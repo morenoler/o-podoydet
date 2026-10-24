@@ -103,6 +103,9 @@ export function HotelPage() {
       </div>
     );
   const { hotel, facts } = data;
+  const labFixture =
+    import.meta.env.VITE_LAB_MODE === "true" &&
+    hotel.id.startsWith("lab-demo-");
   const room = ranked.rooms.find((r) => r.room.id === roomId) || ranked.best;
   return (
     <div className="page">
@@ -118,23 +121,40 @@ export function HotelPage() {
             {lodgingLabel(hotel)} · {hotel.address}
           </p>
         </div>
-        <a
-          href={hotel.osmUrl}
-          className="button secondary"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Объект на OSM <ExternalLink size={16} />
-        </a>
+        {hotel.osmUrl && !labFixture && (
+          <a
+            href={hotel.osmUrl}
+            className="button secondary"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Объект на OSM <ExternalLink size={16} />
+          </a>
+        )}
       </div>
-      <Notice>
-        Подбор использует проверяемые источники и оценки. Расчётные выводы
-        отмечены как «Предположение». Цена и наличие на даты поездки не
-        проверены.
-      </Notice>
+      {labFixture ? (
+        <Notice>
+          <strong>Вымышленное тестовое объявление.</strong>{" "}
+          {hotel.dataNotes?.join(" ")} Демонстрационные сведения используются
+          только для проверки работы этой копии.
+        </Notice>
+      ) : (
+        <Notice>
+          Подбор использует проверяемые источники и оценки. Расчётные выводы
+          отмечены как «Предположение». Цена и наличие на даты поездки не
+          проверены.
+        </Notice>
+      )}
       <div className="detail-grid">
         <section>
-          <GeoMap dataset={catalog} hotel={hotel} />
+          {labFixture ? (
+            <Notice>
+              Координаты этого объявления условные. Карта реального размещения и
+              маршрут для него не показываются.
+            </Notice>
+          ) : (
+            <GeoMap dataset={catalog} hotel={hotel} />
+          )}
           {hotel.route && (
             <div className="route-stats">
               <div>
@@ -163,13 +183,13 @@ export function HotelPage() {
               Соединительные участки не включены в длину. Отсутствие отмеченных
               лестниц не подтверждает доступность всего пути.
             </p>
-          ) : (
+          ) : !labFixture ? (
             <Notice>
               Пешеходный маршрут до пляжа пока не рассчитан. На карте показано
               расположение объекта; расстояние и доступность пути остаются
               неизвестными.
             </Notice>
-          )}
+          ) : null}
           {hotel.route?.noStepsAlternative && (
             <Notice>
               Найден альтернативный путь без отмеченных лестниц:{" "}
@@ -177,40 +197,42 @@ export function HotelPage() {
               доступность не обследована.
             </Notice>
           )}
-          <div className="subsection">
-            <h2>Что находится рядом</h2>
-            <p>
-              Возможные источники внешнего шума. Уровень шума внутри номера не
-              измерен.
-            </p>
-            {hotel.noise.length ? (
-              hotel.noise.map((n) => (
-                <a
-                  className="noise-row"
-                  key={n.osmUrl}
-                  href={n.osmUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <span>
-                    <span className="noise-dot" />
-                    {n.name}
-                  </span>
-                  <span>
-                    ≈ {n.meters} м <ExternalLink size={13} />
-                  </span>
-                </a>
-              ))
-            ) : (
-              <Notice>
-                В выгрузке не обнаружены учитываемые источники рядом. Это не
-                подтверждает тишину.
-              </Notice>
-            )}
-            <p className="muted">
-              Расстояния до ближайшей точки геометрии в выгрузке, по прямой.
-            </p>
-          </div>
+          {!labFixture && (
+            <div className="subsection">
+              <h2>Что находится рядом</h2>
+              <p>
+                Возможные источники внешнего шума. Уровень шума внутри номера не
+                измерен.
+              </p>
+              {hotel.noise.length ? (
+                hotel.noise.map((n) => (
+                  <a
+                    className="noise-row"
+                    key={n.osmUrl}
+                    href={n.osmUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <span>
+                      <span className="noise-dot" />
+                      {n.name}
+                    </span>
+                    <span>
+                      ≈ {n.meters} м <ExternalLink size={13} />
+                    </span>
+                  </a>
+                ))
+              ) : (
+                <Notice>
+                  В выгрузке не обнаружены учитываемые источники рядом. Это не
+                  подтверждает тишину.
+                </Notice>
+              )}
+              <p className="muted">
+                Расстояния до ближайшей точки геометрии в выгрузке, по прямой.
+              </p>
+            </div>
+          )}
         </section>
         <aside className="room-panel">
           <h2>Проверим один номер</h2>
@@ -299,45 +321,48 @@ export function HotelPage() {
           )}
         </aside>
       </div>
-      <section className="subsection trip-environment">
-        <div className="environment-heading">
-          <span className="note-icon">
-            <ShieldCheck size={25} />
-          </span>
-          <div>
-            <h2>Район на даты вашей поездки</h2>
-            <p>
-              {dateFull(trip.checkIn)} — {dateFull(trip.checkOut)} · время
-              Пусана
-            </p>
+      {!labFixture && (
+        <section className="subsection trip-environment">
+          <div className="environment-heading">
+            <span className="note-icon">
+              <ShieldCheck size={25} />
+            </span>
+            <div>
+              <h2>Район на даты вашей поездки</h2>
+              <p>
+                {dateFull(trip.checkIn)} — {dateFull(trip.checkOut)} · время
+                Пусана
+              </p>
+            </div>
           </div>
-        </div>
-        <p>
-          Эти условия одинаковы для всех номеров отеля. «Обязательно» влияет на
-          допуск к подбору; остальные пожелания влияют на порядок вариантов.
-        </p>
-        {ranked.warnings?.map((text, i) => (
-          <Notice key={`w${i}`}>{text}</Notice>
-        ))}
-        {ranked.conflicts?.map((text, i) => (
-          <Notice key={`c${i}`}>{text}</Notice>
-        ))}
-        <div className="environment-criteria">
-          {room.criteria
-            .filter((c) => features[c.feature].tool === "area")
-            .map((c) => (
-              <div className="environment-criterion" key={c.feature}>
-                <CriterionLine criterion={c} detailed />
-                <span className="muted">
-                  {ranked.preferences?.some((p) => p.feature === c.feature)
-                    ? "Учтено в подборе"
-                    : "Справочно · не выбрано в пожеланиях"}
-                </span>
-              </div>
-            ))}
-        </div>
-      </section>
-      <AreaPanel hotelId={hotel.id} />
+          <p>
+            Эти условия одинаковы для всех номеров отеля. «Обязательно» влияет
+            на допуск к подбору; остальные пожелания влияют на порядок
+            вариантов.
+          </p>
+          {ranked.warnings?.map((text, i) => (
+            <Notice key={`w${i}`}>{text}</Notice>
+          ))}
+          {ranked.conflicts?.map((text, i) => (
+            <Notice key={`c${i}`}>{text}</Notice>
+          ))}
+          <div className="environment-criteria">
+            {room.criteria
+              .filter((c) => features[c.feature].tool === "area")
+              .map((c) => (
+                <div className="environment-criterion" key={c.feature}>
+                  <CriterionLine criterion={c} detailed />
+                  <span className="muted">
+                    {ranked.preferences?.some((p) => p.feature === c.feature)
+                      ? "Учтено в подборе"
+                      : "Справочно · не выбрано в пожеланиях"}
+                  </span>
+                </div>
+              ))}
+          </div>
+        </section>
+      )}
+      {!labFixture && <AreaPanel hotelId={hotel.id} />}
       <section className="subsection evidence-section">
         <h2>Почему мы так считаем</h2>
         <p>
@@ -347,7 +372,14 @@ export function HotelPage() {
         {facts
           .filter((f) => !f.roomId || f.roomId === roomId)
           .map((f) => (
-            <FactEvidence key={f.id} fact={f} />
+            <FactEvidence
+              key={f.id}
+              fact={f}
+              allowDemo={
+                import.meta.env.VITE_LAB_MODE === "true" &&
+                catalog.evidencePolicy === "demo"
+              }
+            />
           ))}
       </section>
     </div>

@@ -1,5 +1,6 @@
 node_modules/
 dist/
+dist-lab/
 .local/
 .env
 .env.*
@@ -16,3 +17,6 @@ backend/target/
 .aws/
 *.log
 test-results/
+__pycache__/
+*.py[cod]
+.venv/

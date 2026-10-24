@@ -153,6 +153,39 @@ class EnvironmentTest {
   }
 
   @Test
+  void syntheticCoordinatesCannotInheritAirSafetyOrRoadEvidence() throws Exception {
+    Path areas = temporary.resolve("synthetic-areas.json");
+    Path roads = temporary.resolve("synthetic-noise.json");
+    ObjectNode sourceArea = area(forecast(20));
+    sourceArea.set("safety", safetyArea(rate()).path("safety"));
+    Files.writeString(
+        areas, Json.write(Json.obj("region", "Пусан", "assessments", List.of(sourceArea))));
+    Files.writeString(roads, Json.write(context()));
+    Environment environment = new Environment(areas, roads);
+    Map<String, JsonNode> real = environment.evaluate(List.of(hotel()), trip(), NOW).get("test");
+    assertEquals("match", status(real.get("clean_air")));
+    assertEquals("match", status(real.get("area_safety")));
+    assertTrue(real.get("low_noise").has("nearestRoadMeters"));
+    ObjectNode synthetic = hotel().put("synthetic", true);
+    Map<String, JsonNode> result =
+        environment.evaluate(List.of(synthetic), trip(), NOW).get("test");
+    for (String feature : List.of("clean_air", "area_safety", "low_noise")) {
+      JsonNode criterion = result.get(feature);
+      assertEquals("unknown", status(criterion));
+      assertFalse(criterion.has("environmentalEvidence"));
+      assertFalse(criterion.has("currentAirUsAqi"));
+      assertFalse(criterion.has("nearestRoadMeters"));
+      assertTrue(criterion.path("facts").isEmpty());
+      assertEquals(
+          "mismatch", Json.str(BinaryDecisionPolicy.decide(criterion, synthetic), "status"));
+    }
+    assertEquals(
+        real,
+        environment.evaluate(List.of(hotel()), trip(), NOW).get("test"),
+        "Evaluating a fictional listing must not modify evidence for the real location");
+  }
+
+  @Test
   void currentAirCannotStandInForTripAndKoreanMidnightCoverageIsExact() {
     assertEquals("unknown", status(Environment.air(area(Json.obj()), trip(), NOW)));
     JsonNode match = Environment.air(area(forecast(50)), trip(), NOW);

@@ -42,6 +42,24 @@ public final class Environment {
     JsonNode areas = read(areaPath), noise = read(noisePath), traffic = read(trafficPath);
     Map<String, Map<String, JsonNode>> result = new HashMap<>();
     for (JsonNode hotel : hotels) {
+      if (hotel.path("synthetic").asBoolean(false)) {
+        Map<String, JsonNode> unavailable = new HashMap<>();
+        for (String feature : List.of("clean_air", "area_safety", "low_noise")) {
+          ObjectNode criterion =
+              unknown(
+                  feature,
+                  "Вымышленное объявление: условные координаты не подтверждают характеристики"
+                      + " района.",
+                  List.of(
+                      "Экологические и географические сведения не рассчитываются для учебных"
+                          + " объявлений."),
+                  List.of());
+          criterion.remove("environmentalEvidence");
+          unavailable.put(feature, criterion);
+        }
+        result.put(Json.str(hotel, "id"), unavailable);
+        continue;
+      }
       JsonNode area = findArea(areas, hotel, Json.str(trip, "region"));
       result.put(
           Json.str(hotel, "id"),

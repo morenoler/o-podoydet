@@ -357,6 +357,45 @@ public final class Store implements AutoCloseable {
         });
   }
 
+  /** Advisor records never enter the facts or rooms tables used by matching. */
+  public synchronized void saveAdvisorRun(ObjectNode run) throws SQLException {
+    execute(
+        "INSERT INTO advisor_runs(region,id,created_at,body) VALUES (?,?,?,?)"
+            + " ON CONFLICT(region,id) DO UPDATE SET body=excluded.body",
+        region,
+        Json.str(run, "id"),
+        Json.str(run, "createdAt"),
+        Json.write(run));
+  }
+
+  public synchronized JsonNode advisorRun(String id) throws SQLException {
+    return one("SELECT body FROM advisor_runs WHERE region=? AND id=?", region, id);
+  }
+
+  public synchronized List<JsonNode> advisorRuns() throws SQLException {
+    return rows(
+        "SELECT body FROM advisor_runs WHERE region=? ORDER BY created_at DESC LIMIT 50", region);
+  }
+
+  /** An interrupted task must never resume billable model work after a server restart. */
+  public synchronized void recoverAdvisorRuns() throws SQLException {
+    transaction(
+        () -> {
+          for (JsonNode item :
+              rows(
+                  "SELECT body FROM advisor_runs WHERE region=?"
+                      + " AND json_extract(body,'$.status') IN ('queued','running')",
+                  region)) {
+            ObjectNode run = item.deepCopy();
+            run.put("status", "failed")
+                .put("error", "Сервер был перезапущен. Запустите подбор с помощником заново.")
+                .put("updatedAt", Instant.now().toString());
+            saveAdvisorRun(run);
+          }
+          return null;
+        });
+  }
+
   private <T> T transaction(SqlWork<T> work) throws SQLException {
     connection.setAutoCommit(false);
     try {

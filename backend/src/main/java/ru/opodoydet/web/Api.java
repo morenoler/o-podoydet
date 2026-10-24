@@ -18,9 +18,11 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import ru.opodoydet.advisor.AdvisorService;
 import ru.opodoydet.application.Agents;
 import ru.opodoydet.application.Environment;
 import ru.opodoydet.application.SearchService;
@@ -42,6 +44,8 @@ public final class Api implements AutoCloseable {
   private final String frontendOrigin;
   private final Environment environment;
   private final SearchService searchService;
+  private final AdvisorService advisor;
+  private final boolean labMode;
   private final HttpServer server;
   private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
@@ -87,13 +91,33 @@ public final class Api implements AutoCloseable {
       String frontendOrigin,
       int port)
       throws IOException {
+    this(store, agents, dist, areaData, noiseData, trafficData, frontendOrigin, port, Map.of());
+  }
+
+  public Api(
+      Store store,
+      Agents agents,
+      Path dist,
+      Path areaData,
+      Path noiseData,
+      Path trafficData,
+      String frontendOrigin,
+      int port,
+      Map<String, String> advisorEnvironment)
+      throws IOException {
     this.store = store;
     this.agents = agents;
     this.dist = dist.toAbsolutePath().normalize();
     this.areaData = areaData;
     this.frontendOrigin = frontendOrigin;
+    this.labMode = "true".equals(advisorEnvironment.get("LAB_MODE"));
     this.environment = new Environment(areaData, noiseData, trafficData);
     this.searchService = new SearchService(store, agents, environment);
+    try {
+      this.advisor = new AdvisorService(store, searchService, advisorEnvironment);
+    } catch (SQLException error) {
+      throw new IOException("Не удалось открыть историю помощника", error);
+    }
     server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
     server.setExecutor(executor);
     server.createContext("/", this::handle);
@@ -149,6 +173,15 @@ public final class Api implements AutoCloseable {
 
   private void route(HttpExchange exchange) throws IOException, SQLException {
     String path = exchange.getRequestURI().getPath(), method = exchange.getRequestMethod();
+    if (path.equals("/api/lab/search")) {
+      if (!labMode || !method.equals("POST")) notFound(exchange, "Метод не найден");
+      else send(exchange, 200, searchService.searchLab(body(exchange)));
+      return;
+    }
+    if (path.startsWith("/api/advisor/")) {
+      advisorRoute(exchange, path, method);
+      return;
+    }
     if (method.equals("GET")) {
       if (path.equals("/api/health")) {
         send(
@@ -361,6 +394,38 @@ public final class Api implements AutoCloseable {
     notFound(exchange, "Метод не найден");
   }
 
+  private void advisorRoute(HttpExchange exchange, String path, String method)
+      throws IOException, SQLException {
+    try {
+      if (method.equals("GET") && path.equals("/api/advisor/config")) {
+        send(exchange, 200, advisor.config());
+        return;
+      }
+      if (path.equals("/api/advisor/runs")) {
+        if (method.equals("GET")) {
+          send(exchange, 200, advisor.list());
+          return;
+        }
+        if (method.equals("POST")) {
+          send(exchange, 202, advisor.start(body(exchange)));
+          return;
+        }
+      }
+      String[] parts = path.split("/");
+      JsonNode result = null;
+      if (parts.length == 5 && parts[3].equals("runs") && method.equals("GET"))
+        result = advisor.get(parts[4]);
+      else if (parts.length == 6 && parts[3].equals("runs") && method.equals("POST")) {
+        body(exchange);
+        if (parts[5].equals("cancel")) result = advisor.cancel(parts[4]);
+      }
+      if (result == null) notFound(exchange, "Задание помощника или действие не найдено");
+      else send(exchange, 200, result);
+    } catch (IllegalStateException error) {
+      send(exchange, 409, Json.obj("error", error.getMessage()));
+    }
+  }
+
   public JsonNode assessment(JsonNode hotel, Instant now) throws IOException {
     if (!Files.isRegularFile(areaData)) return null;
     JsonNode file = Json.MAPPER.readTree(areaData.toFile());
@@ -480,6 +545,7 @@ public final class Api implements AutoCloseable {
   @Override
   public void close() {
     server.stop(0);
+    advisor.close();
     executor.close();
   }
 }

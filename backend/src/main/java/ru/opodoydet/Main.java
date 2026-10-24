@@ -39,7 +39,8 @@ public final class Main {
             Path.of(env.getOrDefault("NOISE_DATA_PATH", "data/noise-context.json")),
             Path.of(env.getOrDefault("TRAFFIC_DATA_PATH", "data/traffic-ktdb-2024.json")),
             env.getOrDefault("FRONTEND_ORIGIN", ""),
-            Integer.parseInt(env.getOrDefault("PORT", "8080")));
+            Integer.parseInt(env.getOrDefault("PORT", "8080")),
+            env);
     Runtime.getRuntime()
         .addShutdownHook(
             new Thread(

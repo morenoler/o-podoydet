@@ -18,9 +18,12 @@ import { Notice, ErrorMessage, Loading } from "../shared/ui/Feedback";
 import { features } from "../../shared/features";
 import { HotelCard } from "../features/hotels/components/HotelCard";
 import { CompareDialog } from "../features/hotels/components/CompareDialog";
+import { AdvisorPanel } from "../features/advisor/AdvisorPanel";
+import { advisorTripKey } from "../features/advisor/useAdvisor";
 
 export function ResultsPage() {
-  const { trip, setTrip, catalog, revision, rememberSearch } = useApp();
+  const { trip, setTrip, catalog, revision, rememberSearch, refresh } =
+    useApp();
   const [data, setData] = useState<SearchResult | null>(null),
     [error, setError] = useState(""),
     [loading, setLoading] = useState(true),
@@ -97,9 +100,16 @@ export function ResultsPage() {
         </section>
       )}
       <Notice>
-        География — из OpenStreetMap, условия номеров — из официальных
-        источников. Когда данных недостаточно, используем оценку с пометкой
-        «Предположение». Наличие номеров на ваши даты не проверено.
+        {import.meta.env.VITE_LAB_MODE === "true" &&
+        catalog?.evidencePolicy === "demo" ? (
+          "Тестовый подбор: объявления с пометкой «ДЕМО» полностью вымышленные. Демонстрационные доказательства и ответы участвуют только в подборе этой копии. Цена, наличие и бронирование не проверяются."
+        ) : (
+          <>
+            География — из OpenStreetMap, условия номеров — из официальных
+            источников. Когда данных недостаточно, используем оценку с пометкой
+            «Предположение». Наличие номеров на ваши даты не проверено.
+          </>
+        )}
       </Notice>
       {error && <ErrorMessage text={error} />}{" "}
       {loading ? (
@@ -141,14 +151,22 @@ export function ResultsPage() {
                 <Search size={32} />
                 <h2>Точного совпадения пока нет</h2>
                 <p>
-                  Обязательные условия сохранены. Можно изменить состав гостей
-                  или снять обязательность отдельных пожеланий.
+                  Обязательные условия сохранены. Помощник ниже объяснит, что
+                  исключило варианты и какие сведения стоит уточнить.
                 </p>
                 <Link to="/wishes" className="button primary">
                   Пересмотреть пожелания
                 </Link>
               </div>
             )}
+            <AdvisorPanel
+              key={`${advisorTripKey(trip)}:${data.searchId || "missing"}`}
+              trip={trip}
+              searchId={data.searchId}
+              noMatches={!data.results.length}
+              needsClarification={data.conflicts.length > 0}
+              onRefreshSearch={refresh}
+            />
             <div className="hotel-grid">
               {data.results.slice(0, limit).map((m) => (
                 <HotelCard

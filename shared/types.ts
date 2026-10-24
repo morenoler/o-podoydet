@@ -59,6 +59,8 @@ export interface NoiseSource {
   coordinates: Point;
 }
 export interface Hotel {
+  /** Fictional lab listing: its placeholder coordinates must not produce environmental claims. */
+  synthetic?: boolean;
   dataNotes?: string[];
   id: string;
   name: string;
@@ -163,6 +165,7 @@ export interface Trace {
   tool?: string;
 }
 export interface SearchResult {
+  searchId: string;
   results: HotelMatch[];
   excluded: HotelMatch[];
   preferences: Preference[];

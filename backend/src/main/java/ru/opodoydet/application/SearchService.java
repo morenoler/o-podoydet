@@ -3,9 +3,15 @@ package ru.opodoydet.application;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.sql.SQLException;
+import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import ru.opodoydet.advisor.AdvisorPlanner;
 import ru.opodoydet.domain.BinaryDecisionPolicy;
 import ru.opodoydet.domain.Features;
 import ru.opodoydet.domain.Matching;
@@ -18,27 +24,95 @@ public final class SearchService {
   private final Store store;
   private final Agents agents;
   private final Environment environment;
+  private final Clock clock;
+  private final Map<String, SearchSnapshot> snapshots = new LinkedHashMap<>();
+  private static final Duration SNAPSHOT_LIFETIME = Duration.ofMinutes(10);
+  private static final int MAX_SNAPSHOTS = 20;
+
+  private record SearchSnapshot(
+      JsonNode trip,
+      ObjectNode interpreted,
+      List<JsonNode> hotels,
+      List<JsonNode> facts,
+      Instant now,
+      Map<String, Map<String, JsonNode>> environments,
+      String policy) {}
 
   public SearchService(Store store, Agents agents, Environment environment) {
+    this(store, agents, environment, Clock.systemUTC());
+  }
+
+  public SearchService(Store store, Agents agents, Environment environment, Clock clock) {
     this.store = store;
     this.agents = agents;
     this.environment = environment;
+    this.clock = clock;
   }
 
   public ObjectNode search(JsonNode input) throws SQLException {
-    JsonNode trip = Validation.trip(input, store.region);
+    return search(input, false);
+  }
+
+  /** Lab-only experiment entry point. The HTTP layer independently gates its availability. */
+  public ObjectNode searchLab(JsonNode input) throws SQLException {
+    return search(input, true);
+  }
+
+  private ObjectNode search(JsonNode input, boolean syntheticOnly) throws SQLException {
+    JsonNode trip = Validation.trip(input, store.region).deepCopy();
     ObjectNode interpreted = agents.interpret(trip);
-    List<JsonNode> hotels = store.hotels();
-    Instant now = Instant.now();
+    List<JsonNode> hotels;
+    List<JsonNode> facts;
+    String policy;
+    synchronized (store) {
+      hotels = store.hotels();
+      facts = store.matchingFacts();
+      if (syntheticOnly) {
+        hotels = hotels.stream().filter(hotel -> hotel.path("synthetic").asBoolean(false)).toList();
+        var hotelIds =
+            hotels.stream().map(hotel -> Json.str(hotel, "id")).collect(Collectors.toSet());
+        facts =
+            facts.stream().filter(fact -> hotelIds.contains(Json.str(fact, "hotelId"))).toList();
+      }
+      policy = store.evidencePolicy();
+    }
+    Instant now = clock.instant();
+    Map<String, Map<String, JsonNode>> environments = environment.evaluate(hotels, trip, now);
     List<JsonNode> ranked =
         Matching.rank(
             hotels,
-            store.matchingFacts(),
+            facts,
             Json.list(interpreted.path("preferences")),
             trip,
             now,
-            environment.evaluate(hotels, trip, now),
-            store.evidencePolicy());
+            environments,
+            policy);
+    String searchId = UUID.randomUUID().toString();
+    synchronized (snapshots) {
+      expireSnapshots();
+      while (snapshots.size() >= MAX_SNAPSHOTS)
+        snapshots.remove(snapshots.keySet().iterator().next());
+      snapshots.put(
+          searchId,
+          new SearchSnapshot(
+              trip.deepCopy(),
+              interpreted.deepCopy(),
+              copyNodes(hotels),
+              copyNodes(facts),
+              now,
+              environments.entrySet().stream()
+                  .collect(
+                      Collectors.toUnmodifiableMap(
+                          Map.Entry::getKey,
+                          entry ->
+                              entry.getValue().entrySet().stream()
+                                  .collect(
+                                      Collectors.toUnmodifiableMap(
+                                          Map.Entry::getKey,
+                                          value -> value.getValue().deepCopy())))),
+              policy));
+    }
+    interpreted.put("searchId", searchId);
     if (!interpreted.path("conflicts").isEmpty())
       for (JsonNode match : ranked) excludeForConflict((ObjectNode) match);
     interpreted.set(
@@ -91,6 +165,40 @@ public final class SearchService {
                     "tool",
                     "SQLite 3"))));
     return interpreted;
+  }
+
+  /** Advice reuses the exact interpreted constraints and evidence shown by this search result. */
+  public ObjectNode advisorContext(JsonNode input, String searchId) {
+    JsonNode trip = Validation.trip(input, store.region).deepCopy();
+    SearchSnapshot snapshot;
+    synchronized (snapshots) {
+      expireSnapshots();
+      snapshot = snapshots.get(searchId);
+    }
+    if (snapshot == null || !snapshot.trip().equals(trip))
+      throw new IllegalArgumentException(
+          "Результат поиска устарел или параметры изменились. Обновите поиск перед запуском"
+              + " помощника.");
+    return AdvisorPlanner.plan(
+            snapshot.trip(),
+            snapshot.interpreted(),
+            snapshot.hotels(),
+            snapshot.facts(),
+            snapshot.now(),
+            snapshot.environments(),
+            snapshot.policy())
+        .put("searchId", searchId);
+  }
+
+  private static List<JsonNode> copyNodes(List<JsonNode> values) {
+    return values.stream().map(value -> (JsonNode) value.deepCopy()).toList();
+  }
+
+  private void expireSnapshots() {
+    Instant now = clock.instant();
+    snapshots
+        .entrySet()
+        .removeIf(entry -> !entry.getValue().now().plus(SNAPSHOT_LIFETIME).isAfter(now));
   }
 
   public ObjectNode detail(String id, JsonNode input) throws SQLException {

@@ -3,7 +3,13 @@ import { features } from "../../../../shared/features";
 import { ExternalLink } from "lucide-react";
 import { dateFull } from "../../../shared/lib/date";
 
-export function FactEvidence({ fact }: { fact: Fact }) {
+export function FactEvidence({
+  fact,
+  allowDemo = false,
+}: {
+  fact: Fact;
+  allowDemo?: boolean;
+}) {
   return (
     <article className={`evidence ${fact.supersededBy ? "superseded" : ""}`}>
       <div className="evidence-title">
@@ -19,7 +25,9 @@ export function FactEvidence({ fact }: { fact: Fact }) {
         </strong>
         <span className={`tag ${fact.demo ? "demo" : ""}`}>
           {fact.demo
-            ? "Демонстрация · не влияет на подбор"
+            ? allowDemo
+              ? "Демонстрация · влияет только на тестовый подбор"
+              : "Демонстрация · не влияет на подбор"
             : fact.method === "official"
               ? "Официальный источник"
               : "Расчёт по OSM"}
