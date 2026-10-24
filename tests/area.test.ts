@@ -8,6 +8,7 @@ import { createHash } from "node:crypto";
 import {
   airRequestUrl,
   normalizeAir,
+  normalizeAirForecast,
   unknownAir,
   assessSafety,
   makeAssessment,
@@ -273,4 +274,217 @@ test("offline CLI batch preserves per-hotel values, skips invalid coordinates an
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
+});
+
+const forecastRaw = (hours = 48) => ({
+  ...raw(),
+  hourly_units: {
+    time: "unixtime",
+    pm2_5: "μg/m³",
+    pm10: "μg/m³",
+    nitrogen_dioxide: "μg/m³",
+    us_aqi: "USAQI",
+  },
+  hourly: {
+    time: Array.from(
+      { length: hours },
+      (_, i) => Date.parse("2026-10-24T15:00:00Z") / 1000 + i * 3600,
+    ),
+    pm2_5: Array.from({ length: hours }, () => 4.5 as number | null),
+    pm10: Array.from({ length: hours }, () => 8 as number | null),
+    nitrogen_dioxide: Array.from({ length: hours }, () => 12 as number | null),
+    us_aqi: Array.from({ length: hours }, () => 35 as number | null),
+  },
+});
+test("forecast preserves all hourly UTC timestamps and exclusive end without inventing issue time", () => {
+  const result = normalizeAir(
+    forecastRaw(),
+    now.toISOString(),
+    "test",
+    now,
+    [129.16, 35.16],
+  );
+  assert.equal(result.status, "available");
+  assert.equal(result.forecast.status, "available");
+  assert.equal(result.forecast.hourly.length, 48);
+  assert.equal(result.forecast.coverageStart, "2026-10-24T15:00:00.000Z");
+  assert.equal(result.forecast.coverageEnd, "2026-10-26T15:00:00.000Z");
+  assert.equal(result.forecast.issuedAt, null);
+  assert.equal(result.forecast.tripTimezone, "Asia/Seoul");
+  assert.equal(result.forecast.hourly[0].usAqi, 35);
+  const url = new URL(airRequestUrl([129.16, 35.16]));
+  assert.equal(url.searchParams.get("timezone"), "Asia/Seoul");
+  assert.equal(url.searchParams.get("forecast_days"), "5");
+  assert.match(url.searchParams.get("hourly")!, /us_aqi/);
+});
+test("forecast does not fill a missing hour, null, invalid concentration, unexpected unit or mismatched arrays", () => {
+  const missing = forecastRaw(3);
+  for (const key of Object.keys(
+    missing.hourly,
+  ) as (keyof typeof missing.hourly)[])
+    missing.hourly[key].splice(1, 1);
+  const gap = normalizeAirForecast(missing, now.toISOString(), "test", now);
+  assert.equal(gap.status, "partial");
+  assert.equal(gap.hourly.length, 2);
+  assert.equal(
+    Date.parse(gap.hourly[1].time) - Date.parse(gap.hourly[0].time),
+    7200000,
+  );
+  const bad = forecastRaw(3);
+  bad.hourly.us_aqi[1] = null;
+  bad.hourly.pm2_5[0] = -1;
+  bad.hourly.pm10.pop();
+  bad.hourly_units.nitrogen_dioxide = "ppb";
+  const result = normalizeAirForecast(bad, now.toISOString(), "test", now);
+  assert.equal(result.status, "partial");
+  assert.equal(result.hourly[1].usAqi, null);
+  assert.equal(result.hourly[0].pm25, null);
+  assert.ok(result.hourly.every((h) => h.pm10 === null && h.no2 === null));
+});
+test("forecast rejects duplicate unordered off-hour oversized and out-of-horizon time arrays", () => {
+  for (const change of [
+    (r: ReturnType<typeof forecastRaw>) => {
+      r.hourly.time[1] = r.hourly.time[0];
+    },
+    (r: ReturnType<typeof forecastRaw>) => {
+      r.hourly.time.reverse();
+    },
+    (r: ReturnType<typeof forecastRaw>) => {
+      r.hourly.time[0] += 60;
+    },
+    (r: ReturnType<typeof forecastRaw>) => {
+      r.hourly.time[0] = +now / 1000 - 25 * 3600;
+    },
+    (r: ReturnType<typeof forecastRaw>) => {
+      r.hourly.time = r.hourly.time.map((x) => x + 8 * 24 * 3600);
+    },
+  ]) {
+    const r = forecastRaw(3);
+    change(r);
+    const f = normalizeAirForecast(r, now.toISOString(), "test", now);
+    assert.equal(f.status, "unknown");
+    assert.equal(f.hourly.length, 0);
+  }
+  assert.equal(
+    normalizeAirForecast(forecastRaw(169), now.toISOString(), "test", now)
+      .status,
+    "unknown",
+  );
+});
+test("forecast and current have independent validity but share checked model coordinates", () => {
+  const brokenCurrent = { ...forecastRaw(), current: undefined };
+  assert.equal(
+    normalizeAir(brokenCurrent, now.toISOString(), "test", now).status,
+    "unknown",
+  );
+  assert.equal(
+    normalizeAir(brokenCurrent, now.toISOString(), "test", now).forecast.status,
+    "available",
+  );
+  assert.equal(
+    normalizeAirForecast(
+      forecastRaw(),
+      now.toISOString(),
+      "test",
+      now,
+      [39.9, 43.4],
+    ).status,
+    "unknown",
+  );
+  const a = makeAssessment(
+    { hotelId: "test", name: "test", coordinates: [129.16, 35.16] },
+    normalizeAir(forecastRaw(), now.toISOString(), "test", now),
+    [],
+    now,
+  );
+  const later = refreshAreaFreshness(a, new Date(+now + 7 * 3600000));
+  assert.equal(later.airQuality.forecast.status, "stale");
+  assert.equal(a.airQuality.forecast.status, "available");
+  assert.equal(later.airQuality.forecast.fetchedAt, now.toISOString());
+});
+function comparableRate(): OfficialEvidence {
+  const e = evidence();
+  return {
+    ...e,
+    metric: "crime_rate_per_100000",
+    value: 200,
+    unit: "incidents_per_100000_residents",
+    rateDefinition: {
+      categoryCode: "theft",
+      denominatorBasis: "annual_average_resident_population",
+      methodologyId: "TEST-official-rate-v1",
+    },
+    comparator: {
+      metric: "crime_rate_per_100000",
+      categoryCode: "theft",
+      period: { ...e.period },
+      unit: "incidents_per_100000_residents",
+      denominatorBasis: "annual_average_resident_population",
+      methodologyId: "TEST-official-rate-v1",
+      value: 250,
+      baselineRegion: {
+        name: "Synthetic baseline only",
+        code: "TEST-BASELINE",
+      },
+      sourcePublisher: "Synthetic test publisher",
+      sourceUrl: "https://www.safemap.go.kr/test-fixture",
+      sourceRecord: "Synthetic baseline row, not real Korean statistics",
+      publishedAt: e.publishedAt,
+      retrievedAt: e.retrievedAt,
+      verification: "operator-checked-official-source",
+    },
+  };
+}
+test("optional crime comparison requires identical rate category period denominator units and methodology", () => {
+  assert.equal(
+    officialImportSchema.safeParse({ version: 1, records: [comparableRate()] })
+      .success,
+    true,
+  );
+  const e = comparableRate();
+  for (const bad of [
+    { ...e, metric: "reported_incidents" },
+    { ...e, rateDefinition: undefined },
+    { ...e, unit: "incidents" },
+    { ...e, comparator: { ...e.comparator!, categoryCode: "robbery" } },
+    {
+      ...e,
+      comparator: {
+        ...e.comparator!,
+        period: { from: "2024-01-01", to: "2024-12-31" },
+      },
+    },
+    { ...e, comparator: { ...e.comparator!, methodologyId: "other-method" } },
+    { ...e, comparator: { ...e.comparator!, denominatorBasis: "tourists" } },
+    {
+      ...e,
+      comparator: {
+        ...e.comparator!,
+        sourceUrl: "https://example.com/unofficial",
+      },
+    },
+    {
+      ...e,
+      comparator: {
+        ...e.comparator!,
+        baselineRegion: { name: "Same district", code: e.geography.code },
+      },
+    },
+  ])
+    assert.equal(
+      officialImportSchema.safeParse({ version: 1, records: [bad] }).success,
+      false,
+    );
+  const future = {
+    ...e,
+    comparator: {
+      ...e.comparator!,
+      publishedAt: "2027-01-01",
+      retrievedAt: "2027-01-02T00:00:00Z",
+    },
+  };
+  assert.equal(
+    assessSafety([129.2, 35.2], [future], now).evidence[0].comparator,
+    undefined,
+  );
 });

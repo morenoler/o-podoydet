@@ -32,6 +32,7 @@ public final class Main {
             new Agents(Agents.Config.from(env)),
             Path.of(env.getOrDefault("DIST_PATH", "dist")),
             Path.of(env.getOrDefault("AREA_DATA_PATH", "data/area-assessments.json")),
+            Path.of(env.getOrDefault("NOISE_DATA_PATH", "data/noise-context.json")),
             env.getOrDefault("FRONTEND_ORIGIN", ""),
             Integer.parseInt(env.getOrDefault("PORT", "8080")));
     Runtime.getRuntime()

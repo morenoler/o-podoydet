@@ -18,6 +18,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,16 +33,37 @@ final class Api implements AutoCloseable {
   private final Path dist;
   private final Path areaData;
   private final String frontendOrigin;
+  private final Environment environment;
   private final HttpServer server;
   private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
   Api(Store store, Agents agents, Path dist, Path areaData, String frontendOrigin, int port)
+      throws IOException {
+    this(
+        store,
+        agents,
+        dist,
+        areaData,
+        areaData.resolveSibling("noise-context.json"),
+        frontendOrigin,
+        port);
+  }
+
+  Api(
+      Store store,
+      Agents agents,
+      Path dist,
+      Path areaData,
+      Path noiseData,
+      String frontendOrigin,
+      int port)
       throws IOException {
     this.store = store;
     this.agents = agents;
     this.dist = dist.toAbsolutePath().normalize();
     this.areaData = areaData;
     this.frontendOrigin = frontendOrigin;
+    this.environment = new Environment(areaData, noiseData);
     server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
     server.setExecutor(executor);
     server.createContext("/", this::handle);
@@ -162,13 +184,15 @@ final class Api implements AutoCloseable {
         JsonNode trip = Validation.trip(input, store.region);
         ObjectNode interpreted = agents.interpret(trip);
         List<JsonNode> hotels = store.hotels();
+        Instant now = Instant.now();
         List<JsonNode> ranked =
             Matching.rank(
                 hotels,
                 store.facts(),
                 Json.list(interpreted.path("preferences")),
                 trip,
-                Instant.now());
+                now,
+                environment.evaluate(hotels, trip, now));
         interpreted.set(
             "results",
             Json.array(
@@ -223,6 +247,69 @@ final class Api implements AutoCloseable {
         send(exchange, 200, interpreted);
         return;
       }
+      String[] detailParts = path.split("/");
+      if (detailParts.length == 5
+          && detailParts[2].equals("hotels")
+          && detailParts[4].equals("evaluate")) {
+        JsonNode trip = Validation.trip(input, store.region), hotel = store.hotel(detailParts[3]);
+        if (hotel == null) {
+          notFound(exchange, "Отель не найден");
+          return;
+        }
+        Instant now = Instant.now();
+        ObjectNode interpreted = agents.interpret(trip);
+        List<JsonNode> preferences = Json.list(interpreted.path("preferences")),
+            facts =
+                store.facts().stream()
+                    .filter(f -> Json.str(f, "hotelId").equals(detailParts[3]))
+                    .toList();
+        Map<String, Map<String, JsonNode>> environmental =
+            environment.evaluate(List.of(hotel), trip, now);
+        ObjectNode match =
+            (ObjectNode)
+                Matching.rank(List.of(hotel), facts, preferences, trip, now, environmental)
+                    .getFirst();
+        String bestId = Json.str(match.path("best").path("room"), "id");
+        List<JsonNode> allPreferences =
+            Features.ids().stream()
+                .map(
+                    feature ->
+                        (JsonNode)
+                            Json.obj(
+                                "feature",
+                                feature,
+                                "required",
+                                preferences.stream()
+                                    .anyMatch(
+                                        p ->
+                                            Json.str(p, "feature").equals(feature)
+                                                && p.path("required").asBoolean())))
+                .toList();
+        for (JsonNode room : match.path("rooms")) {
+          ((ObjectNode) room)
+              .set(
+                  "criteria",
+                  Json.array(
+                      allPreferences.stream()
+                          .map(
+                              preference ->
+                                  Matching.evaluateWithEnvironment(
+                                      facts,
+                                      preference,
+                                      room.path("room"),
+                                      trip,
+                                      now,
+                                      environmental.get(Json.str(hotel, "id"))))
+                          .toList()));
+          if (!interpreted.path("conflicts").isEmpty() && Json.str(room, "status").equals("fits"))
+            ((ObjectNode) room).put("status", "clarify");
+          if (Json.str(room.path("room"), "id").equals(bestId)) match.set("best", room.deepCopy());
+        }
+        for (String key : List.of("preferences", "warnings", "conflicts", "mode"))
+          match.set(key, interpreted.path(key));
+        send(exchange, 200, match);
+        return;
+      }
       if (path.equals("/api/questions")) {
         String hotelId = Validation.text(input, "hotelId", 1, 150),
             roomId = Validation.text(input, "roomId", 1, 150),
@@ -235,6 +322,21 @@ final class Api implements AutoCloseable {
           return;
         }
         Features.Definition definition = Features.get(feature);
+        if (definition.tool().equals("area")) {
+          JsonNode result =
+              environment.evaluate(List.of(hotel), trip, Instant.now()).get(hotelId).get(feature);
+          send(
+              exchange,
+              200,
+              Json.obj(
+                  "question",
+                  null,
+                  "message",
+                  Json.str(result, "explanation")
+                      + ". Условие проверяется по независимым источникам на даты поездки; ответ"
+                      + " отельера не заменяет эти данные."));
+          return;
+        }
         JsonNode criterion =
             Matching.evaluate(
                 store.facts().stream().filter(f -> Json.str(f, "hotelId").equals(hotelId)).toList(),
@@ -252,11 +354,11 @@ final class Api implements AutoCloseable {
                   "message",
                   hotel.hasNonNull("route")
                       ? "Маршрут рассчитан по сохранённой карте. Доступность всего пути требует"
-                            + " обследования; отсутствие отметок не подтверждает отсутствие"
-                            + " препятствий."
+                          + " обследования; отсутствие отметок не подтверждает отсутствие"
+                          + " препятствий."
                       : "Для этого отеля маршрут по сохранённой карте не найден. Геоданных"
-                            + " недостаточно; расстояние и доступность пути остаются"
-                            + " неизвестными."));
+                          + " недостаточно; расстояние и доступность пути остаются"
+                          + " неизвестными."));
           return;
         }
         JsonNode question =

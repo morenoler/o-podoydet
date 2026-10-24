@@ -49,7 +49,6 @@ import { api } from "./api";
 import { GeoMap } from "./GeoMap";
 import { AreaPanel } from "./AreaPanel";
 import { features, featureIds, scenarios } from "../shared/features";
-import { rankHotels } from "../shared/matching";
 import type {
   Criterion,
   Dataset,
@@ -594,7 +593,6 @@ function WishesPage() {
       ...trip.scenarios.flatMap(
         (id) => scenarios.find((s) => s.id === id)?.features || [],
       ),
-      ...trip.preferences.map((p) => p.feature),
     ]),
   ];
   return (
@@ -647,7 +645,7 @@ function WishesPage() {
             <p>Сценарий предлагает пожелания. Вы решаете, какие учитывать.</p>
             <PreferencePicker
               preferences={trip.preferences}
-              ids={suggested.length ? suggested : featureIds}
+              ids={[...new Set([...suggested, ...featureIds])]}
               onChange={(preferences) => setTrip({ ...trip, preferences })}
             />
           </div>
@@ -705,7 +703,13 @@ function WishesPage() {
   );
 }
 
-function CriterionLine({ criterion }: { criterion: Criterion }) {
+function CriterionLine({
+  criterion,
+  detailed = false,
+}: {
+  criterion: Criterion;
+  detailed?: boolean;
+}) {
   const Icon =
     criterion.status === "match"
       ? CheckCircle2
@@ -717,7 +721,7 @@ function CriterionLine({ criterion }: { criterion: Criterion }) {
   return (
     <div className={`criterion ${criterion.status}`}>
       <Icon size={17} />
-      <span>
+      <div className="criterion-body">
         <strong>
           {features[criterion.feature].label}
           {criterion.required && (
@@ -725,7 +729,27 @@ function CriterionLine({ criterion }: { criterion: Criterion }) {
           )}
         </strong>
         <small>{criterion.explanation}</small>
-      </span>
+        {detailed &&
+          ((criterion.details?.length || 0) > 0 ||
+            (criterion.environmentalEvidence?.length || 0) > 0) && (
+            <details className="criterion-evidence">
+              <summary>Расчёт и источники</summary>
+              {criterion.details?.map((detail, i) => (
+                <p key={i}>{detail}</p>
+              ))}
+              {criterion.environmentalEvidence?.map((e, i) => (
+                <p key={i}>
+                  <a href={e.sourceUrl} target="_blank" rel="noreferrer">
+                    {e.details} <ExternalLink size={12} />
+                  </a>
+                  {e.observedAt && (
+                    <small>Данные: {dateFull(e.observedAt)}</small>
+                  )}
+                </p>
+              ))}
+            </details>
+          )}
+      </div>
     </div>
   );
 }
@@ -820,7 +844,6 @@ function HotelCard({
                   Number(b.status !== "match") -
                   (Number(a.required) * 2 + Number(a.status !== "match")),
               )
-              .slice(0, 3)
               .map((c) => <CriterionLine key={c.feature} criterion={c} />)
           ) : (
             <>
@@ -914,8 +937,10 @@ function ResultsPage() {
         >
           <SlidersHorizontal size={17} />
           Пожелания
-          {trip.preferences.length > 0 && (
-            <span className="count">{trip.preferences.length}</span>
+          {(data?.preferences.length ?? trip.preferences.length) > 0 && (
+            <span className="count">
+              {data?.preferences.length ?? trip.preferences.length}
+            </span>
           )}
         </button>
       </div>
@@ -1079,6 +1104,7 @@ function CompareDialog({
   matches: HotelMatch[];
   onClose: () => void;
 }) {
+  const { trip } = useApp();
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     ref.current?.showModal();
@@ -1099,7 +1125,13 @@ function CompareDialog({
       <div className="dialog-head">
         <div>
           <h2 id="compare-title">Сравним детали</h2>
-          <p>Условия относятся к одной категории номера в каждом отеле.</p>
+          <p>
+            Одна категория номера в каждом отеле. Воздух и шум проверены на даты
+            поездки.
+          </p>
+          <p className="muted">
+            {dateFull(trip.checkIn)} — {dateFull(trip.checkOut)} · Пусан
+          </p>
         </div>
         <button
           className="icon-button"
@@ -1127,7 +1159,7 @@ function CompareDialog({
             {ids.map((id) => {
               const c = m.best.criteria.find((c) => c.feature === id);
               return c ? (
-                <CriterionLine key={id} criterion={c} />
+                <CriterionLine key={id} criterion={c} detailed />
               ) : (
                 <p key={id}>Нет сведений</p>
               );
@@ -1204,10 +1236,11 @@ function FactEvidence({ fact }: { fact: Fact }) {
 }
 function HotelPage() {
   const { id } = useParams();
-  const { trip, catalog, revision, effectivePreferences } = useApp();
+  const { trip, catalog, revision } = useApp();
   const [params] = useSearchParams();
   const requestedRoom = params.get("room");
-  const preferenceKey = JSON.stringify(effectivePreferences);
+  const tripKey = JSON.stringify(trip);
+  const [ranked, setRanked] = useState<HotelMatch | null>(null);
   const [data, setData] = useState<{
       hotel: Hotel;
       facts: Fact[];
@@ -1220,16 +1253,21 @@ function HotelPage() {
   useEffect(() => {
     let active = true;
     setData(null);
-    api<typeof data>(`/hotels/${id}`)
-      .then((d) => {
+    setRanked(null);
+    setError("");
+    Promise.all([
+      api<typeof data>(`/hotels/${id}`),
+      api<HotelMatch>(`/hotels/${id}/evaluate`, trip),
+    ])
+      .then(([d, evaluation]) => {
         if (active) {
           setData(d);
+          setRanked(evaluation);
           if (d)
             setRoomId(
               d.hotel.rooms.some((r) => r.id === requestedRoom)
                 ? requestedRoom!
-                : rankHotels([d.hotel], d.facts, effectivePreferences, trip)[0]
-                    .best.room.id,
+                : evaluation.best.room.id,
             );
         }
       })
@@ -1239,7 +1277,7 @@ function HotelPage() {
     return () => {
       active = false;
     };
-  }, [id, revision, requestedRoom, preferenceKey]);
+  }, [id, revision, requestedRoom, tripKey]);
   async function ask(feature: FeatureId) {
     if (!data) return;
     setBusy(true);
@@ -1262,20 +1300,13 @@ function HotelPage() {
         <ErrorMessage text={error} />
       </div>
     );
-  if (!data || !catalog)
+  if (!data || !catalog || !ranked)
     return (
       <div className="page">
         <Loading />
       </div>
     );
   const { hotel, facts } = data;
-  const allPreferences: Preference[] = featureIds.map((feature) => ({
-    feature,
-    required:
-      effectivePreferences.find((p) => p.feature === feature)?.required ||
-      false,
-  }));
-  const ranked = rankHotels([hotel], facts, allPreferences, trip)[0];
   const room = ranked.rooms.find((r) => r.room.id === roomId) || ranked.best;
   return (
     <div className="page">
@@ -1399,24 +1430,26 @@ function HotelPage() {
             <ErrorMessage text="Эта демонстрационная категория не вмещает всех гостей." />
           )}
           <div className="room-criteria">
-            {room.criteria.map((c) => (
-              <div className="room-criterion" key={c.feature}>
-                <CriterionLine criterion={c} />
-                {["unknown", "conflict", "stale"].includes(c.status) && (
-                  <button
-                    className="text-link"
-                    type="button"
-                    disabled={busy}
-                    onClick={() => ask(c.feature)}
-                  >
-                    {c.status === "conflict"
-                      ? "Разобраться в противоречии"
-                      : "Уточнить условие"}{" "}
-                    <MessageCircle size={14} />
-                  </button>
-                )}
-              </div>
-            ))}
+            {room.criteria
+              .filter((c) => features[c.feature].tool !== "area")
+              .map((c) => (
+                <div className="room-criterion" key={c.feature}>
+                  <CriterionLine criterion={c} />
+                  {["unknown", "conflict", "stale"].includes(c.status) && (
+                    <button
+                      className="text-link"
+                      type="button"
+                      disabled={busy}
+                      onClick={() => ask(c.feature)}
+                    >
+                      {c.status === "conflict"
+                        ? "Разобраться в противоречии"
+                        : "Уточнить условие"}{" "}
+                      <MessageCircle size={14} />
+                    </button>
+                  )}
+                </div>
+              ))}
           </div>
           {error && <ErrorMessage text={error} />}{" "}
           {message && (
@@ -1432,6 +1465,44 @@ function HotelPage() {
           </Link>
         </aside>
       </div>
+      <section className="subsection trip-environment">
+        <div className="environment-heading">
+          <span className="note-icon">
+            <ShieldCheck size={25} />
+          </span>
+          <div>
+            <h2>Район на даты вашей поездки</h2>
+            <p>
+              {dateFull(trip.checkIn)} — {dateFull(trip.checkOut)} · время
+              Пусана
+            </p>
+          </div>
+        </div>
+        <p>
+          Эти условия одинаковы для всех номеров отеля. «Обязательно» влияет на
+          допуск к подбору; остальные пожелания влияют на порядок вариантов.
+        </p>
+        {ranked.warnings?.map((text, i) => (
+          <Notice key={`w${i}`}>{text}</Notice>
+        ))}
+        {ranked.conflicts?.map((text, i) => (
+          <Notice key={`c${i}`}>{text}</Notice>
+        ))}
+        <div className="environment-criteria">
+          {room.criteria
+            .filter((c) => features[c.feature].tool === "area")
+            .map((c) => (
+              <div className="environment-criterion" key={c.feature}>
+                <CriterionLine criterion={c} detailed />
+                <span className="muted">
+                  {ranked.preferences?.some((p) => p.feature === c.feature)
+                    ? "Учтено в подборе"
+                    : "Справочно · не выбрано в пожеланиях"}
+                </span>
+              </div>
+            ))}
+        </div>
+      </section>
       <AreaPanel hotelId={hotel.id} />
       <section className="subsection evidence-section">
         <h2>Почему мы так считаем</h2>

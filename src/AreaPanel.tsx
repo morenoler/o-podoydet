@@ -52,7 +52,7 @@ export function AreaPanel({ hotelId }: { hotelId: string }) {
       ));
   return (
     <section className="subsection area-section" aria-labelledby="area-heading">
-      <h2 id="area-heading">Район вокруг отеля</h2>
+      <h2 id="area-heading">Текущий снимок и статистика района</h2>
       <p className="muted">
         Качество воздуха и доступные сведения о безопасности. У этих данных своё
         время и границы покрытия.

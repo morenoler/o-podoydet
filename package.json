@@ -18,7 +18,8 @@
     "backend:test": "node --env-file-if-exists=.env scripts/backend.mjs test",
     "test:all": "npm test && npm run backend:test",
     "build:all": "npm run build && npm run backend:build",
-    "area:assess": "tsx --env-file-if-exists=.env scripts/assess-area.ts"
+    "area:assess": "tsx --env-file-if-exists=.env scripts/assess-area.ts",
+    "noise:assess": "tsx --env-file-if-exists=.env scripts/assess-noise.ts"
   },
   "dependencies": {
     "@fontsource/golos-text": "^5.2.8",

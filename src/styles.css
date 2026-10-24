@@ -1065,7 +1065,7 @@ textarea::placeholder {
 .criterion.conflict > svg {
   color: #b16a3f;
 }
-.criterion > span {
+.criterion-body {
   min-width: 0;
 }
 .criterion strong {
@@ -2132,5 +2132,59 @@ textarea::placeholder {
   .area-safety {
     border-top: 1px solid #e2e8ef;
     padding-top: 24px;
+  }
+}
+.trip-environment {
+  background: #f4f7fb;
+  border: 1px solid #dce5ef;
+  border-radius: 16px;
+  padding: 26px;
+}
+.environment-heading {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+.environment-heading h2,
+.environment-heading p {
+  margin: 0 0 6px;
+}
+.environment-criteria {
+  display: grid;
+  gap: 0;
+}
+.environment-criterion {
+  padding: 18px 0;
+  border-top: 1px solid #dce5ef;
+}
+.environment-criterion > .muted {
+  display: block;
+  margin: 8px 0 0 29px;
+  font-size: 12px;
+}
+.criterion-evidence {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #53647b;
+  font-weight: 400;
+}
+.criterion-evidence summary {
+  cursor: pointer;
+  color: #285899;
+  padding-block: 3px;
+}
+.criterion-evidence p {
+  margin: 9px 0;
+  overflow-wrap: anywhere;
+}
+.criterion-evidence a {
+  color: #285899;
+}
+.criterion-body {
+  min-width: 0;
+}
+@media (max-width: 680px) {
+  .trip-environment {
+    padding: 18px;
   }
 }

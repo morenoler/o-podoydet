@@ -18,6 +18,14 @@ export function evaluate(
   now = new Date(),
 ): Criterion {
   const definition = features[preference.feature];
+  if (definition.tool === "area")
+    return {
+      feature: preference.feature,
+      required: preference.required,
+      facts: [],
+      status: "unknown",
+      explanation: "Нужна оценка района на даты поездки через сервер",
+    };
   const scoped = facts.filter(
     (f) =>
       f.feature === preference.feature &&

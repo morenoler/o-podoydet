@@ -18,6 +18,18 @@ final class Matching {
       List<JsonNode> facts, JsonNode preference, JsonNode room, JsonNode trip, Instant now) {
     String feature = Json.str(preference, "feature");
     Features.Definition definition = Features.get(feature);
+    if (definition.tool().equals("area"))
+      return Json.obj(
+          "feature",
+          feature,
+          "required",
+          preference.path("required").asBoolean(),
+          "facts",
+          List.of(),
+          "status",
+          "unknown",
+          "explanation",
+          "Нет достаточных данных о районе на даты поездки");
     List<JsonNode> relevant =
         facts.stream()
             .filter(
@@ -89,6 +101,31 @@ final class Matching {
       List<JsonNode> preferences,
       JsonNode trip,
       Instant now) {
+    return rank(hotels, facts, preferences, trip, now, Map.of());
+  }
+
+  static ObjectNode evaluateWithEnvironment(
+      List<JsonNode> facts,
+      JsonNode preference,
+      JsonNode room,
+      JsonNode trip,
+      Instant now,
+      Map<String, JsonNode> environment) {
+    String feature = Json.str(preference, "feature");
+    if (Features.get(feature).tool().equals("area") && environment.containsKey(feature)) {
+      ObjectNode criterion = environment.get(feature).deepCopy();
+      return criterion.put("required", preference.path("required").asBoolean());
+    }
+    return evaluate(facts, preference, room, trip, now);
+  }
+
+  static List<JsonNode> rank(
+      List<JsonNode> hotels,
+      List<JsonNode> facts,
+      List<JsonNode> preferences,
+      JsonNode trip,
+      Instant now,
+      Map<String, Map<String, JsonNode>> environments) {
     List<JsonNode> matches = new ArrayList<>();
     Comparator<JsonNode> roomOrder =
         Comparator.comparingInt((JsonNode r) -> ORDER.get(Json.str(r, "status")))
@@ -100,7 +137,18 @@ final class Matching {
       List<JsonNode> rooms = new ArrayList<>();
       for (JsonNode room : hotel.path("rooms")) {
         List<JsonNode> criteria =
-            preferences.stream().map(p -> (JsonNode) evaluate(scoped, p, room, trip, now)).toList();
+            preferences.stream()
+                .map(
+                    p ->
+                        (JsonNode)
+                            evaluateWithEnvironment(
+                                scoped,
+                                p,
+                                room,
+                                trip,
+                                now,
+                                environments.getOrDefault(Json.str(hotel, "id"), Map.of())))
+                .toList();
         boolean capacity =
             room.path("capacity").asInt()
                 >= trip.path("adults").asInt() + trip.path("children").asInt();
@@ -125,7 +173,11 @@ final class Matching {
                     c ->
                         switch (Json.str(c, "status")) {
                           case "match" -> 3;
-                          case "mismatch" -> -2;
+                          case "mismatch" ->
+                              Json.str(c, "feature").equals("low_noise")
+                                      && Json.str(c, "riskLevel").equals("high")
+                                  ? -3
+                                  : -2;
                           default -> -1;
                         })
                 .sum();

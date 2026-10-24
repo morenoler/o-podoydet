@@ -4,7 +4,10 @@ export type FeatureId =
   | "step_free_route"
   | "courtyard"
   | "step_free_access"
-  | "family";
+  | "family"
+  | "area_safety"
+  | "clean_air"
+  | "low_noise";
 export type Value = boolean | number | string;
 export interface Fact {
   id: string;
@@ -100,6 +103,14 @@ export interface Criterion {
   status: MatchStatus;
   facts: Fact[];
   explanation: string;
+  environmentalEvidence?: {
+    sourceUrl: string;
+    observedAt?: string;
+    details: string;
+  }[];
+  details?: string[];
+  value?: number | string;
+  riskLevel?: "high" | "moderate" | "low" | "unknown";
 }
 export interface RoomMatch {
   room: Room;
@@ -111,6 +122,10 @@ export interface HotelMatch {
   hotel: Hotel;
   best: RoomMatch;
   rooms: RoomMatch[];
+  preferences?: Preference[];
+  warnings?: string[];
+  conflicts?: string[];
+  mode?: "rules" | "llm";
 }
 export interface Trace {
   step: string;

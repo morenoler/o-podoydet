@@ -66,7 +66,7 @@ final class Validation {
   }
 
   static void preferences(JsonNode values, boolean unique) {
-    if (!values.isArray() || values.size() > 5)
+    if (!values.isArray() || values.size() > Features.ALL.size())
       throw new IllegalArgumentException("Некорректные пожелания");
     Set<String> ids = new HashSet<>();
     for (JsonNode value : values) {
@@ -80,6 +80,8 @@ final class Validation {
     JsonNode values = result.path("extractions");
     if (!values.isArray() || values.size() > 1)
       throw new IllegalArgumentException("Ответ должен описывать одно условие выбранной категории");
+    if (!values.isEmpty() && !Features.get(feature).tool().equals("host"))
+      throw new IllegalArgumentException("Условие района нельзя подтвердить ответом отельера");
     for (JsonNode value : values) {
       if (!feature(value, "feature").equals(feature)
           || !text.contains(text(value, "quote", 1, 1500)))

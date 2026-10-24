@@ -186,6 +186,9 @@ final class Store implements AutoCloseable {
     String hotelId = Json.str(requested, "hotelId"),
         roomId = Json.str(requested, "roomId"),
         feature = Validation.feature(requested, "feature");
+    if (!Features.get(feature).tool().equals("host"))
+      throw new IllegalArgumentException(
+          "Это условие проверяется по независимым источникам, а не ответом отельера");
     JsonNode hotel = hotel(hotelId);
     if (hotel == null || room(hotel, roomId) == null)
       throw new IllegalArgumentException("Категория номера не найдена");

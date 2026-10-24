@@ -163,7 +163,7 @@ async function airFor(target: AreaTarget): Promise<AirQualityAssessment> {
       new Date(),
       target.coordinates,
     );
-    if (result.status === "unknown")
+    if (result.status === "unknown" && result.forecast.status === "unknown")
       throw new Error(result.error || "Invalid source response");
     await writeFile(path, JSON.stringify({ fetchedAt, response: raw }));
     return result;
@@ -182,6 +182,15 @@ async function airFor(target: AreaTarget): Promise<AirQualityAssessment> {
         ...result,
         status: result.status === "unknown" ? "unknown" : "stale",
         error: `Обновление не удалось: ${reason}`,
+        forecast: {
+          ...result.forecast,
+          status: result.forecast.status === "unknown" ? "unknown" : "stale",
+          error: `Обновление прогноза не удалось: ${reason}`,
+          limitations: [
+            ...result.forecast.limitations,
+            "Показан сохранённый прогноз без обновления времени получения.",
+          ],
+        },
         limitations: [
           ...result.limitations,
           "Показан прежний кеш; повторный запрос не обновляет дату доказательства.",
@@ -203,7 +212,7 @@ await Promise.all(
       const air = await airFor(target);
       assessments[index] = makeAssessment(target, air, records, now);
       console.log(
-        `${target.hotelId}: air=${air.status}; safety=${assessments[index].safety.status}`,
+        `${target.hotelId}: air=${air.status}; forecast=${air.forecast.status} (${air.forecast.hourly.length} h); safety=${assessments[index].safety.status}`,
       );
     }
   }),
