@@ -10,6 +10,12 @@
   --line: #dce3ee;
   --paper: #fff;
   --yellow: #f8b84e;
+  --wish-match-ink: #176247;
+  --wish-match-bg: #edf8f1;
+  --wish-mismatch-ink: #973a34;
+  --wish-mismatch-bg: #fff2ef;
+  --wish-pending-ink: #79551c;
+  --wish-pending-bg: #fff8e9;
 }
 * {
   box-sizing: border-box;
@@ -1053,6 +1059,122 @@ textarea::placeholder {
   font-size: 11px;
   color: #62718a;
   line-height: 1.6;
+}
+.wish-matches {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.wish-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 14px;
+}
+.wish-summary > span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.wish-group {
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-radius: 12px;
+  padding: 14px;
+}
+.wish-match {
+  color: var(--wish-match-ink);
+  background: var(--wish-match-bg);
+}
+.wish-mismatch {
+  color: var(--wish-mismatch-ink);
+  background: var(--wish-mismatch-bg);
+}
+.wish-pending {
+  color: var(--wish-pending-ink);
+  background: var(--wish-pending-bg);
+}
+.wish-group-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.wish-group-title > svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+.wish-group-title > span {
+  margin-left: auto;
+  font-weight: 700;
+}
+.wish-group ul {
+  display: grid;
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.wish-group .criterion strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.wish-group .criterion small {
+  font-size: 12px;
+  color: #4e5f73;
+  line-height: 1.55;
+}
+.wish-group .required-label {
+  font-size: 11px;
+  color: #79551c;
+}
+.wish-group .criterion > svg {
+  flex: 0 0 auto;
+}
+.wish-demo {
+  display: block;
+  margin: 4px 0 0 25px;
+  font-size: 11px;
+  color: #5b6269;
+}
+.wish-no-match {
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 0;
+  color: var(--muted);
+}
+.wish-match:has(.wish-no-match) {
+  background: #f7f9fc;
+  color: var(--muted);
+}
+.wish-empty {
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.wish-empty p {
+  color: var(--muted);
+  margin: 8px 0;
+}
+.wish-empty a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-weight: 600;
+}
+.room-panel > .wish-matches,
+.room-panel > .wish-empty {
+  margin-top: 24px;
+}
+.room-criteria h3 {
+  font-size: 14px;
 }
 .criterion > svg {
   margin-top: 1px;

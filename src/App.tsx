@@ -785,6 +785,83 @@ function MatchBadge({ match }: { match: HotelMatch }) {
     </span>
   );
 }
+function WishMatches({ criteria }: { criteria: Criterion[] }) {
+  if (!criteria.length)
+    return (
+      <div className="wish-empty">
+        <strong>Пожелания пока не выбраны</strong>
+        <p>Выберите, что важно вам, и здесь появятся совпадения.</p>
+        <Link to="/wishes">
+          Выбрать пожелания <ArrowRight size={14} />
+        </Link>
+      </div>
+    );
+  const matched = criteria.filter((c) => c.status === "match");
+  const groups = [
+    {
+      key: "match",
+      title: "Совпадает с вашими пожеланиями",
+      Icon: CheckCircle2,
+      items: matched,
+    },
+    {
+      key: "mismatch",
+      title: "Не совпадает",
+      Icon: X,
+      items: criteria.filter((c) => c.status === "mismatch"),
+    },
+    {
+      key: "pending",
+      title: "Нужно уточнить",
+      Icon: CircleHelp,
+      items: criteria.filter((c) => !["match", "mismatch"].includes(c.status)),
+    },
+  ];
+  return (
+    <section
+      className="wish-matches"
+      aria-label="Совпадения с вашими пожеланиями"
+    >
+      <div className="wish-summary">
+        <strong>Ваши пожелания</strong>
+        <span>
+          Совпало {matched.length} из {criteria.length}
+        </span>
+      </div>
+      {groups
+        .filter((group) => group.key === "match" || group.items.length)
+        .map(({ key, title, Icon, items }) => (
+          <div className={`wish-group wish-${key}`} key={key}>
+            <p className="wish-group-title">
+              <Icon size={18} aria-hidden="true" />
+              <strong>{title}</strong>
+              <span>{items.length}</span>
+            </p>
+            {items.length ? (
+              <ul>
+                {[...items]
+                  .sort((a, b) => Number(b.required) - Number(a.required))
+                  .map((criterion) => (
+                    <li key={criterion.feature}>
+                      <CriterionLine criterion={criterion} />
+                      {criterion.facts.some((fact) => fact.demo) && (
+                        <span className="wish-demo">
+                          Условие номера · демоданные
+                        </span>
+                      )}
+                    </li>
+                  ))}
+              </ul>
+            ) : (
+              <p className="wish-no-match">
+                Пока нет подтверждённых совпадений по выбранным пожеланиям.
+              </p>
+            )}
+          </div>
+        ))}
+    </section>
+  );
+}
 function HotelCard({
   match,
   compared,
@@ -848,39 +925,7 @@ function HotelCard({
           <span>Демо</span>
         </div>
         <div className="card-criteria">
-          {best.criteria.length ? (
-            [...best.criteria]
-              .sort(
-                (a, b) =>
-                  Number(b.required) * 2 +
-                  Number(b.status !== "match") -
-                  (Number(a.required) * 2 + Number(a.status !== "match")),
-              )
-              .map((c) => <CriterionLine key={c.feature} criterion={c} />)
-          ) : (
-            <>
-              <div className={`criterion ${hotel.route ? "match" : "unknown"}`}>
-                <RouteIcon size={18} />
-                <span>
-                  {hotel.route
-                    ? "Пешеходный маршрут рассчитан"
-                    : "Маршрут до пляжа не рассчитан"}
-                  <small>
-                    {hotel.route
-                      ? "Точки входа приближённые"
-                      : "Расстояние и доступность пути неизвестны"}
-                  </small>
-                </span>
-              </div>
-              <div className="criterion unknown">
-                <CircleHelp size={18} />
-                <span>
-                  Что важно именно вам?
-                  <small>Добавьте пожелания, чтобы уточнить подбор</small>
-                </span>
-              </div>
-            </>
-          )}
+          <WishMatches criteria={best.criteria} />
         </div>
         <div className="card-bottom">
           <span>Цена и наличие не проверены</span>
@@ -1458,7 +1503,15 @@ function HotelPage() {
           {room.room.capacity < trip.adults + trip.children && (
             <ErrorMessage text="Эта демонстрационная категория не вмещает всех гостей." />
           )}
+          <WishMatches
+            criteria={room.criteria.filter((c) =>
+              (ranked.preferences || trip.preferences).some(
+                (p) => p.feature === c.feature,
+              ),
+            )}
+          />
           <div className="room-criteria">
+            <h3>Все условия номера</h3>
             {room.criteria
               .filter((c) => features[c.feature].tool !== "area")
               .map((c) => (
