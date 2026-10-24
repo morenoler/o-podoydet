@@ -1,4 +1,4 @@
-package ru.opodoydet;
+package ru.opodoydet.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -8,18 +8,19 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import ru.opodoydet.shared.Json;
 
-final class Matching {
-  private static final Map<String, Integer> ORDER = Map.of("fits", 0, "clarify", 1, "excluded", 2);
+public final class Matching {
+  private static final Map<String, Integer> ORDER = Map.of("fits", 0, "excluded", 1);
 
   private Matching() {}
 
-  static ObjectNode evaluate(
+  public static ObjectNode evaluate(
       List<JsonNode> facts, JsonNode preference, JsonNode room, JsonNode trip, Instant now) {
     return evaluate(facts, preference, room, trip, now, "verified-only");
   }
 
-  static ObjectNode evaluate(
+  public static ObjectNode evaluate(
       List<JsonNode> facts,
       JsonNode preference,
       JsonNode room,
@@ -103,7 +104,7 @@ final class Matching {
             .distinct()
             .count()
         > 1)
-      return status(result, "conflict", "Источники противоречат друг другу — нужно уточнение");
+      return status(result, "conflict", "Источники содержат несовместимые значения");
     if (active.stream().noneMatch(f -> f.hasNonNull("value")))
       return status(
           result,
@@ -131,7 +132,7 @@ final class Matching {
     return result.put("status", status).put("explanation", explanation);
   }
 
-  static List<JsonNode> rank(
+  public static List<JsonNode> rank(
       List<JsonNode> hotels,
       List<JsonNode> facts,
       List<JsonNode> preferences,
@@ -140,7 +141,7 @@ final class Matching {
     return rank(hotels, facts, preferences, trip, now, Map.of());
   }
 
-  static ObjectNode evaluateWithEnvironment(
+  public static ObjectNode evaluateWithEnvironment(
       List<JsonNode> facts,
       JsonNode preference,
       JsonNode room,
@@ -151,7 +152,7 @@ final class Matching {
         facts, preference, room, trip, now, environment, "verified-only");
   }
 
-  static ObjectNode evaluateWithEnvironment(
+  public static ObjectNode evaluateWithEnvironment(
       List<JsonNode> facts,
       JsonNode preference,
       JsonNode room,
@@ -167,7 +168,7 @@ final class Matching {
     return evaluate(facts, preference, room, trip, now, policy);
   }
 
-  static List<JsonNode> rank(
+  public static List<JsonNode> rank(
       List<JsonNode> hotels,
       List<JsonNode> facts,
       List<JsonNode> preferences,
@@ -177,7 +178,7 @@ final class Matching {
     return rank(hotels, facts, preferences, trip, now, environments, "verified-only");
   }
 
-  static List<JsonNode> rank(
+  public static List<JsonNode> rank(
       List<JsonNode> hotels,
       List<JsonNode> facts,
       List<JsonNode> preferences,
@@ -203,79 +204,42 @@ final class Matching {
                 .map(
                     p ->
                         (JsonNode)
-                            evaluateWithEnvironment(
-                                scoped,
-                                p,
-                                room,
-                                trip,
-                                now,
-                                environments.getOrDefault(Json.str(hotel, "id"), Map.of()),
-                                policy))
+                            BinaryDecisionPolicy.decide(
+                                evaluateWithEnvironment(
+                                    scoped,
+                                    p,
+                                    room,
+                                    trip,
+                                    now,
+                                    environments.getOrDefault(Json.str(hotel, "id"), Map.of()),
+                                    policy),
+                                hotel))
                 .toList();
-        boolean capacityKnown =
-            room.path("capacity").isIntegralNumber() && room.path("capacity").asInt() > 0;
-        boolean capacity =
-            room.path("capacity").asInt()
-                >= trip.path("adults").asInt() + trip.path("children").asInt();
-        if (!capacity && room.path("capacityMayVary").asBoolean(false)) capacityKnown = false;
+        ObjectNode capacity = BinaryDecisionPolicy.capacity(hotel, room, trip);
         String state =
-            (capacityKnown && !capacity)
+            Json.str(capacity, "capacityStatus").equals("mismatch")
                     || criteria.stream()
                         .anyMatch(
                             c ->
                                 c.path("required").asBoolean()
                                     && Json.str(c, "status").equals("mismatch"))
                 ? "excluded"
-                : !capacityKnown
-                        || criteria.stream()
-                            .anyMatch(
-                                c ->
-                                    c.path("required").asBoolean()
-                                        && !Json.str(c, "status").equals("match"))
-                    ? "clarify"
-                    : "fits";
+                : "fits";
         int score =
             criteria.stream()
                 .mapToInt(
                     c ->
-                        switch (Json.str(c, "status")) {
-                          case "match" -> 3;
-                          case "mismatch" ->
-                              Json.str(c, "feature").equals("low_noise")
-                                      && Json.str(c, "riskLevel").equals("high")
-                                  ? -3
-                                  : -2;
-                          default ->
-                              Json.str(c, "status").equals("unknown")
-                                      && Json.str(c, "feature").equals("low_noise")
-                                      && Json.str(c, "assessmentBasis").equals("historical")
-                                      && !c.path("required").asBoolean()
-                                  ? switch (Json.str(c, "riskLevel")) {
-                                    case "high" -> -3;
-                                    case "moderate" -> -2;
-                                    default -> -1;
-                                  }
-                                  : -1;
-                        })
+                        Json.str(c, "status").equals("match")
+                            ? 3
+                            : Json.str(c, "feature").equals("low_noise")
+                                    && Json.str(c, "riskLevel").equals("high")
+                                ? -3
+                                : -2)
                 .sum();
-        rooms.add(
-            Json.obj(
-                "room",
-                room,
-                "criteria",
-                criteria,
-                "status",
-                state,
-                "score",
-                score,
-                "capacityStatus",
-                !capacityKnown ? "unknown" : capacity ? "match" : "mismatch",
-                "capacityExplanation",
-                !capacityKnown
-                    ? "Вместимость категории не подтверждена источником"
-                    : capacity
-                        ? "Указанная вместимость позволяет разместить всех гостей"
-                        : "Указанная вместимость меньше числа гостей"));
+        ObjectNode roomMatch =
+            Json.obj("room", room, "criteria", criteria, "status", state, "score", score);
+        roomMatch.setAll(capacity);
+        rooms.add(roomMatch);
       }
       if (rooms.isEmpty())
         continue; // An invalid or empty category list cannot yield a recommendation.

@@ -80,7 +80,7 @@ export const features: Record<
   },
   clean_air: {
     label: "Чистый воздух",
-    detail: "Прогноз US AQI до 50 на весь период поездки",
+    detail: "US AQI до 50: прогноз или оценка по свежим данным",
     scope: "hotel",
     evaluator: "max",
     threshold: 50,
@@ -91,7 +91,7 @@ export const features: Record<
   },
   low_noise: {
     label: "Меньше внешнего шума",
-    detail: "Дорожная нагрузка и события на даты поездки",
+    detail: "Оценка по дорогам, трафику и событиям",
     scope: "hotel",
     evaluator: "true",
     tool: "area",

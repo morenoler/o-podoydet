@@ -109,6 +109,14 @@ export interface Criterion {
   feature: FeatureId;
   required: boolean;
   status: MatchStatus;
+  evidenceStatus?: MatchStatus;
+  assumed?: boolean;
+  decisionBasis?: "evidence" | "estimate";
+  assumption?: string;
+  sourceExplanation?: string;
+  nearestRoadMeters?: number;
+  currentAirUsAqi?: number;
+  currentAirTime?: string;
   facts: Fact[];
   explanation: string;
   environmentalEvidence?: {
@@ -121,13 +129,24 @@ export interface Criterion {
   riskLevel?: "high" | "moderate" | "low" | "unknown";
   assessmentBasis?: "historical" | "dated";
 }
+/** API decision contract. Raw evidence evaluation can still be unknown or stale. */
+export interface CriterionDecision extends Criterion {
+  status: "match" | "mismatch";
+  evidenceStatus: MatchStatus;
+  assumed: boolean;
+  decisionBasis: "evidence" | "estimate";
+  sourceExplanation: string;
+}
 export interface RoomMatch {
-  capacityStatus?: "match" | "mismatch" | "unknown";
+  capacityStatus?: "match" | "mismatch";
+  capacityEvidenceStatus?: "match" | "mismatch" | "unknown";
+  capacityAssumed?: boolean;
+  estimatedCapacity?: number;
   capacityExplanation?: string;
   room: Room;
-  criteria: Criterion[];
+  criteria: CriterionDecision[];
   score: number;
-  status: "fits" | "clarify" | "excluded";
+  status: "fits" | "excluded";
 }
 export interface HotelMatch {
   hotel: Hotel;

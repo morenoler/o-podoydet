@@ -83,13 +83,13 @@ test("historical demonstration answers cannot confirm or reject a real room", ()
   assert.equal(evaluate([real, demo], pref, room, trip, now).status, "match");
   assert.equal(evaluate([demo], pref, room, trip, now).status, "unknown");
 });
-test("missing category capacity stays unknown and conditional extra occupancy is not rejected", () => {
+test("missing capacity is estimated and conditional extra occupancy does not pass", () => {
   const unknown = data.hotels.find(
     (h) => h.rooms[0].evidenceStatus === "unknown",
   )!;
   assert.equal(
     rankHotels([unknown], data.facts, [], trip, now)[0].best.status,
-    "clarify",
+    "excluded",
   );
   const conditional = data.hotels.find((h) =>
     h.rooms.some((r) => r.capacityMayVary),
@@ -101,8 +101,8 @@ test("missing category capacity stays unknown and conditional extra occupancy is
     { ...trip, adults: 2, children: 2 },
     now,
   )[0];
-  assert.equal(match.best.capacityStatus, "unknown");
-  assert.equal(match.best.status, "clarify");
+  assert.equal(match.best.capacityStatus, "mismatch");
+  assert.equal(match.best.status, "excluded");
 });
 test("partial route evidence explains missing verification without becoming a boolean or conflict", () => {
   const hotel = data.hotels.find((h) => h.route)!,

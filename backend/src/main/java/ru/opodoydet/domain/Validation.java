@@ -1,4 +1,4 @@
-package ru.opodoydet;
+package ru.opodoydet.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.time.LocalDate;
@@ -6,23 +6,23 @@ import java.time.format.DateTimeParseException;
 import java.util.HashSet;
 import java.util.Set;
 
-final class Validation {
+public final class Validation {
   private Validation() {}
 
-  static String text(JsonNode input, String key, int min, int max) {
+  public static String text(JsonNode input, String key, int min, int max) {
     JsonNode value = input.path(key);
     if (!value.isTextual() || value.textValue().length() < min || value.textValue().length() > max)
       throw new IllegalArgumentException("Некорректное поле: " + key);
     return value.textValue();
   }
 
-  static boolean bool(JsonNode input, String key) {
+  public static boolean bool(JsonNode input, String key) {
     if (!input.path(key).isBoolean())
       throw new IllegalArgumentException("Ожидается логическое значение: " + key);
     return input.path(key).booleanValue();
   }
 
-  static void integer(JsonNode input, String key, int min, int max) {
+  public static void integer(JsonNode input, String key, int min, int max) {
     JsonNode value = input.path(key);
     if (!value.isIntegralNumber()
         || !value.canConvertToInt()
@@ -31,13 +31,13 @@ final class Validation {
       throw new IllegalArgumentException("Некорректное число гостей: " + key);
   }
 
-  static String feature(JsonNode input, String key) {
+  public static String feature(JsonNode input, String key) {
     String feature = text(input, key, 1, 50);
     Features.get(feature);
     return feature;
   }
 
-  static JsonNode trip(JsonNode input, String region) {
+  public static JsonNode trip(JsonNode input, String region) {
     if (!input.isObject() || !text(input, "region", 1, 100).equals(region))
       throw new IllegalArgumentException("Доступен регион: " + region);
     String from = text(input, "checkIn", 10, 10), to = text(input, "checkOut", 10, 10);
@@ -65,8 +65,8 @@ final class Validation {
     return input;
   }
 
-  static void preferences(JsonNode values, boolean unique) {
-    if (!values.isArray() || values.size() > Features.ALL.size())
+  public static void preferences(JsonNode values, boolean unique) {
+    if (!values.isArray() || values.size() > Features.ids().size())
       throw new IllegalArgumentException("Некорректные пожелания");
     Set<String> ids = new HashSet<>();
     for (JsonNode value : values) {
@@ -76,7 +76,7 @@ final class Validation {
     }
   }
 
-  static void extraction(JsonNode result, String feature, String text) {
+  public static void extraction(JsonNode result, String feature, String text) {
     JsonNode values = result.path("extractions");
     if (!values.isArray() || values.size() > 1)
       throw new IllegalArgumentException("Ответ должен описывать одно условие выбранной категории");
@@ -91,7 +91,7 @@ final class Validation {
     strings(result.path("warnings"));
   }
 
-  static void strings(JsonNode values) {
+  public static void strings(JsonNode values) {
     if (!values.isArray() || values.size() > 20)
       throw new IllegalArgumentException("Некорректный список пояснений");
     for (JsonNode value : values)

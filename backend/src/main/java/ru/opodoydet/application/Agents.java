@@ -1,4 +1,4 @@
-package ru.opodoydet;
+package ru.opodoydet.application;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -16,11 +16,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import ru.opodoydet.domain.Features;
+import ru.opodoydet.domain.Validation;
+import ru.opodoydet.shared.Json;
 
 /** Bounded agent flow: at most one model request per operation, then an explicit local fallback. */
-final class Agents {
-  record Config(String key, String model, String baseUrl) {
-    static Config from(Map<String, String> env) {
+public final class Agents {
+  public record Config(String key, String model, String baseUrl) {
+    public static Config from(Map<String, String> env) {
       return new Config(
           env.getOrDefault("LLM_API_KEY", ""),
           env.getOrDefault("LLM_MODEL", ""),
@@ -56,15 +59,15 @@ final class Agents {
               "меньше.{0,15}шум|без.{0,15}шум|тих(?:ий|о|ая|ого|ом)|тишин|выспаться|спит"
                   + " днем|низк.{0,15}шум|внешн.{0,15}шум|не шумн");
 
-  Agents(Config config) {
+  public Agents(Config config) {
     this.config = config;
   }
 
-  boolean enabled() {
+  public boolean enabled() {
     return config.enabled();
   }
 
-  String mode() {
+  public String mode() {
     return enabled() ? "llm" : "rules";
   }
 
@@ -78,7 +81,7 @@ final class Agents {
         .find();
   }
 
-  static ObjectNode parseRules(String text, List<JsonNode> selected) {
+  public static ObjectNode parseRules(String text, List<JsonNode> selected) {
     List<JsonNode> inferred = new ArrayList<>();
     Set<String> excluded = new LinkedHashSet<>();
     List<String> warnings = new ArrayList<>();
@@ -143,7 +146,7 @@ final class Agents {
     return Json.obj("preferences", merged.values(), "warnings", warnings, "conflicts", conflicts);
   }
 
-  ObjectNode interpret(JsonNode trip) {
+  public ObjectNode interpret(JsonNode trip) {
     String text = Json.str(trip, "text");
     List<JsonNode> selected = Json.list(trip.path("preferences"));
     if (text.isBlank() || !enabled()) return parseRules(text, selected);
@@ -215,7 +218,7 @@ final class Agents {
     return Json.obj("extractions", List.of(), "warnings", List.of(warning), "mode", "rules");
   }
 
-  static ObjectNode extractRules(String text, String feature) {
+  public static ObjectNode extractRules(String text, String feature) {
     Features.get(feature);
     if (!Features.get(feature).tool().equals("host"))
       return uncertain(
@@ -285,7 +288,7 @@ final class Agents {
         "rules");
   }
 
-  ObjectNode extract(String text, String feature) {
+  public ObjectNode extract(String text, String feature) {
     if (!Features.get(feature).tool().equals("host")) return extractRules(text, feature);
     if (!enabled() || has(UNCLEAR, normalized(text))) return extractRules(text, feature);
     try {

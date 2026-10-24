@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Minus, Plus } from "lucide-react";
-import type { Dataset, Hotel, Point } from "../shared/types";
+import type { Dataset, Hotel, Point } from "../../../../shared/types";
 
 export function GeoMap({
   dataset,

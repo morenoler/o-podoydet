@@ -1,4 +1,4 @@
-package ru.opodoydet;
+package ru.opodoydet.application;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -18,25 +18,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import ru.opodoydet.shared.Json;
 
 /** Derived criteria are evaluated on the trip, never imported as permanent hotel facts. */
-final class Environment {
+public final class Environment {
   private static final ZoneId SEOUL = ZoneId.of("Asia/Seoul");
   private final Path areaPath;
   private final Path noisePath;
   private final Path trafficPath;
 
-  Environment(Path areaPath, Path noisePath) {
+  public Environment(Path areaPath, Path noisePath) {
     this(areaPath, noisePath, noisePath.resolveSibling("traffic-ktdb-2024.json"));
   }
 
-  Environment(Path areaPath, Path noisePath, Path trafficPath) {
+  public Environment(Path areaPath, Path noisePath, Path trafficPath) {
     this.areaPath = areaPath;
     this.noisePath = noisePath;
     this.trafficPath = trafficPath;
   }
 
-  Map<String, Map<String, JsonNode>> evaluate(List<JsonNode> hotels, JsonNode trip, Instant now) {
+  public Map<String, Map<String, JsonNode>> evaluate(
+      List<JsonNode> hotels, JsonNode trip, Instant now) {
     JsonNode areas = read(areaPath), noise = read(noisePath), traffic = read(trafficPath);
     Map<String, Map<String, JsonNode>> result = new HashMap<>();
     for (JsonNode hotel : hotels) {
@@ -45,13 +47,63 @@ final class Environment {
           Json.str(hotel, "id"),
           Map.of(
               "clean_air",
-              air(area, trip, now),
+              airForDecision(area, trip, now),
               "area_safety",
               safety(area, hotel, trip, now),
               "low_noise",
-              noise(noise, traffic, hotel, trip, now)));
+              noiseForDecision(noise, traffic, hotel, trip, now)));
     }
     return result;
+  }
+
+  static ObjectNode airForDecision(JsonNode area, JsonNode trip, Instant now) {
+    ObjectNode raw = air(area, trip, now);
+    JsonNode current = area.path("airQuality");
+    Instant measured = time(Json.str(current, "time")),
+        fetched = time(Json.str(current, "fetchedAt"));
+    if (Json.str(raw, "status").equals("unknown")
+        && Json.str(current, "status").equals("available")
+        && nonnegative(current.path("usAqi"))
+        && url(Json.str(current, "sourceUrl"))
+        && Json.str(current, "concentrationUnit").equals("µg/m³")
+        && point(area.path("coordinates"))
+        && point(current.path("modelCoordinates"))
+        && distance(area.path("coordinates"), current.path("modelCoordinates")) <= 80000
+        && measured != null
+        && fetched != null
+        && !measured.isAfter(now)
+        && !fetched.isAfter(now)
+        && !measured.isBefore(now.minusSeconds(86400))
+        && !fetched.isBefore(now.minusSeconds(86400))) {
+      raw.put("currentAirUsAqi", current.path("usAqi").asDouble())
+          .put("currentAirTime", measured.toString());
+      List<JsonNode> evidence = new ArrayList<>(Json.list(raw.path("environmentalEvidence")));
+      evidence.add(
+          Json.obj(
+              "sourceUrl",
+              Json.str(current, "sourceUrl"),
+              "observedAt",
+              measured.toString(),
+              "details",
+              "Текущий снимок US AQI; не прогноз на даты поездки"));
+      raw.set("environmentalEvidence", Json.array(evidence));
+    }
+    return raw;
+  }
+
+  private static ObjectNode noiseForDecision(
+      JsonNode context, JsonNode history, JsonNode hotel, JsonNode trip, Instant now) {
+    ObjectNode raw = noise(context, history, hotel, trip, now);
+    if (Json.str(context, "region").equals(Json.str(trip, "region"))
+        && point(hotel.path("coordinates"))) {
+      double nearest = Double.POSITIVE_INFINITY;
+      for (JsonNode road : context.path("roads"))
+        if (datedSource(road.path("source"), now) && validLine(road.path("geometry")))
+          nearest =
+              Math.min(nearest, lineDistance(hotel.path("coordinates"), road.path("geometry")));
+      if (nearest <= 300) raw.put("nearestRoadMeters", nearest);
+    }
+    return raw;
   }
 
   private static JsonNode read(Path path) {
@@ -71,7 +123,7 @@ final class Environment {
     return Json.obj();
   }
 
-  static boolean samePoint(JsonNode a, JsonNode b) {
+  public static boolean samePoint(JsonNode a, JsonNode b) {
     return point(a)
         && point(b)
         && Math.abs(a.get(0).asDouble() - b.get(0).asDouble()) <= 0.0001
@@ -126,7 +178,7 @@ final class Environment {
     return criterion(feature, "unknown", explanation, details, evidence, null);
   }
 
-  static Instant time(String value) {
+  public static Instant time(String value) {
     try {
       return Instant.parse(value);
     } catch (DateTimeParseException ignored) {
@@ -178,7 +230,7 @@ final class Environment {
         : List.of();
   }
 
-  static ObjectNode air(JsonNode area, JsonNode trip, Instant now) {
+  public static ObjectNode air(JsonNode area, JsonNode trip, Instant now) {
     JsonNode forecast = area.path("airQuality").path("forecast");
     List<String> details =
         new ArrayList<>(
@@ -258,7 +310,7 @@ final class Environment {
         maximum);
   }
 
-  static ObjectNode safety(JsonNode area, JsonNode hotel, JsonNode trip, Instant now) {
+  public static ObjectNode safety(JsonNode area, JsonNode hotel, JsonNode trip, Instant now) {
     List<String> details =
         new ArrayList<>(
             List.of(
@@ -398,7 +450,7 @@ final class Environment {
         && (uri.getHost().equals("go.kr") || uri.getHost().endsWith(".go.kr"));
   }
 
-  static ObjectNode noise(JsonNode context, JsonNode hotel, JsonNode trip, Instant now) {
+  public static ObjectNode noise(JsonNode context, JsonNode hotel, JsonNode trip, Instant now) {
     List<String> details =
         new ArrayList<>(
             List.of(
@@ -582,7 +634,7 @@ final class Environment {
   }
 
   /** Historical link counts are ranking hints only, never observations for the selected dates. */
-  static ObjectNode noise(
+  public static ObjectNode noise(
       JsonNode context, JsonNode history, JsonNode hotel, JsonNode trip, Instant now) {
     ObjectNode dated = noise(context, hotel, trip, now);
     if (!Json.str(dated, "status").equals("unknown")) return dated;
@@ -767,7 +819,7 @@ final class Environment {
     return false;
   }
 
-  static boolean inside(JsonNode point, JsonNode geometry) {
+  public static boolean inside(JsonNode point, JsonNode geometry) {
     if (!point(point)) return false;
     String type = Json.str(geometry, "type");
     if (type.equals("Polygon")) return polygon(point, geometry.path("coordinates"));

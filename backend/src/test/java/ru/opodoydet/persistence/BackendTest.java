@@ -1,4 +1,4 @@
-package ru.opodoydet;
+package ru.opodoydet.persistence;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,6 +19,12 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import ru.opodoydet.application.Agents;
+import ru.opodoydet.domain.Evidence;
+import ru.opodoydet.domain.Matching;
+import ru.opodoydet.domain.Validation;
+import ru.opodoydet.shared.Json;
+import ru.opodoydet.web.Api;
 
 class BackendTest {
   @TempDir Path temp;
@@ -217,7 +223,7 @@ class BackendTest {
               .path("status")
               .asText());
     assertEquals(
-        "clarify",
+        "excluded",
         Matching.rank(
                 List.of(hotel()), List.of(), List.of(preference("courtyard", true)), trip(), NOW)
             .getFirst()
@@ -243,7 +249,7 @@ class BackendTest {
                 trip(),
                 NOW)
             .getFirst();
-    assertEquals("clarify", match.path("best").path("status").asText());
+    assertEquals("excluded", match.path("best").path("status").asText());
     for (JsonNode room : match.path("rooms"))
       assertEquals(
           1,
@@ -258,7 +264,8 @@ class BackendTest {
                 trip(),
                 NOW)
             .getFirst();
-    assertEquals("unknown", other.path("best").path("criteria").path(0).path("status").asText());
+    assertEquals(
+        "unknown", other.path("best").path("criteria").path(0).path("evidenceStatus").asText());
   }
 
   @Test
@@ -615,10 +622,10 @@ class BackendTest {
       ObjectNode search = trip();
       search.set("preferences", Json.array(List.of(preference("courtyard", true))));
       assertEquals(
-          "clarify",
+          "excluded",
           request(base, "POST", "/api/search", search, null)
               .body
-              .path("results")
+              .path("excluded")
               .path(0)
               .path("best")
               .path("status")
@@ -814,8 +821,8 @@ class BackendTest {
     demoHotel.set("rooms", Json.array(List.of(realRoom("room-a").put("demo", true))));
     JsonNode result =
         Matching.rank(List.of(demoHotel), List.of(fact()), List.of(), trip(), NOW).getFirst();
-    assertEquals("clarify", Json.str(result.path("best"), "status"));
-    assertEquals("unknown", Json.str(result.path("best"), "capacityStatus"));
+    assertEquals("excluded", Json.str(result.path("best"), "status"));
+    assertEquals("unknown", Json.str(result.path("best"), "capacityEvidenceStatus"));
     assertEquals("hotel-a-unverified", Json.str(result.path("best").path("room"), "id"));
     assertFalse(result.path("hotel").path("rooms").toString().contains("\"demo\":true"));
     assertEquals(
@@ -846,8 +853,8 @@ class BackendTest {
       h.set("rooms", Json.array(List.of(room)));
       JsonNode best =
           Matching.rank(List.of(h), List.of(), List.of(), trip(), NOW).getFirst().path("best");
-      assertEquals("clarify", Json.str(best, "status"));
-      assertEquals("unknown", Json.str(best, "capacityStatus"));
+      assertEquals("excluded", Json.str(best, "status"));
+      assertEquals("unknown", Json.str(best, "capacityEvidenceStatus"));
     }
     ObjectNode partial =
         fact()

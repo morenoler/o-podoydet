@@ -102,7 +102,7 @@ test("unknown, expired, invalid and out-of-period evidence never becomes a match
     );
   assert.equal(
     rankHotels([hotel], [], [pref("courtyard")], trip, now)[0].best.status,
-    "clarify",
+    "excluded",
   );
 });
 test("room advantages cannot combine across categories or leak between hotels", () => {
@@ -117,7 +117,7 @@ test("room advantages cannot combine across categories or leak between hotels", 
     trip,
     now,
   )[0];
-  assert.equal(result.best.status, "clarify");
+  assert.equal(result.best.status, "excluded");
   assert.ok(
     result.rooms.every(
       (r) => r.criteria.filter((c) => c.status === "match").length === 1,
@@ -131,7 +131,7 @@ test("room advantages cannot combine across categories or leak between hotels", 
       trip,
       now,
     )[0].best.criteria[0].status,
-    "unknown",
+    "mismatch",
   );
 });
 test("conflicting current evidence requires clarification and stale evidence cannot override it", () => {
@@ -222,9 +222,13 @@ test("persisted host or demo facts cannot confirm or reject environmental criter
           trip,
           now,
         )[0];
-        assert.equal(ranked.best.status, "clarify");
+        assert.equal(ranked.best.status, "excluded");
         assert.ok(
-          ranked.rooms.every((room) => room.criteria[0].status === "unknown"),
+          ranked.rooms.every(
+            (room) =>
+              room.criteria[0].status === "mismatch" &&
+              room.criteria[0].evidenceStatus === "unknown",
+          ),
         );
       }
     }

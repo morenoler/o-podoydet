@@ -14,8 +14,6 @@
   --wish-match-bg: #edf8f1;
   --wish-mismatch-ink: #973a34;
   --wish-mismatch-bg: #fff2ef;
-  --wish-pending-ink: #79551c;
-  --wish-pending-bg: #fff8e9;
 }
 * {
   box-sizing: border-box;
@@ -986,10 +984,6 @@ textarea::placeholder {
   border-radius: 5px;
   line-height: 1.5;
 }
-.match-badge.clarify {
-  color: #8a601c;
-  background: #fff4d9;
-}
 .match-badge.excluded {
   color: #9e4938;
   background: #fff0eb;
@@ -1091,10 +1085,6 @@ textarea::placeholder {
   color: var(--wish-mismatch-ink);
   background: var(--wish-mismatch-bg);
 }
-.wish-pending {
-  color: var(--wish-pending-ink);
-  background: var(--wish-pending-bg);
-}
 .wish-group-title {
   display: flex;
   align-items: flex-start;
@@ -1183,8 +1173,7 @@ textarea::placeholder {
 .criterion.match > svg {
   color: #2c8068;
 }
-.criterion.mismatch > svg,
-.criterion.conflict > svg {
+.criterion.mismatch > svg {
   color: #b16a3f;
 }
 .criterion-body {
@@ -2309,4 +2298,40 @@ textarea::placeholder {
   .trip-environment {
     padding: 18px;
   }
+}
+
+/* A decision and its evidence basis are separate: estimates keep their label in both groups. */
+.assumption-label {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  padding: 3px 7px;
+  border: 1px solid #c6b8dc;
+  border-radius: 6px;
+  background: #f5f0fc;
+  color: #594272;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+.criterion-body > .assumption-label {
+  margin: 5px 0 2px;
+}
+.capacity-summary {
+  margin: 10px 0;
+  color: #5d6261;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.capacity-summary p {
+  margin: 4px 0 0;
+}
+.capacity-mismatch {
+  color: #a53d31;
+}
+
+.wish-requirements {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 12px;
 }

@@ -1,12 +1,13 @@
-package ru.opodoydet;
+package ru.opodoydet.domain;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import ru.opodoydet.shared.Json;
 
-final class Features {
-  record Definition(
+public final class Features {
+  public record Definition(
       String label,
       String scope,
       String tool,
@@ -15,7 +16,7 @@ final class Features {
       String negative,
       Integer threshold) {}
 
-  static final Map<String, Definition> ALL = new LinkedHashMap<>();
+  private static final Map<String, Definition> ALL = new LinkedHashMap<>();
 
   static {
     ALL.put(
@@ -102,17 +103,17 @@ final class Features {
             null));
   }
 
-  static List<String> ids() {
+  public static List<String> ids() {
     return List.copyOf(ALL.keySet());
   }
 
-  static Definition get(String id) {
+  public static Definition get(String id) {
     Definition value = ALL.get(id);
     if (value == null) throw new IllegalArgumentException("Неизвестное пожелание");
     return value;
   }
 
-  static ObjectNode catalog() {
+  public static ObjectNode catalog() {
     return Json.MAPPER.valueToTree(ALL);
   }
 }

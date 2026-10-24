@@ -1,4 +1,4 @@
-package ru.opodoydet;
+package ru.opodoydet.persistence;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -16,21 +16,25 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import ru.opodoydet.domain.Evidence;
+import ru.opodoydet.domain.Features;
+import ru.opodoydet.domain.Validation;
+import ru.opodoydet.shared.Json;
 
 /**
  * One synchronized JDBC connection keeps each read/modify/write operation atomic in this local
  * demo.
  */
-final class Store implements AutoCloseable {
+public final class Store implements AutoCloseable {
   final Connection connection;
-  final String region;
+  public final String region;
   private String evidencePolicy = "verified-only";
 
-  String evidencePolicy() {
+  public String evidencePolicy() {
     return evidencePolicy;
   }
 
-  Store(String path, JsonNode seed) throws SQLException, IOException {
+  public Store(String path, JsonNode seed) throws SQLException, IOException {
     region = Validation.text(seed, "region", 1, 100);
     if (!path.equals(":memory:")) {
       Path parent = Path.of(path).toAbsolutePath().getParent();
@@ -54,7 +58,7 @@ final class Store implements AutoCloseable {
    * stay untouched. Missing source facts become inactive so omitted evidence cannot remain a
    * current claim; their rows and any supersession history remain stored.
    */
-  synchronized void importSeed(JsonNode seed) throws SQLException {
+  public synchronized void importSeed(JsonNode seed) throws SQLException {
     if (!region.equals(Json.str(seed, "region"))
         || !seed.path("hotels").isArray()
         || !seed.path("facts").isArray())
@@ -131,7 +135,7 @@ final class Store implements AutoCloseable {
         Evidence.demoPolicy(Json.str(seed, "evidencePolicy")) ? "demo" : "verified-only";
   }
 
-  synchronized ObjectNode dataset() throws SQLException {
+  public synchronized ObjectNode dataset() throws SQLException {
     JsonNode saved = one("SELECT body FROM metadata WHERE region=? AND key='dataset'", region);
     ObjectNode result = saved == null ? Json.obj("region", region) : saved.deepCopy();
     result.set("hotels", Json.array(hotels()));
@@ -139,7 +143,7 @@ final class Store implements AutoCloseable {
     return result;
   }
 
-  synchronized List<JsonNode> hotels() throws SQLException {
+  public synchronized List<JsonNode> hotels() throws SQLException {
     List<JsonNode> hotels =
         rows("SELECT body FROM hotels WHERE region=? AND active=1 ORDER BY rowid", region);
     for (JsonNode hotel : hotels)
@@ -158,7 +162,7 @@ final class Store implements AutoCloseable {
     return hotels;
   }
 
-  synchronized JsonNode hotel(String id) throws SQLException {
+  public synchronized JsonNode hotel(String id) throws SQLException {
     ObjectNode hotel = (ObjectNode) rawHotel(id);
     if (hotel != null)
       hotel.set("rooms", Json.array(Evidence.rooms(hotel, Instant.now(), evidencePolicy)));
@@ -181,36 +185,36 @@ final class Store implements AutoCloseable {
     return hotel;
   }
 
-  static JsonNode room(JsonNode hotel, String id) {
+  public static JsonNode room(JsonNode hotel, String id) {
     return Json.list(hotel.path("rooms")).stream()
         .filter(r -> Json.str(r, "id").equals(id))
         .findFirst()
         .orElse(null);
   }
 
-  synchronized List<JsonNode> facts() throws SQLException {
+  public synchronized List<JsonNode> facts() throws SQLException {
     return rows("SELECT body FROM facts WHERE region=? AND active=1 ORDER BY rowid", region);
   }
 
-  synchronized List<JsonNode> matchingFacts() throws SQLException {
+  public synchronized List<JsonNode> matchingFacts() throws SQLException {
     return Evidence.demoPolicy(evidencePolicy)
         ? facts()
         : facts().stream().filter(f -> Evidence.fact(f, Instant.now())).toList();
   }
 
-  synchronized List<JsonNode> questions() throws SQLException {
+  public synchronized List<JsonNode> questions() throws SQLException {
     return rows("SELECT body FROM questions WHERE region=? ORDER BY rowid DESC", region);
   }
 
-  synchronized JsonNode question(String id) throws SQLException {
+  public synchronized JsonNode question(String id) throws SQLException {
     return one("SELECT body FROM questions WHERE region=? AND id=?", region, id);
   }
 
-  synchronized JsonNode draft(String id) throws SQLException {
+  public synchronized JsonNode draft(String id) throws SQLException {
     return one("SELECT body FROM drafts WHERE region=? AND id=?", region, id);
   }
 
-  synchronized JsonNode ask(ObjectNode requested) throws SQLException {
+  public synchronized JsonNode ask(ObjectNode requested) throws SQLException {
     String hotelId = Json.str(requested, "hotelId"),
         roomId = Json.str(requested, "roomId"),
         feature = Validation.feature(requested, "feature");
@@ -249,7 +253,8 @@ final class Store implements AutoCloseable {
         });
   }
 
-  synchronized void saveDraft(ObjectNode draft, String expectedRevision) throws SQLException {
+  public synchronized void saveDraft(ObjectNode draft, String expectedRevision)
+      throws SQLException {
     JsonNode question = question(Json.str(draft, "questionId"));
     if (question == null || !Json.str(question, "status").equals("open"))
       throw new IllegalArgumentException("Открытый вопрос не найден");
@@ -266,7 +271,7 @@ final class Store implements AutoCloseable {
         Json.write(draft));
   }
 
-  synchronized List<JsonNode> confirm(String draftId, boolean resolve) throws SQLException {
+  public synchronized List<JsonNode> confirm(String draftId, boolean resolve) throws SQLException {
     return transaction(
         () -> {
           JsonNode draft = draft(draftId);

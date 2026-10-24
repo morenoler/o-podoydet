@@ -1,4 +1,4 @@
-package ru.opodoydet;
+package ru.opodoydet.application;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,6 +16,13 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import ru.opodoydet.domain.BinaryDecisionPolicy;
+import ru.opodoydet.domain.Features;
+import ru.opodoydet.domain.Matching;
+import ru.opodoydet.domain.Validation;
+import ru.opodoydet.persistence.Store;
+import ru.opodoydet.shared.Json;
+import ru.opodoydet.web.Api;
 
 class EnvironmentTest {
   @TempDir Path temporary;
@@ -156,6 +163,74 @@ class EnvironmentTest {
     assertEquals(
         "unknown",
         status(Environment.air(area(forecast(20)), trip().put("checkOut", "2026-10-27"), NOW)));
+  }
+
+  @Test
+  void currentAirFallbackIsAnExplicitEstimateWithStrictTwentyFourHourFreshness() {
+    ObjectNode area = area(Json.obj());
+    ObjectNode current = (ObjectNode) area.path("airQuality");
+    current
+        .put("time", NOW.toString())
+        .put("fetchedAt", NOW.toString())
+        .put("concentrationUnit", "µg/m³")
+        .put("sourceUrl", "https://open-meteo.com/en/docs/air-quality-api");
+    current.set("modelCoordinates", hotel().path("coordinates"));
+    JsonNode raw = Environment.airForDecision(area, trip(), NOW);
+    assertEquals("unknown", status(raw));
+    assertEquals(20, raw.path("currentAirUsAqi").asInt());
+    JsonNode decision = BinaryDecisionPolicy.decide(raw, hotel());
+    assertEquals("match", status(decision));
+    assertTrue(decision.path("assumed").asBoolean());
+    assertTrue(Json.str(decision, "explanation").contains("не прогноз"));
+    assertTrue(Json.str(decision, "explanation").contains(NOW.toString()));
+    for (JsonNode wrongGrid :
+        List.of(
+            Json.array(List.of(39.7, 43.5)), Json.array(List.of(129.16)), Json.MAPPER.nullNode())) {
+      ObjectNode changed = area.deepCopy();
+      ((ObjectNode) changed.path("airQuality")).set("modelCoordinates", wrongGrid);
+      assertFalse(Environment.airForDecision(changed, trip(), NOW).has("currentAirUsAqi"));
+      assertEquals(
+          "mismatch",
+          status(
+              BinaryDecisionPolicy.decide(
+                  Environment.airForDecision(changed, trip(), NOW), hotel())));
+    }
+    ObjectNode wrongUnit = area.deepCopy();
+    ((ObjectNode) wrongUnit.path("airQuality")).put("concentrationUnit", "mg/m³");
+    assertFalse(Environment.airForDecision(wrongUnit, trip(), NOW).has("currentAirUsAqi"));
+    for (String field : List.of("time", "fetchedAt")) {
+      for (String bad :
+          List.of("invalid", NOW.plusSeconds(1).toString(), NOW.minusSeconds(86401).toString())) {
+        ObjectNode changed = area.deepCopy();
+        ((ObjectNode) changed.path("airQuality")).put(field, bad);
+        assertFalse(Environment.airForDecision(changed, trip(), NOW).has("currentAirUsAqi"));
+      }
+    }
+    current.put("time", NOW.minusSeconds(86400).toString()).put("usAqi", 51);
+    assertEquals(
+        "mismatch",
+        status(
+            BinaryDecisionPolicy.decide(Environment.airForDecision(area, trip(), NOW), hotel())));
+    current.put("sourceUrl", "file:///invalid");
+    assertFalse(Environment.airForDecision(area, trip(), NOW).has("currentAirUsAqi"));
+    assertFalse(
+        Environment.airForDecision(area(forecast(100)), trip(), NOW).has("currentAirUsAqi"));
+  }
+
+  @Test
+  void savedCurrentAirSnapshotSatisfiesTheRuntimeGridAndUnitContract() throws Exception {
+    Path source = Path.of("../data/area-assessments.json");
+    if (!Files.isRegularFile(source)) source = Path.of("data/area-assessments.json");
+    JsonNode snapshot = Json.read(Files.readString(source)).path("assessments").get(0);
+    JsonNode current = snapshot.path("airQuality");
+    Instant checkedAt = Instant.parse(Json.str(current, "fetchedAt")).plusSeconds(60);
+    if (Instant.parse(Json.str(current, "time")).isAfter(checkedAt))
+      checkedAt = Instant.parse(Json.str(current, "time")).plusSeconds(60);
+    JsonNode raw =
+        Environment.airForDecision(
+            snapshot, trip().put("checkIn", "2030-01-01").put("checkOut", "2030-01-02"), checkedAt);
+    assertEquals("unknown", status(raw));
+    assertEquals(current.path("usAqi").asDouble(), raw.path("currentAirUsAqi").asDouble(-1));
   }
 
   @Test
@@ -637,8 +712,8 @@ class EnvironmentTest {
             weekdayTrip(),
             NOW,
             environment)) {
-      assertEquals("clarify", Json.str(match.path("best"), "status"));
-      assertEquals(-1, match.path("best").path("score").asInt());
+      assertEquals("excluded", Json.str(match.path("best"), "status"));
+      assertTrue(match.path("best").path("score").asInt() <= -2);
     }
   }
 
@@ -739,7 +814,7 @@ class EnvironmentTest {
             .path("status")
             .asText());
     assertEquals(
-        "clarify",
+        "excluded",
         Matching.rank(List.of(hotel()), List.of(), List.of(pref("clean_air")), trip(), NOW)
             .getFirst()
             .path("best")
@@ -811,6 +886,12 @@ class EnvironmentTest {
       ObjectNode query = trip().put("text", "Обязательно чистый воздух");
       JsonNode result = post(base, "/api/hotels/test/evaluate", query);
       assertEquals(8, result.path("best").path("criteria").size());
+      assertTrue(List.of("fits", "excluded").contains(Json.str(result.path("best"), "status")));
+      for (JsonNode criterion : result.path("best").path("criteria")) {
+        assertTrue(List.of("match", "mismatch").contains(Json.str(criterion, "status")));
+        assertTrue(criterion.has("evidenceStatus"));
+        assertTrue(criterion.has("decisionBasis"));
+      }
       JsonNode air =
           Json.list(result.path("best").path("criteria")).stream()
               .filter(c -> Json.str(c, "feature").equals("clean_air"))

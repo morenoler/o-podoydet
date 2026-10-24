@@ -1,4 +1,4 @@
-package ru.opodoydet;
+package ru.opodoydet.web;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -18,26 +18,34 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import ru.opodoydet.application.Agents;
+import ru.opodoydet.application.Environment;
+import ru.opodoydet.application.SearchService;
+import ru.opodoydet.domain.Features;
+import ru.opodoydet.domain.Matching;
+import ru.opodoydet.domain.Validation;
+import ru.opodoydet.persistence.Store;
+import ru.opodoydet.shared.Json;
 
 /**
  * Local demo API. A production service would additionally need user authentication and
  * authorization.
  */
-final class Api implements AutoCloseable {
+public final class Api implements AutoCloseable {
   private final Store store;
   private final Agents agents;
   private final Path dist;
   private final Path areaData;
   private final String frontendOrigin;
   private final Environment environment;
+  private final SearchService searchService;
   private final HttpServer server;
   private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
-  Api(Store store, Agents agents, Path dist, Path areaData, String frontendOrigin, int port)
+  public Api(Store store, Agents agents, Path dist, Path areaData, String frontendOrigin, int port)
       throws IOException {
     this(
         store,
@@ -49,7 +57,7 @@ final class Api implements AutoCloseable {
         port);
   }
 
-  Api(
+  public Api(
       Store store,
       Agents agents,
       Path dist,
@@ -69,7 +77,7 @@ final class Api implements AutoCloseable {
         port);
   }
 
-  Api(
+  public Api(
       Store store,
       Agents agents,
       Path dist,
@@ -85,16 +93,17 @@ final class Api implements AutoCloseable {
     this.areaData = areaData;
     this.frontendOrigin = frontendOrigin;
     this.environment = new Environment(areaData, noiseData, trafficData);
+    this.searchService = new SearchService(store, agents, environment);
     server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
     server.setExecutor(executor);
     server.createContext("/", this::handle);
   }
 
-  void start() {
+  public void start() {
     server.start();
   }
 
-  int port() {
+  public int port() {
     return server.getAddress().getPort();
   }
 
@@ -204,143 +213,16 @@ final class Api implements AutoCloseable {
     if (method.equals("POST")) {
       JsonNode input = body(exchange);
       if (path.equals("/api/search")) {
-        JsonNode trip = Validation.trip(input, store.region);
-        ObjectNode interpreted = agents.interpret(trip);
-        List<JsonNode> hotels = store.hotels();
-        Instant now = Instant.now();
-        List<JsonNode> ranked =
-            Matching.rank(
-                hotels,
-                store.matchingFacts(),
-                Json.list(interpreted.path("preferences")),
-                trip,
-                now,
-                environment.evaluate(hotels, trip, now),
-                store.evidencePolicy());
-        interpreted.set(
-            "results",
-            Json.array(
-                interpreted.path("conflicts").isEmpty()
-                    ? ranked.stream()
-                        .filter(h -> !Json.str(h.path("best"), "status").equals("excluded"))
-                        .toList()
-                    : List.of()));
-        interpreted.set(
-            "excluded",
-            Json.array(
-                ranked.stream()
-                    .filter(h -> Json.str(h.path("best"), "status").equals("excluded"))
-                    .toList()));
-        interpreted.set(
-            "trace",
-            Json.array(
-                List.of(
-                    Json.obj(
-                        "step",
-                        "Запрос",
-                        "detail",
-                        Json.str(trip, "region")
-                            + ", "
-                            + Json.str(trip, "checkIn")
-                            + " — "
-                            + Json.str(trip, "checkOut")
-                            + ". "
-                            + interpreted.path("preferences").size()
-                            + " пожеланий.",
-                        "tool",
-                        Json.str(interpreted, "mode").equals("llm")
-                            ? "structured LLM"
-                            : "local rules"),
-                    Json.obj(
-                        "step",
-                        "Поиск",
-                        "detail",
-                        "Проверены "
-                            + hotels.size()
-                            + " отелей. Условия сопоставлены внутри одной категории номера.",
-                        "tool",
-                        "rankHotels"),
-                    Json.obj(
-                        "step",
-                        "Доказательства",
-                        "detail",
-                        "Условия проверены по доступным источникам; отсутствующие сведения остаются"
-                            + " неизвестными. Демонстрационные ответы не используются в подборе."
-                            + " Бронирование и цены не проверены.",
-                        "tool",
-                        "SQLite 3"))));
-        send(exchange, 200, interpreted);
+        send(exchange, 200, searchService.search(input));
         return;
       }
       String[] detailParts = path.split("/");
       if (detailParts.length == 5
           && detailParts[2].equals("hotels")
           && detailParts[4].equals("evaluate")) {
-        JsonNode trip = Validation.trip(input, store.region), hotel = store.hotel(detailParts[3]);
-        if (hotel == null) {
-          notFound(exchange, "Отель не найден");
-          return;
-        }
-        Instant now = Instant.now();
-        ObjectNode interpreted = agents.interpret(trip);
-        List<JsonNode> preferences = Json.list(interpreted.path("preferences")),
-            facts =
-                store.matchingFacts().stream()
-                    .filter(f -> Json.str(f, "hotelId").equals(detailParts[3]))
-                    .toList();
-        Map<String, Map<String, JsonNode>> environmental =
-            environment.evaluate(List.of(hotel), trip, now);
-        ObjectNode match =
-            (ObjectNode)
-                Matching.rank(
-                        List.of(hotel),
-                        facts,
-                        preferences,
-                        trip,
-                        now,
-                        environmental,
-                        store.evidencePolicy())
-                    .getFirst();
-        String bestId = Json.str(match.path("best").path("room"), "id");
-        List<JsonNode> allPreferences =
-            Features.ids().stream()
-                .map(
-                    feature ->
-                        (JsonNode)
-                            Json.obj(
-                                "feature",
-                                feature,
-                                "required",
-                                preferences.stream()
-                                    .anyMatch(
-                                        p ->
-                                            Json.str(p, "feature").equals(feature)
-                                                && p.path("required").asBoolean())))
-                .toList();
-        for (JsonNode room : match.path("rooms")) {
-          ((ObjectNode) room)
-              .set(
-                  "criteria",
-                  Json.array(
-                      allPreferences.stream()
-                          .map(
-                              preference ->
-                                  Matching.evaluateWithEnvironment(
-                                      facts,
-                                      preference,
-                                      room.path("room"),
-                                      trip,
-                                      now,
-                                      environmental.get(Json.str(hotel, "id")),
-                                      store.evidencePolicy()))
-                          .toList()));
-          if (!interpreted.path("conflicts").isEmpty() && Json.str(room, "status").equals("fits"))
-            ((ObjectNode) room).put("status", "clarify");
-          if (Json.str(room.path("room"), "id").equals(bestId)) match.set("best", room.deepCopy());
-        }
-        for (String key : List.of("preferences", "warnings", "conflicts", "mode"))
-          match.set(key, interpreted.path(key));
-        send(exchange, 200, match);
+        ObjectNode match = searchService.detail(detailParts[3], input);
+        if (match == null) notFound(exchange, "Отель не найден");
+        else send(exchange, 200, match);
         return;
       }
       if (path.equals("/api/questions")) {
@@ -479,7 +361,7 @@ final class Api implements AutoCloseable {
     notFound(exchange, "Метод не найден");
   }
 
-  JsonNode assessment(JsonNode hotel, Instant now) throws IOException {
+  public JsonNode assessment(JsonNode hotel, Instant now) throws IOException {
     if (!Files.isRegularFile(areaData)) return null;
     JsonNode file = Json.MAPPER.readTree(areaData.toFile());
     if (file.hasNonNull("region") && !Json.str(file, "region").equals(store.region)) return null;

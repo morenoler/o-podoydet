@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { CircleHelp, ExternalLink, Wind, ShieldCheck } from "lucide-react";
-import { api } from "./api";
-import type { AreaAssessment } from "../shared/area";
+import { api } from "../../../shared/api/client";
+import type { AreaAssessment } from "../../../../shared/area";
 
 const timestamp = (value: string | null) =>
   value

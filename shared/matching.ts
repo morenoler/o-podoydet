@@ -1,3 +1,4 @@
+import { decideCapacity, decideCriterion } from "./domain/binaryDecisionPolicy";
 import { features } from "./features";
 import type {
   Criterion,
@@ -101,7 +102,7 @@ export function evaluate(
     return {
       ...base,
       status: "conflict",
-      explanation: "Источники противоречат друг другу — нужно уточнение",
+      explanation: "Источники содержат несовместимые значения",
     };
   const value = known[0].value;
   if (
@@ -155,44 +156,32 @@ export function rankHotels(
           ];
       const rooms: RoomMatch[] = visibleRooms.map((room) => {
         const criteria = preferences.map((p) =>
-          evaluate(hotelFacts, p, room, trip, now),
+          decideCriterion(evaluate(hotelFacts, p, room, trip, now), hotel),
         );
-        const capacityStatus =
-          room.capacity === null
-            ? "unknown"
-            : room.capacity >= trip.adults + trip.children
-              ? "match"
-              : room.capacityMayVary
-                ? "unknown"
-                : "mismatch";
+        const capacity = decideCapacity(hotel, room, trip);
         const status: RoomMatch["status"] =
-          capacityStatus === "mismatch" ||
+          capacity.capacityStatus === "mismatch" ||
           criteria.some((c) => c.required && c.status === "mismatch")
             ? "excluded"
-            : capacityStatus === "unknown" ||
-                criteria.some((c) => c.required && c.status !== "match")
-              ? "clarify"
-              : "fits";
+            : "fits";
         return {
           room,
           criteria,
           status,
-          capacityStatus,
-          capacityExplanation:
-            capacityStatus === "unknown"
-              ? "Вместимость категории не подтверждена"
-              : capacityStatus === "mismatch"
-                ? "Категория не вмещает всех гостей"
-                : "Вместимость категории соответствует числу гостей",
+          ...capacity,
           score: criteria.reduce(
             (s, c) =>
               s +
-              (c.status === "match" ? 3 : c.status === "mismatch" ? -2 : -1),
+              (c.status === "match"
+                ? 3
+                : c.feature === "low_noise" && c.riskLevel === "high"
+                  ? -3
+                  : -2),
             0,
           ),
         };
       });
-      const order = { fits: 0, clarify: 1, excluded: 2 };
+      const order = { fits: 0, excluded: 1 };
       rooms.sort(
         (a, b) => order[a.status] - order[b.status] || b.score - a.score,
       );
@@ -200,8 +189,8 @@ export function rankHotels(
     })
     .sort(
       (a, b) =>
-        ({ fits: 0, clarify: 1, excluded: 2 })[a.best.status] -
-          { fits: 0, clarify: 1, excluded: 2 }[b.best.status] ||
+        ({ fits: 0, excluded: 1 })[a.best.status] -
+          { fits: 0, excluded: 1 }[b.best.status] ||
         b.best.score - a.best.score ||
         (a.hotel.route?.meters ?? Infinity) -
           (b.hotel.route?.meters ?? Infinity),
