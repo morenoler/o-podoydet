@@ -1,0 +1,14 @@
+{
+  "synthetic": {
+    "path": "data/demo/synthetic.scene.json",
+    "sha256": "e47b3ee6937ee2c1685eecad5811ece6a1ea493c1f9fc01d82a95826202c30ef",
+    "is_demo": true,
+    "description": "Synthetic room/floor/obstacle regression scene"
+  },
+  "batumi-radisson": {
+    "path": "data/open/batumi-radisson.scene.json.gz",
+    "sha256": "4adba23ac23157d727e65b55062bd10aac8c50bd52415793bad3d21052498ffd",
+    "is_demo": false,
+    "description": "Public OSM + Open-Meteo snapshot around Radisson Blu Batumi; no physical room geometry verified"
+  }
+}

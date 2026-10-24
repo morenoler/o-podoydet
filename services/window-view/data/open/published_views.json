@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0",
+  "rooms": [],
+  "claims": [
+    {
+      "hotel_id": "osm:way:222982524",
+      "scope": "room_category",
+      "category_name": "Spa Suite",
+      "feature": "sea_view",
+      "value": true,
+      "status": "reported",
+      "source": {
+        "url": "https://www.radissonhotels.com/en-us/hotels/radisson-blu-batumi/rooms",
+        "quote": "Spa Suite with sea view",
+        "retrieved_at": "2026-10-24T10:29:16.794839+00:00",
+        "source_updated_at": null,
+        "method": "manual review of official page image caption; no image downloaded",
+        "recheck_after_days": 90
+      },
+      "limitations": [
+        "Published category description; no physical room, floor, window position or bearing established.",
+        "Not independently verified on site."
+      ]
+    },
+    {
+      "hotel_id": "osm:way:222982524",
+      "scope": "room_category",
+      "category_name": "Family Suite",
+      "feature": "sea_view",
+      "value": true,
+      "status": "reported",
+      "source": {
+        "url": "https://www.radissonhotels.com/en-us/hotels/radisson-blu-batumi/rooms",
+        "quote": "Family Suite with sea view",
+        "retrieved_at": "2026-10-24T10:29:16.794839+00:00",
+        "source_updated_at": null,
+        "method": "manual review of official page image caption; no image downloaded",
+        "recheck_after_days": 90
+      },
+      "limitations": [
+        "Published category description; no physical room, floor, window position or bearing established.",
+        "Not independently verified on site."
+      ]
+    },
+    {
+      "hotel_id": "osm:way:222982524",
+      "scope": "room_category",
+      "category_name": "Standard Room",
+      "feature": "city_view",
+      "value": true,
+      "status": "reported",
+      "source": {
+        "url": "https://www.radissonhotels.com/en-us/hotels/radisson-blu-batumi/rooms",
+        "quote": "City view from Standard Room",
+        "retrieved_at": "2026-10-24T10:29:16.794839+00:00",
+        "source_updated_at": null,
+        "method": "manual review of official page image caption; no image downloaded",
+        "recheck_after_days": 90
+      },
+      "limitations": [
+        "Published category description; no physical room, floor, window position or bearing established.",
+        "Not independently verified on site."
+      ]
+    }
+  ],
+  "limitations": [
+    "No exact physical room window coordinates or bearings have been verified from public sources.",
+    "Reviewed public category claims may be added to claims, never promoted to exact room geometry.",
+    "Exact room observations require matching hotel_id, room_id, floor, window coordinates/bearing and a public source."
+  ]
+}

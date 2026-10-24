@@ -13,3 +13,8 @@ dist/
 .aws/
 *.log
 test-results/
+__pycache__/
+*.pyc
+services/window-view/.cache/
+services/window-view/data/open/*.scene.json
+services/window-view/examples/real-hotel.result.json
