@@ -11,7 +11,7 @@ public final class Main {
 
   public static void main(String[] arguments) throws Exception {
     Map<String, String> env = configuration();
-    Path data = Path.of(env.getOrDefault("DATA_PATH", "data/demo.json"));
+    Path data = Path.of(env.getOrDefault("DATA_PATH", "data/verified-hotels.json"));
     JsonNode dataset = Json.MAPPER.readTree(data.toFile());
     if (!Json.str(dataset, "region").equals("Пусан"))
       throw new IllegalArgumentException(

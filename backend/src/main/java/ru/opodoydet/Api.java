@@ -182,7 +182,9 @@ final class Api implements AutoCloseable {
                 "hotel",
                 hotel,
                 "facts",
-                store.facts().stream().filter(f -> Json.str(f, "hotelId").equals(id)).toList(),
+                store.matchingFacts().stream()
+                    .filter(f -> Json.str(f, "hotelId").equals(id))
+                    .toList(),
                 "questions",
                 store.questions().stream()
                     .filter(q -> Json.str(q, "hotelId").equals(id))
@@ -209,11 +211,12 @@ final class Api implements AutoCloseable {
         List<JsonNode> ranked =
             Matching.rank(
                 hotels,
-                store.facts(),
+                store.matchingFacts(),
                 Json.list(interpreted.path("preferences")),
                 trip,
                 now,
-                environment.evaluate(hotels, trip, now));
+                environment.evaluate(hotels, trip, now),
+                store.evidencePolicy());
         interpreted.set(
             "results",
             Json.array(
@@ -261,8 +264,9 @@ final class Api implements AutoCloseable {
                         "step",
                         "Доказательства",
                         "detail",
-                        "Географические расчёты из локальной выгрузки; условия номеров —"
-                            + " демонстрационные. Бронирование и цены не проверены.",
+                        "Условия проверены по доступным источникам; отсутствующие сведения остаются"
+                            + " неизвестными. Демонстрационные ответы не используются в подборе."
+                            + " Бронирование и цены не проверены.",
                         "tool",
                         "SQLite 3"))));
         send(exchange, 200, interpreted);
@@ -281,14 +285,21 @@ final class Api implements AutoCloseable {
         ObjectNode interpreted = agents.interpret(trip);
         List<JsonNode> preferences = Json.list(interpreted.path("preferences")),
             facts =
-                store.facts().stream()
+                store.matchingFacts().stream()
                     .filter(f -> Json.str(f, "hotelId").equals(detailParts[3]))
                     .toList();
         Map<String, Map<String, JsonNode>> environmental =
             environment.evaluate(List.of(hotel), trip, now);
         ObjectNode match =
             (ObjectNode)
-                Matching.rank(List.of(hotel), facts, preferences, trip, now, environmental)
+                Matching.rank(
+                        List.of(hotel),
+                        facts,
+                        preferences,
+                        trip,
+                        now,
+                        environmental,
+                        store.evidencePolicy())
                     .getFirst();
         String bestId = Json.str(match.path("best").path("room"), "id");
         List<JsonNode> allPreferences =
@@ -320,7 +331,8 @@ final class Api implements AutoCloseable {
                                       room.path("room"),
                                       trip,
                                       now,
-                                      environmental.get(Json.str(hotel, "id"))))
+                                      environmental.get(Json.str(hotel, "id")),
+                                      store.evidencePolicy()))
                           .toList()));
           if (!interpreted.path("conflicts").isEmpty() && Json.str(room, "status").equals("fits"))
             ((ObjectNode) room).put("status", "clarify");
@@ -360,11 +372,14 @@ final class Api implements AutoCloseable {
         }
         JsonNode criterion =
             Matching.evaluate(
-                store.facts().stream().filter(f -> Json.str(f, "hotelId").equals(hotelId)).toList(),
+                store.matchingFacts().stream()
+                    .filter(f -> Json.str(f, "hotelId").equals(hotelId))
+                    .toList(),
                 Json.obj("feature", feature, "required", false),
                 room,
                 trip,
-                Instant.now());
+                Instant.now(),
+                store.evidencePolicy());
         if (definition.tool().equals("route")) {
           send(
               exchange,

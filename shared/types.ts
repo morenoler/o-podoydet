@@ -8,7 +8,7 @@ export type FeatureId =
   | "area_safety"
   | "clean_air"
   | "low_noise";
-export type Value = boolean | number | string;
+export type Value = boolean | number | string | null;
 export interface Fact {
   id: string;
   hotelId: string;
@@ -18,7 +18,7 @@ export interface Fact {
   source: string;
   sourceUrl?: string;
   quote: string;
-  method: "geo" | "host" | "demo";
+  method: "geo" | "host" | "demo" | "official";
   confidence: "high" | "medium" | "low";
   confidenceReason: string;
   obtainedAt: string;
@@ -32,8 +32,13 @@ export interface Fact {
 export interface Room {
   id: string;
   name: string;
-  capacity: number;
+  capacity: number | null;
   demo: boolean;
+  evidenceStatus?: "verified" | "unknown";
+  sourceUrl?: string;
+  obtainedAt?: string;
+  quote?: string;
+  capacityMayVary?: boolean;
 }
 export interface Route {
   meters: number;
@@ -54,6 +59,7 @@ export interface NoiseSource {
   coordinates: Point;
 }
 export interface Hotel {
+  dataNotes?: string[];
   id: string;
   name: string;
   lodgingType?: "hotel" | "motel" | "guest_house" | "hostel" | "apartment";
@@ -69,6 +75,7 @@ export interface MapLine {
   kind: string;
 }
 export interface Dataset {
+  evidencePolicy?: "verified-only" | "demo";
   region: string;
   fetchedAt: string;
   sourceDate: string;
@@ -115,6 +122,8 @@ export interface Criterion {
   assessmentBasis?: "historical" | "dated";
 }
 export interface RoomMatch {
+  capacityStatus?: "match" | "mismatch" | "unknown";
+  capacityExplanation?: string;
   room: Room;
   criteria: Criterion[];
   score: number;

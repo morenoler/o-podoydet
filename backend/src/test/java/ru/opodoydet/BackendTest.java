@@ -65,9 +65,27 @@ class BackendTest {
         "noise",
         List.of(),
         "rooms",
-        List.of(
-            Json.obj("id", "room-a", "name", "Семейный во двор", "capacity", 4, "demo", true),
-            Json.obj("id", "room-b", "name", "У входа", "capacity", 4, "demo", true)));
+        List.of(realRoom("room-a"), realRoom("room-b")));
+  }
+
+  private static ObjectNode realRoom(String id) {
+    return Json.obj(
+        "id",
+        id,
+        "name",
+        "Тестовая категория",
+        "capacity",
+        4,
+        "demo",
+        false,
+        "evidenceStatus",
+        "verified",
+        "sourceUrl",
+        "https://example.org/test-room",
+        "quote",
+        "Synthetic fixture: maximum 4 guests",
+        "obtainedAt",
+        "2026-10-01T00:00:00Z");
   }
 
   private static ObjectNode fact() {
@@ -87,7 +105,7 @@ class BackendTest {
         "quote",
         "Окна во двор",
         "method",
-        "demo",
+        "official",
         "confidence",
         "low",
         "confidenceReason",
@@ -97,11 +115,15 @@ class BackendTest {
         "expiresAt",
         "2030-01-01T00:00:00Z",
         "demo",
-        true);
+        false,
+        "sourceUrl",
+        "https://example.org/test-fact");
   }
 
   private static ObjectNode seed() {
     return Json.obj(
+        "evidencePolicy",
+        "demo",
         "region",
         "Пусан",
         "fetchedAt",
@@ -349,7 +371,7 @@ class BackendTest {
       throws Exception {
     Path database = temp.resolve("busan.sqlite3");
     ObjectNode seeded = seed();
-    seeded.set("facts", Json.array(List.of(fact())));
+    seeded.set("facts", Json.array(List.of(fact().put("demo", true))));
     String factId;
     try (Store store = new Store(database.toString(), seeded)) {
       JsonNode q = ask(store);
@@ -387,7 +409,7 @@ class BackendTest {
   void catalogSyncAddsHotelsAndRetainsOmittedHotelsRoomsAndUserHistory() throws Exception {
     Path database = temp.resolve("catalog-sync.sqlite3");
     ObjectNode initial = seed();
-    initial.set("facts", Json.array(List.of(fact())));
+    initial.set("facts", Json.array(List.of(fact().put("demo", true))));
     JsonNode answered, pending, savedDraft, hostFact;
     try (Store store = new Store(database.toString(), initial)) {
       JsonNode question = ask(store);
@@ -752,6 +774,172 @@ class BackendTest {
   }
 
   private record Response(int code, JsonNode body) {}
+
+  @Test
+  void verifiedOnlyIgnoresEveryDemoFlagAndRequiresRoomProvenance() {
+    for (ObjectNode untrusted :
+        List.of(
+            fact().put("demo", true),
+            fact().put("method", "demo"),
+            fact().put("sourceUrl", ""),
+            fact().put("obtainedAt", "2028-01-01T00:00:00Z"))) {
+      assertEquals(
+          "unknown",
+          Json.str(
+              Matching.evaluate(
+                  List.of(untrusted), preference("courtyard", true), room(), trip(), NOW),
+              "status"));
+    }
+    ObjectNode missingFlag = fact();
+    missingFlag.remove("demo");
+    assertEquals(
+        "unknown",
+        Json.str(
+            Matching.evaluate(
+                List.of(missingFlag), preference("courtyard", true), room(), trip(), NOW),
+            "status"));
+    assertEquals(
+        "match",
+        Json.str(
+            Matching.evaluate(
+                List.of(
+                    fact(),
+                    fact().put("id", "fake-negative").put("demo", true).put("value", false)),
+                preference("courtyard", true),
+                room(),
+                trip(),
+                NOW),
+            "status"));
+    ObjectNode demoHotel = hotel();
+    demoHotel.set("rooms", Json.array(List.of(realRoom("room-a").put("demo", true))));
+    JsonNode result =
+        Matching.rank(List.of(demoHotel), List.of(fact()), List.of(), trip(), NOW).getFirst();
+    assertEquals("clarify", Json.str(result.path("best"), "status"));
+    assertEquals("unknown", Json.str(result.path("best"), "capacityStatus"));
+    assertEquals("hotel-a-unverified", Json.str(result.path("best").path("room"), "id"));
+    assertFalse(result.path("hotel").path("rooms").toString().contains("\"demo\":true"));
+    assertEquals(
+        "unknown",
+        Json.str(
+            Matching.evaluate(
+                List.of(fact().put("roomId", "hotel-a-unverified")),
+                preference("courtyard", true),
+                result.path("best").path("room"),
+                trip(),
+                NOW),
+            "status"));
+  }
+
+  @Test
+  void unknownAndConditionalCapacityClarifyAndNullGeoEvidenceExplainsItsLimits() {
+    assertFalse(
+        Evidence.room(
+            realRoom("old").put("obtainedAt", NOW.minusSeconds(31L * 86400).toString()), NOW));
+    assertTrue(
+        Evidence.room(
+            realRoom("recent").put("obtainedAt", NOW.minusSeconds(30L * 86400).toString()), NOW));
+    for (ObjectNode room :
+        List.of(
+            realRoom("room-a").putNull("capacity"),
+            realRoom("room-a").put("capacity", 2).put("capacityMayVary", true))) {
+      ObjectNode h = hotel();
+      h.set("rooms", Json.array(List.of(room)));
+      JsonNode best =
+          Matching.rank(List.of(h), List.of(), List.of(), trip(), NOW).getFirst().path("best");
+      assertEquals("clarify", Json.str(best, "status"));
+      assertEquals("unknown", Json.str(best, "capacityStatus"));
+    }
+    ObjectNode partial =
+        fact()
+            .put("feature", "step_free_route")
+            .put("method", "geo")
+            .put("quote", "OSM: steps absent, entire route not surveyed")
+            .putNull("value");
+    partial.remove("roomId");
+    JsonNode criterion =
+        Matching.evaluate(
+            List.of(partial), preference("step_free_route", true), room(), trip(), NOW);
+    assertEquals("unknown", Json.str(criterion, "status"));
+    assertTrue(Json.str(criterion, "explanation").contains("entire route not surveyed"));
+    assertEquals(1, criterion.path("facts").size());
+  }
+
+  @Test
+  void verifiedCatalogKeepsLegacyHistoryButHidesDemoRoomsFactsAndHostChanges() throws Exception {
+    Path db = temp.resolve("verified-transition.sqlite3");
+    ObjectNode legacy = seed();
+    ObjectNode oldHotel = hotel();
+    oldHotel.set(
+        "rooms",
+        Json.array(
+            List.of(realRoom("room-a").put("demo", true), realRoom("room-b").put("demo", true))));
+    legacy.set("hotels", Json.array(List.of(oldHotel)));
+    legacy.set("facts", Json.array(List.of(fact().put("demo", true))));
+    JsonNode oldQuestion;
+    try (Store store = new Store(db.toString(), legacy)) {
+      oldQuestion = ask(store);
+      save(store, oldQuestion, draft(oldQuestion, "legacy-preview", false));
+    }
+    ObjectNode verified = seed();
+    verified.remove("evidencePolicy");
+    ObjectNode realHotel = hotel();
+    realHotel.set("rooms", Json.array(List.of(realRoom("real-room"))));
+    verified.set("hotels", Json.array(List.of(realHotel)));
+    verified.set(
+        "facts", Json.array(List.of(fact().put("id", "real-fact").put("roomId", "real-room"))));
+    try (Store store = new Store(db.toString(), verified);
+        Api api =
+            new Api(
+                store,
+                new Agents(Agents.Config.from(Map.of())),
+                temp,
+                temp.resolve("areas.json"),
+                "",
+                0)) {
+      assertEquals("verified-only", store.evidencePolicy());
+      assertNotNull(store.draft("legacy-preview"));
+      assertEquals(oldQuestion, store.question(Json.str(oldQuestion, "id")));
+      assertEquals(1, store.hotel("hotel-a").path("rooms").size());
+      assertEquals("real-room", Json.str(store.hotel("hotel-a").path("rooms").get(0), "id"));
+      assertEquals(1, store.matchingFacts().size());
+      JsonNode q =
+          store.ask(
+              Json.obj(
+                  "hotelId",
+                  "hotel-a",
+                  "roomId",
+                  "real-room",
+                  "feature",
+                  "courtyard",
+                  "text",
+                  "Test",
+                  "trace",
+                  List.of()));
+      save(store, q, draft(q, "host-demo", false));
+      store.confirm("host-demo", true);
+      assertFalse(store.matchingFacts().getFirst().has("supersededBy"));
+      assertEquals(1, store.matchingFacts().size());
+      assertEquals(2, store.facts().size());
+      api.start();
+      String base = "http://127.0.0.1:" + api.port();
+      JsonNode catalog = request(base, "GET", "/api/catalog", null, null).body;
+      assertFalse(catalog.toString().contains("\"demo\":true"));
+      JsonNode detail = request(base, "GET", "/api/hotels/hotel-a", null, null).body;
+      assertEquals(1, detail.path("facts").size());
+      ObjectNode query = trip();
+      query.set("preferences", Json.array(List.of(preference("courtyard", true))));
+      JsonNode best =
+          request(base, "POST", "/api/search", query, null)
+              .body
+              .path("results")
+              .get(0)
+              .path("best");
+      assertEquals("fits", Json.str(best, "status"));
+      assertFalse(best.toString().contains("\"demo\":true"));
+      store.confirm("legacy-preview", true);
+      assertEquals(1, store.matchingFacts().size());
+    }
+  }
 
   private static Response request(
       String base, String method, String path, JsonNode body, String origin) throws Exception {

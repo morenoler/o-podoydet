@@ -16,8 +16,32 @@ final class Matching {
 
   static ObjectNode evaluate(
       List<JsonNode> facts, JsonNode preference, JsonNode room, JsonNode trip, Instant now) {
+    return evaluate(facts, preference, room, trip, now, "verified-only");
+  }
+
+  static ObjectNode evaluate(
+      List<JsonNode> facts,
+      JsonNode preference,
+      JsonNode room,
+      JsonNode trip,
+      Instant now,
+      String policy) {
     String feature = Json.str(preference, "feature");
     Features.Definition definition = Features.get(feature);
+    if (!Evidence.demoPolicy(policy)
+        && !definition.scope().equals("hotel")
+        && !Evidence.room(room, now))
+      return Json.obj(
+          "feature",
+          feature,
+          "required",
+          preference.path("required").asBoolean(),
+          "facts",
+          List.of(),
+          "status",
+          "unknown",
+          "explanation",
+          "Категория номера не подтверждена источником");
     if (definition.tool().equals("area"))
       return Json.obj(
           "feature",
@@ -32,6 +56,7 @@ final class Matching {
           "Нет достаточных данных о районе на даты поездки");
     List<JsonNode> relevant =
         facts.stream()
+            .filter(f -> Evidence.demoPolicy(policy) || Evidence.fact(f, now))
             .filter(
                 f ->
                     Json.str(f, "feature").equals(feature)
@@ -72,9 +97,20 @@ final class Matching {
           relevant.isEmpty()
               ? "Нет достаточных сведений"
               : "Сведения устарели — нужна повторная проверка");
-    if (active.stream().map(f -> f.path("value")).distinct().count() > 1)
+    if (active.stream()
+            .filter(f -> f.hasNonNull("value"))
+            .map(f -> f.path("value"))
+            .distinct()
+            .count()
+        > 1)
       return status(result, "conflict", "Источники противоречат друг другу — нужно уточнение");
-    JsonNode value = active.getFirst().path("value");
+    if (active.stream().noneMatch(f -> f.hasNonNull("value")))
+      return status(
+          result,
+          "unknown",
+          "Источник содержит только частичные сведения: " + Json.str(active.getFirst(), "quote"));
+    JsonNode value =
+        active.stream().filter(f -> f.hasNonNull("value")).findFirst().orElseThrow().path("value");
     if (definition.threshold() != null
         ? (!value.isNumber() || !Double.isFinite(value.asDouble()) || value.asDouble() < 0)
         : !value.isBoolean())
@@ -111,12 +147,24 @@ final class Matching {
       JsonNode trip,
       Instant now,
       Map<String, JsonNode> environment) {
+    return evaluateWithEnvironment(
+        facts, preference, room, trip, now, environment, "verified-only");
+  }
+
+  static ObjectNode evaluateWithEnvironment(
+      List<JsonNode> facts,
+      JsonNode preference,
+      JsonNode room,
+      JsonNode trip,
+      Instant now,
+      Map<String, JsonNode> environment,
+      String policy) {
     String feature = Json.str(preference, "feature");
     if (Features.get(feature).tool().equals("area") && environment.containsKey(feature)) {
       ObjectNode criterion = environment.get(feature).deepCopy();
       return criterion.put("required", preference.path("required").asBoolean());
     }
-    return evaluate(facts, preference, room, trip, now);
+    return evaluate(facts, preference, room, trip, now, policy);
   }
 
   static List<JsonNode> rank(
@@ -126,6 +174,17 @@ final class Matching {
       JsonNode trip,
       Instant now,
       Map<String, Map<String, JsonNode>> environments) {
+    return rank(hotels, facts, preferences, trip, now, environments, "verified-only");
+  }
+
+  static List<JsonNode> rank(
+      List<JsonNode> hotels,
+      List<JsonNode> facts,
+      List<JsonNode> preferences,
+      JsonNode trip,
+      Instant now,
+      Map<String, Map<String, JsonNode>> environments,
+      String policy) {
     List<JsonNode> matches = new ArrayList<>();
     Comparator<JsonNode> roomOrder =
         Comparator.comparingInt((JsonNode r) -> ORDER.get(Json.str(r, "status")))
@@ -135,7 +194,10 @@ final class Matching {
       List<JsonNode> scoped =
           facts.stream().filter(f -> Json.str(f, "hotelId").equals(Json.str(hotel, "id"))).toList();
       List<JsonNode> rooms = new ArrayList<>();
-      for (JsonNode room : hotel.path("rooms")) {
+      List<JsonNode> visibleRooms = Evidence.rooms(hotel, now, policy);
+      ObjectNode visibleHotel = hotel.deepCopy();
+      visibleHotel.set("rooms", Json.array(visibleRooms));
+      for (JsonNode room : visibleRooms) {
         List<JsonNode> criteria =
             preferences.stream()
                 .map(
@@ -147,24 +209,29 @@ final class Matching {
                                 room,
                                 trip,
                                 now,
-                                environments.getOrDefault(Json.str(hotel, "id"), Map.of())))
+                                environments.getOrDefault(Json.str(hotel, "id"), Map.of()),
+                                policy))
                 .toList();
+        boolean capacityKnown =
+            room.path("capacity").isIntegralNumber() && room.path("capacity").asInt() > 0;
         boolean capacity =
             room.path("capacity").asInt()
                 >= trip.path("adults").asInt() + trip.path("children").asInt();
+        if (!capacity && room.path("capacityMayVary").asBoolean(false)) capacityKnown = false;
         String state =
-            !capacity
+            (capacityKnown && !capacity)
                     || criteria.stream()
                         .anyMatch(
                             c ->
                                 c.path("required").asBoolean()
                                     && Json.str(c, "status").equals("mismatch"))
                 ? "excluded"
-                : criteria.stream()
-                        .anyMatch(
-                            c ->
-                                c.path("required").asBoolean()
-                                    && !Json.str(c, "status").equals("match"))
+                : !capacityKnown
+                        || criteria.stream()
+                            .anyMatch(
+                                c ->
+                                    c.path("required").asBoolean()
+                                        && !Json.str(c, "status").equals("match"))
                     ? "clarify"
                     : "fits";
         int score =
@@ -191,12 +258,29 @@ final class Matching {
                                   : -1;
                         })
                 .sum();
-        rooms.add(Json.obj("room", room, "criteria", criteria, "status", state, "score", score));
+        rooms.add(
+            Json.obj(
+                "room",
+                room,
+                "criteria",
+                criteria,
+                "status",
+                state,
+                "score",
+                score,
+                "capacityStatus",
+                !capacityKnown ? "unknown" : capacity ? "match" : "mismatch",
+                "capacityExplanation",
+                !capacityKnown
+                    ? "Вместимость категории не подтверждена источником"
+                    : capacity
+                        ? "Указанная вместимость позволяет разместить всех гостей"
+                        : "Указанная вместимость меньше числа гостей"));
       }
       if (rooms.isEmpty())
         continue; // An invalid or empty category list cannot yield a recommendation.
       rooms.sort(roomOrder);
-      matches.add(Json.obj("hotel", hotel, "best", rooms.getFirst(), "rooms", rooms));
+      matches.add(Json.obj("hotel", visibleHotel, "best", rooms.getFirst(), "rooms", rooms));
     }
     matches.sort(
         (a, b) -> {

@@ -24,6 +24,11 @@ import java.util.UUID;
 final class Store implements AutoCloseable {
   final Connection connection;
   final String region;
+  private String evidencePolicy = "verified-only";
+
+  String evidencePolicy() {
+    return evidencePolicy;
+  }
 
   Store(String path, JsonNode seed) throws SQLException, IOException {
     region = Validation.text(seed, "region", 1, 100);
@@ -87,7 +92,7 @@ final class Store implements AutoCloseable {
                 Json.write(body));
             for (JsonNode room : hotel.path("rooms")) {
               String roomId = Validation.text(room, "id", 1, 150);
-              Validation.integer(room, "capacity", 1, 20);
+              if (room.hasNonNull("capacity")) Validation.integer(room, "capacity", 1, 20);
               execute(
                   "INSERT INTO rooms(region,hotel_id,id,body,active) VALUES (?,?,?,?,1) ON"
                       + " CONFLICT(region,hotel_id,id) DO UPDATE SET body=excluded.body,active=1",
@@ -101,7 +106,7 @@ final class Store implements AutoCloseable {
             String id = Validation.text(fact, "id", 1, 200),
                 hotelId = Validation.text(fact, "hotelId", 1, 150),
                 feature = Validation.feature(fact, "feature");
-            JsonNode hotel = hotel(hotelId);
+            JsonNode hotel = rawHotel(hotelId);
             if (hotel == null)
               throw new IllegalArgumentException("Факт ссылается на неизвестный отель");
             String roomId =
@@ -122,12 +127,15 @@ final class Store implements AutoCloseable {
           }
           return null;
         });
+    evidencePolicy =
+        Evidence.demoPolicy(Json.str(seed, "evidencePolicy")) ? "demo" : "verified-only";
   }
 
   synchronized ObjectNode dataset() throws SQLException {
     JsonNode saved = one("SELECT body FROM metadata WHERE region=? AND key='dataset'", region);
     ObjectNode result = saved == null ? Json.obj("region", region) : saved.deepCopy();
     result.set("hotels", Json.array(hotels()));
+    result.put("evidencePolicy", evidencePolicy);
     return result;
   }
 
@@ -144,10 +152,20 @@ final class Store implements AutoCloseable {
                           + " rowid",
                       region,
                       Json.str(hotel, "id"))));
+    for (JsonNode hotel : hotels)
+      ((ObjectNode) hotel)
+          .set("rooms", Json.array(Evidence.rooms(hotel, Instant.now(), evidencePolicy)));
     return hotels;
   }
 
   synchronized JsonNode hotel(String id) throws SQLException {
+    ObjectNode hotel = (ObjectNode) rawHotel(id);
+    if (hotel != null)
+      hotel.set("rooms", Json.array(Evidence.rooms(hotel, Instant.now(), evidencePolicy)));
+    return hotel;
+  }
+
+  private JsonNode rawHotel(String id) throws SQLException {
     ObjectNode hotel =
         (ObjectNode)
             one("SELECT body FROM hotels WHERE region=? AND id=? AND active=1", region, id);
@@ -174,6 +192,12 @@ final class Store implements AutoCloseable {
     return rows("SELECT body FROM facts WHERE region=? AND active=1 ORDER BY rowid", region);
   }
 
+  synchronized List<JsonNode> matchingFacts() throws SQLException {
+    return Evidence.demoPolicy(evidencePolicy)
+        ? facts()
+        : facts().stream().filter(f -> Evidence.fact(f, Instant.now())).toList();
+  }
+
   synchronized List<JsonNode> questions() throws SQLException {
     return rows("SELECT body FROM questions WHERE region=? ORDER BY rowid DESC", region);
   }
@@ -193,7 +217,7 @@ final class Store implements AutoCloseable {
     if (!Features.get(feature).tool().equals("host"))
       throw new IllegalArgumentException(
           "Это условие проверяется по независимым источникам, а не ответом отельера");
-    JsonNode hotel = hotel(hotelId);
+    JsonNode hotel = rawHotel(hotelId);
     if (hotel == null || room(hotel, roomId) == null)
       throw new IllegalArgumentException("Категория номера не найдена");
     return transaction(
@@ -291,6 +315,7 @@ final class Store implements AutoCloseable {
             if (resolve)
               for (JsonNode old : facts())
                 if (!old.hasNonNull("supersededBy")
+                    && old.path("demo").asBoolean(false)
                     && old.path("hotelId").equals(fact.path("hotelId"))
                     && old.path("roomId").equals(fact.path("roomId"))
                     && old.path("feature").equals(fact.path("feature"))) {

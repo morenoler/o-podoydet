@@ -10,6 +10,34 @@ import type {
   Trip,
 } from "./types";
 
+function sourced(
+  value: { sourceUrl?: string; obtainedAt?: string; quote?: string },
+  now: Date,
+) {
+  try {
+    const url = new URL(value.sourceUrl || "");
+    return (
+      ["http:", "https:"].includes(url.protocol) &&
+      !!url.hostname &&
+      !!value.quote?.trim() &&
+      Date.parse(value.obtainedAt || "") <= +now
+    );
+  } catch {
+    return false;
+  }
+}
+function verifiedRoom(room: Room, now: Date) {
+  const obtained = Date.parse(room.obtainedAt || "");
+  return (
+    room.demo === false &&
+    room.evidenceStatus === "verified" &&
+    sourced(room, now) &&
+    Number.isFinite(obtained) &&
+    obtained <= +now &&
+    +now - obtained <= 30 * 86400000
+  );
+}
+
 export function evaluate(
   facts: Fact[],
   preference: Preference,
@@ -28,6 +56,9 @@ export function evaluate(
     };
   const scoped = facts.filter(
     (f) =>
+      f.demo === false &&
+      ["official", "geo"].includes(f.method) &&
+      sourced(f, now) &&
       f.feature === preference.feature &&
       !f.supersededBy &&
       (definition.scope === "hotel" ? !f.roomId : f.roomId === room.id),
@@ -43,6 +74,13 @@ export function evaluate(
     required: preference.required,
     facts: active.length ? active : relevant,
   };
+  if (definition.scope === "room" && !verifiedRoom(room, now))
+    return {
+      ...base,
+      facts: [],
+      status: "unknown",
+      explanation: "Категория номера не подтверждена официальным источником",
+    };
   if (!active.length)
     return {
       ...base,
@@ -51,14 +89,21 @@ export function evaluate(
         ? "Сведения устарели — нужна повторная проверка"
         : "Нет достаточных сведений",
     };
-  const values = new Set(active.map((f) => JSON.stringify(f.value)));
+  const known = active.filter((f) => f.value !== null);
+  if (!known.length)
+    return {
+      ...base,
+      status: "unknown",
+      explanation: active.map((f) => f.quote).join(" "),
+    };
+  const values = new Set(known.map((f) => JSON.stringify(f.value)));
   if (values.size > 1)
     return {
       ...base,
       status: "conflict",
       explanation: "Источники противоречат друг другу — нужно уточнение",
     };
-  const value = active[0].value;
+  const value = known[0].value;
   if (
     definition.evaluator === "max"
       ? typeof value !== "number" || !Number.isFinite(value) || value < 0
@@ -94,22 +139,51 @@ export function rankHotels(
   return hotels
     .map((hotel) => {
       const hotelFacts = facts.filter((f) => f.hotelId === hotel.id);
-      const rooms: RoomMatch[] = hotel.rooms.map((room) => {
+      const verifiedRooms = hotel.rooms.filter((room) =>
+        verifiedRoom(room, now),
+      );
+      const visibleRooms: Room[] = verifiedRooms.length
+        ? verifiedRooms
+        : [
+            {
+              id: `${hotel.id}-unverified`,
+              name: "Категория номера не подтверждена",
+              capacity: null,
+              demo: false,
+              evidenceStatus: "unknown",
+            },
+          ];
+      const rooms: RoomMatch[] = visibleRooms.map((room) => {
         const criteria = preferences.map((p) =>
           evaluate(hotelFacts, p, room, trip, now),
         );
-        const capacity = room.capacity >= trip.adults + trip.children;
+        const capacityStatus =
+          room.capacity === null
+            ? "unknown"
+            : room.capacity >= trip.adults + trip.children
+              ? "match"
+              : room.capacityMayVary
+                ? "unknown"
+                : "mismatch";
         const status: RoomMatch["status"] =
-          !capacity ||
+          capacityStatus === "mismatch" ||
           criteria.some((c) => c.required && c.status === "mismatch")
             ? "excluded"
-            : criteria.some((c) => c.required && c.status !== "match")
+            : capacityStatus === "unknown" ||
+                criteria.some((c) => c.required && c.status !== "match")
               ? "clarify"
               : "fits";
         return {
           room,
           criteria,
           status,
+          capacityStatus,
+          capacityExplanation:
+            capacityStatus === "unknown"
+              ? "Вместимость категории не подтверждена"
+              : capacityStatus === "mismatch"
+                ? "Категория не вмещает всех гостей"
+                : "Вместимость категории соответствует числу гостей",
           score: criteria.reduce(
             (s, c) =>
               s +

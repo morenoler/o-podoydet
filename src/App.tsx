@@ -255,7 +255,7 @@ export function App() {
           >
             © OpenStreetMap contributors
           </a>{" "}
-          · номера — демо
+          · проверяемые источники
         </span>
       </footer>
     </Context.Provider>
@@ -780,7 +780,7 @@ function MatchBadge({ match }: { match: HotelMatch }) {
           : unknown || match.best.criteria.some((c) => c.status === "mismatch")
             ? "Есть оговорки"
             : match.best.criteria.length
-              ? "Совпадает в демосценарии"
+              ? "Совпадает по данным источников"
               : "Рядом с вашим отдыхом"}
     </span>
   );
@@ -922,8 +922,17 @@ function HotelCard({
         <div className="room-label">
           <Building2 size={15} />
           {best.room.name}
-          <span>Демо</span>
+          <span>
+            {best.room.evidenceStatus === "verified"
+              ? "Официальный источник"
+              : "Нет данных о категории"}
+          </span>
         </div>
+        {best.capacityStatus === "unknown" && (
+          <p className="muted">
+            Вместимость не подтверждена — нужно уточнить размещение всех гостей.
+          </p>
+        )}
         <div className="card-criteria">
           <WishMatches criteria={best.criteria} />
         </div>
@@ -1019,8 +1028,9 @@ function ResultsPage() {
         </section>
       )}
       <Notice>
-        География — из OpenStreetMap. Категории номеров и ответы отельеров —
-        учебная демонстрация. Доступность номеров на ваши даты не проверена.
+        География — из OpenStreetMap, условия номеров — из официальных
+        источников. Неподтверждённые параметры остаются неизвестными. Наличие
+        номеров на ваши даты не проверено.
       </Notice>
       {error && <ErrorMessage text={error} />}{" "}
       {loading ? (
@@ -1102,8 +1112,8 @@ function ResultsPage() {
                   <div className="excluded-row" key={m.hotel.id}>
                     <Link to={`/hotels/${m.hotel.id}`}>{m.hotel.name}</Link>
                     <span>
-                      {m.best.room.capacity < trip.adults + trip.children
-                        ? "Недостаточная вместимость демонстрационных категорий"
+                      {m.best.capacityStatus === "mismatch"
+                        ? "Недостаточная вместимость проверенных категорий"
                         : m.best.criteria
                             .filter(
                               (c) => c.required && c.status === "mismatch",
@@ -1215,7 +1225,8 @@ function CompareDialog({
             <MatchBadge match={m} />
             <h3>{m.hotel.name}</h3>
             <p>{lodgingLabel(m.hotel)}</p>
-            <p>{m.best.room.name} · демо</p>
+            <p>{m.best.room.name}</p>
+            <p>{m.best.capacityExplanation}</p>
             <div className="comparison-distance">
               <Footprints size={18} />
               {m.hotel.route?.meters ?? "—"} м до пляжа
@@ -1239,8 +1250,8 @@ function CompareDialog({
         ))}
       </div>
       <Notice>
-        Условия номеров демонстрационные. Реальное наличие на выбранные даты не
-        проверено.
+        Совпадения основаны на сохранённых источниках. Цена и наличие на
+        выбранные даты не проверены.
       </Notice>
     </dialog>
   );
@@ -1258,10 +1269,14 @@ function FactEvidence({ fact }: { fact: Fact }) {
               : "нет"
             : typeof fact.value === "number"
               ? `${fact.value} м`
-              : fact.value}
+              : (fact.value ?? "не подтверждено")}
         </strong>
         <span className={`tag ${fact.demo ? "demo" : ""}`}>
-          {fact.demo ? "Демонстрация" : "Расчёт по OSM"}
+          {fact.demo
+            ? "Демонстрация · не влияет на подбор"
+            : fact.method === "official"
+              ? "Официальный источник"
+              : "Расчёт по OSM"}
         </span>
       </div>
       <blockquote>{fact.quote}</blockquote>
@@ -1396,8 +1411,9 @@ function HotelPage() {
         </a>
       </div>
       <Notice>
-        Реальные геоданные. Номера и ответы отельеров ниже — демонстрационные.
-        Проверка цены и наличия на даты поездки не подключена.
+        Подбор использует проверяемые источники. Если категория или условие не
+        подтверждены, показываем это явно. Цена и наличие на даты поездки не
+        проверены.
       </Notice>
       <div className="detail-grid">
         <section>
@@ -1485,7 +1501,7 @@ function HotelPage() {
             Сильные стороны разных категорий не складываются в один вариант.
           </p>
           <label className="field">
-            <span>Категория · демосценарий</span>
+            <span>Категория номера</span>
             <select
               value={roomId}
               onChange={(e) => {
@@ -1495,13 +1511,41 @@ function HotelPage() {
             >
               {hotel.rooms.map((r) => (
                 <option key={r.id} value={r.id}>
-                  {r.name} · до {r.capacity} гостей
+                  {r.name} ·{" "}
+                  {r.capacity === null
+                    ? "вместимость не подтверждена"
+                    : `до ${r.capacity} гостей`}
                 </option>
               ))}
             </select>
           </label>
-          {room.room.capacity < trip.adults + trip.children && (
-            <ErrorMessage text="Эта демонстрационная категория не вмещает всех гостей." />
+          {room.room.sourceUrl && (
+            <p className="muted">
+              <a href={room.room.sourceUrl} target="_blank" rel="noreferrer">
+                Категория на сайте отеля <ExternalLink size={12} />
+              </a>
+              {room.room.quote && (
+                <>
+                  <br />
+                  {room.room.quote}
+                </>
+              )}
+            </p>
+          )}
+          {room.room.capacity === null && (
+            <Notice>
+              Вместимость категории не подтверждена. Нужно уточнить размещение
+              всех гостей.
+            </Notice>
+          )}
+          {room.capacityStatus === "unknown" && room.room.capacity !== null && (
+            <Notice>
+              {room.capacityExplanation ||
+                "Дополнительные гости размещаются только по отдельным условиям отеля. Нужно подтверждение."}
+            </Notice>
+          )}
+          {room.capacityStatus === "mismatch" && (
+            <ErrorMessage text="Эта категория не вмещает всех гостей." />
           )}
           <WishMatches
             criteria={room.criteria.filter((c) =>
@@ -1517,19 +1561,20 @@ function HotelPage() {
               .map((c) => (
                 <div className="room-criterion" key={c.feature}>
                   <CriterionLine criterion={c} />
-                  {["unknown", "conflict", "stale"].includes(c.status) && (
-                    <button
-                      className="text-link"
-                      type="button"
-                      disabled={busy}
-                      onClick={() => ask(c.feature)}
-                    >
-                      {c.status === "conflict"
-                        ? "Разобраться в противоречии"
-                        : "Уточнить условие"}{" "}
-                      <MessageCircle size={14} />
-                    </button>
-                  )}
+                  {catalog.evidencePolicy === "demo" &&
+                    ["unknown", "conflict", "stale"].includes(c.status) && (
+                      <button
+                        className="text-link"
+                        type="button"
+                        disabled={busy}
+                        onClick={() => ask(c.feature)}
+                      >
+                        {c.status === "conflict"
+                          ? "Разобраться в противоречии"
+                          : "Уточнить условие"}{" "}
+                        <MessageCircle size={14} />
+                      </button>
+                    )}
                 </div>
               ))}
           </div>
@@ -1542,9 +1587,11 @@ function HotelPage() {
               </span>
             </div>
           )}
-          <Link to={`/host?hotel=${id}`} className="button secondary wide">
-            Демонстрационный кабинет <ArrowRight size={16} />
-          </Link>
+          {catalog.evidencePolicy === "demo" && (
+            <Link to={`/host?hotel=${id}`} className="button secondary wide">
+              Демонстрационный кабинет <ArrowRight size={16} />
+            </Link>
+          )}
         </aside>
       </div>
       <section className="subsection trip-environment">
@@ -1672,8 +1719,8 @@ function HostPage() {
       </div>
       <Notice>
         Вы играете роль отельера. Ответы сохраняются локально как
-        демонстрационные и меняют подбор. Это не сведения, полученные от
-        реальных отелей.
+        демонстрационные и не подтверждают условия в подборе. Это не сведения,
+        полученные от реальных отелей.
       </Notice>
       {!catalog ? (
         <Loading />

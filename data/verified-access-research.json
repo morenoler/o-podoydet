@@ -1,0 +1,570 @@
+{
+  "schemaVersion": 1,
+  "region": "Пусан",
+  "obtainedAt": "2026-10-24T14:07:47.536Z",
+  "method": "Проверены официальные страницы Marriott и их публичный источник roomCards; API обнаружен в JavaScript страницы rooms. Вместимость взята из maxOccupancy, family подтверждается явным названием категории. Русские парафразы. Непрерывный путь без ступеней не доказан; соответствующие факты не созданы.",
+  "hotels": [
+    {
+      "hotelId": "node-368952148",
+      "hotelName": "The Westin Josun Busan",
+      "address": "67 Dongbaek-Ro, Haeundae, Busan 48100",
+      "rooms": [
+        {
+          "id": "node-368952148-real-superior-family-twin-ccty",
+          "name": "Superior Family Twin",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "CCTY",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории CCTY: 3. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Marriott публикует категорию Superior Family Twin как семейную по её названию. Максимальная вместимость в карточке: 3. Название Family само по себе не увеличивает допустимое число гостей.",
+              "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+              "obtainedAt": "2026-10-24T14:07:47.536Z",
+              "sourcePublisher": "Marriott International / The Westin Josun Busan"
+            }
+          ],
+          "limitations": [
+            "Название и подзаголовок карточки расходятся по виду: name=Superior Family Twin, подзаголовок упоминает Park View, описание говорит об отсутствии вида. Вид не нормализован; courtyard не подтверждён."
+          ]
+        },
+        {
+          "id": "node-368952148-real-deluxe-park-king-dlux",
+          "name": "Deluxe Park King",
+          "capacity": 2,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "DLUX",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории DLUX: 2. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": []
+        },
+        {
+          "id": "node-368952148-real-deluxe-park-family-dcty",
+          "name": "Deluxe Park Family",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "DCTY",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории DCTY: 3. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Marriott публикует категорию Deluxe Park Family как семейную по её названию. Максимальная вместимость в карточке: 3. Название Family само по себе не увеличивает допустимое число гостей.",
+              "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+              "obtainedAt": "2026-10-24T14:07:47.536Z",
+              "sourcePublisher": "Marriott International / The Westin Josun Busan"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "id": "node-368952148-real-deluxe-park-ondol-parl",
+          "name": "Deluxe Park Ondol",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "PARL",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории PARL: 3. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": []
+        },
+        {
+          "id": "node-368952148-real-low-floor-beach-king-ssek",
+          "name": "Low Floor Beach King",
+          "capacity": 2,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "SSEK",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории SSEK: 2. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": []
+        },
+        {
+          "id": "node-368952148-real-low-floor-beach-family-sset",
+          "name": "Low Floor Beach Family",
+          "capacity": 2,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "SSET",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории SSET: 2. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Marriott публикует категорию Low Floor Beach Family как семейную по её названию. Максимальная вместимость в карточке: 2. Название Family само по себе не увеличивает допустимое число гостей.",
+              "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+              "obtainedAt": "2026-10-24T14:07:47.536Z",
+              "sourcePublisher": "Marriott International / The Westin Josun Busan"
+            }
+          ],
+          "limitations": [
+            "Название содержит Family, но опубликованный maxOccupancy равен 2. Не заменяем это значение предполагаемой вместимостью семейного номера."
+          ]
+        },
+        {
+          "id": "node-368952148-real-deluxe-beach-king-dque",
+          "name": "Deluxe Beach King",
+          "capacity": 2,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "DQUE",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории DQUE: 2. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": []
+        },
+        {
+          "id": "node-368952148-real-deluxe-beach-family-doub",
+          "name": "Deluxe Beach Family",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "DOUB",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории DOUB: 3. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Marriott публикует категорию Deluxe Beach Family как семейную по её названию. Максимальная вместимость в карточке: 3. Название Family само по себе не увеличивает допустимое число гостей.",
+              "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+              "obtainedAt": "2026-10-24T14:07:47.536Z",
+              "sourcePublisher": "Marriott International / The Westin Josun Busan"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "id": "node-368952148-real-deluxe-beach-triple-dlan",
+          "name": "Deluxe Beach Triple",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "DLAN",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории DLAN: 3. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": []
+        },
+        {
+          "id": "node-368952148-real-deluxe-beach-ondol-bchf",
+          "name": "Deluxe Beach Ondol",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "BCHF",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории BCHF: 3. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": []
+        },
+        {
+          "id": "node-368952148-real-executive-park-king-clbl",
+          "name": "Executive Park King",
+          "capacity": 2,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "CLBL",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории CLBL: 2. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": []
+        },
+        {
+          "id": "node-368952148-real-executive-park-twin-cddb",
+          "name": "Executive Park Twin",
+          "capacity": 2,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "CDDB",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории CDDB: 2. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": []
+        },
+        {
+          "id": "node-368952148-real-executive-park-family-ccbt",
+          "name": "Executive Park Family",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "CCBT",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории CCBT: 3. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Marriott публикует категорию Executive Park Family как семейную по её названию. Максимальная вместимость в карточке: 3. Название Family само по себе не увеличивает допустимое число гостей.",
+              "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+              "obtainedAt": "2026-10-24T14:07:47.536Z",
+              "sourcePublisher": "Marriott International / The Westin Josun Busan"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "id": "node-368952148-real-executive-beach-king-view",
+          "name": "Executive Beach King",
+          "capacity": 2,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "VIEW",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории VIEW: 2. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": []
+        },
+        {
+          "id": "node-368952148-real-executive-beach-twin-cbxu",
+          "name": "Executive Beach Twin",
+          "capacity": 2,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "CBXU",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории CBXU: 2. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": []
+        },
+        {
+          "id": "node-368952148-real-executive-beach-family-fmla",
+          "name": "Executive Beach Family",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "FMLA",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории FMLA: 3. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Marriott публикует категорию Executive Beach Family как семейную по её названию. Максимальная вместимость в карточке: 3. Название Family само по себе не увеличивает допустимое число гостей.",
+              "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+              "obtainedAt": "2026-10-24T14:07:47.536Z",
+              "sourcePublisher": "Marriott International / The Westin Josun Busan"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "id": "node-368952148-real-deluxe-family-ondol-suite-hosp",
+          "name": "Deluxe Family Ondol Suite",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "HOSP",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории HOSP: 3. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Marriott публикует категорию Deluxe Family Ondol Suite как семейную по её названию. Максимальная вместимость в карточке: 3. Название Family само по себе не увеличивает допустимое число гостей.",
+              "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+              "obtainedAt": "2026-10-24T14:07:47.536Z",
+              "sourcePublisher": "Marriott International / The Westin Josun Busan"
+            }
+          ],
+          "limitations": []
+        },
+        {
+          "id": "node-368952148-real-executive-grand-roys",
+          "name": "Executive Grand",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "ROYS",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории ROYS: 3. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": []
+        },
+        {
+          "id": "node-368952148-real-executive-park-suite-exfs",
+          "name": "Executive Park Suite",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "EXFS",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории EXFS: 3. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": []
+        },
+        {
+          "id": "node-368952148-real-executive-beach-suite-este",
+          "name": "Executive Beach Suite",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "ESTE",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории ESTE: 3. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": []
+        },
+        {
+          "id": "node-368952148-real-presidential-suite-pres",
+          "name": "Presidential Suite",
+          "capacity": 4,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+          "sourceRoomTypeCode": "PRES",
+          "sourcePublisher": "Marriott International / The Westin Josun Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории PRES: 4. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": []
+        }
+      ],
+      "familyEvidence": {
+        "sourceUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/rooms/",
+        "sourcePublisher": "Marriott International / The Westin Josun Busan",
+        "obtainedAt": "2026-10-24T14:07:47.536Z",
+        "paraphrase": "Официальная страница размещения прямо упоминает семейные номера; конкретные семейные категории и вместимость взяты из её источника roomCards."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "sourceUrl": "https://www.marriott.com/en-us/hotels/puswi-the-westin-josun-busan/overview/",
+        "sourcePublisher": "Marriott International / The Westin Josun Busan",
+        "obtainedAt": "2026-10-24T14:07:47.536Z",
+        "paraphrase": "Официальный раздел доступности указывает доступный главный вход, лифты и вход в номера через внутренний коридор. Не найдено однозначного подтверждения непрерывного пути без ступеней от публичного входа до каждой выбранной категории.",
+        "additionalEvidence": [
+          {
+            "sourceUrl": "https://access.visitkorea.or.kr/acm/detail.do?cotId=9dd75598-7bbf-423a-86a3-4ad3e5ec02c0",
+            "sourcePublisher": "Korea Tourism Organization, Accessible Korea",
+            "obtainedAt": "2026-10-24T14:07:47.536Z",
+            "sourceUpdatedAt": "2026-09-10",
+            "paraphrase": "Официальный туристический портал сообщает о пандусе к главному входу, лифте и одном доступном номере. Категория этого номера и весь путь до него не обозначены. Также указаны аренда детских колясок и пеленальный стол."
+          }
+        ]
+      },
+      "limitations": [
+        "Это сведения о категориях, а не поиск свободных номеров: цены, наличие, условия для конкретного возраста ребёнка и доступный вариант на даты поездки не проверялись.",
+        "Вместимость взята из maxOccupancy настоящих roomTypeCode. Служебные категории D00* исключены тем же условием, которое использует публичная страница Marriott; общий лимит 8 гостей в поисковой форме не используется.",
+        "step_free_access не подтверждён и не опровергнут: отдельные упоминания лифта, доступного входа, ванной или коридора недостаточны для проверки всего пути. Фактов true/false для этого признака не создано.",
+        "Опубликованный вид на парк, сад, пляж, море или отсутствие вида не доказывает внутренний двор; факты courtyard не созданы.",
+        "Korea Tourism Organization сообщает об одном доступном номере, однако roomCards не связывает его с категорией; отсутствие доступных ванных в карточке также не доказывает наличие ступеней на пути.",
+        "Happy Kidscation не использован как действующее предложение: на его странице встречаются противоречащие друг другу периоды 2025 и 2026 годов."
+      ]
+    },
+    {
+      "hotelId": "node-13447858318",
+      "hotelName": "Fairfield by Marriott Busan",
+      "address": "314 Haeundaehaebyeon-ro, Haeundae-gu, Busan 48099",
+      "rooms": [
+        {
+          "id": "node-13447858318-real-standard-king-king",
+          "name": "Standard King",
+          "capacity": 2,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSFI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/pusfi-fairfield-busan/rooms/",
+          "sourceRoomTypeCode": "king",
+          "sourcePublisher": "Marriott International / Fairfield by Marriott Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории king: 2. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": [
+            "В карточке Standard King указаны доступные варианты с ванной и с душем без бортика. Это характеристика отдельных доступных вариантов категории, а не всех Standard King. Полный путь от публичного входа до такого номера и наличие варианта на даты поездки не подтверждены; step_free_access остаётся unknown."
+          ]
+        },
+        {
+          "id": "node-13447858318-real-standard-twin-twtw",
+          "name": "Standard Twin",
+          "capacity": 2,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSFI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/pusfi-fairfield-busan/rooms/",
+          "sourceRoomTypeCode": "twtw",
+          "sourcePublisher": "Marriott International / Fairfield by Marriott Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории twtw: 2. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": []
+        },
+        {
+          "id": "node-13447858318-real-premier-king-high-floor-quen",
+          "name": "Premier King High Floor",
+          "capacity": 2,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSFI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/pusfi-fairfield-busan/rooms/",
+          "sourceRoomTypeCode": "quen",
+          "sourcePublisher": "Marriott International / Fairfield by Marriott Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории quen: 2. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": []
+        },
+        {
+          "id": "node-13447858318-real-premier-twin-high-floor-dbdb",
+          "name": "Premier Twin High Floor",
+          "capacity": 2,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSFI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/pusfi-fairfield-busan/rooms/",
+          "sourceRoomTypeCode": "dbdb",
+          "sourcePublisher": "Marriott International / Fairfield by Marriott Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории dbdb: 2. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": []
+        },
+        {
+          "id": "node-13447858318-real-deluxe-king-srpm",
+          "name": "Deluxe King",
+          "capacity": 2,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSFI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/pusfi-fairfield-busan/rooms/",
+          "sourceRoomTypeCode": "srpm",
+          "sourcePublisher": "Marriott International / Fairfield by Marriott Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории srpm: 2. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": []
+        },
+        {
+          "id": "node-13447858318-real-oversized-king-bed-dlux",
+          "name": "Oversized King Bed",
+          "capacity": 2,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSFI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/pusfi-fairfield-busan/rooms/",
+          "sourceRoomTypeCode": "dlux",
+          "sourcePublisher": "Marriott International / Fairfield by Marriott Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории dlux: 2. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [],
+          "limitations": []
+        },
+        {
+          "id": "node-13447858318-real-corner-family-room-exks",
+          "name": "Corner Family Room",
+          "capacity": 2,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSFI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/pusfi-fairfield-busan/rooms/",
+          "sourceRoomTypeCode": "exks",
+          "sourcePublisher": "Marriott International / Fairfield by Marriott Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории exks: 2. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Marriott публикует категорию Corner Family Room как семейную по её названию. Максимальная вместимость в карточке: 2. Название Family само по себе не увеличивает допустимое число гостей.",
+              "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSFI&locale=en-US&acrsEnabled=false",
+              "obtainedAt": "2026-10-24T14:07:47.536Z",
+              "sourcePublisher": "Marriott International / Fairfield by Marriott Busan"
+            }
+          ],
+          "limitations": [
+            "Несмотря на название Family Room, официальный maxOccupancy равен 2. Та же карточка допускает одну дополнительную кровать за плату либо одну детскую кроватку; разрешённое число гостей с учётом возраста ребёнка необходимо уточнить у отеля. Вместимость 3 или 4 из этих сведений автоматически не выводится."
+          ]
+        },
+        {
+          "id": "node-13447858318-real-deluxe-family-room-kste",
+          "name": "Deluxe Family Room",
+          "capacity": 2,
+          "demo": false,
+          "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSFI&locale=en-US&acrsEnabled=false",
+          "sourcePageUrl": "https://www.marriott.com/en-us/hotels/pusfi-fairfield-busan/rooms/",
+          "sourceRoomTypeCode": "kste",
+          "sourcePublisher": "Marriott International / Fairfield by Marriott Busan",
+          "obtainedAt": "2026-10-24T14:07:47.536Z",
+          "capacityEvidence": "Официальное поле maxOccupancy карточки категории kste: 2. Это предел категории, а не наличие номера на даты поездки.",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Marriott публикует категорию Deluxe Family Room как семейную по её названию. Максимальная вместимость в карточке: 2. Название Family само по себе не увеличивает допустимое число гостей.",
+              "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSFI&locale=en-US&acrsEnabled=false",
+              "obtainedAt": "2026-10-24T14:07:47.536Z",
+              "sourcePublisher": "Marriott International / Fairfield by Marriott Busan"
+            }
+          ],
+          "limitations": [
+            "Несмотря на название Family Room, официальный maxOccupancy равен 2. Та же карточка допускает одну дополнительную кровать за плату либо одну детскую кроватку; разрешённое число гостей с учётом возраста ребёнка необходимо уточнить у отеля. Вместимость 3 или 4 из этих сведений автоматически не выводится."
+          ]
+        }
+      ],
+      "familyEvidence": {
+        "sourceUrl": "https://www.marriott.com/en-us/hotels/pusfi-fairfield-busan/photos/",
+        "sourcePublisher": "Marriott International / Fairfield by Marriott Busan",
+        "obtainedAt": "2026-10-24T14:07:47.536Z",
+        "paraphrase": "Официальная фотогалерея подписывает Family Room и Corner Family Room; источник roomCards даёт реальные категории Corner Family Room и Deluxe Family Room, обе вместимостью 2."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "sourceUrl": "https://www.marriott.com/en-us/hotels/pusfi-fairfield-busan/overview/",
+        "sourcePublisher": "Marriott International / Fairfield by Marriott Busan",
+        "obtainedAt": "2026-10-24T14:07:47.536Z",
+        "paraphrase": "Официальный раздел доступности указывает доступный главный вход, лифты и вход в номера через внутренний коридор. Не найдено однозначного подтверждения непрерывного пути без ступеней от публичного входа до каждой выбранной категории."
+      },
+      "limitations": [
+        "Это сведения о категориях, а не поиск свободных номеров: цены, наличие, условия для конкретного возраста ребёнка и доступный вариант на даты поездки не проверялись.",
+        "Вместимость взята из maxOccupancy настоящих roomTypeCode. Служебные категории D00* исключены тем же условием, которое использует публичная страница Marriott; общий лимит 8 гостей в поисковой форме не используется.",
+        "step_free_access не подтверждён и не опровергнут: отдельные упоминания лифта, доступного входа, ванной или коридора недостаточны для проверки всего пути. Фактов true/false для этого признака не создано.",
+        "Опубликованный вид на парк, сад, пляж, море или отсутствие вида не доказывает внутренний двор; факты courtyard не созданы.",
+        "Это Fairfield by Marriott Busan в Хэундэ, код PUSFI. Fairfield Busan Songdo Beach (PUSFB) является другим отелем и не использован.",
+        "Семейное назначение подтверждено только для явно названных семейных категорий. Для остальных категорий отсутствие family-факта означает unknown, а не непригодность для семьи."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,315 @@
+{
+  "schemaVersion": 1,
+  "region": "Пусан",
+  "obtainedAt": "2026-10-24T14:04:55.303Z",
+  "method": "Проверка опубликованных карточек категорий на официальных сайтах отелей. Русские парафразы; наличие на даты и бронирование не запрашивались.",
+  "hotels": [
+    {
+      "hotelId": "node-7858128118",
+      "hotelName": "SIGNIEL BUSAN",
+      "rooms": [
+        {
+          "id": "node-7858128118-real-premier-family-twin",
+          "name": "Premier Family Twin",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://app.lottehotel.com/busan-signiel/en/rooms/premier-family-twin-room",
+          "sourcePublisher": "SIGNIEL BUSAN / LOTTE HOTELS & RESORTS",
+          "obtainedAt": "2026-10-24T14:04:55.303Z",
+          "publishedView": "Dalmaji-gil View",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная категория Premier Family Twin имеет семейную конфигурацию кроватей Family Twin; в карточке указаны максимум 3 гостя и доступ в детскую гостиную для детей до 10 лет с сопровождающим.",
+              "sourceUrl": "https://app.lottehotel.com/busan-signiel/en/rooms/premier-family-twin-room",
+              "obtainedAt": "2026-10-24T14:04:55.303Z",
+              "sourcePublisher": "SIGNIEL BUSAN / LOTTE HOTELS & RESORTS"
+            }
+          ],
+          "limitations": [
+            "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+            "capacity=3 взято из поля Maximum Occupancy категории. Четвёртый гость допускается только по отдельным условиям FAQ, с учётом возраста, типа категории, доплаты и подтверждения отеля; это исключение не преобразовано в безусловную вместимость 4."
+          ]
+        },
+        {
+          "id": "node-7858128118-real-signiel-premier-family-twin",
+          "name": "SIGNIEL Premier Family Twin",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://app.lottehotel.com/busan-signiel/en/rooms/signiel-premier-family-twin-room",
+          "sourcePublisher": "SIGNIEL BUSAN / LOTTE HOTELS & RESORTS",
+          "obtainedAt": "2026-10-24T14:04:55.303Z",
+          "publishedView": "City View",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная категория SIGNIEL Premier Family Twin имеет семейную конфигурацию кроватей Family Twin; в карточке указаны максимум 3 гостя и доступ в детскую гостиную для детей до 10 лет с сопровождающим.",
+              "sourceUrl": "https://app.lottehotel.com/busan-signiel/en/rooms/signiel-premier-family-twin-room",
+              "obtainedAt": "2026-10-24T14:04:55.303Z",
+              "sourcePublisher": "SIGNIEL BUSAN / LOTTE HOTELS & RESORTS"
+            }
+          ],
+          "limitations": [
+            "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+            "capacity=3 взято из поля Maximum Occupancy категории. Четвёртый гость допускается только по отдельным условиям FAQ, с учётом возраста, типа категории, доплаты и подтверждения отеля; это исключение не преобразовано в безусловную вместимость 4."
+          ]
+        },
+        {
+          "id": "node-7858128118-real-signiel-premier-family-twin-ocean-view",
+          "name": "SIGNIEL Premier Family Twin Ocean View",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://app.lottehotel.com/busan-signiel/en/rooms/signiel-premier-family-twin-room-ocean-view",
+          "sourcePublisher": "SIGNIEL BUSAN / LOTTE HOTELS & RESORTS",
+          "obtainedAt": "2026-10-24T14:04:55.303Z",
+          "publishedView": "Ocean View",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная категория SIGNIEL Premier Family Twin Ocean View имеет семейную конфигурацию кроватей Family Twin; в карточке указаны максимум 3 гостя и доступ в детскую гостиную для детей до 10 лет с сопровождающим.",
+              "sourceUrl": "https://app.lottehotel.com/busan-signiel/en/rooms/signiel-premier-family-twin-room-ocean-view",
+              "obtainedAt": "2026-10-24T14:04:55.303Z",
+              "sourcePublisher": "SIGNIEL BUSAN / LOTTE HOTELS & RESORTS"
+            }
+          ],
+          "limitations": [
+            "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+            "capacity=3 взято из поля Maximum Occupancy категории. Четвёртый гость допускается только по отдельным условиям FAQ, с учётом возраста, типа категории, доплаты и подтверждения отеля; это исключение не преобразовано в безусловную вместимость 4."
+          ]
+        }
+      ],
+      "checkedUrls": [
+        "https://app.lottehotel.com/busan-signiel/en/rooms/premier-family-twin-room",
+        "https://app.lottehotel.com/busan-signiel/en/rooms/signiel-premier-family-twin-room",
+        "https://app.lottehotel.com/busan-signiel/en/rooms/signiel-premier-family-twin-room-ocean-view",
+        "https://app.lottehotel.com/busan-signiel/en/about/faq"
+      ],
+      "limitations": [
+        "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+        "FAQ допускает некоторые составы из четырёх гостей в Family Twin, но не пять; стандартная карточка категории указывает 3. Наличие на даты, цена и индивидуальное подтверждение дополнительного места не проверялись."
+      ]
+    },
+    {
+      "hotelId": "way-627150752",
+      "hotelName": "Shilla Stay Haeundae",
+      "rooms": [
+        {
+          "id": "way-627150752-real-standard-family-twin",
+          "name": "Standard Family Twin",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/standardTwin.do",
+          "sourcePublisher": "Shilla Stay Haeundae / Shilla Hotels & Resorts",
+          "obtainedAt": "2026-10-24T14:04:55.303Z",
+          "publishedView": "City, Ocean",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "В карточке Standard Family Twin указаны семейные кровати Family Twin и размещение 1–3 гостей. Отдельно отель разрешает до 4 гостей при размещении с ребёнком; состав семьи и условия четвёртого места нужно согласовать.",
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/standardTwin.do",
+              "obtainedAt": "2026-10-24T14:04:55.303Z",
+              "sourcePublisher": "Shilla Stay Haeundae / Shilla Hotels & Resorts"
+            }
+          ],
+          "limitations": [
+            "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+            "capacity=3 отражает основное поле Guests. Условное размещение до 4 при наличии ребёнка не означает разрешение для четырёх взрослых и не превращено в безусловную вместимость 4.",
+            "На странице перечислены варианты City и Ocean, но это не гарантия конкретного вида без выбора варианта при бронировании."
+          ]
+        },
+        {
+          "id": "way-627150752-real-deluxe-family-twin",
+          "name": "Deluxe Family Twin",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/deluxeFamilyTwin.do",
+          "sourcePublisher": "Shilla Stay Haeundae / Shilla Hotels & Resorts",
+          "obtainedAt": "2026-10-24T14:04:55.303Z",
+          "publishedView": "City, Ocean",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "В карточке Deluxe Family Twin указаны семейные кровати Family Twin и размещение 1–3 гостей. Отдельно отель разрешает до 4 гостей при размещении с ребёнком; состав семьи и условия четвёртого места нужно согласовать.",
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/deluxeFamilyTwin.do",
+              "obtainedAt": "2026-10-24T14:04:55.303Z",
+              "sourcePublisher": "Shilla Stay Haeundae / Shilla Hotels & Resorts"
+            }
+          ],
+          "limitations": [
+            "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+            "capacity=3 отражает основное поле Guests. Условное размещение до 4 при наличии ребёнка не означает разрешение для четырёх взрослых и не превращено в безусловную вместимость 4.",
+            "На странице перечислены варианты City и Ocean, но это не гарантия конкретного вида без выбора варианта при бронировании."
+          ]
+        },
+        {
+          "id": "way-627150752-real-premier-deluxe-family-twin",
+          "name": "Premier Deluxe Family Twin",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/premierDeluxeFamilyTwin.do",
+          "sourcePublisher": "Shilla Stay Haeundae / Shilla Hotels & Resorts",
+          "obtainedAt": "2026-10-24T14:04:55.303Z",
+          "publishedView": "City, Ocean",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "В карточке Premier Deluxe Family Twin указаны семейные кровати Family Twin и размещение 1–3 гостей. Отдельно отель разрешает до 4 гостей при размещении с ребёнком; состав семьи и условия четвёртого места нужно согласовать.",
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/premierDeluxeFamilyTwin.do",
+              "obtainedAt": "2026-10-24T14:04:55.303Z",
+              "sourcePublisher": "Shilla Stay Haeundae / Shilla Hotels & Resorts"
+            }
+          ],
+          "limitations": [
+            "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+            "capacity=3 отражает основное поле Guests. Условное размещение до 4 при наличии ребёнка не означает разрешение для четырёх взрослых и не превращено в безусловную вместимость 4.",
+            "На странице перечислены варианты City и Ocean, но это не гарантия конкретного вида без выбора варианта при бронировании."
+          ]
+        }
+      ],
+      "checkedUrls": [
+        "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/standardTwin.do",
+        "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/deluxeFamilyTwin.do",
+        "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/premierDeluxeFamilyTwin.do"
+      ],
+      "limitations": [
+        "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+        "Семейная категория подтверждена для конкретных реальных номеров. Доступность дополнительной кровати и возрастные условия требуют проверки; наличие на даты и цены не проверялись."
+      ]
+    },
+    {
+      "hotelId": "way-843161717",
+      "hotelName": "Grand Josun Busan",
+      "rooms": [
+        {
+          "id": "way-843161717-real-kids-deluxe",
+          "name": "Kids Deluxe",
+          "capacity": null,
+          "demo": false,
+          "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsDeluxe.do",
+          "sourcePublisher": "Grand Josun Busan / Josun Hotels & Resorts",
+          "obtainedAt": "2026-10-24T14:04:55.303Z",
+          "publishedView": "City View / Partial Ocean View / Ocean View",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная детская категория Kids Deluxe включает одну двуспальную и одну детскую кровать, а также детские принадлежности. Это подтверждение семейной категории, но не числового максимума гостей.",
+              "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsDeluxe.do",
+              "obtainedAt": "2026-10-24T14:04:55.303Z",
+              "sourcePublisher": "Grand Josun Busan / Josun Hotels & Resorts"
+            }
+          ],
+          "limitations": [
+            "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+            "Максимальная вместимость прямо не указана: capacity=null. Количество кроватей не пересчитано в допустимое число гостей. Темы Forest, Sea, Sky описывают интерьер, а не вид из окна."
+          ]
+        },
+        {
+          "id": "way-843161717-real-kids-suite",
+          "name": "Kids Suite",
+          "capacity": null,
+          "demo": false,
+          "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsSuite.do",
+          "sourcePublisher": "Grand Josun Busan / Josun Hotels & Resorts",
+          "obtainedAt": "2026-10-24T14:04:55.303Z",
+          "publishedView": "City View / Ocean View / Ocean View (Living Room)",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "В Kids Suite предусмотрены отдельные детская и взрослая зоны, одна кровать King и одна детская кровать; отель описывает категорию как предназначенную для отдыха с детьми.",
+              "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsSuite.do",
+              "obtainedAt": "2026-10-24T14:04:55.303Z",
+              "sourcePublisher": "Grand Josun Busan / Josun Hotels & Resorts"
+            }
+          ],
+          "limitations": [
+            "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+            "Максимальная вместимость прямо не указана: capacity=null. Число посетителей бассейна или лаунжа не использовано как вместимость номера."
+          ]
+        }
+      ],
+      "checkedUrls": [
+        "https://gjb.josunhotel.com/rooms/kidsDeluxe.do",
+        "https://gjb.josunhotel.com/rooms/kidsSuite.do"
+      ],
+      "limitations": [
+        "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+        "Семейное назначение двух категорий подтверждено, но допустимое число гостей не установлено. Возраст ребёнка, размещение второго ребёнка и наличие нужной категории требуют уточнения."
+      ]
+    },
+    {
+      "hotelId": "node-4199814292",
+      "hotelName": "Paradise Hotel Busan",
+      "rooms": [
+        {
+          "id": "node-4199814292-real-main-deluxe-city",
+          "name": "Deluxe City — Main Building",
+          "capacity": null,
+          "demo": false,
+          "sourceUrl": "https://www.busanparadisehotel.co.kr/front/hotel/room/view?RR_LOCATION_TYPE=MAIN_BUILDING&RR_ROOM_CATEGORY=DELUXE&RR_ROOM_TYPE=DELUXE_CITY",
+          "sourcePublisher": "Paradise Hotel Busan",
+          "obtainedAt": "2026-10-24T14:04:55.303Z",
+          "publishedView": "City",
+          "facts": [],
+          "limitations": [
+            "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+            "Официально указана базовая норма 2 взрослых, а не безусловный максимум всех гостей. Поэтому capacity=null; publishedBaseOccupancy хранит исходное значение отдельно.",
+            "На странице партнёрского бронирования опубликованы условия размещения детей до 13 лет и доплаты. Их применимость к конкретному обычному тарифу и варианту кроватей не подтверждена, поэтому family-факт здесь не создан."
+          ],
+          "publishedBaseOccupancy": {
+            "adults": 2,
+            "sourceUrl": "https://www.busanparadisehotel.co.kr/front/hotel/room/view?RR_LOCATION_TYPE=MAIN_BUILDING&RR_ROOM_CATEGORY=DELUXE&RR_ROOM_TYPE=DELUXE_CITY"
+          }
+        }
+      ],
+      "checkedUrls": [
+        "https://www.busanparadisehotel.co.kr/front/hotel/room/view?RR_LOCATION_TYPE=MAIN_BUILDING&RR_ROOM_CATEGORY=DELUXE&RR_ROOM_TYPE=DELUXE_CITY",
+        "https://www.busanparadisehotel.co.kr/front/partnerReservation/"
+      ],
+      "limitations": [
+        "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+        "Для Deluxe City подтверждены название, основной корпус, базовая норма 2 взрослых и варианты кроватей King/Twin/Ondol. Максимум гостей и безусловная семейная политика для обычного тарифа не подтверждены."
+      ]
+    },
+    {
+      "hotelId": "node-13011853719",
+      "hotelName": "L7 HAEUNDAE by LOTTE",
+      "rooms": [],
+      "checkedUrls": [
+        "https://www.lottehotel.com/haeundae-l7/en/rooms/standard-family-twin",
+        "https://www.lottehotel.com/haeundae-l7/en/rooms/superior-family-twin",
+        "https://www.lottehotel.com/prerendered/haeundae-l7/ko/rooms/standard-family-twin/index.html"
+      ],
+      "limitations": [
+        "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+        "Текущие карточки номеров вернули страницу антибот-проверки. В поисковой выдаче доступен старый официальный prerendered-документ с Standard Family Twin и 3 гостями, но для нового набора решено не считать его достаточным подтверждением актуальной категории. Обход проверки не выполнялся."
+      ]
+    },
+    {
+      "hotelId": "way-627350916",
+      "hotelName": "Toyoko Inn Busan Haeundae No.2",
+      "rooms": [],
+      "checkedUrls": [
+        "https://www.toyoko-inn.com/eng/search/detail/00256/",
+        "https://www.toyoko-inn.com/eng/feature/room/"
+      ],
+      "limitations": [
+        "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+        "Проверена официальная страница именно Haeundae No.2. В доступном тексте нет привязанных к этому отелю конкретных категорий с вместимостью. Общесетевая страница предупреждает, что вместимость Twin различается по отелям, поэтому её значения не перенесены в каталог."
+      ]
+    }
+  ],
+  "limitations": [
+    "Только реальные именованные категории. Исследование не подтверждает свободные номера, цену, гарантированный вид или конкретное размещение на даты поездки.",
+    "Отсутствие family/courtyard-факта означает unknown, а не false. Никакие факты не присоединены к демонстрационным номерам.",
+    "capacity=null означает отсутствие подтверждённого общего лимита; его нельзя подменять вместимостью демономера или числом кроватей. capacity=3 для SIGNIEL/Shilla — стандартное опубликованное размещение с отдельно описанными условными исключениями.",
+    "Courtyard не подтверждён ни для одной исследованной категории. City view, garden общественной зоны и темы оформления комнаты не считаются видом во внутренний двор."
+  ]
+}
