@@ -441,6 +441,190 @@ class EnvironmentTest {
     assertEquals("unknown", status(Environment.noise(scheduled, outside, trip(), NOW)));
   }
 
+  private static ObjectNode historicalProfile(double peak) {
+    var counts = Json.MAPPER.createArrayNode();
+    for (int i = 0; i < 24; i++)
+      if (i == 8) counts.add(peak);
+      else counts.addNull();
+    return Json.obj(
+        "id",
+        "ktdb-2024-link",
+        "sourceLinkId",
+        "link",
+        "referenceYear",
+        2024,
+        "dayType",
+        "weekday",
+        "geometry",
+        Json.obj(
+            "type",
+            "LineString",
+            "coordinates",
+            List.of(List.of(129.159, 35.1601), List.of(129.161, 35.1601))),
+        "hourlyVehicleCounts",
+        counts,
+        "availableHours",
+        24,
+        "reportedTotal",
+        999999,
+        "lanes",
+        null,
+        "direction",
+        "source_link_unspecified",
+        "source",
+        source(),
+        "limitations",
+        List.of("Полосы неизвестны"));
+  }
+
+  private static ObjectNode history(JsonNode profile) {
+    return Json.obj(
+        "schemaVersion",
+        1,
+        "region",
+        "Пусан",
+        "referenceYear",
+        2024,
+        "dayType",
+        "weekday",
+        "kind",
+        "historical_observed_profile",
+        "timeZone",
+        "Asia/Seoul",
+        "source",
+        source(),
+        "historicalTrafficProfiles",
+        List.of(profile));
+  }
+
+  private static ObjectNode weekdayTrip() {
+    return trip().put("checkIn", "2026-10-26").put("checkOut", "2026-10-27");
+  }
+
+  @Test
+  void historicalCountsAreUnknownHintsWithMeasuredHourlyCoverageAndDistance() {
+    for (double peak : new double[] {0, 500, 501, 1500, 1501}) {
+      JsonNode result =
+          Environment.noise(
+              context(), history(historicalProfile(peak)), hotel(), weekdayTrip(), NOW);
+      assertEquals("unknown", status(result));
+      assertEquals("historical", Json.str(result, "assessmentBasis"));
+      assertEquals(
+          peak > 1500 ? "high" : peak > 500 ? "moderate" : "low", Json.str(result, "riskLevel"));
+      assertTrue(result.path("details").toString().contains("1 из 24"));
+      assertTrue(result.path("explanation").asText().contains("2024"));
+      assertTrue(result.path("explanation").asText().contains("прогноз"));
+    }
+    for (double latitude : new double[] {35.161, 35.162, 35.17}) {
+      ObjectNode location = hotel();
+      location.set("coordinates", Json.array(List.of(129.16, latitude)));
+      JsonNode result =
+          Environment.noise(
+              context(), history(historicalProfile(2000)), location, weekdayTrip(), NOW);
+      assertEquals(
+          latitude < 35.162 ? "moderate" : latitude < 35.17 ? "low" : "unknown",
+          Json.str(result, "riskLevel"));
+    }
+    ObjectNode datedEvent = context();
+    datedEvent.set(
+        "events",
+        Json.array(
+            List.of(
+                event()
+                    .put("startsAt", "2026-10-26T19:00:00+09:00")
+                    .put("endsAt", "2026-10-26T20:00:00+09:00"))));
+    JsonNode known =
+        Environment.noise(datedEvent, history(historicalProfile(1)), hotel(), weekdayTrip(), NOW);
+    assertEquals("mismatch", status(known));
+    assertEquals("high", Json.str(known, "riskLevel"));
+    assertFalse(known.has("assessmentBasis"));
+  }
+
+  @Test
+  void historicalCountsRejectWrongPeriodDayTypeMissingAndNegativeValues() {
+    for (ObjectNode invalid :
+        List.of(
+            historicalProfile(-1000),
+            historicalProfile(10).put("referenceYear", 2023),
+            historicalProfile(10).put("dayType", "weekend")))
+      assertFalse(
+          Environment.noise(context(), history(invalid), hotel(), weekdayTrip(), NOW)
+              .has("assessmentBasis"));
+    ObjectNode empty = historicalProfile(10);
+    ((com.fasterxml.jackson.databind.node.ArrayNode) empty.path("hourlyVehicleCounts"))
+        .set(8, Json.MAPPER.nullNode());
+    assertFalse(
+        Environment.noise(context(), history(empty), hotel(), weekdayTrip(), NOW)
+            .has("assessmentBasis"));
+    ObjectNode futureSource = historicalProfile(10);
+    ((ObjectNode) futureSource.path("source")).put("retrievedAt", NOW.plusSeconds(1).toString());
+    assertFalse(
+        Environment.noise(context(), history(futureSource), hotel(), weekdayTrip(), NOW)
+            .has("assessmentBasis"));
+    for (ObjectNode dates :
+        List.of(
+            trip(),
+            trip().put("checkIn", "2028-10-23").put("checkOut", "2028-10-24"),
+            trip().put("checkIn", "2023-10-23").put("checkOut", "2023-10-24")))
+      assertFalse(
+          Environment.noise(context(), history(historicalProfile(2000)), hotel(), dates, NOW)
+              .has("assessmentBasis"));
+    ObjectNode future = historicalProfile(2000).put("referenceYear", 2027);
+    ObjectNode futureData = history(future).put("referenceYear", 2027);
+    assertFalse(
+        Environment.noise(
+                context(),
+                futureData,
+                hotel(),
+                trip().put("checkIn", "2027-10-25").put("checkOut", "2027-10-26"),
+                NOW)
+            .has("assessmentBasis"));
+    assertTrue(
+        Environment.noise(
+                context(),
+                history(historicalProfile(2000)),
+                hotel(),
+                trip().put("checkOut", "2026-10-27"),
+                NOW)
+            .has("assessmentBasis"));
+  }
+
+  @Test
+  void historicalRiskRanksOptionalNoiseWithoutExcludingMandatoryUnknown() {
+    ObjectNode highHotel = hotel().put("id", "high"), moderateHotel = hotel().put("id", "moderate");
+    JsonNode
+        high =
+            Environment.noise(
+                context(), history(historicalProfile(2000)), highHotel, weekdayTrip(), NOW),
+        moderate =
+            Environment.noise(
+                context(), history(historicalProfile(1000)), moderateHotel, weekdayTrip(), NOW);
+    Map<String, Map<String, JsonNode>> environment =
+        Map.of("high", Map.of("low_noise", high), "moderate", Map.of("low_noise", moderate));
+    List<JsonNode> ranked =
+        Matching.rank(
+            List.of(highHotel, moderateHotel),
+            List.of(),
+            List.of(pref("low_noise").put("required", false)),
+            weekdayTrip(),
+            NOW,
+            environment);
+    assertEquals("moderate", Json.str(ranked.getFirst().path("hotel"), "id"));
+    assertEquals(-2, ranked.getFirst().path("best").path("score").asInt());
+    assertEquals(-3, ranked.getLast().path("best").path("score").asInt());
+    for (JsonNode match :
+        Matching.rank(
+            List.of(highHotel, moderateHotel),
+            List.of(),
+            List.of(pref("low_noise")),
+            weekdayTrip(),
+            NOW,
+            environment)) {
+      assertEquals("clarify", Json.str(match.path("best"), "status"));
+      assertEquals(-1, match.path("best").path("score").asInt());
+    }
+  }
+
   @Test
   void lowNoiseRequiresCompleteTrafficAndEventsAndHistoricalCountsDoNotForecast() {
     ObjectNode pastTrip = trip().put("checkIn", "2026-10-23").put("checkOut", "2026-10-24");

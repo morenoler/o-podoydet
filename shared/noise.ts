@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { closestPointOnLine, distance } from "./geo";
+import { evaluateHistoricalTraffic } from "./traffic";
 import type { Point } from "./types";
 
 export type NoiseRisk = "low" | "moderate" | "high" | "unknown";
@@ -324,6 +325,7 @@ export function evaluateNoise(
   checkIn: string,
   checkOut: string,
   now: Date = new Date(),
+  historicalTraffic?: unknown,
 ) {
   const tripWindow = noiseTripWindow(checkIn, checkOut);
   const nowMs = now.getTime();
@@ -437,7 +439,7 @@ export function evaluateNoise(
     ...observations.map((o) => o.risk),
     ...matches.map((e) => e.risk),
   ];
-  const risk: NoiseRisk = !inArea
+  const observedRisk: NoiseRisk = !inArea
     ? "unknown"
     : contributors.includes("high")
       ? "high"
@@ -446,13 +448,28 @@ export function evaluateNoise(
         : trafficComplete && eventsComplete
           ? "low"
           : "unknown";
+  const historical = evaluateHistoricalTraffic(
+    historicalTraffic,
+    coordinates,
+    checkIn,
+    checkOut,
+    now,
+  );
+  const assessmentBasis =
+    observedRisk === "unknown" && historical.risk !== "unknown"
+      ? "historical"
+      : "dated";
+  const risk =
+    assessmentBasis === "historical" ? historical.risk : observedRisk;
   const nearest = roads[0]?.meters;
   return {
     risk,
+    assessmentBasis,
+    historicalTraffic: historical,
     matchingStatus:
-      risk === "high" || risk === "moderate"
+      observedRisk === "high" || observedRisk === "moderate"
         ? "mismatch"
-        : risk === "low"
+        : observedRisk === "low"
           ? "match"
           : "unknown",
     tripWindow,

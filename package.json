@@ -19,6 +19,7 @@
     "test:all": "npm test && npm run backend:test",
     "build:all": "npm run build && npm run backend:build",
     "area:assess": "tsx --env-file-if-exists=.env scripts/assess-area.ts",
+    "traffic:fetch": "tsx --env-file-if-exists=.env scripts/fetch-traffic.ts",
     "noise:assess": "tsx --env-file-if-exists=.env scripts/assess-noise.ts"
   },
   "dependencies": {

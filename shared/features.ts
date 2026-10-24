@@ -91,7 +91,7 @@ export const features: Record<
   },
   low_noise: {
     label: "Меньше внешнего шума",
-    detail: "Учтём движение на дорогах и события на ваши даты",
+    detail: "Дорожная нагрузка и события на даты поездки",
     scope: "hotel",
     evaluator: "true",
     tool: "area",

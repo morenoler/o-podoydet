@@ -384,6 +384,78 @@ class BackendTest {
   }
 
   @Test
+  void catalogSyncAddsHotelsAndRetainsOmittedHotelsRoomsAndUserHistory() throws Exception {
+    Path database = temp.resolve("catalog-sync.sqlite3");
+    ObjectNode initial = seed();
+    initial.set("facts", Json.array(List.of(fact())));
+    JsonNode answered, pending, savedDraft, hostFact;
+    try (Store store = new Store(database.toString(), initial)) {
+      JsonNode question = ask(store);
+      save(store, question, draft(question, "confirmed", false));
+      hostFact = store.confirm("confirmed", true).getFirst();
+      answered = store.question(Json.str(question, "id"));
+      pending =
+          store.ask(
+              Json.obj(
+                  "hotelId",
+                  "hotel-a",
+                  "roomId",
+                  "room-b",
+                  "feature",
+                  "courtyard",
+                  "text",
+                  "Куда выходят окна?",
+                  "trace",
+                  List.of()));
+      savedDraft = draft(pending, "pending", true);
+      save(store, pending, (ObjectNode) savedDraft);
+
+      ObjectNode updatedHotel = hotel().put("name", "Обновлённое название");
+      updatedHotel.set("rooms", Json.array(List.of(room())));
+      ObjectNode expanded = seed();
+      expanded.set("hotels", Json.array(List.of(updatedHotel, hotel().put("id", "hotel-new"))));
+      expanded.set("facts", Json.array(List.of(fact())));
+      store.importSeed(expanded);
+      store.importSeed(expanded);
+      assertEquals(2, store.hotels().size());
+      assertEquals("Обновлённое название", Json.str(store.hotel("hotel-a"), "name"));
+      assertEquals(2, store.hotel("hotel-a").path("rooms").size());
+      assertEquals(answered, store.question(Json.str(answered, "id")));
+      assertEquals(pending, store.question(Json.str(pending, "id")));
+      assertEquals(savedDraft, store.draft("pending"));
+      assertEquals(2, store.facts().size());
+      assertTrue(store.facts().contains(hostFact));
+      assertEquals(
+          Json.str(hostFact, "id"),
+          store.facts().stream()
+              .filter(f -> Json.str(f, "id").equals("fact-a"))
+              .findFirst()
+              .orElseThrow()
+              .path("supersededBy")
+              .asText());
+    }
+
+    ObjectNode partial = seed();
+    partial.set("hotels", Json.array(List.of(hotel().put("id", "hotel-new"))));
+    try (Store store = new Store(database.toString(), partial)) {
+      assertEquals(2, store.hotels().size());
+      assertNotNull(store.hotel("hotel-a"));
+      assertNotNull(Store.room(store.hotel("hotel-a"), "room-b"));
+      assertEquals(answered, store.question(Json.str(answered, "id")));
+      assertEquals(savedDraft, store.draft("pending"));
+      assertEquals(List.of(hostFact), store.facts());
+      try (var sql = store.connection.createStatement();
+          var rows = sql.executeQuery("SELECT body,active FROM facts WHERE id='fact-a'")) {
+        assertTrue(rows.next());
+        assertEquals(
+            Json.str(hostFact, "id"), Json.read(rows.getString(1)).path("supersededBy").asText());
+        assertEquals(0, rows.getInt(2));
+      }
+      assertEquals(1, store.confirm("pending", false).size());
+    }
+  }
+
+  @Test
   void confirmationIsIdempotentAndReopeningCannotReuseAnOldPreview() throws Exception {
     try (Store store = new Store(":memory:", seed())) {
       JsonNode question = ask(store);

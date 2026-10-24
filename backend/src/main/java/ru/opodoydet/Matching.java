@@ -178,7 +178,17 @@ final class Matching {
                                       && Json.str(c, "riskLevel").equals("high")
                                   ? -3
                                   : -2;
-                          default -> -1;
+                          default ->
+                              Json.str(c, "status").equals("unknown")
+                                      && Json.str(c, "feature").equals("low_noise")
+                                      && Json.str(c, "assessmentBasis").equals("historical")
+                                      && !c.path("required").asBoolean()
+                                  ? switch (Json.str(c, "riskLevel")) {
+                                    case "high" -> -3;
+                                    case "moderate" -> -2;
+                                    default -> -1;
+                                  }
+                                  : -1;
                         })
                 .sum();
         rooms.add(Json.obj("room", room, "criteria", criteria, "status", state, "score", score));

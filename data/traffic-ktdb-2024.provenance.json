@@ -1,0 +1,7 @@
+{
+  "url": "https://viewt.ktdb.go.kr/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=Link_ObservedTrafficVolume_total_weekday&outputFormat=application%2Fjson&srsname=EPSG%3A4326&viewparams=year%3A2024&bbox=129.145%2C35.15%2C129.18%2C35.175%2CEPSG%3A4326&maxFeatures=1000",
+  "publisher": "Korea Transport Database (KTDB), Korea Transport Institute",
+  "retrievedAt": "2026-10-24T13:36:49.322Z",
+  "description": "Official View-T observed traffic volume layer, reference year 2024, weekdays. Map and hour legend: https://viewt.ktdb.go.kr/cong/map/second_map.do?sendIp=2024",
+  "sha256": "542f3f329742012ee4ca33dd50353ca16ee7c33ceb6cb8c4d9076f585400bb6f"
+}

@@ -58,12 +58,33 @@ final class Api implements AutoCloseable {
       String frontendOrigin,
       int port)
       throws IOException {
+    this(
+        store,
+        agents,
+        dist,
+        areaData,
+        noiseData,
+        noiseData.resolveSibling("traffic-ktdb-2024.json"),
+        frontendOrigin,
+        port);
+  }
+
+  Api(
+      Store store,
+      Agents agents,
+      Path dist,
+      Path areaData,
+      Path noiseData,
+      Path trafficData,
+      String frontendOrigin,
+      int port)
+      throws IOException {
     this.store = store;
     this.agents = agents;
     this.dist = dist.toAbsolutePath().normalize();
     this.areaData = areaData;
     this.frontendOrigin = frontendOrigin;
-    this.environment = new Environment(areaData, noiseData);
+    this.environment = new Environment(areaData, noiseData, trafficData);
     server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
     server.setExecutor(executor);
     server.createContext("/", this::handle);

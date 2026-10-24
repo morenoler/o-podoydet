@@ -24,14 +24,20 @@ final class Environment {
   private static final ZoneId SEOUL = ZoneId.of("Asia/Seoul");
   private final Path areaPath;
   private final Path noisePath;
+  private final Path trafficPath;
 
   Environment(Path areaPath, Path noisePath) {
+    this(areaPath, noisePath, noisePath.resolveSibling("traffic-ktdb-2024.json"));
+  }
+
+  Environment(Path areaPath, Path noisePath, Path trafficPath) {
     this.areaPath = areaPath;
     this.noisePath = noisePath;
+    this.trafficPath = trafficPath;
   }
 
   Map<String, Map<String, JsonNode>> evaluate(List<JsonNode> hotels, JsonNode trip, Instant now) {
-    JsonNode areas = read(areaPath), noise = read(noisePath);
+    JsonNode areas = read(areaPath), noise = read(noisePath), traffic = read(trafficPath);
     Map<String, Map<String, JsonNode>> result = new HashMap<>();
     for (JsonNode hotel : hotels) {
       JsonNode area = findArea(areas, hotel, Json.str(trip, "region"));
@@ -43,7 +49,7 @@ final class Environment {
               "area_safety",
               safety(area, hotel, trip, now),
               "low_noise",
-              noise(noise, hotel, trip, now)));
+              noise(noise, traffic, hotel, trip, now)));
     }
     return result;
   }
@@ -574,6 +580,130 @@ final class Environment {
         "Нет полного подтверждённого покрытия транспортной нагрузки и событий на всё пребывание.");
     return noiseResult("unknown", 0, details, sources);
   }
+
+  /** Historical link counts are ranking hints only, never observations for the selected dates. */
+  static ObjectNode noise(
+      JsonNode context, JsonNode history, JsonNode hotel, JsonNode trip, Instant now) {
+    ObjectNode dated = noise(context, hotel, trip, now);
+    if (!Json.str(dated, "status").equals("unknown")) return dated;
+    if (!Json.str(history, "region").equals(Json.str(trip, "region"))
+        || !Json.str(history, "kind").equals("historical_observed_profile")
+        || !Json.str(history, "timeZone").equals("Asia/Seoul")
+        || !Json.str(history, "dayType").equals("weekday")
+        || !history.path("referenceYear").isIntegralNumber()
+        || !datedSource(history.path("source"), now)
+        || !history.path("historicalTrafficProfiles").isArray()
+        || !point(hotel.path("coordinates"))) return dated;
+    LocalDate checkIn = start(trip).atZone(SEOUL).toLocalDate(),
+        checkOut = end(trip).atZone(SEOUL).toLocalDate();
+    int year = history.path("referenceYear").asInt();
+    boolean weekday = false;
+    for (LocalDate day = checkIn;
+        day.isBefore(checkOut) && day.isBefore(checkIn.plusDays(7));
+        day = day.plusDays(1)) if (day.getDayOfWeek().getValue() <= 5) weekday = true;
+    if (!weekday
+        || year < 1900
+        || year > now.atZone(SEOUL).getYear()
+        || year > checkIn.getYear()
+        || checkIn.getYear() - year > 3) return dated;
+
+    List<HistoricalLink> nearby = new ArrayList<>();
+    for (JsonNode profile : history.path("historicalTrafficProfiles")) {
+      JsonNode geometry = profile.path("geometry"), counts = profile.path("hourlyVehicleCounts");
+      if (!profile.path("referenceYear").isIntegralNumber()
+          || profile.path("referenceYear").asInt() != year
+          || !Json.str(profile, "dayType").equals("weekday")
+          || !Json.str(geometry, "type").equals("LineString")
+          || !validLine(geometry.path("coordinates"))
+          || !datedSource(profile.path("source"), now)
+          || !counts.isArray()
+          || counts.size() != 24) continue;
+      double distance = lineDistance(hotel.path("coordinates"), geometry.path("coordinates"));
+      if (distance > 300) continue;
+      double peak = 0;
+      int available = 0;
+      boolean valid = true;
+      for (JsonNode count : counts) {
+        if (count.isNull()) continue;
+        if (!nonnegative(count)) {
+          valid = false;
+          break;
+        }
+        peak = Math.max(peak, count.asDouble());
+        available++;
+      }
+      if (!valid || available == 0) continue;
+      int risk =
+          peak > 1500
+              ? (distance <= 75 ? 3 : distance <= 150 ? 2 : 1)
+              : peak > 500 ? (distance <= 150 ? 2 : 1) : 1;
+      nearby.add(new HistoricalLink(profile, distance, peak, available, risk));
+    }
+    if (nearby.isEmpty()) return dated;
+    nearby.sort(
+        Comparator.comparingInt(HistoricalLink::risk)
+            .reversed()
+            .thenComparingDouble(HistoricalLink::distance));
+    List<String> details = new ArrayList<>();
+    for (JsonNode detail : dated.path("details")) details.add(detail.asText());
+    List<JsonNode> evidence = new ArrayList<>(Json.list(dated.path("environmentalEvidence")));
+    details.add(
+        "Предварительный фон по историческим будним подсчётам KTDB за "
+            + year
+            + " год. Это не наблюдение и не прогноз движения на даты поездки; для выходных профиль"
+            + " не применяется.");
+    details.add(
+        "Пиковое доступное часовое значение относится ко всему исходному дорожному сегменту."
+            + " Число полос и направление не установлены; пересчёта на полосу нет."
+            + " Пороги ≤500, ≤1500 и >1500 автомобилей/час — эвристика риска, не измерение звука.");
+    for (HistoricalLink link : nearby.stream().limit(5).toList()) {
+      details.add(
+          "KTDB "
+              + Json.str(link.profile, "sourceLinkId")
+              + ": около "
+              + Math.round(link.distance)
+              + " м, максимум "
+              + format(link.peak)
+              + " автомобилей/час среди "
+              + link.available
+              + " из 24 доступных часов (будни, "
+              + year
+              + "). Пропуски не считались нулями.");
+      evidence.addAll(
+          provenance(
+              link.profile.path("source"),
+              "retrievedAt",
+              "Исторические подсчёты KTDB "
+                  + year
+                  + ", сегмент "
+                  + Json.str(link.profile, "sourceLinkId")));
+      for (JsonNode limitation : link.profile.path("limitations"))
+        if (limitation.isTextual() && !details.contains(limitation.asText()))
+          details.add(limitation.asText());
+    }
+    if (nearby.size() > 5)
+      details.add(
+          "Учтены все "
+              + nearby.size()
+              + " исторических сегментов в пределах 300 м; показаны 5 с наибольшим риском.");
+    for (JsonNode limitation : history.path("limitations"))
+      if (limitation.isTextual() && !details.contains(limitation.asText()))
+        details.add(limitation.asText());
+    ObjectNode result =
+        noiseResult("unknown", nearby.getFirst().risk, details, evidence)
+            .put("assessmentBasis", "historical");
+    result.put(
+        "explanation",
+        Json.str(result, "explanation")
+            + " — предварительная оценка по будним"
+            + " подсчётам "
+            + year
+            + " года; прогноз на даты поездки неизвестен");
+    return result;
+  }
+
+  private record HistoricalLink(
+      JsonNode profile, double distance, double peak, int available, int risk) {}
 
   private static boolean completeCoverage(
       JsonNode coverage, JsonNode location, Instant from, Instant to, Instant now) {

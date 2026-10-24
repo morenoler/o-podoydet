@@ -33,6 +33,7 @@ public final class Main {
             Path.of(env.getOrDefault("DIST_PATH", "dist")),
             Path.of(env.getOrDefault("AREA_DATA_PATH", "data/area-assessments.json")),
             Path.of(env.getOrDefault("NOISE_DATA_PATH", "data/noise-context.json")),
+            Path.of(env.getOrDefault("TRAFFIC_DATA_PATH", "data/traffic-ktdb-2024.json")),
             env.getOrDefault("FRONTEND_ORIGIN", ""),
             Integer.parseInt(env.getOrDefault("PORT", "8080")));
     Runtime.getRuntime()

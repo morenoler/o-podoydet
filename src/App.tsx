@@ -64,6 +64,15 @@ import type {
 } from "../shared/types";
 
 type Catalog = Dataset & { mode: "rules" | "llm" };
+const lodgingLabels = {
+  hotel: "Отель",
+  motel: "Мотель",
+  guest_house: "Гостевой дом",
+  hostel: "Хостел",
+  apartment: "Апартаменты",
+};
+const lodgingLabel = (hotel: Hotel) =>
+  lodgingLabels[hotel.lodgingType || "hotel"];
 const initialTrip: Trip = {
   region: "Пусан",
   checkIn: "",
@@ -729,6 +738,9 @@ function CriterionLine({
           )}
         </strong>
         <small>{criterion.explanation}</small>
+        {criterion.assessmentBasis === "historical" && (
+          <small>Историческая оценка · не прогноз на даты поездки</small>
+        )}
         {detailed &&
           ((criterion.details?.length || 0) > 0 ||
             (criterion.environmentalEvidence?.length || 0) > 0) && (
@@ -828,7 +840,7 @@ function HotelCard({
         </Link>
         <p className="address">
           <MapPin size={14} />
-          {hotel.address}
+          {lodgingLabel(hotel)} · {hotel.address}
         </p>
         <div className="room-label">
           <Building2 size={15} />
@@ -847,11 +859,17 @@ function HotelCard({
               .map((c) => <CriterionLine key={c.feature} criterion={c} />)
           ) : (
             <>
-              <div className="criterion match">
+              <div className={`criterion ${hotel.route ? "match" : "unknown"}`}>
                 <RouteIcon size={18} />
                 <span>
-                  Пешеходный маршрут рассчитан
-                  <small>Точки входа приближённые</small>
+                  {hotel.route
+                    ? "Пешеходный маршрут рассчитан"
+                    : "Маршрут до пляжа не рассчитан"}
+                  <small>
+                    {hotel.route
+                      ? "Точки входа приближённые"
+                      : "Расстояние и доступность пути неизвестны"}
+                  </small>
                 </span>
               </div>
               <div className="criterion unknown">
@@ -1126,8 +1144,8 @@ function CompareDialog({
         <div>
           <h2 id="compare-title">Сравним детали</h2>
           <p>
-            Одна категория номера в каждом отеле. Воздух и шум проверены на даты
-            поездки.
+            Одна категория номера в каждом отеле. Для воздуха и шума показываем
+            доступные данные и ограничения оценки.
           </p>
           <p className="muted">
             {dateFull(trip.checkIn)} — {dateFull(trip.checkOut)} · Пусан
@@ -1151,6 +1169,7 @@ function CompareDialog({
           <section key={m.hotel.id}>
             <MatchBadge match={m} />
             <h3>{m.hotel.name}</h3>
+            <p>{lodgingLabel(m.hotel)}</p>
             <p>{m.best.room.name} · демо</p>
             <div className="comparison-distance">
               <Footprints size={18} />
@@ -1319,7 +1338,7 @@ function HotelPage() {
           <h1>{hotel.name}</h1>
           <p className="address">
             <MapPin size={16} />
-            {hotel.address}
+            {lodgingLabel(hotel)} · {hotel.address}
           </p>
         </div>
         <a
@@ -1338,31 +1357,41 @@ function HotelPage() {
       <div className="detail-grid">
         <section>
           <GeoMap dataset={catalog} hotel={hotel} />
-          <div className="route-stats">
-            <div>
-              <strong>
-                {hotel.route?.meters ?? "—"} <small>м</small>
-              </strong>
-              <span>по пешеходной сети</span>
+          {hotel.route && (
+            <div className="route-stats">
+              <div>
+                <strong>
+                  {hotel.route?.meters ?? "—"} <small>м</small>
+                </strong>
+                <span>по пешеходной сети</span>
+              </div>
+              <div>
+                <strong>
+                  ≈ {hotel.route ? Math.ceil(hotel.route.meters / 65) : "—"}{" "}
+                  <small>мин</small>
+                </strong>
+                <span>при скорости 65 м/мин</span>
+              </div>
+              <div>
+                <strong>{hotel.route?.steps ?? "—"}</strong>
+                <span>участков с лестницами</span>
+              </div>
             </div>
-            <div>
-              <strong>
-                ≈ {hotel.route ? Math.ceil(hotel.route.meters / 65) : "—"}{" "}
-                <small>мин</small>
-              </strong>
-              <span>при скорости 65 м/мин</span>
-            </div>
-            <div>
-              <strong>{hotel.route?.steps ?? "—"}</strong>
-              <span>участков с лестницами</span>
-            </div>
-          </div>
-          <p className="muted map-caveat">
-            Маршрут до подхода к пляжу «{hotel.route?.beachName}». Вход
-            приближённый: {hotel.route?.connectionMeters} м до сети.
-            Соединительные участки не включены в длину. Отсутствие отмеченных
-            лестниц не подтверждает доступность всего пути.
-          </p>
+          )}
+          {hotel.route ? (
+            <p className="muted map-caveat">
+              Маршрут до подхода к пляжу «{hotel.route?.beachName}». Вход
+              приближённый: {hotel.route?.connectionMeters} м до сети.
+              Соединительные участки не включены в длину. Отсутствие отмеченных
+              лестниц не подтверждает доступность всего пути.
+            </p>
+          ) : (
+            <Notice>
+              Пешеходный маршрут до пляжа пока не рассчитан. На карте показано
+              расположение объекта; расстояние и доступность пути остаются
+              неизвестными.
+            </Notice>
+          )}
           {hotel.route?.noStepsAlternative && (
             <Notice>
               Найден альтернативный путь без отмеченных лестниц:{" "}

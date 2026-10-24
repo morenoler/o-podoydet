@@ -13,6 +13,7 @@ import type { OsmElement } from "../shared/geo";
 const args = process.argv.slice(2);
 const allowed = new Set([
   "--traffic",
+  "--historical-traffic",
   "--events",
   "--event-coverage",
   "--traffic-coverage",
@@ -51,6 +52,17 @@ if (option("--validate")) {
     "data/osm-busan-haeundae-snapshot.json",
   )) as { regionKey: string; fetchedAt: string; elements: OsmElement[] };
   const dataset = (await readJson("data/demo.json")) as Dataset;
+  const historicalPath =
+    option("--historical-traffic") ||
+    process.env.TRAFFIC_DATA_PATH ||
+    "data/traffic-ktdb-2024.json";
+  const historicalTraffic = await readJson(historicalPath).catch(
+    (error: NodeJS.ErrnoException) => {
+      if (error.code === "ENOENT" && !option("--historical-traffic"))
+        return undefined;
+      throw error;
+    },
+  );
   if (snapshot.regionKey !== "busan-haeundae" || dataset.region !== "Пусан")
     throw new Error("Real Busan / Haeundae data is required");
   const roadClasses = new Set([
@@ -139,7 +151,7 @@ if (option("--validate")) {
             status: trafficObservations.length ? "partial" : "unavailable",
             reason: trafficObservations.length
               ? "Импортированы наблюдения с указанными периодами и направлением. Полнота по всему сроку поездки проверяется отдельно; наблюдения не являются прогнозом."
-              : "Наблюдения загрузки дорог не загружены. UTIC требует ключ/IP-авторизацию и прямо не предоставляет объём движения; городские обследования относятся к отдельным историческим дням и точкам. Класс OSM-дороги не заменяет измеренную загрузку.",
+              : "Датированные наблюдения движения на срок поездки не загружены. Исторические почасовые профили KTDB учитываются отдельно как предварительный фон; они не подтверждают движение или тишину на выбранные даты.",
             sourceUrls: [
               "https://its.busan.go.kr/",
               "https://www.busan.go.kr/depart/trafficcensus0101",
@@ -173,6 +185,8 @@ if (option("--validate")) {
           hotel.coordinates,
           option("--check-in")!,
           option("--check-out")!,
+          new Date(),
+          historicalTraffic,
         ),
         null,
         2,

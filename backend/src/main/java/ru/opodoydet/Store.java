@@ -43,6 +43,12 @@ final class Store implements AutoCloseable {
     }
   }
 
+  /**
+   * Synchronizes source records atomically on startup. Catalog entries are upserted, never removed
+   * merely because a partial/newer source snapshot omits them. Questions, drafts and host facts
+   * stay untouched. Missing source facts become inactive so omitted evidence cannot remain a
+   * current claim; their rows and any supersession history remain stored.
+   */
   synchronized void importSeed(JsonNode seed) throws SQLException {
     if (!region.equals(Json.str(seed, "region"))
         || !seed.path("hotels").isArray()
@@ -64,8 +70,6 @@ final class Store implements AutoCloseable {
               region,
               "schemaVersion",
               "1");
-          execute("UPDATE hotels SET active=0 WHERE region=?", region);
-          execute("UPDATE rooms SET active=0 WHERE region=?", region);
           execute("UPDATE facts SET active=0 WHERE region=? AND seeded=1", region);
           for (JsonNode hotel : seed.path("hotels")) {
             String hotelId = Validation.text(hotel, "id", 1, 150);

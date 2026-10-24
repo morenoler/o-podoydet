@@ -20,6 +20,11 @@ export function GeoMap({
       maxX = Math.max(...points.map((p) => p[0])) + 0.0025;
       minY = Math.min(...points.map((p) => p[1])) - 0.002;
       maxY = Math.max(...points.map((p) => p[1])) + 0.002;
+    } else if (hotel) {
+      minX = hotel.coordinates[0] - 0.004;
+      maxX = hotel.coordinates[0] + 0.004;
+      minY = hotel.coordinates[1] - 0.003;
+      maxY = hotel.coordinates[1] + 0.003;
     }
     const middleX = (minX + maxX) / 2,
       middleY = (minY + maxY) / 2;
@@ -48,9 +53,11 @@ export function GeoMap({
         viewBox={`${300 - 300 / zoom} ${260 - 260 / zoom} ${600 / zoom} ${520 / zoom}`}
         role="img"
         aria-label={
-          hotel
+          hotel?.route
             ? `Схема пути от ${hotel.name} к пляжу. Вход приближённый.`
-            : "Карта отелей Пусана, район Хэундэ, по данным OpenStreetMap"
+            : hotel
+              ? `Расположение ${hotel.name}. Маршрут до пляжа не рассчитан.`
+              : "Карта отелей Пусана, район Хэундэ, по данным OpenStreetMap"
         }
       >
         <rect x="-1000" y="-1000" width="3000" height="3000" fill="#eaf1ee" />

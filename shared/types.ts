@@ -56,6 +56,7 @@ export interface NoiseSource {
 export interface Hotel {
   id: string;
   name: string;
+  lodgingType?: "hotel" | "motel" | "guest_house" | "hostel" | "apartment";
   address: string;
   coordinates: Point;
   osmUrl: string;
@@ -111,6 +112,7 @@ export interface Criterion {
   details?: string[];
   value?: number | string;
   riskLevel?: "high" | "moderate" | "low" | "unknown";
+  assessmentBasis?: "historical" | "dated";
 }
 export interface RoomMatch {
   room: Room;
