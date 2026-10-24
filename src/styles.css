@@ -2013,3 +2013,124 @@ textarea::placeholder {
     scroll-behavior: auto !important;
   }
 }
+
+.area-section {
+  padding-top: 32px;
+  border-top: 1px solid #e2e8ef;
+}
+.area-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 42px;
+  margin-top: 28px;
+}
+.area-columns h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 19px;
+  margin: 0 0 15px;
+}
+.area-columns p,
+.area-columns li {
+  font-size: 14px;
+  line-height: 1.65;
+}
+.area-columns a {
+  color: #234e94;
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.area-columns a svg {
+  vertical-align: middle;
+}
+.area-columns details {
+  margin-top: 18px;
+}
+.area-columns summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+.area-columns ul {
+  padding-left: 20px;
+}
+.area-status {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 5px;
+  background: #eef2f7;
+  font-size: 12px;
+  color: #44546d;
+}
+.area-status.outdated,
+.area-warning {
+  color: #785300;
+  background: #fff4d9;
+}
+.area-warning {
+  padding: 10px 14px;
+  border-radius: 6px;
+}
+.area-aqi {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 15px 0;
+}
+.area-aqi > strong {
+  font-size: 48px;
+  line-height: 1.1;
+  letter-spacing: -2px;
+  color: #183a71;
+}
+.area-aqi b {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+}
+.air-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-block: 1px solid #e2e8ef;
+  padding: 15px 0;
+}
+.air-metrics dt {
+  font-size: 12px;
+  color: #66738a;
+}
+.air-metrics dd {
+  margin: 6px 0 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+.air-metrics small {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: #66738a;
+}
+.area-date {
+  color: #66738a;
+  font-size: 12px !important;
+}
+.area-summary {
+  margin-top: 22px;
+  font-size: 17px !important;
+}
+.area-evidence {
+  border-top: 1px solid #e2e8ef;
+  padding-top: 18px;
+  margin-top: 18px;
+}
+@media (max-width: 680px) {
+  .area-columns {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .area-safety {
+    border-top: 1px solid #e2e8ef;
+    padding-top: 24px;
+  }
+}

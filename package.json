@@ -1,23 +1,27 @@
 {
   "name": "o-podoydet",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "engines": {
     "node": ">=24.0.0"
   },
   "scripts": {
-    "dev": "tsx --env-file-if-exists=.env server/index.ts",
+    "dev": "node --env-file-if-exists=.env scripts/dev.mjs",
     "build": "tsc --noEmit && vite build",
-    "start": "tsx --env-file-if-exists=.env server/index.ts --production",
+    "start": "node --env-file-if-exists=.env scripts/backend.mjs start",
     "test": "tsx --test tests/*.test.ts",
     "data:fetch": "tsx scripts/fetch-osm.ts",
     "data:prepare": "tsx scripts/prepare-data.ts",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "backend:build": "node --env-file-if-exists=.env scripts/backend.mjs build",
+    "backend:test": "node --env-file-if-exists=.env scripts/backend.mjs test",
+    "test:all": "npm test && npm run backend:test",
+    "build:all": "npm run build && npm run backend:build",
+    "area:assess": "tsx --env-file-if-exists=.env scripts/assess-area.ts"
   },
   "dependencies": {
     "@fontsource/golos-text": "^5.2.8",
-    "express": "^5.1.0",
     "lucide-react": "^0.468.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -25,7 +29,6 @@
     "zod": "^4.0.0"
   },
   "devDependencies": {
-    "@types/express": "^5.0.0",
     "@types/node": "^24.0.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",

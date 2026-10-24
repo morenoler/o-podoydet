@@ -10,11 +10,18 @@ import {
 } from "../shared/geo";
 import type { Dataset, Fact, Hotel, Point } from "../shared/types";
 
-const raw = JSON.parse(await readFile("data/osm-snapshot.json", "utf8")) as {
+const raw = JSON.parse(await readFile("data/osm-busan-haeundae-snapshot.json", "utf8")) as {
   elements: OsmElement[];
   fetchedAt: string;
+  regionKey: string;
+  bbox: string;
+  sourceDate?: string;
   osm3s?: { timestamp_osm_base: string };
 };
+if (raw.regionKey !== "busan-haeundae" || raw.bbox !== "35.150,129.145,35.175,129.180") {
+  throw new Error("Expected a real Busan / Haeundae snapshot; run npm run data:fetch.");
+}
+const label = (element: OsmElement) => element.tags?.["name:ru"] || element.tags?.["name:en"] || element.tags?.name;
 const graph = buildGraph(raw.elements);
 const beaches = raw.elements.filter(
   (e) => e.tags?.natural === "beach" && e.geometry?.length,
@@ -32,7 +39,7 @@ if (!beachNodes.size)
     "No beach approach nodes in snapshot; inspect coverage before continuing.",
   );
 const targets = new Set(beachNodes.keys());
-const sourceDate = raw.osm3s?.timestamp_osm_base || raw.fetchedAt;
+const sourceDate = raw.sourceDate || raw.osm3s?.timestamp_osm_base || raw.fetchedAt;
 const noiseObjects = raw.elements.filter(
   (e) =>
     e.tags?.railway === "rail" ||
@@ -42,7 +49,7 @@ const noiseObjects = raw.elements.filter(
 const candidates = raw.elements.filter(
   (e) =>
     ["hotel", "guest_house"].includes(e.tags?.tourism || "") &&
-    e.tags?.name &&
+    label(e) &&
     pointOf(e),
 );
 const hotels: Hotel[] = [];
@@ -55,7 +62,7 @@ for (const e of candidates) {
   if (
     hotels.some(
       (h) =>
-        h.name === e.tags!.name || distance(h.coordinates, coordinates) < 12,
+        h.name === label(e) || distance(h.coordinates, coordinates) < 12,
     )
   )
     continue;
@@ -83,7 +90,7 @@ for (const e of candidates) {
       return [
         {
           name:
-            o.tags?.name ||
+            label(o) ||
             (o.tags?.railway
               ? "Железная дорога"
               : o.tags?.highway
@@ -109,11 +116,11 @@ for (const e of candidates) {
     .slice(0, 5);
   const hotel: Hotel = {
     id,
-    name: e.tags!.name,
+    name: label(e)!,
     address:
       [e.tags?.["addr:street"], e.tags?.["addr:housenumber"]]
         .filter(Boolean)
-        .join(", ") || "Адлер, прибрежный район",
+        .join(", ") || "Пусан, Хэундэ",
     coordinates,
     osmUrl: `https://www.openstreetmap.org/${e.type}/${e.id}`,
     rooms: [
@@ -127,7 +134,7 @@ for (const e of candidates) {
     ],
     route: {
       ...path,
-      beachName: beach.tags?.name || "Пляж",
+      beachName: label(beach) || "Пляж — название участка не указано в OSM",
       beachId: beach.id,
       connectionMeters: Math.round(n!.meters),
       approximate: true,
@@ -218,20 +225,40 @@ for (const e of candidates) {
 }
 if (hotels.length < 5)
   throw new Error(`Only ${hotels.length} routable hotels; inspect region.`);
+// Join adjacent coastline ways by their actual OSM endpoints. Rendering separate
+// fragments as independently closed water polygons would paint over land.
+const coastParts = raw.elements.filter(e => e.tags?.natural === "coastline" && e.geometry?.length).map(e => e.geometry!.map(p => [p.lon,p.lat] as Point));
+const coastlines: Point[][] = [];
+const samePoint = (a: Point, b: Point) => a[0] === b[0] && a[1] === b[1];
+while (coastParts.length) {
+  let chain = coastParts.shift()!;
+  let extended = true;
+  while (extended) {
+    extended = false;
+    for (let i = 0; i < coastParts.length; i++) {
+      const part = coastParts[i];
+      if (samePoint(chain[chain.length - 1], part[0])) chain = [...chain, ...part.slice(1)];
+      else if (samePoint(part[part.length - 1], chain[0])) chain = [...part, ...chain.slice(1)];
+      else continue;
+      coastParts.splice(i, 1); extended = true; break;
+    }
+  }
+  coastlines.push(chain);
+}
 const dataset: Dataset = {
-  region: "Адлер",
+  region: "Пусан",
   fetchedAt: raw.fetchedAt,
   sourceDate,
   attribution: "© OpenStreetMap contributors · ODbL 1.0",
-  bbox: [39.907, 43.417, 39.951, 43.452],
+  bbox: [129.145, 35.150, 129.180, 35.175],
   hotels,
   facts,
-  map: raw.elements
-    .filter((e) => e.geometry?.length && (e.tags?.highway || e.tags?.natural))
+  map: [...raw.elements
+    .filter((e) => e.geometry?.length && (e.tags?.highway || e.tags?.natural) && e.tags?.natural !== "coastline")
     .map((e) => ({
-      coordinates: e.geometry!.map((p) => [p.lon, p.lat]),
+      coordinates: e.geometry!.map((p) => [p.lon, p.lat] as Point),
       kind: e.tags?.natural || e.tags?.highway || "road",
-    })),
+    })), ...coastlines.map(coordinates => ({ coordinates, kind: "coastline" }))],
 };
 await writeFile("data/demo.json", JSON.stringify(dataset));
 console.log(

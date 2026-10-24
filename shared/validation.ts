@@ -15,7 +15,7 @@ const date = z
   }, "Некорректная дата");
 export const tripSchema = z
   .object({
-    region: z.literal("Адлер"),
+    region: z.literal("Пусан"),
     checkIn: date,
     checkOut: date,
     adults: z.number().int().min(1).max(6),

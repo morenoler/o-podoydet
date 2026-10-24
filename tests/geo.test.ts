@@ -93,7 +93,7 @@ test("noise distance uses road segment, not its distant endpoints", () => {
 });
 
 test("saved real routes consist only of connected graph edges; alternatives contain no mapped steps", () => {
-  const raw = JSON.parse(readFileSync("data/osm-snapshot.json", "utf8")) as {
+  const raw = JSON.parse(readFileSync("data/osm-busan-haeundae-snapshot.json", "utf8")) as {
     elements: OsmElement[];
   };
   const dataset = JSON.parse(readFileSync("data/demo.json", "utf8")) as Dataset;
@@ -108,8 +108,12 @@ test("saved real routes consist only of connected graph edges; alternatives cont
       connected.add(key);
       if (!e.steps) stepFree.add(key);
     }
-  assert.equal(dataset.hotels.length, 24);
+  assert.equal(dataset.region, "Пусан");
+  assert.ok(dataset.hotels.length >= 15 && dataset.hotels.length <= 25);
+  assert.deepEqual(dataset.bbox, [129.145,35.150,129.180,35.175]);
   for (const h of dataset.hotels) {
+    assert.ok(h.coordinates[0] >= dataset.bbox[0] && h.coordinates[0] <= dataset.bbox[2]);
+    assert.ok(h.coordinates[1] >= dataset.bbox[1] && h.coordinates[1] <= dataset.bbox[3]);
     assert.ok(h.osmUrl.startsWith("https://www.openstreetmap.org/"));
     assert.ok(h.route && h.route.meters > 0);
     const paths = [

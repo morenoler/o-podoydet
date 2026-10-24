@@ -50,7 +50,7 @@ export function GeoMap({
         aria-label={
           hotel
             ? `Схема пути от ${hotel.name} к пляжу. Вход приближённый.`
-            : "Карта отелей прибрежного Адлера по данным OpenStreetMap"
+            : "Карта отелей Пусана, район Хэундэ, по данным OpenStreetMap"
         }
       >
         <rect x="-1000" y="-1000" width="3000" height="3000" fill="#eaf1ee" />
@@ -59,7 +59,7 @@ export function GeoMap({
           .map((line, i) => (
             <path
               key={`sea${i}`}
-              d={`${path(line.coordinates)} L-600,1300 L-600,1000 Z`}
+              d={`${path(line.coordinates)} L1300,1300 L-600,1300 Z`}
               fill="#c4e2ed"
               stroke="none"
             />
@@ -165,14 +165,8 @@ export function GeoMap({
           );
         })}
         {!hotel && (
-          <text
-            x="25"
-            y="480"
-            fill="#527e97"
-            fontSize="18"
-            transform="rotate(-25 25 480)"
-          >
-            Чёрное море
+          <text x="230" y="480" fill="#527e97" fontSize="18">
+            Побережье Хэундэ
           </text>
         )}
       </svg>
@@ -180,7 +174,7 @@ export function GeoMap({
         <>
           <div className="map-heading">
             <span className="live-dot" />
-            Адлер, побережье
+            Пусан, Хэундэ
           </div>
           <div className="map-controls">
             <button
