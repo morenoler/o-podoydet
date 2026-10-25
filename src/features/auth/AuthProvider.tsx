@@ -3,6 +3,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -25,30 +26,63 @@ interface AuthContextValue {
   updateUser: (user: AccountUser) => void;
 }
 const AuthContext = createContext<AuthContextValue | null>(null);
+const SESSION_CHANGED = "o-account-session-changed";
+
+function announceSessionChange() {
+  try {
+    // Only an invalidation signal crosses tabs; no credentials or user data are stored here.
+    localStorage.setItem(SESSION_CHANGED, crypto.randomUUID());
+  } catch {
+    /* Focus-based revalidation still works when browser storage is unavailable. */
+  }
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AccountUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const reload = useCallback(async () => {
-    setLoading(true);
+  const generation = useRef(0);
+  const verifySession = useCallback(async (quiet = false) => {
+    const request = ++generation.current;
+    if (!quiet) setLoading(true);
     setError("");
     try {
-      setUser((await authApi.me()).user);
+      const result = await authApi.me();
+      if (request === generation.current) setUser(result.user);
     } catch (error) {
-      setError((error as Error).message);
+      if (request === generation.current) {
+        // Do not keep a private account screen open after session verification fails.
+        setUser(null);
+        setError((error as Error).message);
+      }
     } finally {
-      setLoading(false);
+      if (request === generation.current) setLoading(false);
     }
   }, []);
+  const reload = useCallback(() => verifySession(), [verifySession]);
   useEffect(() => {
     void reload();
-  }, [reload]);
+    const changed = (event: StorageEvent) => {
+      if (event.key === SESSION_CHANGED) void reload();
+    };
+    // Refocusing the window must not destroy an unsaved form when the session is unchanged.
+    const focused = () => { void verifySession(true); };
+    window.addEventListener("storage", changed);
+    window.addEventListener("focus", focused);
+    return () => {
+      ++generation.current;
+      window.removeEventListener("storage", changed);
+      window.removeEventListener("focus", focused);
+    };
+  }, [reload, verifySession]);
   const acceptUser = (value: AccountUser | null) => {
     if (!value)
       throw new Error("Не удалось открыть кабинет. Попробуйте войти ещё раз.");
+    ++generation.current;
     setUser(value);
     setError("");
+    setLoading(false);
+    announceSessionChange();
     return value;
   };
   return (
@@ -58,13 +92,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         error,
         reload,
-        login: async (email, password) =>
-          acceptUser((await authApi.login(email, password)).user),
-        register: async (input) =>
-          acceptUser((await authApi.register(input)).user),
+        login: async (email, password) => {
+          ++generation.current;
+          return acceptUser((await authApi.login(email, password)).user);
+        },
+        register: async (input) => {
+          ++generation.current;
+          return acceptUser((await authApi.register(input)).user);
+        },
         logout: async () => {
+          ++generation.current;
           await authApi.logout();
+          ++generation.current;
           setUser(null);
+          setLoading(false);
+          announceSessionChange();
         },
         updateUser: setUser,
       }}

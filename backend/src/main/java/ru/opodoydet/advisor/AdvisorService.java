@@ -63,27 +63,49 @@ public final class AdvisorService implements AutoCloseable {
     return store.advisorRun(id);
   }
 
+  public JsonNode get(String id, String actor) throws SQLException {
+    return store.advisorRun(id, actor);
+  }
+
   public List<JsonNode> list() throws SQLException {
     return store.advisorRuns();
   }
 
+  public List<JsonNode> list(String actor) throws SQLException {
+    return store.advisorRuns(actor);
+  }
+
   public synchronized JsonNode start(JsonNode input) throws SQLException {
+    return startForActor(input, null);
+  }
+
+  public synchronized JsonNode start(JsonNode input, String actor) throws SQLException {
+    if (actor == null || actor.isBlank())
+      throw new IllegalArgumentException("Не задан владелец запуска помощника.");
+    return startForActor(input, actor);
+  }
+
+  private JsonNode startForActor(JsonNode input, String actor) throws SQLException {
     if (closed) throw new IllegalStateException("Помощник остановлен.");
     String mode = Validation.text(input, "mode", 1, 20);
     if (Json.list(config.path("modes")).stream().noneMatch(v -> v.asText().equals(mode)))
       throw new IllegalArgumentException("Этот режим помощника не настроен.");
     JsonNode trip = Validation.trip(input.path("trip"), store.region);
     String searchId = Validation.text(input, "searchId", 1, 100);
+    // Authorize the snapshot before duplicate detection: knowing another search/run ID is not access.
+    ObjectNode context = actor == null
+        ? search.advisorContext(trip, searchId)
+        : search.advisorContext(trip, searchId, actor);
     if (activeId != null) {
-      JsonNode active = store.advisorRun(activeId);
+      JsonNode active = actor == null ? store.advisorRun(activeId) : store.advisorRun(activeId, actor);
       if (active != null
           && active.path("context").path("trip").equals(trip)
           && Json.str(active.path("context"), "searchId").equals(searchId)
           && Json.str(active, "mode").equals(mode)) return active;
-      throw new IllegalStateException(
-          "Помощник уже работает. Дождитесь результата или отмените запуск.");
+      throw new IllegalStateException(active == null
+          ? "Помощник сейчас занят. Попробуйте запустить подбор позже."
+          : "Помощник уже работает. Дождитесь результата или отмените свой запуск.");
     }
-    ObjectNode context = search.advisorContext(trip, searchId);
     String now = Instant.now().toString();
     ObjectNode run =
         Json.obj(
@@ -114,7 +136,8 @@ public final class AdvisorService implements AutoCloseable {
     run.put("model", mode.equals("local") ? Json.str(config, "model") : "");
     run.set("diagnostics", Json.array(List.of()));
     if (mode.equals("rules")) run.put("execution", "rules");
-    store.saveAdvisorRun(run);
+    if (actor == null) store.saveAdvisorRun(run);
+    else store.createAdvisorRun(run, actor);
     activeId = Json.str(run, "id");
     String id = activeId;
     activeTask = executor.submit(() -> execute(id, context, mode));
@@ -277,6 +300,14 @@ public final class AdvisorService implements AutoCloseable {
 
   public synchronized JsonNode cancel(String id) throws SQLException {
     JsonNode existing = store.advisorRun(id);
+    return cancelExisting(id, existing);
+  }
+
+  public synchronized JsonNode cancel(String id, String actor) throws SQLException {
+    return cancelExisting(id, store.advisorRun(id, actor));
+  }
+
+  private JsonNode cancelExisting(String id, JsonNode existing) throws SQLException {
     if (existing == null) return null;
     if (!Set.of("queued", "running").contains(Json.str(existing, "status"))) return existing;
     ObjectNode run = existing.deepCopy();

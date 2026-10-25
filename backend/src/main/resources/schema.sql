@@ -37,3 +37,9 @@ CREATE TABLE IF NOT EXISTS advisor_runs (
   body TEXT NOT NULL CHECK(json_valid(body)), PRIMARY KEY(region,id)
 );
 CREATE INDEX IF NOT EXISTS advisor_runs_recent ON advisor_runs(region,created_at DESC);
+CREATE TABLE IF NOT EXISTS advisor_run_owners (
+  region TEXT NOT NULL, run_id TEXT NOT NULL, owner_key TEXT NOT NULL,
+  PRIMARY KEY(region,run_id),
+  FOREIGN KEY(region,run_id) REFERENCES advisor_runs(region,id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS advisor_run_owner ON advisor_run_owners(region,owner_key);

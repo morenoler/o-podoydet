@@ -8,6 +8,7 @@ import "../features/search/search.css";
 import "../features/hotels/hotel-details.css";
 import { CapacitySummary } from "../features/hotels/components/CapacitySummary";
 import { MatchBadge } from "../features/hotels/components/MatchBadge";
+import { matchForSelectedPreferences } from "../shared/lib/matchPresentation";
 import { useParams, useSearchParams, Link } from "react-router-dom";
 import { useApp } from "../app/providers/TripProvider";
 import { useState, useEffect } from "react";
@@ -25,6 +26,8 @@ import { CriterionLine } from "../features/hotels/components/CriterionLine";
 import { dateFull } from "../shared/lib/date";
 import { AreaPanel } from "../features/area/components/AreaPanel";
 import { FactEvidence } from "../features/hotels/components/FactEvidence";
+import { CatalogClarificationPlan } from "../features/clarifications/CatalogClarificationPlan";
+import "../features/clarifications/clarifications.css";
 
 export function HotelPage() {
   const { id } = useParams();
@@ -298,13 +301,28 @@ export function HotelPage() {
               )}
             </p>
           )}
-          <MatchBadge match={{ ...ranked, best: room }} />
+          <MatchBadge
+            match={matchForSelectedPreferences(
+              ranked,
+              ranked.preferences || trip.preferences,
+              room,
+            )}
+          />
           <CapacitySummary match={room} />
           {(selectedCriteria.length > 0 || !hasOwnerCriteria) && (
             <WishMatches criteria={selectedCriteria} />
           )}
           {hasOwnerCriteria && (
             <OwnerCriteriaSummary criteria={ranked.ownerCriteria} detailed />
+          )}
+          {!labFixture && (
+            <CatalogClarificationPlan
+              match={{
+                ...ranked,
+                preferences: ranked.preferences || trip.preferences,
+              }}
+              room={room}
+            />
           )}
           <div className="room-criteria">
             <h3>Все условия номера</h3>

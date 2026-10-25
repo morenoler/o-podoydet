@@ -19,7 +19,7 @@ export function App() {
 function AccountFavorites() {
   const { user } = useAuth();
   return (
-    <FavoritesProvider scope={user?.id || "guest"}>
+    <FavoritesProvider key={user?.id || "guest"} scope={user?.id || "guest"}>
       <AppLayout />
     </FavoritesProvider>
   );

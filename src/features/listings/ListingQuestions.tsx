@@ -69,9 +69,7 @@ export function ListingQuestions({ listingId }: { listingId: string }) {
                   <p>{question.answer}</p>
                 </div>
               ) : (
-                <p className="account-muted">
-                  Ваш вопрос отправлен. Ожидаем ответ отельера.
-                </p>
+                <p className="account-muted">Ожидает ответа отельера.</p>
               )}
             </article>
           ))}

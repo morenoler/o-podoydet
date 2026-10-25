@@ -3,6 +3,7 @@ import { CheckCircle2, CircleHelp, X, ExternalLink } from "lucide-react";
 import { features } from "../../../../shared/features";
 import { dateFull } from "../../../shared/lib/date";
 import { criterionNeedsClarification } from "../../../shared/lib/matchPresentation";
+import { clarificationDate } from "../../clarifications/clarificationDates";
 
 export function CriterionLine({
   criterion,
@@ -12,16 +13,22 @@ export function CriterionLine({
   detailed?: boolean;
 }) {
   const unconfirmed = criterionNeedsClarification(criterion);
-  const Icon = unconfirmed ? CircleHelp : criterion.status === "match" ? CheckCircle2 : X;
+  const Icon = unconfirmed
+    ? CircleHelp
+    : criterion.status === "match"
+      ? CheckCircle2
+      : X;
   return (
     <div className={`criterion ${unconfirmed ? "unknown" : criterion.status}`}>
       <Icon
         size={17}
         role="img"
         aria-label={
-          unconfirmed ? "Требует уточнения" : criterion.status === "match"
-            ? "Соответствует фильтру"
-            : "Не соответствует фильтру"
+          unconfirmed
+            ? "Требует уточнения"
+            : criterion.status === "match"
+              ? "Соответствует фильтру"
+              : "Не соответствует фильтру"
         }
       />
       <div className="criterion-body">
@@ -34,6 +41,11 @@ export function CriterionLine({
         {unconfirmed && (
           <span className="assumption-label">Требует уточнения</span>
         )}
+        {!!criterion.reportedEvidence?.length && (
+          <small className="criterion-reported-source">
+            Со слов отельера · без независимой проверки
+          </small>
+        )}
         <small>{criterion.explanation}</small>
         {criterion.assessmentBasis === "historical" && (
           <small>Историческая оценка · не прогноз на даты поездки</small>
@@ -41,7 +53,8 @@ export function CriterionLine({
         {detailed &&
           (criterion.sourceExplanation !== criterion.explanation ||
             (criterion.details?.length || 0) > 0 ||
-            (criterion.environmentalEvidence?.length || 0) > 0) && (
+            (criterion.environmentalEvidence?.length || 0) > 0 ||
+            (criterion.reportedEvidence?.length || 0) > 0) && (
             <details className="criterion-evidence">
               <summary>
                 {criterion.decisionBasis === "estimate"
@@ -69,6 +82,40 @@ export function CriterionLine({
                     <small>Данные: {dateFull(e.observedAt)}</small>
                   )}
                 </p>
+              ))}
+              {criterion.reportedEvidence?.map((e, i) => (
+                <div
+                  className="criterion-reported-evidence"
+                  key={`${e.recordedAt}:${i}`}
+                >
+                  <p>
+                    Заявление отельера:{" "}
+                    {e.value === null ? "неизвестно" : e.value ? "да" : "нет"}.
+                    {e.evidenceStatus === "conflict"
+                      ? " Есть противоречащие сведения."
+                      : e.evidenceStatus === "stale"
+                        ? " Требуется перепроверка."
+                        : ""}
+                  </p>
+                  <p>
+                    {e.evidenceStatus === "unknown"
+                      ? "Это заявление не подтверждает условие для текущего варианта размещения и всех дат поездки."
+                      : "Область заявления — единица размещения из объявления. Актуальность указана отдельно."}
+                  </p>
+                  <p>
+                    Записано {clarificationDate(e.recordedAt)} · перепроверить
+                    до {clarificationDate(e.recheckAt)} (Пусан).
+                    {e.observedOn
+                      ? ` Проверено отельером ${clarificationDate(e.observedOn)}.`
+                      : " Дата проверки отельером неизвестна."}
+                  </p>
+                  {e.validFrom && e.validTo && (
+                    <p>
+                      Для проживания с {dateFull(e.validFrom)} по{" "}
+                      {dateFull(e.validTo)}.
+                    </p>
+                  )}
+                </div>
               ))}
             </details>
           )}

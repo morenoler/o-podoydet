@@ -240,13 +240,14 @@ def audit(base, restart, report):
                   accounts=3, listings=1, questions=1, bookingRequests=1)
 
 
-def main():
+def main(audit_function=audit, default_report="docs/ACCOUNTS_HTTP_REPORT.json",
+         audit_name="Accounts", isolated_directory="accounts-http-smoke"):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--port", type=int, default=8083)
-    parser.add_argument("--report", default="docs/ACCOUNTS_HTTP_REPORT.json")
+    parser.add_argument("--report", default=default_report)
     args = parser.parse_args()
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
-    work = ROOT / ".local/accounts-http-smoke" / stamp
+    work = ROOT / ".local" / isolated_directory / stamp
     work.mkdir(parents=True)
     report = {"checkedAt": datetime.now(timezone.utc).isoformat(), "status": "running", "isDemo": True,
               "scope": "Local HTTP, fictional accounts/listing and generated PNGs; isolated database and uploads", "checks": []}
@@ -299,8 +300,8 @@ def main():
             stop()
             start()
         start()
-        print(f"Accounts HTTP audit: {base}; isolated files {work}", flush=True)
-        audit(base, restart, report)
+        print(f"{audit_name} HTTP audit: {base}; isolated files {work}", flush=True)
+        audit_function(base, restart, report)
         require(sha(source) == report["inputSha256"]["catalog"], "Source catalog changed during audit")
         report["status"] = "passed"
     except Exception as error:

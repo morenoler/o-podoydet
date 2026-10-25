@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.*;
 import ru.opodoydet.accounts.AccountProblem;
+import ru.opodoydet.accounts.clarifications.ClarificationScope;
 import ru.opodoydet.accounts.Inputs;
 import ru.opodoydet.accounts.persistence.AccountDatabase;
 import ru.opodoydet.accounts.photos.UploadedPhotoRepository;
@@ -87,6 +88,8 @@ public final class ListingService {
           ObjectNode existing = owned(id, host);
           ListingDetails.apply(listing, input, existing);
           photos.requireOwnership(host, listing.path("photos"));
+          if (!ClarificationScope.fingerprint(existing).equals(ClarificationScope.fingerprint(listing)))
+            db.execute("INSERT INTO account_listing_scopes(listing_id,generation) VALUES(?,1) ON CONFLICT(listing_id) DO UPDATE SET generation=generation+1", id);
           repository.update(id, listing);
           if (profile != null) profiles.save(id, profile);
           return owned(id, host);

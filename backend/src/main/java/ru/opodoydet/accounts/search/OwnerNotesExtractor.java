@@ -17,13 +17,13 @@ public final class OwnerNotesExtractor {
 
   private OwnerNotesExtractor() {}
 
-  record Assertions(Map<String, Boolean> values, Set<String> conflicts) {}
+  public record Assertions(Map<String, Boolean> values, Set<String> conflicts) {}
 
   public static Map<String, Boolean> extract(String notes) {
     return assess(notes).values();
   }
 
-  static Assertions assess(String notes) {
+  public static Assertions assess(String notes) {
     String normalized = normalize(notes);
     boolean qualified = notes.contains("?") || UNCERTAIN.matcher(normalized).find();
     // A standalone qualification can refer to the whole description. Never guess its scope.

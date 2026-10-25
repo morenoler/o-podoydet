@@ -13,6 +13,7 @@ import ru.opodoydet.accounts.listings.ListingService;
 import ru.opodoydet.accounts.persistence.AccountDatabase;
 import ru.opodoydet.accounts.photos.PhotoService;
 import ru.opodoydet.accounts.questions.QuestionService;
+import ru.opodoydet.accounts.clarifications.ClarificationService;
 import ru.opodoydet.accounts.search.OwnerListingSearchProvider;
 import ru.opodoydet.application.SearchExtension;
 import ru.opodoydet.shared.Json;
@@ -24,6 +25,7 @@ public final class AccountApi implements AutoCloseable {
   private final ListingService listings;
   private final BookingService bookings;
   private final QuestionService questions;
+  private final ClarificationService clarifications;
   private final PhotoService photos;
 
   public AccountApi(String path, boolean secureCookie, Path uploads)
@@ -33,11 +35,18 @@ public final class AccountApi implements AutoCloseable {
     listings = new ListingService(db);
     bookings = new BookingService(db, listings);
     questions = new QuestionService(db, listings);
+    clarifications = new ClarificationService(db, listings);
     photos = new PhotoService(db, uploads);
   }
 
   public SearchExtension searchExtension() {
     return new OwnerListingSearchProvider(db);
+  }
+
+  /** Narrow identity boundary for private advisor runs; never exposes account details. */
+  public String currentUserId(HttpExchange exchange) throws SQLException {
+    JsonNode user = auth.current(exchange);
+    return user == null ? null : Json.str(user, "id");
   }
 
   public boolean handle(HttpExchange exchange) throws IOException, SQLException {
@@ -112,6 +121,10 @@ public final class AccountApi implements AutoCloseable {
         send(ex, 200, questions.user(user));
         return;
       }
+      if (method.equals("GET") && path.equals("/api/account/clarifications")) {
+        send(ex, 200, clarifications.user(user));
+        return;
+      }
       if (method.equals("POST")
           && parts.length == 6
           && parts[3].equals("bookings")
@@ -151,7 +164,15 @@ public final class AccountApi implements AutoCloseable {
         send(ex, 200, questions.host(host));
         return;
       }
+      if (method.equals("GET") && path.equals("/api/host/clarifications")) {
+        send(ex, 200, clarifications.host(host));
+        return;
+      }
       if (method.equals("POST") && parts.length == 6) {
+        if (parts[3].equals("clarifications") && parts[5].equals("answers")) {
+          send(ex, 200, clarifications.answer(host, parts[4], body(ex)));
+          return;
+        }
         if (parts[3].equals("questions") && parts[5].equals("answer")) {
           send(ex, 200, questions.answer(host, parts[4], body(ex)));
           return;
@@ -171,6 +192,10 @@ public final class AccountApi implements AutoCloseable {
       return;
     }
     if (parts.length == 5 && parts[2].equals("listings")) {
+      if (parts[4].equals("clarifications") && method.equals("POST")) {
+        send(ex, 201, clarifications.ask(Json.str(auth.require(ex, "user"), "id"), parts[3], body(ex)));
+        return;
+      }
       if (parts[4].equals("questions")) {
         if (method.equals("GET")) {
           send(ex, 200, questions.published(parts[3]));

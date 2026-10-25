@@ -32,6 +32,7 @@ public final class SearchService {
   private static final int MAX_SNAPSHOTS = 20;
 
   private record SearchSnapshot(
+      String actor,
       JsonNode trip,
       ObjectNode interpreted,
       List<JsonNode> hotels,
@@ -59,15 +60,26 @@ public final class SearchService {
   }
 
   public ObjectNode search(JsonNode input) throws SQLException {
-    return search(input, false);
+    return search(input, false, null);
+  }
+
+  /** Browser/account-scoped snapshot; actor never enters the search response or model context. */
+  public ObjectNode search(JsonNode input, String actor) throws SQLException {
+    requireActor(actor);
+    return search(input, false, actor);
   }
 
   /** Lab-only experiment entry point. The HTTP layer independently gates its availability. */
   public ObjectNode searchLab(JsonNode input) throws SQLException {
-    return search(input, true);
+    return search(input, true, null);
   }
 
-  private ObjectNode search(JsonNode input, boolean syntheticOnly) throws SQLException {
+  public ObjectNode searchLab(JsonNode input, String actor) throws SQLException {
+    requireActor(actor);
+    return search(input, true, actor);
+  }
+
+  private ObjectNode search(JsonNode input, boolean syntheticOnly, String actor) throws SQLException {
     JsonNode trip = Validation.trip(input, store.region).deepCopy();
     ObjectNode interpreted = agents.interpret(trip);
     List<JsonNode> hotels;
@@ -102,6 +114,7 @@ public final class SearchService {
       snapshots.put(
           searchId,
           new SearchSnapshot(
+              actor,
               trip.deepCopy(),
               interpreted.deepCopy(),
               copyNodes(hotels),
@@ -178,13 +191,23 @@ public final class SearchService {
 
   /** Advice reuses the exact interpreted constraints and evidence shown by this search result. */
   public ObjectNode advisorContext(JsonNode input, String searchId) {
+    return advisorContextForActor(input, searchId, null);
+  }
+
+  public ObjectNode advisorContext(JsonNode input, String searchId, String actor) {
+    requireActor(actor);
+    return advisorContextForActor(input, searchId, actor);
+  }
+
+  private ObjectNode advisorContextForActor(JsonNode input, String searchId, String actor) {
     JsonNode trip = Validation.trip(input, store.region).deepCopy();
     SearchSnapshot snapshot;
     synchronized (snapshots) {
       expireSnapshots();
       snapshot = snapshots.get(searchId);
     }
-    if (snapshot == null || !snapshot.trip().equals(trip))
+    if (snapshot == null || !java.util.Objects.equals(snapshot.actor(), actor)
+        || !snapshot.trip().equals(trip))
       throw new IllegalArgumentException(
           "Результат поиска устарел или параметры изменились. Обновите поиск перед запуском"
               + " помощника.");
@@ -200,6 +223,11 @@ public final class SearchService {
         .put("searchId", searchId);
   }
 
+  private static void requireActor(String actor) {
+    if (actor == null || actor.isBlank() || actor.length() > 160)
+      throw new IllegalArgumentException("Не задан владелец поиска.");
+  }
+
   private static List<JsonNode> copyNodes(List<JsonNode> values) {
     return values.stream().map(value -> (JsonNode) value.deepCopy()).toList();
   }
@@ -213,10 +241,55 @@ public final class SearchService {
 
   public ObjectNode detail(String id, JsonNode input) throws SQLException {
     JsonNode trip = Validation.trip(input, store.region), hotel = store.hotel(id);
-    if (hotel == null) return null;
-    Instant now = Instant.now();
+    Instant now = clock.instant();
     ObjectNode interpreted = agents.interpret(trip);
-    List<JsonNode> preferences = Json.list(interpreted.path("preferences")),
+    List<JsonNode> preferences = Json.list(interpreted.path("preferences"));
+    List<JsonNode> allPreferences =
+        Features.ids().stream()
+            .map(
+                feature ->
+                    (JsonNode)
+                        Json.obj(
+                            "feature",
+                            feature,
+                            "required",
+                            preferences.stream()
+                                .anyMatch(
+                                    p ->
+                                        Json.str(p, "feature").equals(feature)
+                                            && p.path("required").asBoolean())))
+            .toList();
+    SearchExtension.Snapshot extra =
+        extension == null ? SearchExtension.EMPTY : extension.snapshot(trip);
+    // Published host units live in the account database, outside the research catalog.
+    // The extra criteria explain the unit; they must not change the original admission/score.
+    if (hotel == null) {
+      ObjectNode match =
+          extra.apply(List.of(), preferences).stream()
+              .filter(value -> Json.str(value.path("hotel"), "id").equals(id))
+              .map(value -> (ObjectNode) value.deepCopy())
+              .findFirst()
+              .orElse(null);
+      if (match == null) return null;
+      JsonNode expanded =
+          extra.apply(List.of(), allPreferences).stream()
+              .filter(value -> Json.str(value.path("hotel"), "id").equals(id))
+              .findFirst()
+              .orElseThrow();
+      String bestId = Json.str(match.path("best").path("room"), "id");
+      for (JsonNode room : match.path("rooms")) {
+        for (JsonNode fullRoom : expanded.path("rooms")) {
+          if (Json.str(room.path("room"), "id").equals(Json.str(fullRoom.path("room"), "id")))
+            ((ObjectNode) room).set("criteria", fullRoom.path("criteria").deepCopy());
+        }
+        if (Json.str(room.path("room"), "id").equals(bestId)) match.set("best", room.deepCopy());
+      }
+      if (!interpreted.path("conflicts").isEmpty()) excludeForConflict(match);
+      for (String key : List.of("preferences", "warnings", "conflicts", "mode"))
+        match.set(key, interpreted.path(key));
+      return match;
+    }
+    List<JsonNode>
         facts =
             store.matchingFacts().stream().filter(f -> Json.str(f, "hotelId").equals(id)).toList();
     Map<String, Map<String, JsonNode>> environments =
@@ -233,21 +306,6 @@ public final class SearchService {
                     store.evidencePolicy())
                 .getFirst();
     String bestId = Json.str(match.path("best").path("room"), "id");
-    List<JsonNode> allPreferences =
-        Features.ids().stream()
-            .map(
-                feature ->
-                    (JsonNode)
-                        Json.obj(
-                            "feature",
-                            feature,
-                            "required",
-                            preferences.stream()
-                                .anyMatch(
-                                    p ->
-                                        Json.str(p, "feature").equals(feature)
-                                            && p.path("required").asBoolean())))
-            .toList();
     for (JsonNode room : match.path("rooms")) {
       ((ObjectNode) room)
           .set(
@@ -272,7 +330,7 @@ public final class SearchService {
     if (extension != null)
       match =
           (ObjectNode)
-              extension.snapshot(trip).apply(List.of(match), preferences).stream()
+              extra.apply(List.of(match), preferences).stream()
                   .filter(value -> Json.str(value.path("hotel"), "id").equals(id))
                   .findFirst()
                   .orElseThrow();

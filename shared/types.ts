@@ -1,4 +1,5 @@
 import type { WindowDirection } from "./account";
+import type { ReportedEvidence } from "./clarifications";
 export type Point = [number, number]; // longitude, latitude
 export type FeatureId =
   | "beach_walk"
@@ -130,6 +131,8 @@ export type MatchStatus =
   | "conflict"
   | "stale";
 export interface Criterion {
+  /** Sanitized owner statements; private dialogue never appears in search results. */
+  reportedEvidence?: ReportedEvidence[];
   feature: FeatureId;
   required: boolean;
   status: MatchStatus;
@@ -162,6 +165,8 @@ export interface CriterionDecision extends Criterion {
   sourceExplanation: string;
 }
 export interface RoomMatch {
+  /** An explicit reported capacity remains distinct from independently sourced category evidence. */
+  capacitySource?: "owner" | "official";
   /** True only when admission relies on missing or outdated mandatory evidence. */
   provisional?: boolean;
   capacityStatus?: "match" | "mismatch";

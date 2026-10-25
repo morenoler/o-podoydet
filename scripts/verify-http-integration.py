@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 from datetime import datetime, timezone
+from http.cookiejar import CookieJar
 import hashlib
 import json
 import os
@@ -20,7 +21,7 @@ import subprocess
 import sys
 import time
 from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
+from urllib.request import HTTPCookieProcessor, Request, build_opener, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
 FEATURES = ("beach_walk", "step_free_route", "courtyard", "step_free_access",
@@ -28,6 +29,7 @@ FEATURES = ("beach_walk", "step_free_route", "courtyard", "step_free_access",
 DATES = (("2026-10-26", "2026-10-27"), ("2026-11-07", "2026-11-08"))
 UNRESOLVED = {"unknown", "stale", "conflict"}
 FLAGS = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
+CLIENTS = {}
 
 
 def read(path):
@@ -53,7 +55,10 @@ def request(base, path, payload=None, expected=200, timeout=120):
     req = Request(base + path, data=body,
                   headers={"Content-Type": "application/json"} if body is not None else {})
     try:
-        response = urlopen(req, timeout=timeout)
+        # A simulated browser keeps its anonymous advisor identity across requests.
+        # Separate origins receive separate jars, matching the app/lab boundary.
+        client = CLIENTS.setdefault(base, build_opener(HTTPCookieProcessor(CookieJar())))
+        response = client.open(req, timeout=timeout)
     except HTTPError as error:
         response = error
     with response:

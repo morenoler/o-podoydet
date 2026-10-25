@@ -375,13 +375,50 @@ public final class Store implements AutoCloseable {
         Json.write(run));
   }
 
+  /** Ownership is assigned once, separately from model-visible and public run JSON. */
+  public synchronized void createAdvisorRun(ObjectNode run, String owner) throws SQLException {
+    requireAdvisorOwner(owner);
+    transaction(
+        () -> {
+          execute(
+              "INSERT INTO advisor_runs(region,id,created_at,body) VALUES (?,?,?,?)",
+              region, Json.str(run, "id"), Json.str(run, "createdAt"), Json.write(run));
+          execute(
+              "INSERT INTO advisor_run_owners(region,run_id,owner_key) VALUES (?,?,?)",
+              region, Json.str(run, "id"), owner);
+          return null;
+        });
+  }
+
   public synchronized JsonNode advisorRun(String id) throws SQLException {
     return one("SELECT body FROM advisor_runs WHERE region=? AND id=?", region, id);
+  }
+
+  public synchronized JsonNode advisorRun(String id, String owner) throws SQLException {
+    requireAdvisorOwner(owner);
+    return one(
+        "SELECT r.body FROM advisor_runs r JOIN advisor_run_owners o"
+            + " ON o.region=r.region AND o.run_id=r.id WHERE r.region=? AND r.id=? AND o.owner_key=?",
+        region, id, owner);
   }
 
   public synchronized List<JsonNode> advisorRuns() throws SQLException {
     return rows(
         "SELECT body FROM advisor_runs WHERE region=? ORDER BY created_at DESC LIMIT 50", region);
+  }
+
+  public synchronized List<JsonNode> advisorRuns(String owner) throws SQLException {
+    requireAdvisorOwner(owner);
+    return rows(
+        "SELECT r.body FROM advisor_runs r JOIN advisor_run_owners o"
+            + " ON o.region=r.region AND o.run_id=r.id WHERE r.region=? AND o.owner_key=?"
+            + " ORDER BY r.created_at DESC LIMIT 50",
+        region, owner);
+  }
+
+  private static void requireAdvisorOwner(String owner) {
+    if (owner == null || owner.isBlank() || owner.length() > 160)
+      throw new IllegalArgumentException("Не задан владелец истории помощника.");
   }
 
   /** An interrupted task must never resume billable model work after a server restart. */

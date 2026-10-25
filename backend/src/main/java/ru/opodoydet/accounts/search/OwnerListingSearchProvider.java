@@ -3,10 +3,16 @@ package ru.opodoydet.accounts.search;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.sql.SQLException;
+import java.time.Clock;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 import ru.opodoydet.accounts.listings.ListingRepository;
 import ru.opodoydet.accounts.persistence.AccountDatabase;
+import ru.opodoydet.accounts.clarifications.ClarificationRepository;
+import ru.opodoydet.accounts.clarifications.ClarificationScope;
+import ru.opodoydet.accounts.clarifications.ClarificationService;
+import ru.opodoydet.accounts.clarifications.ReportedEvidence;
 import ru.opodoydet.application.SearchExtension;
 import ru.opodoydet.domain.Features;
 import ru.opodoydet.domain.AdmissionPolicy;
@@ -20,20 +26,30 @@ public final class OwnerListingSearchProvider implements SearchExtension {
   private final AccountDatabase db;
   private final ListingRepository listings;
   private final SearchProfileRepository profiles;
+  private final ClarificationRepository clarifications;
+  private final Clock clock;
 
   private record Source(
-      ObjectNode listing, Map<String, Boolean> assertions, Set<String> conflicts, Integer floor, Set<String> directions) {}
+      ObjectNode listing, Map<String, Boolean> assertions, Set<String> conflicts,
+      List<JsonNode> statements, Integer floor, Set<String> directions) {}
 
   public OwnerListingSearchProvider(AccountDatabase db) {
+    this(db, Clock.systemUTC());
+  }
+
+  public OwnerListingSearchProvider(AccountDatabase db, Clock clock) {
     this.db = db;
+    this.clock = clock;
     listings = new ListingRepository(db);
     profiles = new SearchProfileRepository(db);
+    clarifications = new ClarificationRepository(db);
   }
 
   @Override
   public Snapshot snapshot(JsonNode trip) throws SQLException {
     OwnerRequirements requirements = OwnerRequirements.parse(Json.str(trip, "text"));
     int guests = trip.path("adults").asInt() + trip.path("children").asInt();
+    Instant now = clock.instant();
     List<Source> sources =
         db.transaction(
             () -> {
@@ -42,10 +58,13 @@ public final class OwnerListingSearchProvider implements SearchExtension {
                 if (!Json.str(listing, "city").equalsIgnoreCase(Json.str(trip, "region"))) continue;
                 ObjectNode profile = profiles.find(Json.str(listing, "id"));
                 var evidence = OwnerNotesExtractor.assess(Json.str(profile, "notes"));
+                String fingerprint = ClarificationScope.fingerprint(listing, db);
+                List<JsonNode> statements = clarifications.statements(Json.str(listing, "id")).stream()
+                    .map(answer -> (JsonNode) ClarificationService.statement(answer, fingerprint, now)).toList();
                 values.add(
                     new Source(
                         listing.deepCopy(),
-                        evidence.values(), evidence.conflicts(),
+                        evidence.values(), evidence.conflicts(), statements,
                         listing.path("floor").isIntegralNumber()
                             ? listing.path("floor").asInt()
                             : null,
@@ -143,7 +162,7 @@ public final class OwnerListingSearchProvider implements SearchExtension {
             "dataNotes",
             List.of(OwnerRequirements.SOURCE));
     List<JsonNode> criteria =
-        preferences.stream().map(preference -> criterion(preference, source.assertions(), source.conflicts())).toList();
+        preferences.stream().map(preference -> criterion(preference, source, trip)).toList();
     boolean capacity = listing.path("capacity").asInt() >= guests;
     int score =
         criteria.stream().mapToInt(c -> Json.str(c, "status").equals("match") ? 3 : -2).sum();
@@ -161,6 +180,8 @@ public final class OwnerListingSearchProvider implements SearchExtension {
             capacity ? "match" : "mismatch",
             "capacityAssumed",
             true,
+            "capacitySource",
+            "owner",
             "capacityExplanation",
             (capacity
                     ? "Заявленной вместимости достаточно для выбранного числа гостей. "
@@ -170,10 +191,15 @@ public final class OwnerListingSearchProvider implements SearchExtension {
     return Json.obj("hotel", hotel, "best", best, "rooms", List.of(best.deepCopy()));
   }
 
-  private static JsonNode criterion(JsonNode preference, Map<String, Boolean> assertions, Set<String> conflicts) {
+  private static JsonNode criterion(JsonNode preference, Source source, JsonNode trip) {
     String feature = Json.str(preference, "feature");
-    Boolean value = Features.get(feature).tool().equals("area") ? null : assertions.get(feature);
-    boolean conflict = conflicts.contains(feature);
+    boolean area = Features.get(feature).tool().equals("area");
+    Boolean value = area ? null : source.assertions().get(feature);
+    ReportedEvidence.Assessment reported = ReportedEvidence.assess(source.statements(), feature, trip);
+    ReportedEvidence.Decision decision = ReportedEvidence.combine(value, source.conflicts().contains(feature), reported);
+    value = decision.value();
+    String evidenceStatus = decision.status();
+    boolean conflict = evidenceStatus.equals("conflict");
     String explanation;
     if (Features.get(feature).tool().equals("area"))
       explanation =
@@ -181,6 +207,10 @@ public final class OwnerListingSearchProvider implements SearchExtension {
               + " проверку.";
     else if (conflict)
       explanation = "Сведения отельера об этом условии противоречат друг другу. Требуется уточнение.";
+    else if (evidenceStatus.equals("stale"))
+      explanation = "Срок перепроверки ответа владельца истёк. Условие нужно уточнить заново.";
+    else if (value == null && !reported.evidence().isEmpty())
+      explanation = "Ответ владельца пока не позволяет проверить условие для выбранных дат и текущего варианта размещения. " + OwnerRequirements.SOURCE;
     else if (value == null)
       explanation =
           "Из описания отельера нельзя однозначно установить выполнение этого пожелания. "
@@ -191,15 +221,15 @@ public final class OwnerListingSearchProvider implements SearchExtension {
                   ? "Пожелание выполняется по сведениям отельера. "
                   : "Пожелание не выполняется по сведениям отельера. ")
               + OwnerRequirements.SOURCE;
-    return Json.obj(
+    ObjectNode result = Json.obj(
         "feature",
         feature,
         "required",
         preference.path("required").asBoolean(),
         "status",
-        Boolean.TRUE.equals(value) ? "match" : "mismatch",
+        !conflict && Boolean.TRUE.equals(value) ? "match" : "mismatch",
         "evidenceStatus",
-        conflict ? "conflict" : value == null ? "unknown" : value ? "match" : "mismatch",
+        evidenceStatus,
         "assumed",
         true,
         "decisionBasis",
@@ -212,6 +242,8 @@ public final class OwnerListingSearchProvider implements SearchExtension {
         explanation,
         "assumption",
         OwnerRequirements.SOURCE);
+    if (!reported.evidence().isEmpty()) result.set("reportedEvidence", Json.array(reported.evidence()));
+    return result;
   }
 
   private static void decorate(ObjectNode match, List<JsonNode> criteria, JsonNode trip) {

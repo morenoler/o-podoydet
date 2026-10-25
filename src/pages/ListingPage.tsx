@@ -17,12 +17,15 @@ import {
 import { BookingRequest } from "../features/listings/BookingRequest";
 import { ListingQuestions } from "../features/listings/ListingQuestions";
 import { ListingGallery } from "../features/listings/ListingGallery";
+import { ListingClarificationPanel } from "../features/clarifications/ListingClarificationPanel";
 import { FavoriteButton } from "../features/favorites/FavoriteButton";
 import { Modal } from "../shared/ui/Modal";
 import { useMediaQuery } from "../shared/lib/useMediaQuery";
 import { directionLabels, price } from "../features/account/format";
 import "../features/account/account.css";
 import "../features/listings/listings-v2.css";
+import "../features/search/search.css";
+import "../features/clarifications/clarifications.css";
 
 export function ListingPage() {
   const { id = "" } = useParams();
@@ -37,6 +40,8 @@ export function ListingPage() {
         "#listing-amenities",
         "#listing-questions",
         "#listing-questions-title",
+        "#listing-fit",
+        "#listing-fit-question",
       ].includes(hash)
     )
       return;
@@ -92,6 +97,7 @@ export function ListingPage() {
                 >
                   <a href="#listing-about">О жилье</a>
                   <a href="#listing-amenities">Удобства</a>
+                  <a href="#listing-fit">Подойдёт ли вам</a>
                   <a href="#listing-questions">Вопросы отельеру</a>
                 </nav>
                 <section className="listing-overview" id="listing-about">
@@ -164,6 +170,7 @@ export function ListingPage() {
                     </div>
                   </div>
                 </section>
+                <ListingClarificationPanel key={listing.id} listing={listing} />
                 <div id="listing-questions">
                   <ListingQuestions
                     key={`questions-${listing.id}`}

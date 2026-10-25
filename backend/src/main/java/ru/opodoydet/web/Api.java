@@ -47,6 +47,7 @@ public final class Api implements AutoCloseable {
   private final SearchService searchService;
   private final AdvisorService advisor;
   private final boolean labMode;
+  private final boolean secureSessionCookie;
   private final AccountApi accounts;
   private final HttpServer server;
   private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
@@ -114,6 +115,7 @@ public final class Api implements AutoCloseable {
     this.areaData = areaData;
     this.frontendOrigin = frontendOrigin;
     this.labMode = "true".equals(advisorEnvironment.get("LAB_MODE"));
+    this.secureSessionCookie = "true".equals(advisorEnvironment.get("SESSION_COOKIE_SECURE"));
     this.environment = new Environment(areaData, noiseData, trafficData);
     try {
       this.accounts =
@@ -237,7 +239,7 @@ public final class Api implements AutoCloseable {
     }
     if (path.equals("/api/lab/search")) {
       if (!labMode || !method.equals("POST")) notFound(exchange, "Метод не найден");
-      else send(exchange, 200, searchService.searchLab(body(exchange)));
+      else send(exchange, 200, searchService.searchLab(body(exchange), advisorActor(exchange)));
       return;
     }
     if (path.startsWith("/api/advisor/")) {
@@ -310,7 +312,7 @@ public final class Api implements AutoCloseable {
     if (method.equals("POST")) {
       JsonNode input = body(exchange);
       if (path.equals("/api/search")) {
-        send(exchange, 200, searchService.search(input));
+        send(exchange, 200, searchService.search(input, advisorActor(exchange)));
         return;
       }
       String[] detailParts = path.split("/");
@@ -465,29 +467,34 @@ public final class Api implements AutoCloseable {
         send(exchange, 200, advisor.config());
         return;
       }
+      String actor = advisorActor(exchange);
       if (path.equals("/api/advisor/runs")) {
         if (method.equals("GET")) {
-          send(exchange, 200, advisor.list());
+          send(exchange, 200, advisor.list(actor));
           return;
         }
         if (method.equals("POST")) {
-          send(exchange, 202, advisor.start(body(exchange)));
+          send(exchange, 202, advisor.start(body(exchange), actor));
           return;
         }
       }
       String[] parts = path.split("/");
       JsonNode result = null;
       if (parts.length == 5 && parts[3].equals("runs") && method.equals("GET"))
-        result = advisor.get(parts[4]);
+        result = advisor.get(parts[4], actor);
       else if (parts.length == 6 && parts[3].equals("runs") && method.equals("POST")) {
         body(exchange);
-        if (parts[5].equals("cancel")) result = advisor.cancel(parts[4]);
+        if (parts[5].equals("cancel")) result = advisor.cancel(parts[4], actor);
       }
       if (result == null) notFound(exchange, "Задание помощника или действие не найдено");
       else send(exchange, 200, result);
     } catch (IllegalStateException error) {
       send(exchange, 409, Json.obj("error", error.getMessage()));
     }
+  }
+
+  private String advisorActor(HttpExchange exchange) throws SQLException {
+    return AdvisorIdentity.resolve(exchange, accounts, secureSessionCookie);
   }
 
   public JsonNode assessment(JsonNode hotel, Instant now) throws IOException {

@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import type { FeatureId, Hotel, SearchResult, Trip } from "../../shared/types";
 import { useApp } from "../app/providers/TripProvider";
+import { useAuth } from "../features/auth/AuthProvider";
 import { api } from "../shared/api/client";
 import { ErrorMessage, Loading } from "../shared/ui/Feedback";
 import { accommodationPhotos } from "../shared/lib/hotelPhotos";
@@ -28,6 +29,7 @@ import { features } from "../../shared/features";
 import "../features/search/search.css";
 
 export function ResultsPage() {
+  const { user, loading: authLoading } = useAuth();
   const {
     trip,
     setTrip,
@@ -56,7 +58,7 @@ export function ResultsPage() {
     setLimit(8);
     setCompare([]);
     setShowCompare(false);
-    if (!validTrip) {
+    if (!validTrip || authLoading) {
       setLoading(false);
       return;
     }
@@ -77,7 +79,7 @@ export function ResultsPage() {
     return () => {
       active = false;
     };
-  }, [trip, revision, validTrip]);
+  }, [trip, revision, validTrip, authLoading, user?.id]);
   const hotels = useMemo(() => {
     const items = data
       ? data.results.map((result) => result.hotel)

@@ -3,6 +3,7 @@ import type { SearchResult, Trip } from "../../../shared/types";
 import { Modal } from "../../shared/ui/Modal";
 import { AdvisorPanel } from "./AdvisorPanel";
 import { advisorTripKey } from "./useAdvisor";
+import { useAuth } from "../auth/AuthProvider";
 
 /** The dialog remains mounted when closed so an active analysis is not discarded. */
 export function AdvisorDrawer({
@@ -18,6 +19,8 @@ export function AdvisorDrawer({
   result: SearchResult | null;
   onRefresh: () => void;
 }) {
+  const { user } = useAuth();
+  const identity = user ? `account:${user.id}` : "anonymous";
   return (
     <Modal
       open={open}
@@ -27,7 +30,7 @@ export function AdvisorDrawer({
     >
       {result ? (
         <AdvisorPanel
-          key={`${advisorTripKey(trip)}:${result.searchId}`}
+          key={`${identity}:${advisorTripKey(trip)}:${result.searchId}`}
           trip={trip}
           searchId={result.searchId}
           noMatches={!result.results.length}
