@@ -9,7 +9,7 @@ import {
 import type { Trip } from "../../../shared/types";
 import { Modal } from "../../shared/ui/Modal";
 import { dateLabel } from "../../shared/lib/date";
-import { canSearch, nextSearchDate, searchToday } from "./searchTrip";
+import { canSearch, hasSearchDates, nextSearchDate, readSearchForm, searchToday, searchTripIssues } from "./searchTrip";
 
 export function SearchBar({
   trip,
@@ -22,27 +22,28 @@ export function SearchBar({
 }) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(trip);
-  const [error, setError] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const issues = submitted ? searchTripIssues({ ...draft, region: "Пусан" }) : [];
   useEffect(() => {
     setDraft(trip);
   }, [trip]);
   function edit() {
     setDraft(trip);
-    setError("");
+    setSubmitted(false);
     setOpen(true);
   }
-  function submit(event: FormEvent) {
+  function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!canSearch(draft)) {
-      setError(
-        "Выберите даты: выезд должен быть позже заезда. Допустимо от 1 до 6 взрослых и до 4 детей.",
-      );
+    const current = readSearchForm(draft, new FormData(event.currentTarget));
+    setDraft(current);
+    setSubmitted(true);
+    if (searchTripIssues(current).length) {
       return;
     }
-    onSearch({ ...draft, region: "Пусан" });
+    onSearch(current);
     setOpen(false);
   }
-  const dates = canSearch(trip)
+  const dates = hasSearchDates(trip)
     ? `${dateLabel(trip.checkIn)} — ${dateLabel(trip.checkOut)}`
     : "Выберите даты";
   const guests = `${trip.adults} взр.${trip.children ? ` · ${trip.children} дет.` : ""} · 1 номер`;
@@ -119,10 +120,13 @@ export function SearchBar({
             <label className="field">
               <span>Заезд</span>
               <input
+                name="checkIn"
                 type="date"
                 required
                 min={searchToday()}
                 value={draft.checkIn}
+                aria-invalid={issues.some((issue) => issue.field === "checkIn")}
+                aria-describedby={issues.some((issue) => issue.field === "checkIn") ? "search-trip-errors" : undefined}
                 onChange={(event) =>
                   setDraft({ ...draft, checkIn: event.target.value })
                 }
@@ -131,10 +135,13 @@ export function SearchBar({
             <label className="field">
               <span>Выезд</span>
               <input
+                name="checkOut"
                 type="date"
                 required
                 min={nextSearchDate(draft.checkIn) || searchToday()}
                 value={draft.checkOut}
+                aria-invalid={issues.some((issue) => issue.field === "checkOut")}
+                aria-describedby={issues.some((issue) => issue.field === "checkOut") ? "search-trip-errors" : undefined}
                 onChange={(event) =>
                   setDraft({ ...draft, checkOut: event.target.value })
                 }
@@ -143,7 +150,10 @@ export function SearchBar({
             <label className="field">
               <span>Взрослые</span>
               <select
+                name="adults"
                 value={draft.adults}
+                aria-invalid={issues.some((issue) => issue.field === "adults")}
+                aria-describedby={issues.some((issue) => issue.field === "adults") ? "search-trip-errors" : undefined}
                 onChange={(event) =>
                   setDraft({ ...draft, adults: Number(event.target.value) })
                 }
@@ -158,7 +168,10 @@ export function SearchBar({
             <label className="field">
               <span>Дети</span>
               <select
+                name="children"
                 value={draft.children}
+                aria-invalid={issues.some((issue) => issue.field === "children")}
+                aria-describedby={issues.some((issue) => issue.field === "children") ? "search-trip-errors" : undefined}
                 onChange={(event) =>
                   setDraft({ ...draft, children: Number(event.target.value) })
                 }
@@ -171,10 +184,10 @@ export function SearchBar({
               </select>
             </label>
           </div>
-          {error && (
-            <p className="search-form-error" role="alert">
-              {error}
-            </p>
+          {issues.length > 0 && (
+            <div id="search-trip-errors" className="search-form-error" role="alert">
+              {issues.map((issue) => <p key={issue.field}>{issue.message}</p>)}
+            </div>
           )}
           <p className="search-dialog-intro">
             Проверим, какие варианты подходят вашей компании. Наличие на даты
