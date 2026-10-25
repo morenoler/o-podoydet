@@ -32,3 +32,8 @@ CREATE TABLE IF NOT EXISTS drafts (
   body TEXT NOT NULL CHECK(json_valid(body)), PRIMARY KEY(region,id),
   FOREIGN KEY(region,question_id) REFERENCES questions(region,id)
 );
+CREATE TABLE IF NOT EXISTS advisor_runs (
+  region TEXT NOT NULL, id TEXT NOT NULL, created_at TEXT NOT NULL,
+  body TEXT NOT NULL CHECK(json_valid(body)), PRIMARY KEY(region,id)
+);
+CREATE INDEX IF NOT EXISTS advisor_runs_recent ON advisor_runs(region,created_at DESC);

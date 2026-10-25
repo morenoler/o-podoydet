@@ -5,13 +5,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import ru.opodoydet.application.Agents;
+import ru.opodoydet.persistence.Store;
+import ru.opodoydet.shared.Json;
+import ru.opodoydet.web.Api;
 
 public final class Main {
   private Main() {}
 
   public static void main(String[] arguments) throws Exception {
     Map<String, String> env = configuration();
-    Path data = Path.of(env.getOrDefault("DATA_PATH", "data/demo.json"));
+    Path data = Path.of(env.getOrDefault("DATA_PATH", "data/verified-hotels.json"));
     JsonNode dataset = Json.MAPPER.readTree(data.toFile());
     if (!Json.str(dataset, "region").equals("Пусан"))
       throw new IllegalArgumentException(
@@ -32,9 +36,11 @@ public final class Main {
             new Agents(Agents.Config.from(env)),
             Path.of(env.getOrDefault("DIST_PATH", "dist")),
             Path.of(env.getOrDefault("AREA_DATA_PATH", "data/area-assessments.json")),
+            Path.of(env.getOrDefault("NOISE_DATA_PATH", "data/noise-context.json")),
+            Path.of(env.getOrDefault("TRAFFIC_DATA_PATH", "data/traffic-ktdb-2024.json")),
             env.getOrDefault("FRONTEND_ORIGIN", ""),
             Integer.parseInt(env.getOrDefault("PORT", "8080")),
-            WindowViewClient.from(env));
+            env);
     Runtime.getRuntime()
         .addShutdownHook(
             new Thread(

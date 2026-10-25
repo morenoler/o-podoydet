@@ -88,7 +88,8 @@ def validate_request(request):
     if int(offset) != offset:
         raise ValidationError("utc_offset_minutes must be an integer")
     number(request.get("radius_m", 1200), "radius_m", 200, 2000)
-    if request.get("data_mode", "cached") not in {"cached", "live", "fixture"}:
+    mode = request.get("data_mode", "cached")
+    if not isinstance(mode, str) or mode not in {"cached", "live", "fixture"}:
         raise ValidationError("data_mode must be cached, live or fixture")
     if "scene_id" in request and not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,60}", request["scene_id"] if isinstance(request["scene_id"], str) else ""):
         raise ValidationError("scene_id must be a simple identifier")

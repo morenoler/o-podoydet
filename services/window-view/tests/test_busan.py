@@ -35,12 +35,12 @@ class BusanTests(unittest.TestCase):
 
     def test_all_catalog_identities_are_inside_usable_snapshot(self):
         hotels = self.region["hotels"]
-        self.assertEqual(len(hotels), 24)
-        self.assertEqual(len({h["catalog_id"] for h in hotels}), 24)
+        self.assertEqual(len(hotels), 96)
+        self.assertEqual(len({h["catalog_id"] for h in hotels}), 96)
         for record in hotels:
             with self.subTest(hotel=record["catalog_id"]):
                 hotel = record["hotel"]
-                self.assertLess(distance(hotel, self.scene["origin"]), self.scene["radius_m"] - 1200)
+                self.assertLess(distance(hotel, self.scene["origin"]), self.scene["radius_m"] - 150)
                 self.assertNotIn("rooms", record)
                 self.assertEqual(hotel["id"], "osm:" + record["catalog_id"].replace("-", ":", 1))
 
@@ -53,6 +53,17 @@ class BusanTests(unittest.TestCase):
         self.assertEqual(set(exported), {h["id"] for h in hotels})
         for hotel in hotels:
             self.assertEqual([exported[hotel["id"]]["lon"], exported[hotel["id"]]["lat"]], hotel["coordinates"])
+
+    def test_edge_hotel_without_sea_targets_retains_unknown(self):
+        hotel = next(h for h in self.region["hotels"] if h["catalog_id"] == "way-1494488365")
+        result = self.app.run({**self.region["request_defaults"], "hotel": hotel["hotel"],
+                               "floor": 3, "date": "2026-03-20"})
+        self.assertLess(result["room_resolution"]["evaluated_radius_m"], 1200)
+        for assessment in result["assessments"]:
+            sea = assessment["categories"]["sea"]
+            self.assertEqual(sea["sample_count"], 0)
+            self.assertEqual(sea["status"], "unknown")
+            self.assertIsNone(sea["visible_in_model"])
 
     def test_standard_variants_and_rooftop_are_not_physical_rooms(self):
         observations = self.app.observations

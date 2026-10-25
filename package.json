@@ -7,18 +7,27 @@
     "node": ">=24.0.0"
   },
   "scripts": {
+    "lab:build": "node scripts/lab.mjs build",
+    "lab:start": "node --env-file-if-exists=.env scripts/lab.mjs start",
+    "ollama:start": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ollama-local.ps1",
+    "ollama:prepare": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prepare-local-model.ps1",
     "dev": "node --env-file-if-exists=.env scripts/dev.mjs",
     "build": "tsc --noEmit && vite build",
     "start": "node --env-file-if-exists=.env scripts/backend.mjs start",
     "test": "tsx --test tests/*.test.ts",
     "data:fetch": "tsx scripts/fetch-osm.ts",
-    "data:prepare": "tsx scripts/prepare-data.ts",
+    "data:prepare": "tsx scripts/prepare-data.ts && tsx scripts/prepare-verified-data.ts",
+    "data:verify": "tsx scripts/prepare-verified-data.ts",
     "check": "tsc --noEmit",
     "backend:build": "node --env-file-if-exists=.env scripts/backend.mjs build",
     "backend:test": "node --env-file-if-exists=.env scripts/backend.mjs test",
-    "test:all": "npm test && npm run backend:test",
+    "agents:test": "node --env-file-if-exists=.env scripts/agents-test.mjs",
+    "test:all": "npm test && npm run backend:test && npm run agents:test",
     "build:all": "npm run build && npm run backend:build",
-    "area:assess": "tsx --env-file-if-exists=.env scripts/assess-area.ts"
+    "area:assess": "tsx --env-file-if-exists=.env scripts/assess-area.ts",
+    "traffic:fetch": "tsx --env-file-if-exists=.env scripts/fetch-traffic.ts",
+    "noise:assess": "tsx --env-file-if-exists=.env scripts/assess-noise.ts",
+    "data:collect": "tsx scripts/import-official-hotel-pages.ts"
   },
   "dependencies": {
     "@fontsource/golos-text": "^5.2.8",

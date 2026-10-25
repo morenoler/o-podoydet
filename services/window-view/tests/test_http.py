@@ -69,7 +69,7 @@ class HttpTests(unittest.TestCase):
         status, _, regions = self.call("GET", "/v1/regions")
         self.assertEqual(status, 200)
         busan = regions["busan-haeundae"]
-        self.assertEqual(len(busan["hotels"]), 24)
+        self.assertEqual(len(busan["hotels"]), 96)
         self.assertEqual(busan["request_defaults"]["utc_offset_minutes"], 540)
         self.assertNotIn("floor", busan["request_defaults"])
 
@@ -118,6 +118,14 @@ class HttpTests(unittest.TestCase):
                 status, _, result = self.call(raw=raw)
                 self.assertEqual(status, 422)
                 self.assertEqual(result["error"], "invalid_request")
+
+    def test_unhashable_data_modes_are_validation_errors_not_internal_errors(self):
+        for mode in ([], {}, ["cached"], {"mode": "cached"}):
+            with self.subTest(mode=mode):
+                status, _, result = self.call(value={**valid_request(), "data_mode": mode})
+                self.assertEqual(status, 422)
+                self.assertEqual(result["error"], "invalid_request")
+                self.assertIn("data_mode", result["detail"])
 
     def test_unknown_fields_and_url_controls_rejected(self):
         for extra in [{"fetch_url": "http://127.0.0.1/private"}, {"data_mode": "anything"}, {"scene_id": "../secret"}]:

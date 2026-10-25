@@ -4,8 +4,11 @@ export type FeatureId =
   | "step_free_route"
   | "courtyard"
   | "step_free_access"
-  | "family";
-export type Value = boolean | number | string;
+  | "family"
+  | "area_safety"
+  | "clean_air"
+  | "low_noise";
+export type Value = boolean | number | string | null;
 export interface Fact {
   id: string;
   hotelId: string;
@@ -15,7 +18,7 @@ export interface Fact {
   source: string;
   sourceUrl?: string;
   quote: string;
-  method: "geo" | "host" | "demo";
+  method: "geo" | "host" | "demo" | "official";
   confidence: "high" | "medium" | "low";
   confidenceReason: string;
   obtainedAt: string;
@@ -26,11 +29,28 @@ export interface Fact {
   supersededBy?: string;
   demo: boolean;
 }
+export interface OccupancyRule {
+  maxGuests: number;
+  maxAdults?: number;
+  maxChildren?: number;
+  minChildren?: number;
+  childMaxAge?: number;
+  sourceUrl: string;
+  obtainedAt: string;
+  quote: string;
+}
 export interface Room {
   id: string;
   name: string;
-  capacity: number;
+  scope?: "room_category" | "unknown";
+  capacity: number | null;
   demo: boolean;
+  evidenceStatus?: "verified" | "unknown";
+  sourceUrl?: string;
+  obtainedAt?: string;
+  quote?: string;
+  capacityMayVary?: boolean;
+  occupancyRules?: OccupancyRule[];
 }
 export interface Route {
   meters: number;
@@ -51,8 +71,12 @@ export interface NoiseSource {
   coordinates: Point;
 }
 export interface Hotel {
+  /** Fictional lab listing: its placeholder coordinates must not produce environmental claims. */
+  synthetic?: boolean;
+  dataNotes?: string[];
   id: string;
   name: string;
+  lodgingType?: "hotel" | "motel" | "guest_house" | "hostel" | "apartment";
   address: string;
   coordinates: Point;
   osmUrl: string;
@@ -65,6 +89,7 @@ export interface MapLine {
   kind: string;
 }
 export interface Dataset {
+  evidencePolicy?: "verified-only" | "demo";
   region: string;
   fetchedAt: string;
   sourceDate: string;
@@ -98,19 +123,54 @@ export interface Criterion {
   feature: FeatureId;
   required: boolean;
   status: MatchStatus;
+  evidenceStatus?: MatchStatus;
+  assumed?: boolean;
+  decisionBasis?: "evidence" | "estimate";
+  assumption?: string;
+  sourceExplanation?: string;
+  nearestRoadMeters?: number;
+  currentAirUsAqi?: number;
+  currentAirTime?: string;
   facts: Fact[];
   explanation: string;
+  environmentalEvidence?: {
+    sourceUrl: string;
+    observedAt?: string;
+    details: string;
+  }[];
+  details?: string[];
+  value?: number | string;
+  riskLevel?: "high" | "moderate" | "low" | "unknown";
+  assessmentBasis?: "historical" | "dated";
+}
+/** API decision contract. Raw evidence evaluation can still be unknown or stale. */
+export interface CriterionDecision extends Criterion {
+  status: "match" | "mismatch";
+  evidenceStatus: MatchStatus;
+  assumed: boolean;
+  decisionBasis: "evidence" | "estimate";
+  sourceExplanation: string;
 }
 export interface RoomMatch {
+  capacityStatus?: "match" | "mismatch";
+  capacityEvidenceStatus?: "match" | "mismatch" | "unknown";
+  capacityAssumed?: boolean;
+  estimatedCapacity?: number;
+  capacityExplanation?: string;
+  capacityRule?: OccupancyRule;
   room: Room;
-  criteria: Criterion[];
+  criteria: CriterionDecision[];
   score: number;
-  status: "fits" | "clarify" | "excluded";
+  status: "fits" | "excluded";
 }
 export interface HotelMatch {
   hotel: Hotel;
   best: RoomMatch;
   rooms: RoomMatch[];
+  preferences?: Preference[];
+  warnings?: string[];
+  conflicts?: string[];
+  mode?: "rules" | "llm";
 }
 export interface Trace {
   step: string;
@@ -118,6 +178,7 @@ export interface Trace {
   tool?: string;
 }
 export interface SearchResult {
+  searchId: string;
   results: HotelMatch[];
   excluded: HotelMatch[];
   preferences: Preference[];

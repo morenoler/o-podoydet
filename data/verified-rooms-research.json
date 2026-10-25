@@ -1,0 +1,935 @@
+{
+  "schemaVersion": 1,
+  "region": "Пусан",
+  "obtainedAt": "2026-10-24T14:04:55.303Z",
+  "method": "Проверка опубликованных карточек категорий на официальных сайтах отелей. Русские парафразы; наличие на даты и бронирование не запрашивались.",
+  "hotels": [
+    {
+      "hotelId": "node-7858128118",
+      "hotelName": "SIGNIEL BUSAN",
+      "rooms": [
+        {
+          "id": "node-7858128118-real-premier-family-twin",
+          "name": "Premier Family Twin",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://app.lottehotel.com/busan-signiel/en/rooms/premier-family-twin-room",
+          "sourcePublisher": "SIGNIEL BUSAN / LOTTE HOTELS & RESORTS",
+          "obtainedAt": "2026-10-24T14:04:55.303Z",
+          "publishedView": "Dalmaji-gil View",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная категория Premier Family Twin имеет семейную конфигурацию кроватей Family Twin; в карточке указаны максимум 3 гостя и доступ в детскую гостиную для детей до 10 лет с сопровождающим.",
+              "sourceUrl": "https://app.lottehotel.com/busan-signiel/en/rooms/premier-family-twin-room",
+              "obtainedAt": "2026-10-24T14:04:55.303Z",
+              "sourcePublisher": "SIGNIEL BUSAN / LOTTE HOTELS & RESORTS"
+            }
+          ],
+          "limitations": [
+            "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+            "capacity=3 взято из поля Maximum Occupancy категории. Четвёртый гость допускается только по отдельным условиям FAQ, с учётом возраста, типа категории, доплаты и подтверждения отеля; это исключение не преобразовано в безусловную вместимость 4."
+          ]
+        },
+        {
+          "id": "node-7858128118-real-signiel-premier-family-twin",
+          "name": "SIGNIEL Premier Family Twin",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://app.lottehotel.com/busan-signiel/en/rooms/signiel-premier-family-twin-room",
+          "sourcePublisher": "SIGNIEL BUSAN / LOTTE HOTELS & RESORTS",
+          "obtainedAt": "2026-10-24T14:04:55.303Z",
+          "publishedView": "City View",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная категория SIGNIEL Premier Family Twin имеет семейную конфигурацию кроватей Family Twin; в карточке указаны максимум 3 гостя и доступ в детскую гостиную для детей до 10 лет с сопровождающим.",
+              "sourceUrl": "https://app.lottehotel.com/busan-signiel/en/rooms/signiel-premier-family-twin-room",
+              "obtainedAt": "2026-10-24T14:04:55.303Z",
+              "sourcePublisher": "SIGNIEL BUSAN / LOTTE HOTELS & RESORTS"
+            }
+          ],
+          "limitations": [
+            "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+            "capacity=3 взято из поля Maximum Occupancy категории. Четвёртый гость допускается только по отдельным условиям FAQ, с учётом возраста, типа категории, доплаты и подтверждения отеля; это исключение не преобразовано в безусловную вместимость 4."
+          ]
+        },
+        {
+          "id": "node-7858128118-real-signiel-premier-family-twin-ocean-view",
+          "name": "SIGNIEL Premier Family Twin Ocean View",
+          "capacity": 3,
+          "demo": false,
+          "sourceUrl": "https://app.lottehotel.com/busan-signiel/en/rooms/signiel-premier-family-twin-room-ocean-view",
+          "sourcePublisher": "SIGNIEL BUSAN / LOTTE HOTELS & RESORTS",
+          "obtainedAt": "2026-10-24T14:04:55.303Z",
+          "publishedView": "Ocean View",
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная категория SIGNIEL Premier Family Twin Ocean View имеет семейную конфигурацию кроватей Family Twin; в карточке указаны максимум 3 гостя и доступ в детскую гостиную для детей до 10 лет с сопровождающим.",
+              "sourceUrl": "https://app.lottehotel.com/busan-signiel/en/rooms/signiel-premier-family-twin-room-ocean-view",
+              "obtainedAt": "2026-10-24T14:04:55.303Z",
+              "sourcePublisher": "SIGNIEL BUSAN / LOTTE HOTELS & RESORTS"
+            }
+          ],
+          "limitations": [
+            "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+            "capacity=3 взято из поля Maximum Occupancy категории. Четвёртый гость допускается только по отдельным условиям FAQ, с учётом возраста, типа категории, доплаты и подтверждения отеля; это исключение не преобразовано в безусловную вместимость 4."
+          ]
+        }
+      ],
+      "checkedUrls": [
+        "https://app.lottehotel.com/busan-signiel/en/rooms/premier-family-twin-room",
+        "https://app.lottehotel.com/busan-signiel/en/rooms/signiel-premier-family-twin-room",
+        "https://app.lottehotel.com/busan-signiel/en/rooms/signiel-premier-family-twin-room-ocean-view",
+        "https://app.lottehotel.com/busan-signiel/en/about/faq"
+      ],
+      "limitations": [
+        "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+        "FAQ допускает некоторые составы из четырёх гостей в Family Twin, но не пять; стандартная карточка категории указывает 3. Наличие на даты, цена и индивидуальное подтверждение дополнительного места не проверялись."
+      ]
+    },
+    {
+      "hotelId": "way-627150752",
+      "hotelName": "Shilla Stay Haeundae",
+      "rooms": [
+        {
+          "id": "way-627150752-real-standard-family-twin",
+          "name": "Standard Family Twin",
+          "capacity": 3,
+          "demo": false,
+          "scope": "room_category",
+          "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/standardTwin.do",
+          "sourcePublisher": "Shilla Stay Haeundae / SHILLA HM",
+          "obtainedAt": "2026-10-25T09:18:40.214Z",
+          "publishedView": "City, Ocean",
+          "occupancyRules": [
+            {
+              "maxGuests": 4,
+              "minChildren": 1,
+              "childMaxAge": 12,
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/standardTwin.do",
+              "obtainedAt": "2026-10-25T09:18:40.214Z",
+              "quote": "На странице этой категории разрешено до 4 гостей при размещении с ребёнком. В форме отеля дети определены как возраст от 37 месяцев до 12 лет; младенцы выделены отдельно. Без возраста применимость исключения не подтверждена."
+            }
+          ],
+          "capacityMayVary": true,
+          "publishedInformation": {
+            "wifi": true,
+            "workDesk": null,
+            "viewOptions": "City, Ocean",
+            "evidenceKind": "publisher_reported",
+            "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/standardTwin.do",
+            "limitations": [
+              "Wi-Fi означает опубликованное наличие, не измеренную скорость.",
+              "Варианты вида категории не подтверждают вид из конкретного номера."
+            ]
+          },
+          "provenance": {
+            "sourceId": "shilla-standardTwin",
+            "sourceUpdatedAt": null,
+            "responseSha256": "a4ddb1648d15a36978fca85bd15fc8e4d5dfbd2898c1979fdce1ebcbccd04292",
+            "projectionSha256": "eb289843a85734836578576f0c26e4e9fed655a5398abb291925a3b4ee8a239f",
+            "parserVersion": "official-html-v3"
+          },
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная страница категории Standard Family Twin прямо указывает семейное назначение либо разрешение на размещение с ребёнком. Вместимость и возрастные условия проверяются отдельно.",
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/standardTwin.do",
+              "obtainedAt": "2026-10-25T09:18:40.214Z",
+              "sourcePublisher": "Shilla Stay Haeundae / SHILLA HM"
+            }
+          ],
+          "limitations": [
+            "Категория номера, а не физический номер; наличие на даты не проверялось.",
+            "City/Ocean — варианты вида в категории, а не обещание каждого вида в одном номере.",
+            "Ступени, вход, лифт и полный доступ до номера не подтверждены.",
+            "Увеличение вместимости условно: нужен ребёнок; возрастная категория издателя требует проверки возраста. Младенцы до 36 месяцев учитываются отдельно, это правило их размещение не устанавливает."
+          ]
+        },
+        {
+          "id": "way-627150752-real-deluxe-family-twin",
+          "name": "Deluxe Family Twin",
+          "capacity": 3,
+          "demo": false,
+          "scope": "room_category",
+          "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/deluxeFamilyTwin.do",
+          "sourcePublisher": "Shilla Stay Haeundae / SHILLA HM",
+          "obtainedAt": "2026-10-25T09:18:42.964Z",
+          "publishedView": "City, Ocean",
+          "occupancyRules": [
+            {
+              "maxGuests": 4,
+              "minChildren": 1,
+              "childMaxAge": 12,
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/deluxeFamilyTwin.do",
+              "obtainedAt": "2026-10-25T09:18:42.964Z",
+              "quote": "На странице этой категории разрешено до 4 гостей при размещении с ребёнком. В форме отеля дети определены как возраст от 37 месяцев до 12 лет; младенцы выделены отдельно. Без возраста применимость исключения не подтверждена."
+            }
+          ],
+          "capacityMayVary": true,
+          "publishedInformation": {
+            "wifi": true,
+            "workDesk": null,
+            "viewOptions": "City, Ocean",
+            "evidenceKind": "publisher_reported",
+            "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/deluxeFamilyTwin.do",
+            "limitations": [
+              "Wi-Fi означает опубликованное наличие, не измеренную скорость.",
+              "Варианты вида категории не подтверждают вид из конкретного номера."
+            ]
+          },
+          "provenance": {
+            "sourceId": "shilla-deluxeFamilyTwin",
+            "sourceUpdatedAt": null,
+            "responseSha256": "8853c4cdcf6c39e7b1250d274c99d846937591a9ab60ecce6d9ef3e647ed2a5a",
+            "projectionSha256": "84d5959704f989b9cff9e60b0759af8ab3366e0d4bdcf49e68651654bb284368",
+            "parserVersion": "official-html-v3"
+          },
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная страница категории Deluxe Family Twin прямо указывает семейное назначение либо разрешение на размещение с ребёнком. Вместимость и возрастные условия проверяются отдельно.",
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/deluxeFamilyTwin.do",
+              "obtainedAt": "2026-10-25T09:18:42.964Z",
+              "sourcePublisher": "Shilla Stay Haeundae / SHILLA HM"
+            }
+          ],
+          "limitations": [
+            "Категория номера, а не физический номер; наличие на даты не проверялось.",
+            "City/Ocean — варианты вида в категории, а не обещание каждого вида в одном номере.",
+            "Ступени, вход, лифт и полный доступ до номера не подтверждены.",
+            "Увеличение вместимости условно: нужен ребёнок; возрастная категория издателя требует проверки возраста. Младенцы до 36 месяцев учитываются отдельно, это правило их размещение не устанавливает."
+          ]
+        },
+        {
+          "id": "way-627150752-real-premier-deluxe-family-twin",
+          "name": "Premier Deluxe Family Twin",
+          "capacity": 3,
+          "demo": false,
+          "scope": "room_category",
+          "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/premierDeluxeFamilyTwin.do",
+          "sourcePublisher": "Shilla Stay Haeundae / SHILLA HM",
+          "obtainedAt": "2026-10-25T09:18:45.662Z",
+          "publishedView": "City, Ocean",
+          "occupancyRules": [
+            {
+              "maxGuests": 4,
+              "minChildren": 1,
+              "childMaxAge": 12,
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/premierDeluxeFamilyTwin.do",
+              "obtainedAt": "2026-10-25T09:18:45.662Z",
+              "quote": "На странице этой категории разрешено до 4 гостей при размещении с ребёнком. В форме отеля дети определены как возраст от 37 месяцев до 12 лет; младенцы выделены отдельно. Без возраста применимость исключения не подтверждена."
+            }
+          ],
+          "capacityMayVary": true,
+          "publishedInformation": {
+            "wifi": true,
+            "workDesk": null,
+            "viewOptions": "City, Ocean",
+            "evidenceKind": "publisher_reported",
+            "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/premierDeluxeFamilyTwin.do",
+            "limitations": [
+              "Wi-Fi означает опубликованное наличие, не измеренную скорость.",
+              "Варианты вида категории не подтверждают вид из конкретного номера."
+            ]
+          },
+          "provenance": {
+            "sourceId": "shilla-premierDeluxeFamilyTwin",
+            "sourceUpdatedAt": null,
+            "responseSha256": "91741deacfbce768098c731fda953e94fcd6b5d612aa53ece1d0770f1e8c88de",
+            "projectionSha256": "78d4ffe4cc67d52d6bb63de084e6a9039b0f602aef2f02975909a358a6c742d4",
+            "parserVersion": "official-html-v3"
+          },
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная страница категории Premier Deluxe Family Twin прямо указывает семейное назначение либо разрешение на размещение с ребёнком. Вместимость и возрастные условия проверяются отдельно.",
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/premierDeluxeFamilyTwin.do",
+              "obtainedAt": "2026-10-25T09:18:45.662Z",
+              "sourcePublisher": "Shilla Stay Haeundae / SHILLA HM"
+            }
+          ],
+          "limitations": [
+            "Категория номера, а не физический номер; наличие на даты не проверялось.",
+            "City/Ocean — варианты вида в категории, а не обещание каждого вида в одном номере.",
+            "Ступени, вход, лифт и полный доступ до номера не подтверждены.",
+            "Увеличение вместимости условно: нужен ребёнок; возрастная категория издателя требует проверки возраста. Младенцы до 36 месяцев учитываются отдельно, это правило их размещение не устанавливает."
+          ]
+        },
+        {
+          "id": "way-627150752-real-standard",
+          "name": "Standard",
+          "capacity": 2,
+          "demo": false,
+          "scope": "room_category",
+          "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/standard.do",
+          "sourcePublisher": "Shilla Stay Haeundae / SHILLA HM",
+          "obtainedAt": "2026-10-25T09:18:38.546Z",
+          "publishedView": "City, Ocean",
+          "occupancyRules": [
+            {
+              "maxGuests": 3,
+              "minChildren": 1,
+              "childMaxAge": 12,
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/standard.do",
+              "obtainedAt": "2026-10-25T09:18:38.546Z",
+              "quote": "На странице этой категории разрешено до 3 гостей при размещении с ребёнком. В форме отеля дети определены как возраст от 37 месяцев до 12 лет; младенцы выделены отдельно. Без возраста применимость исключения не подтверждена."
+            }
+          ],
+          "capacityMayVary": true,
+          "publishedInformation": {
+            "wifi": true,
+            "workDesk": null,
+            "viewOptions": "City, Ocean",
+            "evidenceKind": "publisher_reported",
+            "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/standard.do",
+            "limitations": [
+              "Wi-Fi означает опубликованное наличие, не измеренную скорость.",
+              "Варианты вида категории не подтверждают вид из конкретного номера."
+            ]
+          },
+          "provenance": {
+            "sourceId": "shilla-standard",
+            "sourceUpdatedAt": null,
+            "responseSha256": "18a384d666063a73e5711f78a314047e0b9ff51e612ae285140b8e1db08b3f3e",
+            "projectionSha256": "d80b5c1fd921f44bdef26d4c1d0309b027ba5fd9d7cec5ebd1cf5d8132b58fc3",
+            "parserVersion": "official-html-v3"
+          },
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная страница категории Standard прямо указывает семейное назначение либо разрешение на размещение с ребёнком. Вместимость и возрастные условия проверяются отдельно.",
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/standard.do",
+              "obtainedAt": "2026-10-25T09:18:38.546Z",
+              "sourcePublisher": "Shilla Stay Haeundae / SHILLA HM"
+            }
+          ],
+          "limitations": [
+            "Категория номера, а не физический номер; наличие на даты не проверялось.",
+            "City/Ocean — варианты вида в категории, а не обещание каждого вида в одном номере.",
+            "Ступени, вход, лифт и полный доступ до номера не подтверждены.",
+            "Увеличение вместимости условно: нужен ребёнок; возрастная категория издателя требует проверки возраста. Младенцы до 36 месяцев учитываются отдельно, это правило их размещение не устанавливает."
+          ]
+        },
+        {
+          "id": "way-627150752-real-deluxe",
+          "name": "Deluxe",
+          "capacity": 2,
+          "demo": false,
+          "scope": "room_category",
+          "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/deluxe.do",
+          "sourcePublisher": "Shilla Stay Haeundae / SHILLA HM",
+          "obtainedAt": "2026-10-25T09:18:41.580Z",
+          "publishedView": "City, Ocean",
+          "occupancyRules": [
+            {
+              "maxGuests": 3,
+              "minChildren": 1,
+              "childMaxAge": 12,
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/deluxe.do",
+              "obtainedAt": "2026-10-25T09:18:41.580Z",
+              "quote": "На странице этой категории разрешено до 3 гостей при размещении с ребёнком. В форме отеля дети определены как возраст от 37 месяцев до 12 лет; младенцы выделены отдельно. Без возраста применимость исключения не подтверждена."
+            }
+          ],
+          "capacityMayVary": true,
+          "publishedInformation": {
+            "wifi": true,
+            "workDesk": null,
+            "viewOptions": "City, Ocean",
+            "evidenceKind": "publisher_reported",
+            "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/deluxe.do",
+            "limitations": [
+              "Wi-Fi означает опубликованное наличие, не измеренную скорость.",
+              "Варианты вида категории не подтверждают вид из конкретного номера."
+            ]
+          },
+          "provenance": {
+            "sourceId": "shilla-deluxe",
+            "sourceUpdatedAt": null,
+            "responseSha256": "57ded77dd62e85767022d8fff8e2cf5ad50c4c81d6e2f0146f1bb0e696ad767a",
+            "projectionSha256": "ab87ad5b3f9595ba09c0109de3370291055004d4af1dde909ff38df595a4db59",
+            "parserVersion": "official-html-v3"
+          },
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная страница категории Deluxe прямо указывает семейное назначение либо разрешение на размещение с ребёнком. Вместимость и возрастные условия проверяются отдельно.",
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/deluxe.do",
+              "obtainedAt": "2026-10-25T09:18:41.580Z",
+              "sourcePublisher": "Shilla Stay Haeundae / SHILLA HM"
+            }
+          ],
+          "limitations": [
+            "Категория номера, а не физический номер; наличие на даты не проверялось.",
+            "City/Ocean — варианты вида в категории, а не обещание каждого вида в одном номере.",
+            "Ступени, вход, лифт и полный доступ до номера не подтверждены.",
+            "Увеличение вместимости условно: нужен ребёнок; возрастная категория издателя требует проверки возраста. Младенцы до 36 месяцев учитываются отдельно, это правило их размещение не устанавливает."
+          ]
+        },
+        {
+          "id": "way-627150752-real-premier-deluxe",
+          "name": "Premier Deluxe",
+          "capacity": 2,
+          "demo": false,
+          "scope": "room_category",
+          "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/premierDeluxe.do",
+          "sourcePublisher": "Shilla Stay Haeundae / SHILLA HM",
+          "obtainedAt": "2026-10-25T09:18:44.273Z",
+          "publishedView": "City, Ocean",
+          "occupancyRules": [
+            {
+              "maxGuests": 3,
+              "minChildren": 1,
+              "childMaxAge": 12,
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/premierDeluxe.do",
+              "obtainedAt": "2026-10-25T09:18:44.273Z",
+              "quote": "На странице этой категории разрешено до 3 гостей при размещении с ребёнком. В форме отеля дети определены как возраст от 37 месяцев до 12 лет; младенцы выделены отдельно. Без возраста применимость исключения не подтверждена."
+            }
+          ],
+          "capacityMayVary": true,
+          "publishedInformation": {
+            "wifi": true,
+            "workDesk": null,
+            "viewOptions": "City, Ocean",
+            "evidenceKind": "publisher_reported",
+            "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/premierDeluxe.do",
+            "limitations": [
+              "Wi-Fi означает опубликованное наличие, не измеренную скорость.",
+              "Варианты вида категории не подтверждают вид из конкретного номера."
+            ]
+          },
+          "provenance": {
+            "sourceId": "shilla-premierDeluxe",
+            "sourceUpdatedAt": null,
+            "responseSha256": "5782e226c8d002437f316834aaf6fd503143f45656bfdad66553376e28eff4fd",
+            "projectionSha256": "95a9d0af431c2c81ec4d29bebf8798030d0e1f522c5358d9cbe922bc9e59c757",
+            "parserVersion": "official-html-v3"
+          },
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная страница категории Premier Deluxe прямо указывает семейное назначение либо разрешение на размещение с ребёнком. Вместимость и возрастные условия проверяются отдельно.",
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/premierDeluxe.do",
+              "obtainedAt": "2026-10-25T09:18:44.273Z",
+              "sourcePublisher": "Shilla Stay Haeundae / SHILLA HM"
+            }
+          ],
+          "limitations": [
+            "Категория номера, а не физический номер; наличие на даты не проверялось.",
+            "City/Ocean — варианты вида в категории, а не обещание каждого вида в одном номере.",
+            "Ступени, вход, лифт и полный доступ до номера не подтверждены.",
+            "Увеличение вместимости условно: нужен ребёнок; возрастная категория издателя требует проверки возраста. Младенцы до 36 месяцев учитываются отдельно, это правило их размещение не устанавливает."
+          ]
+        },
+        {
+          "id": "way-627150752-real-ondol-suite",
+          "name": "Ondol Suite",
+          "capacity": 4,
+          "demo": false,
+          "scope": "room_category",
+          "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/ondolSuite.do",
+          "sourcePublisher": "Shilla Stay Haeundae / SHILLA HM",
+          "obtainedAt": "2026-10-25T09:18:47.118Z",
+          "publishedView": "City",
+          "occupancyRules": [
+            {
+              "maxGuests": 5,
+              "minChildren": 1,
+              "childMaxAge": 12,
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/ondolSuite.do",
+              "obtainedAt": "2026-10-25T09:18:47.118Z",
+              "quote": "На странице этой категории разрешено до 5 гостей при размещении с ребёнком. В форме отеля дети определены как возраст от 37 месяцев до 12 лет; младенцы выделены отдельно. Без возраста применимость исключения не подтверждена."
+            }
+          ],
+          "capacityMayVary": true,
+          "publishedInformation": {
+            "wifi": true,
+            "workDesk": null,
+            "viewOptions": "City",
+            "evidenceKind": "publisher_reported",
+            "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/ondolSuite.do",
+            "limitations": [
+              "Wi-Fi означает опубликованное наличие, не измеренную скорость.",
+              "Варианты вида категории не подтверждают вид из конкретного номера."
+            ]
+          },
+          "provenance": {
+            "sourceId": "shilla-ondolSuite",
+            "sourceUpdatedAt": null,
+            "responseSha256": "9508795cbcef958294a7399abd2ddd336eba87d1235aca9138e1ff3ad37cd699",
+            "projectionSha256": "3bbc964def557d2d062d313e0b037c182feae7e32ce175eb7be162967b8e109b",
+            "parserVersion": "official-html-v3"
+          },
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная страница категории Ondol Suite прямо указывает семейное назначение либо разрешение на размещение с ребёнком. Вместимость и возрастные условия проверяются отдельно.",
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/ondolSuite.do",
+              "obtainedAt": "2026-10-25T09:18:47.118Z",
+              "sourcePublisher": "Shilla Stay Haeundae / SHILLA HM"
+            }
+          ],
+          "limitations": [
+            "Категория номера, а не физический номер; наличие на даты не проверялось.",
+            "City/Ocean — варианты вида в категории, а не обещание каждого вида в одном номере.",
+            "Ступени, вход, лифт и полный доступ до номера не подтверждены.",
+            "Увеличение вместимости условно: нужен ребёнок; возрастная категория издателя требует проверки возраста. Младенцы до 36 месяцев учитываются отдельно, это правило их размещение не устанавливает."
+          ]
+        },
+        {
+          "id": "way-627150752-real-junior-suite",
+          "name": "Junior Suite",
+          "capacity": 2,
+          "demo": false,
+          "scope": "room_category",
+          "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/juniorSuite.do",
+          "sourcePublisher": "Shilla Stay Haeundae / SHILLA HM",
+          "obtainedAt": "2026-10-25T09:18:49.095Z",
+          "publishedView": "Ocean",
+          "occupancyRules": [
+            {
+              "maxGuests": 3,
+              "minChildren": 1,
+              "childMaxAge": 12,
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/juniorSuite.do",
+              "obtainedAt": "2026-10-25T09:18:49.095Z",
+              "quote": "На странице этой категории разрешено до 3 гостей при размещении с ребёнком. В форме отеля дети определены как возраст от 37 месяцев до 12 лет; младенцы выделены отдельно. Без возраста применимость исключения не подтверждена."
+            }
+          ],
+          "capacityMayVary": true,
+          "publishedInformation": {
+            "wifi": true,
+            "workDesk": null,
+            "viewOptions": "Ocean",
+            "evidenceKind": "publisher_reported",
+            "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/juniorSuite.do",
+            "limitations": [
+              "Wi-Fi означает опубликованное наличие, не измеренную скорость.",
+              "Варианты вида категории не подтверждают вид из конкретного номера."
+            ]
+          },
+          "provenance": {
+            "sourceId": "shilla-juniorSuite",
+            "sourceUpdatedAt": null,
+            "responseSha256": "b9d3dc291713abf820bc7a7b9eb67e6e4dd6a3d386ecac06ab4e43073fbda899",
+            "projectionSha256": "1aad325626acbcba5ea46b96d2cd34c59efa3181e763cd70a3a0d75ca6ed45d6",
+            "parserVersion": "official-html-v3"
+          },
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная страница категории Junior Suite прямо указывает семейное назначение либо разрешение на размещение с ребёнком. Вместимость и возрастные условия проверяются отдельно.",
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/juniorSuite.do",
+              "obtainedAt": "2026-10-25T09:18:49.095Z",
+              "sourcePublisher": "Shilla Stay Haeundae / SHILLA HM"
+            }
+          ],
+          "limitations": [
+            "Категория номера, а не физический номер; наличие на даты не проверялось.",
+            "City/Ocean — варианты вида в категории, а не обещание каждого вида в одном номере.",
+            "Ступени, вход, лифт и полный доступ до номера не подтверждены.",
+            "Увеличение вместимости условно: нужен ребёнок; возрастная категория издателя требует проверки возраста. Младенцы до 36 месяцев учитываются отдельно, это правило их размещение не устанавливает."
+          ]
+        },
+        {
+          "id": "way-627150752-real-grand-suite",
+          "name": "Grand Suite",
+          "capacity": 2,
+          "demo": false,
+          "scope": "room_category",
+          "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/grandSuite.do",
+          "sourcePublisher": "Shilla Stay Haeundae / SHILLA HM",
+          "obtainedAt": "2026-10-25T09:18:50.763Z",
+          "publishedView": "Ocean",
+          "occupancyRules": [
+            {
+              "maxGuests": 3,
+              "minChildren": 1,
+              "childMaxAge": 12,
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/grandSuite.do",
+              "obtainedAt": "2026-10-25T09:18:50.763Z",
+              "quote": "На странице этой категории разрешено до 3 гостей при размещении с ребёнком. В форме отеля дети определены как возраст от 37 месяцев до 12 лет; младенцы выделены отдельно. Без возраста применимость исключения не подтверждена."
+            }
+          ],
+          "capacityMayVary": true,
+          "publishedInformation": {
+            "wifi": true,
+            "workDesk": null,
+            "viewOptions": "Ocean",
+            "evidenceKind": "publisher_reported",
+            "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/grandSuite.do",
+            "limitations": [
+              "Wi-Fi означает опубликованное наличие, не измеренную скорость.",
+              "Варианты вида категории не подтверждают вид из конкретного номера."
+            ]
+          },
+          "provenance": {
+            "sourceId": "shilla-grandSuite",
+            "sourceUpdatedAt": null,
+            "responseSha256": "e64e015045a59e55b4c4bbdfea44b12e319e8351c920c7e7f6aa5e03569baa7f",
+            "projectionSha256": "eeadfd4073accaeae38c02e2babcc68aec5c130fa6e7f4f324b0c206f47cb195",
+            "parserVersion": "official-html-v3"
+          },
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная страница категории Grand Suite прямо указывает семейное назначение либо разрешение на размещение с ребёнком. Вместимость и возрастные условия проверяются отдельно.",
+              "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/grandSuite.do",
+              "obtainedAt": "2026-10-25T09:18:50.763Z",
+              "sourcePublisher": "Shilla Stay Haeundae / SHILLA HM"
+            }
+          ],
+          "limitations": [
+            "Категория номера, а не физический номер; наличие на даты не проверялось.",
+            "City/Ocean — варианты вида в категории, а не обещание каждого вида в одном номере.",
+            "Ступени, вход, лифт и полный доступ до номера не подтверждены.",
+            "Увеличение вместимости условно: нужен ребёнок; возрастная категория издателя требует проверки возраста. Младенцы до 36 месяцев учитываются отдельно, это правило их размещение не устанавливает."
+          ]
+        }
+      ],
+      "checkedUrls": [
+        "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/standardTwin.do",
+        "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/deluxeFamilyTwin.do",
+        "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/premierDeluxeFamilyTwin.do",
+        "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/standard.do",
+        "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/deluxe.do",
+        "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/premierDeluxe.do",
+        "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/ondolSuite.do",
+        "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/juniorSuite.do",
+        "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/grandSuite.do"
+      ],
+      "limitations": [
+        "Сведения о категориях опубликованы отелем; свободные номера и фактические условия на месте не проверены.",
+        "Данные входа, полного пути без ступеней и окон во двор остаются неизвестными."
+      ]
+    },
+    {
+      "hotelId": "way-843161717",
+      "hotelName": "Grand Josun Busan",
+      "rooms": [
+        {
+          "id": "way-843161717-real-kids-deluxe",
+          "name": "Kids Deluxe",
+          "capacity": null,
+          "demo": false,
+          "scope": "room_category",
+          "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsDeluxe.do",
+          "sourcePublisher": "Grand Josun Busan / JOSUN HOTELS & RESORTS",
+          "obtainedAt": "2026-10-25T09:18:57.362Z",
+          "publishedView": "시티뷰, 파셜 오션뷰, 오션뷰",
+          "occupancyRules": [
+            {
+              "maxAdults": 2,
+              "maxChildren": 2,
+              "maxGuests": 4,
+              "childMaxAge": 12,
+              "sourceUrl": "https://gjb.josunhotel.com/about/faq.do?_method=list",
+              "obtainedAt": "2026-10-25T09:19:04.896Z",
+              "quote": "Официальный FAQ устанавливает стандартное размещение семьи: 2 взрослых и 2 ребёнка, возраст ребёнка 0–12 лет. Это общее правило отеля, не разрешение на четырёх взрослых; возраст детей и наличие категории нужно проверить."
+            }
+          ],
+          "capacityMayVary": true,
+          "publishedInformation": {
+            "wifi": null,
+            "workDesk": null,
+            "viewOptions": "시티뷰, 파셜 오션뷰, 오션뷰",
+            "evidenceKind": "publisher_reported",
+            "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsDeluxe.do",
+            "limitations": [
+              "Wi-Fi означает опубликованное наличие, не измеренную скорость.",
+              "Варианты вида категории не подтверждают вид из конкретного номера."
+            ]
+          },
+          "provenance": {
+            "sourceId": "josun-kidsDeluxe",
+            "sourceUpdatedAt": null,
+            "responseSha256": "578acc3c64414dd88b1ecdfd1011c7f38a2c98a7e80945fff5636ab674e43115",
+            "projectionSha256": "29c1ea43f6df2ac751bd445a267523620ab801d150aa75e1dbb9b38ecb4a753c",
+            "parserVersion": "official-html-v3"
+          },
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная страница категории Kids Deluxe прямо указывает семейное назначение либо разрешение на размещение с ребёнком. Вместимость и возрастные условия проверяются отдельно.",
+              "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsDeluxe.do",
+              "obtainedAt": "2026-10-25T09:18:57.362Z",
+              "sourcePublisher": "Grand Josun Busan / JOSUN HOTELS & RESORTS"
+            }
+          ],
+          "limitations": [
+            "Детская/семейная категория подтверждена названием и описанием; общий максимум категории не установлен.",
+            "Море в оформлении Kids не является видом из окна; импортируется только поле VIEW.",
+            "Вместимость lounge и число кроватей не используются как вместимость номера.",
+            "Непрерывный путь от улицы до номера без ступеней не подтверждён."
+          ]
+        },
+        {
+          "id": "way-843161717-real-kids-suite",
+          "name": "Kids Suite",
+          "capacity": null,
+          "demo": false,
+          "scope": "room_category",
+          "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsSuite.do",
+          "sourcePublisher": "Grand Josun Busan / JOSUN HOTELS & RESORTS",
+          "obtainedAt": "2026-10-25T09:18:59.959Z",
+          "publishedView": "시티뷰, 오션뷰, 오션뷰(리빙룸)",
+          "occupancyRules": [
+            {
+              "maxAdults": 2,
+              "maxChildren": 2,
+              "maxGuests": 4,
+              "childMaxAge": 12,
+              "sourceUrl": "https://gjb.josunhotel.com/about/faq.do?_method=list",
+              "obtainedAt": "2026-10-25T09:19:04.896Z",
+              "quote": "Официальный FAQ устанавливает стандартное размещение семьи: 2 взрослых и 2 ребёнка, возраст ребёнка 0–12 лет. Это общее правило отеля, не разрешение на четырёх взрослых; возраст детей и наличие категории нужно проверить."
+            }
+          ],
+          "capacityMayVary": true,
+          "publishedInformation": {
+            "wifi": null,
+            "workDesk": null,
+            "viewOptions": "시티뷰, 오션뷰, 오션뷰(리빙룸)",
+            "evidenceKind": "publisher_reported",
+            "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsSuite.do",
+            "limitations": [
+              "Wi-Fi означает опубликованное наличие, не измеренную скорость.",
+              "Варианты вида категории не подтверждают вид из конкретного номера."
+            ]
+          },
+          "provenance": {
+            "sourceId": "josun-kidsSuite",
+            "sourceUpdatedAt": null,
+            "responseSha256": "e3d7688293b6f41a1bded4a4ffc72dd6dad369529e7c0bf382234a38e6095635",
+            "projectionSha256": "77fa9253caee6812d37080283fa74eeb6194f47690a5681bee74739536eb954b",
+            "parserVersion": "official-html-v3"
+          },
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная страница категории Kids Suite прямо указывает семейное назначение либо разрешение на размещение с ребёнком. Вместимость и возрастные условия проверяются отдельно.",
+              "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsSuite.do",
+              "obtainedAt": "2026-10-25T09:18:59.959Z",
+              "sourcePublisher": "Grand Josun Busan / JOSUN HOTELS & RESORTS"
+            }
+          ],
+          "limitations": [
+            "Детская/семейная категория подтверждена названием и описанием; общий максимум категории не установлен.",
+            "Море в оформлении Kids не является видом из окна; импортируется только поле VIEW.",
+            "Вместимость lounge и число кроватей не используются как вместимость номера.",
+            "Непрерывный путь от улицы до номера без ступеней не подтверждён."
+          ]
+        },
+        {
+          "id": "way-843161717-real-kids-superior",
+          "name": "Kids Superior",
+          "capacity": null,
+          "demo": false,
+          "scope": "room_category",
+          "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsSuperior.do",
+          "sourcePublisher": "Grand Josun Busan / JOSUN HOTELS & RESORTS",
+          "obtainedAt": "2026-10-25T09:18:54.227Z",
+          "publishedView": "시티뷰",
+          "occupancyRules": [
+            {
+              "maxAdults": 2,
+              "maxChildren": 2,
+              "maxGuests": 4,
+              "childMaxAge": 12,
+              "sourceUrl": "https://gjb.josunhotel.com/about/faq.do?_method=list",
+              "obtainedAt": "2026-10-25T09:19:04.896Z",
+              "quote": "Официальный FAQ устанавливает стандартное размещение семьи: 2 взрослых и 2 ребёнка, возраст ребёнка 0–12 лет. Это общее правило отеля, не разрешение на четырёх взрослых; возраст детей и наличие категории нужно проверить."
+            }
+          ],
+          "capacityMayVary": true,
+          "publishedInformation": {
+            "wifi": null,
+            "workDesk": null,
+            "viewOptions": "시티뷰",
+            "evidenceKind": "publisher_reported",
+            "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsSuperior.do",
+            "limitations": [
+              "Wi-Fi означает опубликованное наличие, не измеренную скорость.",
+              "Варианты вида категории не подтверждают вид из конкретного номера."
+            ]
+          },
+          "provenance": {
+            "sourceId": "josun-kidsSuperior",
+            "sourceUpdatedAt": null,
+            "responseSha256": "e4ae5a3095bbd4b01bbb70d52340651766db312130b3067b6d9b1637663e59c9",
+            "projectionSha256": "3e903aa4b669c91d54816bc40493503cb66bd634ae09d4a230e79a34b786ae0d",
+            "parserVersion": "official-html-v3"
+          },
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная страница категории Kids Superior прямо указывает семейное назначение либо разрешение на размещение с ребёнком. Вместимость и возрастные условия проверяются отдельно.",
+              "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsSuperior.do",
+              "obtainedAt": "2026-10-25T09:18:54.227Z",
+              "sourcePublisher": "Grand Josun Busan / JOSUN HOTELS & RESORTS"
+            }
+          ],
+          "limitations": [
+            "Детская/семейная категория подтверждена названием и описанием; общий максимум категории не установлен.",
+            "Море в оформлении Kids не является видом из окна; импортируется только поле VIEW.",
+            "Вместимость lounge и число кроватей не используются как вместимость номера.",
+            "Непрерывный путь от улицы до номера без ступеней не подтверждён."
+          ]
+        },
+        {
+          "id": "way-843161717-real-family-corner-suite",
+          "name": "Family Corner Suite",
+          "capacity": null,
+          "demo": false,
+          "scope": "room_category",
+          "sourceUrl": "https://gjb.josunhotel.com/rooms/familySuite.do",
+          "sourcePublisher": "Grand Josun Busan / JOSUN HOTELS & RESORTS",
+          "obtainedAt": "2026-10-25T09:19:02.633Z",
+          "publishedView": "오션뷰(리빙룸)",
+          "occupancyRules": [
+            {
+              "maxAdults": 2,
+              "maxChildren": 2,
+              "maxGuests": 4,
+              "childMaxAge": 12,
+              "sourceUrl": "https://gjb.josunhotel.com/about/faq.do?_method=list",
+              "obtainedAt": "2026-10-25T09:19:04.896Z",
+              "quote": "Официальный FAQ устанавливает стандартное размещение семьи: 2 взрослых и 2 ребёнка, возраст ребёнка 0–12 лет. Это общее правило отеля, не разрешение на четырёх взрослых; возраст детей и наличие категории нужно проверить."
+            }
+          ],
+          "capacityMayVary": true,
+          "publishedInformation": {
+            "wifi": null,
+            "workDesk": null,
+            "viewOptions": "오션뷰(리빙룸)",
+            "evidenceKind": "publisher_reported",
+            "sourceUrl": "https://gjb.josunhotel.com/rooms/familySuite.do",
+            "limitations": [
+              "Wi-Fi означает опубликованное наличие, не измеренную скорость.",
+              "Варианты вида категории не подтверждают вид из конкретного номера."
+            ]
+          },
+          "provenance": {
+            "sourceId": "josun-familySuite",
+            "sourceUpdatedAt": null,
+            "responseSha256": "f4dee0e3fca8aeb7bfa242b6a8de6563c6ebad6dd10bb1f7e0e54b726c2da196",
+            "projectionSha256": "adabe8eed03e237cbd4d98ce09b03062673dc2545f2d69914d53d3fc67b5af6a",
+            "parserVersion": "official-html-v3"
+          },
+          "facts": [
+            {
+              "feature": "family",
+              "value": true,
+              "paraphrase": "Официальная страница категории Family Corner Suite прямо указывает семейное назначение либо разрешение на размещение с ребёнком. Вместимость и возрастные условия проверяются отдельно.",
+              "sourceUrl": "https://gjb.josunhotel.com/rooms/familySuite.do",
+              "obtainedAt": "2026-10-25T09:19:02.633Z",
+              "sourcePublisher": "Grand Josun Busan / JOSUN HOTELS & RESORTS"
+            }
+          ],
+          "limitations": [
+            "Детская/семейная категория подтверждена названием и описанием; общий максимум категории не установлен.",
+            "Море в оформлении Kids не является видом из окна; импортируется только поле VIEW.",
+            "Вместимость lounge и число кроватей не используются как вместимость номера.",
+            "Непрерывный путь от улицы до номера без ступеней не подтверждён."
+          ]
+        }
+      ],
+      "checkedUrls": [
+        "https://gjb.josunhotel.com/rooms/kidsDeluxe.do",
+        "https://gjb.josunhotel.com/rooms/kidsSuite.do",
+        "https://gjb.josunhotel.com/rooms/kidsSuperior.do",
+        "https://gjb.josunhotel.com/about/faq.do?_method=list",
+        "https://gjb.josunhotel.com/rooms/familySuite.do"
+      ],
+      "limitations": [
+        "Сведения о категориях опубликованы отелем; свободные номера и фактические условия на месте не проверены.",
+        "Данные входа, полного пути без ступеней и окон во двор остаются неизвестными."
+      ]
+    },
+    {
+      "hotelId": "node-4199814292",
+      "hotelName": "Paradise Hotel Busan",
+      "rooms": [
+        {
+          "id": "node-4199814292-real-main-deluxe-city",
+          "name": "Deluxe City — Main Building",
+          "capacity": null,
+          "demo": false,
+          "sourceUrl": "https://www.busanparadisehotel.co.kr/front/hotel/room/view?RR_LOCATION_TYPE=MAIN_BUILDING&RR_ROOM_CATEGORY=DELUXE&RR_ROOM_TYPE=DELUXE_CITY",
+          "sourcePublisher": "Paradise Hotel Busan",
+          "obtainedAt": "2026-10-24T14:04:55.303Z",
+          "publishedView": "City",
+          "facts": [],
+          "limitations": [
+            "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+            "Официально указана базовая норма 2 взрослых, а не безусловный максимум всех гостей. Поэтому capacity=null; publishedBaseOccupancy хранит исходное значение отдельно.",
+            "На странице партнёрского бронирования опубликованы условия размещения детей до 13 лет и доплаты. Их применимость к конкретному обычному тарифу и варианту кроватей не подтверждена, поэтому family-факт здесь не создан."
+          ],
+          "publishedBaseOccupancy": {
+            "adults": 2,
+            "sourceUrl": "https://www.busanparadisehotel.co.kr/front/hotel/room/view?RR_LOCATION_TYPE=MAIN_BUILDING&RR_ROOM_CATEGORY=DELUXE&RR_ROOM_TYPE=DELUXE_CITY"
+          }
+        }
+      ],
+      "checkedUrls": [
+        "https://www.busanparadisehotel.co.kr/front/hotel/room/view?RR_LOCATION_TYPE=MAIN_BUILDING&RR_ROOM_CATEGORY=DELUXE&RR_ROOM_TYPE=DELUXE_CITY",
+        "https://www.busanparadisehotel.co.kr/front/partnerReservation/"
+      ],
+      "limitations": [
+        "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+        "Для Deluxe City подтверждены название, основной корпус, базовая норма 2 взрослых и варианты кроватей King/Twin/Ondol. Максимум гостей и безусловная семейная политика для обычного тарифа не подтверждены."
+      ]
+    },
+    {
+      "hotelId": "node-13011853719",
+      "hotelName": "L7 HAEUNDAE by LOTTE",
+      "rooms": [],
+      "checkedUrls": [
+        "https://www.lottehotel.com/haeundae-l7/en/rooms/standard-family-twin",
+        "https://www.lottehotel.com/haeundae-l7/en/rooms/superior-family-twin",
+        "https://www.lottehotel.com/prerendered/haeundae-l7/ko/rooms/standard-family-twin/index.html"
+      ],
+      "limitations": [
+        "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+        "Текущие карточки номеров вернули страницу антибот-проверки. В поисковой выдаче доступен старый официальный prerendered-документ с Standard Family Twin и 3 гостями, но для нового набора решено не считать его достаточным подтверждением актуальной категории. Обход проверки не выполнялся."
+      ]
+    },
+    {
+      "hotelId": "way-627350916",
+      "hotelName": "Toyoko Inn Busan Haeundae No.2",
+      "rooms": [],
+      "checkedUrls": [
+        "https://www.toyoko-inn.com/eng/search/detail/00256/",
+        "https://www.toyoko-inn.com/eng/feature/room/"
+      ],
+      "limitations": [
+        "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+        "Проверена официальная страница именно Haeundae No.2. В доступном тексте нет привязанных к этому отелю конкретных категорий с вместимостью. Общесетевая страница предупреждает, что вместимость Twin различается по отелям, поэтому её значения не перенесены в каталог."
+      ]
+    }
+  ],
+  "limitations": [
+    "Только реальные именованные категории. Исследование не подтверждает свободные номера, цену, гарантированный вид или конкретное размещение на даты поездки.",
+    "Отсутствие family/courtyard-факта означает unknown, а не false. Никакие факты не присоединены к демонстрационным номерам.",
+    "capacity=null означает отсутствие подтверждённого общего лимита; его нельзя подменять вместимостью демономера или числом кроватей. capacity=3 для SIGNIEL/Shilla — стандартное опубликованное размещение с отдельно описанными условными исключениями.",
+    "Courtyard не подтверждён ни для одной исследованной категории. City view, garden общественной зоны и темы оформления комнаты не считаются видом во внутренний двор."
+  ],
+  "latestCollectionAt": "2026-10-25T09:19:04.896Z",
+  "collectionMethod": "Bounded explicit HTTPS fetch; category-scoped HTML parser; immutable projection cache and source hashes."
+}

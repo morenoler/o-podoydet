@@ -9,7 +9,7 @@ export const features: Record<
     scope: "hotel" | "room";
     evaluator: "max" | "true";
     threshold?: number;
-    tool: "route" | "host";
+    tool: "route" | "host" | "area";
     question: string;
     positive: string;
     negative: string;
@@ -67,6 +67,38 @@ export const features: Record<
     positive: "Предусмотрено семейное размещение",
     negative: "Семейное размещение не подтверждено отельером",
   },
+  area_safety: {
+    label: "Безопасность района",
+    detail: "Проверим сопоставимую статистику происшествий",
+    scope: "hotel",
+    evaluator: "true",
+    tool: "area",
+    question:
+      "Есть ли сопоставимая официальная статистика безопасности района?",
+    positive: "Показатель происшествий не выше регионального",
+    negative: "Показатель происшествий выше регионального",
+  },
+  clean_air: {
+    label: "Чистый воздух",
+    detail: "US AQI до 50 по прогнозу на все даты поездки",
+    scope: "hotel",
+    evaluator: "max",
+    threshold: 50,
+    tool: "area",
+    question: "Есть ли прогноз качества воздуха на даты поездки?",
+    positive: "Прогноз качества воздуха соответствует пожеланию",
+    negative: "В прогнозе есть часы с US AQI выше 50",
+  },
+  low_noise: {
+    label: "Меньше внешнего шума",
+    detail: "Оценка по дорогам, трафику и событиям",
+    scope: "hotel",
+    evaluator: "true",
+    tool: "area",
+    question: "Какой риск внешнего шума на даты поездки?",
+    positive: "Низкий риск по доступным данным",
+    negative: "Повышенный риск внешнего шума",
+  },
 };
 export const featureIds = Object.keys(features) as FeatureId[];
 export const scenarios = [
@@ -81,14 +113,19 @@ export const scenarios = [
     id: "family",
     title: "Поездка с детьми",
     description: "Продумать маленькие детали",
-    features: ["family", "step_free_access", "courtyard"] as FeatureId[],
+    features: [
+      "family",
+      "step_free_access",
+      "clean_air",
+      "area_safety",
+    ] as FeatureId[],
     icon: "family",
   },
   {
     id: "quiet",
     title: "Спокойный отдых",
     description: "Найти свой тихий уголок",
-    features: ["courtyard", "beach_walk"] as FeatureId[],
+    features: ["low_noise", "courtyard", "clean_air"] as FeatureId[],
     icon: "moon",
   },
 ];

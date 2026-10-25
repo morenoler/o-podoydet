@@ -5,11 +5,21 @@ export const SAFETY_SOURCE =
   "https://www.safemap.go.kr/dvct/data/selectDataAPIDetail.do?dataApiId=11";
 export const AIR_MAX_AGE_MS = 6 * 60 * 60 * 1000;
 export const AIR_MAX_CELL_DISTANCE_KM = 80;
+export const AIR_MAX_FORECAST_HOURS = 168;
 export const coordinateSchema = z.tuple([
   z.number().finite().min(-180).max(180),
   z.number().finite().min(-90).max(90),
 ]);
 export type Coordinates = z.infer<typeof coordinateSchema>;
+
+// Publication dates on Korean portals are civil dates in Korea, while
+// retrievedAt is an instant. Comparing its UTC date loses the first nine hours.
+export function koreanDate(value: Date | string): string {
+  const date = typeof value === "string" ? new Date(value) : value;
+  return Number.isFinite(+date)
+    ? new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(date)
+    : "";
+}
 export interface AreaTarget {
   hotelId: string;
   name: string;
@@ -30,6 +40,8 @@ const officialUrl = z
     const u = new URL(s);
     return (
       u.protocol === "https:" &&
+      !u.username &&
+      !u.password &&
       (u.hostname === "go.kr" || u.hostname.endsWith(".go.kr"))
     );
   }, "Expected an official Korean government HTTPS source");
@@ -48,6 +60,8 @@ const boundarySource = z
     const u = new URL(s);
     return (
       u.protocol === "https:" &&
+      !u.username &&
+      !u.password &&
       (u.hostname.endsWith(".go.kr") ||
         ((u.hostname === "www.openstreetmap.org" ||
           u.hostname === "openstreetmap.org") &&
@@ -75,6 +89,45 @@ const geographySchema = z.discriminatedUnion("type", [
     })
     .strict(),
 ]);
+const rateDefinitionSchema = z
+  .object({
+    categoryCode: z.string().min(1).max(100),
+    denominatorBasis: z.literal("annual_average_resident_population"),
+    methodologyId: z.string().min(1).max(200),
+  })
+  .strict();
+const comparatorSchema = z
+  .object({
+    metric: z.literal("crime_rate_per_100000"),
+    categoryCode: z.string().min(1).max(100),
+    period: z
+      .object({ from: isoDate, to: isoDate })
+      .strict()
+      .refine((p) => p.from <= p.to, "Period is reversed"),
+    unit: z.literal("incidents_per_100000_residents"),
+    denominatorBasis: z.literal("annual_average_resident_population"),
+    methodologyId: z.string().min(1).max(200),
+    value: z.number().finite().nonnegative(),
+    baselineRegion: z
+      .object({
+        name: z.string().min(1).max(200),
+        code: z.string().min(1).max(100),
+      })
+      .strict(),
+    sourcePublisher: z.string().min(1).max(200),
+    sourceUrl: officialUrl,
+    sourceRecord: z.string().min(1).max(2000),
+    publishedAt: isoDate,
+    retrievedAt: z.string().datetime(),
+    verification: z.literal("operator-checked-official-source"),
+  })
+  .strict()
+  .refine(
+    (c) =>
+      c.period.to <= c.publishedAt &&
+      c.publishedAt <= koreanDate(c.retrievedAt),
+    "Comparator provenance dates are inconsistent",
+  );
 export const officialEvidenceSchema = z
   .object({
     id: z.string().min(1).max(150),
@@ -103,6 +156,8 @@ export const officialEvidenceSchema = z
     methodology: z.string().min(20).max(3000),
     limitations: z.array(z.string().min(1).max(1000)).min(1).max(20),
     verification: z.literal("operator-checked-official-source"),
+    rateDefinition: rateDefinitionSchema.optional(),
+    comparator: comparatorSchema.optional(),
   })
   .strict()
   .refine(
@@ -110,10 +165,31 @@ export const officialEvidenceSchema = z
     "Publication precedes the covered period",
   )
   .refine(
+    (e) => e.publishedAt <= koreanDate(e.retrievedAt),
+    "Publication follows retrieval in the Korean civil calendar",
+  )
+  .refine(
+    (e) => e.metric !== "reported_incidents" || Number.isInteger(e.value),
+    "Reported incident counts must be integers",
+  )
+  .refine(
     (e) =>
       e.metric !== "crime_density_grade" ||
       (Number.isInteger(e.value) && e.value >= 1 && e.value <= 10),
     "Crime density grade must be 1–10",
+  )
+  .refine(
+    (e) =>
+      !e.comparator ||
+      (e.metric === "crime_rate_per_100000" &&
+        e.unit === e.comparator.unit &&
+        e.period.from === e.comparator.period.from &&
+        e.period.to === e.comparator.period.to &&
+        e.rateDefinition?.categoryCode === e.comparator.categoryCode &&
+        e.rateDefinition?.denominatorBasis === e.comparator.denominatorBasis &&
+        e.rateDefinition?.methodologyId === e.comparator.methodologyId &&
+        e.geography.code !== e.comparator.baselineRegion.code),
+    "Comparator requires exactly matching rate metric, unit, period, category, denominator and methodology",
   );
 export type OfficialEvidence = z.infer<typeof officialEvidenceSchema>;
 export const officialImportSchema = z
@@ -123,6 +199,32 @@ export const officialImportSchema = z
   })
   .strict();
 
+export interface AirForecastHour {
+  time: string;
+  pm25: number | null;
+  pm10: number | null;
+  no2: number | null;
+  usAqi: number | null;
+}
+export interface AirForecast {
+  status: "available" | "partial" | "unknown" | "stale";
+  fetchedAt: string | null;
+  issuedAt: null;
+  sourceUrl: string;
+  requestUrl: string | null;
+  model: "CAMS Global";
+  resolutionKm: 45;
+  timezone: "UTC";
+  tripTimezone: "Asia/Seoul";
+  intervalSeconds: 3600;
+  units: { pm25: "µg/m³"; pm10: "µg/m³"; no2: "µg/m³"; usAqi: "USAQI" };
+  modelCoordinates: Coordinates | null;
+  coverageStart: string | null;
+  coverageEnd: string | null;
+  hourly: AirForecastHour[];
+  limitations: string[];
+  error?: string;
+}
 export interface AirQualityAssessment {
   status: "available" | "partial" | "unknown" | "stale";
   time: string | null;
@@ -142,6 +244,13 @@ export interface AirQualityAssessment {
   concentrationUnit: "µg/m³";
   category: string | null;
   limitations: string[];
+  forecast: AirForecast;
+  sourceSnapshot?: {
+    sha256: string;
+    byteLength: number;
+    requestUrl: string;
+    fetchedAt: string;
+  };
   error?: string;
 }
 export interface SafetyAssessment {
@@ -162,6 +271,7 @@ export interface AreaAssessmentFile {
   region?: string;
   assessments: AreaAssessment[];
   skipped: { hotelId: string; reason: string }[];
+  sourceArchive?: { path: string; sha256: string; entryCount: number };
 }
 
 export function aqiCategory(value: number | null): string | null {
@@ -179,8 +289,10 @@ export function airRequestUrl(coordinates: Coordinates): string {
     latitude: String(coordinates[1]),
     longitude: String(coordinates[0]),
     current: "pm2_5,pm10,nitrogen_dioxide,us_aqi",
+    hourly: "pm2_5,pm10,nitrogen_dioxide,us_aqi",
+    forecast_days: "5",
     domains: "cams_global",
-    timezone: "GMT",
+    timezone: "Asia/Seoul",
     timeformat: "unixtime",
   });
   return `https://air-quality-api.open-meteo.com/v1/air-quality?${params}`;
@@ -190,6 +302,174 @@ const airLimitations = [
   "Оценка относится к указанному времени; она не прогнозирует загрязнение на произвольные даты поездки и не характеризует долгосрочное состояние района.",
   "US AQI возвращён провайдером; концентрации в мкг/м³. Индекс не пересчитывается из одного мгновенного значения PM2.5.",
 ];
+const forecastLimitations = [
+  "Часовые значения интерполированы провайдером из CAMS Global (~45 км, исходный шаг 3 часа); это модель, а не измерение на улице.",
+  "Применим только фактически полученный интервал. Для поездки проверяются все часы от 00:00 заезда до 00:00 выезда по Asia/Seoul без пробелов и пропущенных US AQI.",
+  "Время выпуска модельного прогона API не возвращает. fetchedAt — время получения, а не выпуска; текущие концентрации не заменяют прогноз на даты поездки.",
+];
+export function unknownForecast(
+  reason: string,
+  requestUrl: string | null = null,
+): AirForecast {
+  return {
+    status: "unknown",
+    fetchedAt: null,
+    issuedAt: null,
+    sourceUrl: AIR_SOURCE,
+    requestUrl,
+    model: "CAMS Global",
+    resolutionKm: 45,
+    timezone: "UTC",
+    tripTimezone: "Asia/Seoul",
+    intervalSeconds: 3600,
+    units: { pm25: "µg/m³", pm10: "µg/m³", no2: "µg/m³", usAqi: "USAQI" },
+    modelCoordinates: null,
+    coverageStart: null,
+    coverageEnd: null,
+    hourly: [],
+    limitations: [...forecastLimitations],
+    error: reason,
+  };
+}
+function cellCoordinates(
+  raw: Record<string, unknown>,
+  expected?: Coordinates,
+): Coordinates | null {
+  const parsed = coordinateSchema.safeParse([raw.longitude, raw.latitude]);
+  if (!parsed.success) return null;
+  if (expected) {
+    const rad = Math.PI / 180,
+      lat1 = expected[1] * rad,
+      lat2 = parsed.data[1] * rad;
+    const hav =
+      Math.sin((lat2 - lat1) / 2) ** 2 +
+      Math.cos(lat1) *
+        Math.cos(lat2) *
+        Math.sin(((parsed.data[0] - expected[0]) * rad) / 2) ** 2;
+    if (
+      6371 * 2 * Math.asin(Math.sqrt(Math.min(1, hav))) >
+      AIR_MAX_CELL_DISTANCE_KM
+    )
+      return null;
+  }
+  return parsed.data;
+}
+export function normalizeAirForecast(
+  raw: unknown,
+  fetchedAt: string,
+  requestUrl: string,
+  now = new Date(),
+  expectedCoordinates?: Coordinates,
+): AirForecast {
+  const base = unknownForecast(
+    "Почасовой прогноз отсутствует или не прошёл проверку.",
+    requestUrl,
+  );
+  if (!raw || typeof raw !== "object") return base;
+  const data = raw as Record<string, unknown>;
+  if (data.error) return base;
+  const coords = cellCoordinates(data, expectedCoordinates),
+    fetched = Date.parse(fetchedAt);
+  if (!coords || !Number.isFinite(fetched) || fetched > +now + 60000)
+    return {
+      ...base,
+      error: "Некорректные координаты модели или время получения прогноза.",
+    };
+  const source = data.hourly as Record<string, unknown> | undefined,
+    units = data.hourly_units as Record<string, unknown> | undefined;
+  if (
+    !source ||
+    !units ||
+    units.time !== "unixtime" ||
+    !Array.isArray(source.time) ||
+    source.time.length === 0 ||
+    source.time.length > AIR_MAX_FORECAST_HOURS
+  )
+    return base;
+  const times = source.time;
+  let previous = -Infinity,
+    hasGaps = false;
+  for (const time of times) {
+    if (
+      typeof time !== "number" ||
+      !Number.isSafeInteger(time) ||
+      time % 3600 !== 0 ||
+      time <= previous ||
+      time * 1000 < fetched - 24 * 3600000 ||
+      time * 1000 > fetched + 7 * 24 * 3600000
+    )
+      return {
+        ...base,
+        error:
+          "Неверный, повторный или несортированный час прогноза либо дата за допустимым горизонтом.",
+      };
+    if (previous !== -Infinity && time - previous !== 3600) hasGaps = true;
+    previous = time;
+  }
+  const fields = {
+    pm25: ["pm2_5", "μg/m³"],
+    pm10: ["pm10", "μg/m³"],
+    no2: ["nitrogen_dioxide", "μg/m³"],
+    usAqi: ["us_aqi", "USAQI"],
+  } as const;
+  // An unequal array length makes index alignment untrustworthy for that metric.
+  const arrays = Object.fromEntries(
+    Object.entries(fields).map(([key, [name, unit]]) => [
+      key,
+      units[name] === unit &&
+      Array.isArray(source[name]) &&
+      source[name].length === times.length
+        ? source[name]
+        : null,
+    ]),
+  ) as Record<keyof typeof fields, unknown[] | null>;
+  const value = (key: keyof typeof fields, index: number): number | null => {
+    const v = arrays[key]?.[index];
+    return typeof v === "number" && Number.isFinite(v) && v >= 0 ? v : null;
+  };
+  const hourly: AirForecastHour[] = times.map((time, index) => ({
+    time: new Date(time * 1000).toISOString(),
+    pm25: value("pm25", index),
+    pm10: value("pm10", index),
+    no2: value("no2", index),
+    usAqi: value("usAqi", index),
+  }));
+  const valid = hourly.some((h) =>
+    [h.pm25, h.pm10, h.no2, h.usAqi].some((v) => v !== null),
+  );
+  if (!valid)
+    return {
+      ...base,
+      error: "Прогноз не содержит проверяемых значений в ожидаемых единицах.",
+    };
+  const incomplete =
+    hasGaps ||
+    hourly.some((h) =>
+      [h.pm25, h.pm10, h.no2, h.usAqi].some((v) => v === null),
+    );
+  const stale = +now - fetched > AIR_MAX_AGE_MS;
+  return {
+    ...base,
+    status: stale ? "stale" : incomplete ? "partial" : "available",
+    fetchedAt,
+    modelCoordinates: coords,
+    coverageStart: hourly[0].time,
+    coverageEnd: new Date((times.at(-1)! + 3600) * 1000).toISOString(),
+    hourly,
+    error: undefined,
+    limitations: [
+      ...forecastLimitations,
+      ...(incomplete
+        ? [
+            "В прогнозе есть пропуски часов или показателей. Границы coverageStart/coverageEnd сами по себе не доказывают полного покрытия поездки.",
+          ]
+        : []),
+      ...(stale
+        ? ["Прогноз получен более 6 часов назад; обновите источник."]
+        : []),
+    ],
+  };
+}
 export function unknownAir(
   reason: string,
   requestUrl: string | null = null,
@@ -213,10 +493,11 @@ export function unknownAir(
     concentrationUnit: "µg/m³",
     category: null,
     limitations: [...airLimitations],
+    forecast: unknownForecast(reason, requestUrl),
     error: reason,
   };
 }
-export function normalizeAir(
+function normalizeCurrentAir(
   raw: unknown,
   fetchedAt: string,
   requestUrl: string,
@@ -317,6 +598,30 @@ export function normalizeAir(
     ],
   };
 }
+export function normalizeAir(
+  raw: unknown,
+  fetchedAt: string,
+  requestUrl: string,
+  now = new Date(),
+  expectedCoordinates?: Coordinates,
+): AirQualityAssessment {
+  return {
+    ...normalizeCurrentAir(
+      raw,
+      fetchedAt,
+      requestUrl,
+      now,
+      expectedCoordinates,
+    ),
+    forecast: normalizeAirForecast(
+      raw,
+      fetchedAt,
+      requestUrl,
+      now,
+      expectedCoordinates,
+    ),
+  };
+}
 function ringLocation(point: Coordinates, ring: Coordinates[]): -1 | 0 | 1 {
   const [x, y] = point;
   let inside = false;
@@ -357,13 +662,31 @@ export function assessSafety(
   records: OfficialEvidence[] = [],
   now = new Date(),
 ): SafetyAssessment {
-  const today = now.toISOString().slice(0, 10);
-  const evidence = records.filter(
-    (e) =>
-      evidenceContains(e, coordinates) &&
-      e.publishedAt <= today &&
-      Date.parse(e.retrievedAt) <= +now,
-  );
+  const today = koreanDate(now);
+  const evidence = records
+    .filter(
+      (e) =>
+        evidenceContains(e, coordinates) &&
+        e.publishedAt <= today &&
+        Date.parse(e.retrievedAt) <= +now,
+    )
+    .map((e) => {
+      if (
+        e.comparator &&
+        (e.comparator.publishedAt > today ||
+          Date.parse(e.comparator.retrievedAt) > +now)
+      ) {
+        const { comparator, ...withoutComparator } = e;
+        return {
+          ...withoutComparator,
+          limitations: [
+            ...e.limitations,
+            "Сравнительное значение исключено: дата его публикации или получения находится в будущем.",
+          ],
+        };
+      }
+      return e;
+    });
   return {
     status: evidence.length ? "evidence" : "unknown",
     summary: evidence.length
@@ -399,24 +722,51 @@ export function refreshAreaFreshness(
   now = new Date(),
 ): AreaAssessment {
   const air = assessment.airQuality;
-  if (air.status === "unknown" || air.status === "stale") return assessment;
+  let forecast =
+    air.forecast ??
+    unknownForecast("В старом снимке нет почасового прогноза.", air.requestUrl);
+  const forecastFetched = Date.parse(forecast.fetchedAt || "");
+  if (forecast.status !== "unknown" && forecast.status !== "stale") {
+    if (!Number.isFinite(forecastFetched) || forecastFetched > +now + 60000)
+      forecast = {
+        ...forecast,
+        status: "unknown",
+        error: "Неверное время получения прогноза.",
+      };
+    else if (+now - forecastFetched > AIR_MAX_AGE_MS)
+      forecast = {
+        ...forecast,
+        status: "stale",
+        limitations: [
+          ...forecast.limitations,
+          "Сохранённый прогноз старше 6 часов.",
+        ],
+      };
+  }
+  const withForecast = { ...assessment, airQuality: { ...air, forecast } };
+  if (air.status === "unknown" || air.status === "stale") return withForecast;
   const time = Date.parse(air.time || ""),
     fetched = Date.parse(air.fetchedAt || "");
-  if (!Number.isFinite(time) || !Number.isFinite(fetched))
+  if (
+    !Number.isFinite(time) ||
+    !Number.isFinite(fetched) ||
+    time > +now + 3600000 ||
+    fetched > +now + 60000
+  )
     return {
-      ...assessment,
+      ...withForecast,
       airQuality: {
-        ...air,
+        ...withForecast.airQuality,
         status: "unknown",
-        error: "В сохранённом снимке отсутствует проверяемое время.",
+        error: "Время сохранённого снимка отсутствует, некорректно или находится в будущем.",
       },
     };
   if (+now - time <= AIR_MAX_AGE_MS && +now - fetched <= AIR_MAX_AGE_MS)
-    return assessment;
+    return withForecast;
   return {
-    ...assessment,
+    ...withForecast,
     airQuality: {
-      ...air,
+      ...withForecast.airQuality,
       status: "stale",
       limitations: [
         ...air.limitations,

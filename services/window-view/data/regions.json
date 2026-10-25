@@ -35,6 +35,296 @@
         "source_url": "https://www.openstreetmap.org/node/368663565"
       },
       {
+        "catalog_id": "node-368703845",
+        "hotel": {
+          "id": "osm:node:368703845",
+          "name": "Syanggeuria Motel",
+          "lat": 35.160071,
+          "lon": 129.158584
+        },
+        "source_url": "https://www.openstreetmap.org/node/368703845"
+      },
+      {
+        "catalog_id": "node-368703846",
+        "hotel": {
+          "id": "osm:node:368703846",
+          "name": "Bikaepeul Motel",
+          "lat": 35.158837,
+          "lon": 129.153758
+        },
+        "source_url": "https://www.openstreetmap.org/node/368703846"
+      },
+      {
+        "catalog_id": "node-368703861",
+        "hotel": {
+          "id": "osm:node:368703861",
+          "name": "Aiseu Motel",
+          "lat": 35.15921,
+          "lon": 129.154356
+        },
+        "source_url": "https://www.openstreetmap.org/node/368703861"
+      },
+      {
+        "catalog_id": "node-368703865",
+        "hotel": {
+          "id": "osm:node:368703865",
+          "name": "Jeuseu Motel",
+          "lat": 35.160197,
+          "lon": 129.15864
+        },
+        "source_url": "https://www.openstreetmap.org/node/368703865"
+      },
+      {
+        "catalog_id": "node-368703890",
+        "hotel": {
+          "id": "osm:node:368703890",
+          "name": "Nobioseu Motel",
+          "lat": 35.1593171,
+          "lon": 129.1566976
+        },
+        "source_url": "https://www.openstreetmap.org/node/368703890"
+      },
+      {
+        "catalog_id": "node-368703975",
+        "hotel": {
+          "id": "osm:node:368703975",
+          "name": "Deurama Motel",
+          "lat": 35.160545,
+          "lon": 129.157108
+        },
+        "source_url": "https://www.openstreetmap.org/node/368703975"
+      },
+      {
+        "catalog_id": "node-368704011",
+        "hotel": {
+          "id": "osm:node:368704011",
+          "name": "Kwin Motel",
+          "lat": 35.160073,
+          "lon": 129.160285
+        },
+        "source_url": "https://www.openstreetmap.org/node/368704011"
+      },
+      {
+        "catalog_id": "node-368704033",
+        "hotel": {
+          "id": "osm:node:368704033",
+          "name": "Orenji Pansion Motel",
+          "lat": 35.159389,
+          "lon": 129.154512
+        },
+        "source_url": "https://www.openstreetmap.org/node/368704033"
+      },
+      {
+        "catalog_id": "node-368704039",
+        "hotel": {
+          "id": "osm:node:368704039",
+          "name": "Motel 9",
+          "lat": 35.159675,
+          "lon": 129.154791
+        },
+        "source_url": "https://www.openstreetmap.org/node/368704039"
+      },
+      {
+        "catalog_id": "node-368704160",
+        "hotel": {
+          "id": "osm:node:368704160",
+          "name": "Myu Motel",
+          "lat": 35.160341,
+          "lon": 129.159619
+        },
+        "source_url": "https://www.openstreetmap.org/node/368704160"
+      },
+      {
+        "catalog_id": "node-368704547",
+        "hotel": {
+          "id": "osm:node:368704547",
+          "name": "Rojan Motel",
+          "lat": 35.162047,
+          "lon": 129.158458
+        },
+        "source_url": "https://www.openstreetmap.org/node/368704547"
+      },
+      {
+        "catalog_id": "node-368704647",
+        "hotel": {
+          "id": "osm:node:368704647",
+          "name": "Keullik Motel",
+          "lat": 35.161969,
+          "lon": 129.158095
+        },
+        "source_url": "https://www.openstreetmap.org/node/368704647"
+      },
+      {
+        "catalog_id": "node-368704818",
+        "hotel": {
+          "id": "osm:node:368704818",
+          "name": "Kasa Motel",
+          "lat": 35.160387,
+          "lon": 129.157688
+        },
+        "source_url": "https://www.openstreetmap.org/node/368704818"
+      },
+      {
+        "catalog_id": "node-368704826",
+        "hotel": {
+          "id": "osm:node:368704826",
+          "name": "Syuga Motel",
+          "lat": 35.160586,
+          "lon": 129.160358
+        },
+        "source_url": "https://www.openstreetmap.org/node/368704826"
+      },
+      {
+        "catalog_id": "node-368704981",
+        "hotel": {
+          "id": "osm:node:368704981",
+          "name": "Beach Motel",
+          "lat": 35.161339,
+          "lon": 129.158986
+        },
+        "source_url": "https://www.openstreetmap.org/node/368704981"
+      },
+      {
+        "catalog_id": "node-368705037",
+        "hotel": {
+          "id": "osm:node:368705037",
+          "name": "Bobeu Motel",
+          "lat": 35.162064,
+          "lon": 129.157613
+        },
+        "source_url": "https://www.openstreetmap.org/node/368705037"
+      },
+      {
+        "catalog_id": "node-368705048",
+        "hotel": {
+          "id": "osm:node:368705048",
+          "name": "Sebeun Motel",
+          "lat": 35.1601,
+          "lon": 129.158441
+        },
+        "source_url": "https://www.openstreetmap.org/node/368705048"
+      },
+      {
+        "catalog_id": "node-368706526",
+        "hotel": {
+          "id": "osm:node:368706526",
+          "name": "Paseutel Motel",
+          "lat": 35.159688,
+          "lon": 129.154363
+        },
+        "source_url": "https://www.openstreetmap.org/node/368706526"
+      },
+      {
+        "catalog_id": "node-368706721",
+        "hotel": {
+          "id": "osm:node:368706721",
+          "name": "Oberon Motel",
+          "lat": 35.159694,
+          "lon": 129.15748
+        },
+        "source_url": "https://www.openstreetmap.org/node/368706721"
+      },
+      {
+        "catalog_id": "node-368706855",
+        "hotel": {
+          "id": "osm:node:368706855",
+          "name": "Anabelli Motel",
+          "lat": 35.1598764,
+          "lon": 129.156341
+        },
+        "source_url": "https://www.openstreetmap.org/node/368706855"
+      },
+      {
+        "catalog_id": "node-368707118",
+        "hotel": {
+          "id": "osm:node:368707118",
+          "name": "Vallentine Motel",
+          "lat": 35.1617894,
+          "lon": 129.1576691
+        },
+        "source_url": "https://www.openstreetmap.org/node/368707118"
+      },
+      {
+        "catalog_id": "node-368707125",
+        "hotel": {
+          "id": "osm:node:368707125",
+          "name": "Amaranseu Motel",
+          "lat": 35.159237,
+          "lon": 129.154357
+        },
+        "source_url": "https://www.openstreetmap.org/node/368707125"
+      },
+      {
+        "catalog_id": "node-368707136",
+        "hotel": {
+          "id": "osm:node:368707136",
+          "name": "Castle Beach Motel",
+          "lat": 35.160353,
+          "lon": 129.15929
+        },
+        "source_url": "https://www.openstreetmap.org/node/368707136"
+      },
+      {
+        "catalog_id": "node-368707220",
+        "hotel": {
+          "id": "osm:node:368707220",
+          "name": "Paradia Motel",
+          "lat": 35.16184,
+          "lon": 129.162198
+        },
+        "source_url": "https://www.openstreetmap.org/node/368707220"
+      },
+      {
+        "catalog_id": "node-368707310",
+        "hotel": {
+          "id": "osm:node:368707310",
+          "name": "Wa Motel",
+          "lat": 35.1615439,
+          "lon": 129.1572093
+        },
+        "source_url": "https://www.openstreetmap.org/node/368707310"
+      },
+      {
+        "catalog_id": "node-368707378",
+        "hotel": {
+          "id": "osm:node:368707378",
+          "name": "Imanpalcheonnyang Motel",
+          "lat": 35.160272,
+          "lon": 129.158378
+        },
+        "source_url": "https://www.openstreetmap.org/node/368707378"
+      },
+      {
+        "catalog_id": "node-368707431",
+        "hotel": {
+          "id": "osm:node:368707431",
+          "name": "Seupeonji Motel",
+          "lat": 35.161818,
+          "lon": 129.158839
+        },
+        "source_url": "https://www.openstreetmap.org/node/368707431"
+      },
+      {
+        "catalog_id": "node-368707598",
+        "hotel": {
+          "id": "osm:node:368707598",
+          "name": "Ingka Motel",
+          "lat": 35.161119,
+          "lon": 129.157457
+        },
+        "source_url": "https://www.openstreetmap.org/node/368707598"
+      },
+      {
+        "catalog_id": "node-368707608",
+        "hotel": {
+          "id": "osm:node:368707608",
+          "name": "Beullaekaen White Motel",
+          "lat": 35.160224,
+          "lon": 129.157751
+        },
+        "source_url": "https://www.openstreetmap.org/node/368707608"
+      },
+      {
         "catalog_id": "node-368952148",
         "hotel": {
           "id": "osm:node:368952148",
@@ -65,6 +355,16 @@
         "source_url": "https://www.openstreetmap.org/node/368952200"
       },
       {
+        "catalog_id": "node-2450211344",
+        "hotel": {
+          "id": "osm:node:2450211344",
+          "name": "C Motel",
+          "lat": 35.1597271,
+          "lon": 129.1562981
+        },
+        "source_url": "https://www.openstreetmap.org/node/2450211344"
+      },
+      {
         "catalog_id": "node-3785255114",
         "hotel": {
           "id": "osm:node:3785255114",
@@ -85,6 +385,46 @@
         "source_url": "https://www.openstreetmap.org/node/3856628577"
       },
       {
+        "catalog_id": "node-3856628579",
+        "hotel": {
+          "id": "osm:node:3856628579",
+          "name": "Nuri Hotel",
+          "lat": 35.1598087,
+          "lon": 129.1610692
+        },
+        "source_url": "https://www.openstreetmap.org/node/3856628579"
+      },
+      {
+        "catalog_id": "node-4208249562",
+        "hotel": {
+          "id": "osm:node:4208249562",
+          "name": "D Plan Backpackers",
+          "lat": 35.1617134,
+          "lon": 129.1624017
+        },
+        "source_url": "https://www.openstreetmap.org/node/4208249562"
+      },
+      {
+        "catalog_id": "node-4213243421",
+        "hotel": {
+          "id": "osm:node:4213243421",
+          "name": "Hi Busan Guest House",
+          "lat": 35.1598478,
+          "lon": 129.156121
+        },
+        "source_url": "https://www.openstreetmap.org/node/4213243421"
+      },
+      {
+        "catalog_id": "node-4270166589",
+        "hotel": {
+          "id": "osm:node:4270166589",
+          "name": "Haeundae accommodation ",
+          "lat": 35.1602484,
+          "lon": 129.1543148
+        },
+        "source_url": "https://www.openstreetmap.org/node/4270166589"
+      },
+      {
         "catalog_id": "node-4426268904",
         "hotel": {
           "id": "osm:node:4426268904",
@@ -93,6 +433,36 @@
           "lon": 129.1612674
         },
         "source_url": "https://www.openstreetmap.org/node/4426268904"
+      },
+      {
+        "catalog_id": "node-4588715291",
+        "hotel": {
+          "id": "osm:node:4588715291",
+          "name": "Foxy Motel Busan",
+          "lat": 35.1612571,
+          "lon": 129.1582657
+        },
+        "source_url": "https://www.openstreetmap.org/node/4588715291"
+      },
+      {
+        "catalog_id": "node-4636615590",
+        "hotel": {
+          "id": "osm:node:4636615590",
+          "name": "Sujain Officetel",
+          "lat": 35.1608063,
+          "lon": 129.1559069
+        },
+        "source_url": "https://www.openstreetmap.org/node/4636615590"
+      },
+      {
+        "catalog_id": "node-6476975185",
+        "hotel": {
+          "id": "osm:node:6476975185",
+          "name": "Canvas Black Hostel",
+          "lat": 35.1593237,
+          "lon": 129.1528901
+        },
+        "source_url": "https://www.openstreetmap.org/node/6476975185"
       },
       {
         "catalog_id": "node-6640051687",
@@ -105,6 +475,16 @@
         "source_url": "https://www.openstreetmap.org/node/6640051687"
       },
       {
+        "catalog_id": "node-10689847527",
+        "hotel": {
+          "id": "osm:node:10689847527",
+          "name": "대우마리나아파트",
+          "lat": 35.1591854,
+          "lon": 129.1473285
+        },
+        "source_url": "https://www.openstreetmap.org/node/10689847527"
+      },
+      {
         "catalog_id": "node-11074220074",
         "hotel": {
           "id": "osm:node:11074220074",
@@ -113,6 +493,26 @@
           "lon": 129.1623734
         },
         "source_url": "https://www.openstreetmap.org/node/11074220074"
+      },
+      {
+        "catalog_id": "node-11074220075",
+        "hotel": {
+          "id": "osm:node:11074220075",
+          "name": "Seacloud Hotel Residence",
+          "lat": 35.1605584,
+          "lon": 129.1623474
+        },
+        "source_url": "https://www.openstreetmap.org/node/11074220075"
+      },
+      {
+        "catalog_id": "node-11074220076",
+        "hotel": {
+          "id": "osm:node:11074220076",
+          "name": "Suncloud Hotel",
+          "lat": 35.1605766,
+          "lon": 129.1623734
+        },
+        "source_url": "https://www.openstreetmap.org/node/11074220076"
       },
       {
         "catalog_id": "node-11164247205",
@@ -125,6 +525,16 @@
         "source_url": "https://www.openstreetmap.org/node/11164247205"
       },
       {
+        "catalog_id": "node-12074834269",
+        "hotel": {
+          "id": "osm:node:12074834269",
+          "name": "Canvas Hostel",
+          "lat": 35.1592365,
+          "lon": 129.1526835
+        },
+        "source_url": "https://www.openstreetmap.org/node/12074834269"
+      },
+      {
         "catalog_id": "node-12308280501",
         "hotel": {
           "id": "osm:node:12308280501",
@@ -133,6 +543,16 @@
           "lon": 129.1607691
         },
         "source_url": "https://www.openstreetmap.org/node/12308280501"
+      },
+      {
+        "catalog_id": "node-12761775501",
+        "hotel": {
+          "id": "osm:node:12761775501",
+          "name": "Kimchee Guest House Haendae",
+          "lat": 35.1598771,
+          "lon": 129.1564276
+        },
+        "source_url": "https://www.openstreetmap.org/node/12761775501"
       },
       {
         "catalog_id": "node-13011853719",
@@ -153,6 +573,36 @@
           "lon": 129.1586863
         },
         "source_url": "https://www.openstreetmap.org/way/627150752"
+      },
+      {
+        "catalog_id": "way-627158973",
+        "hotel": {
+          "id": "osm:way:627158973",
+          "name": "원 호텔",
+          "lat": 35.16082525454545,
+          "lon": 129.1575935636364
+        },
+        "source_url": "https://www.openstreetmap.org/way/627158973"
+      },
+      {
+        "catalog_id": "way-627158974",
+        "hotel": {
+          "id": "osm:way:627158974",
+          "name": "잠자리모텔",
+          "lat": 35.160816762500005,
+          "lon": 129.15791798125002
+        },
+        "source_url": "https://www.openstreetmap.org/way/627158974"
+      },
+      {
+        "catalog_id": "way-627347064",
+        "hotel": {
+          "id": "osm:way:627347064",
+          "name": "더 비치호텔",
+          "lat": 35.16223762,
+          "lon": 129.15837668
+        },
+        "source_url": "https://www.openstreetmap.org/way/627347064"
       },
       {
         "catalog_id": "way-627347066",
@@ -193,6 +643,16 @@
           "lon": 129.15698228
         },
         "source_url": "https://www.openstreetmap.org/way/780727746"
+      },
+      {
+        "catalog_id": "way-992351409",
+        "hotel": {
+          "id": "osm:way:992351409",
+          "name": "루이스호텔",
+          "lat": 35.16171215999999,
+          "lon": 129.15748209999998
+        },
+        "source_url": "https://www.openstreetmap.org/way/992351409"
       },
       {
         "catalog_id": "way-992363537",
@@ -253,6 +713,266 @@
           "lon": 129.15378122222222
         },
         "source_url": "https://www.openstreetmap.org/way/992363562"
+      },
+      {
+        "catalog_id": "node-368663479",
+        "hotel": {
+          "id": "osm:node:368663479",
+          "name": "Be Star Resort Hotel",
+          "lat": 35.158252,
+          "lon": 129.175286
+        },
+        "source_url": "https://www.openstreetmap.org/node/368663479"
+      },
+      {
+        "catalog_id": "node-368663556",
+        "hotel": {
+          "id": "osm:node:368663556",
+          "name": "Palledeusijeu Condominium",
+          "lat": 35.1600307,
+          "lon": 129.166567
+        },
+        "source_url": "https://www.openstreetmap.org/node/368663556"
+      },
+      {
+        "catalog_id": "node-368705243",
+        "hotel": {
+          "id": "osm:node:368705243",
+          "name": "Magic Motel",
+          "lat": 35.161965,
+          "lon": 129.164187
+        },
+        "source_url": "https://www.openstreetmap.org/node/368705243"
+      },
+      {
+        "catalog_id": "node-368705677",
+        "hotel": {
+          "id": "osm:node:368705677",
+          "name": "Swelbeureu Motel",
+          "lat": 35.161921,
+          "lon": 129.164055
+        },
+        "source_url": "https://www.openstreetmap.org/node/368705677"
+      },
+      {
+        "catalog_id": "node-368706771",
+        "hotel": {
+          "id": "osm:node:368706771",
+          "name": "Motel Garden Jang",
+          "lat": 35.161391,
+          "lon": 129.162971
+        },
+        "source_url": "https://www.openstreetmap.org/node/368706771"
+      },
+      {
+        "catalog_id": "node-368707442",
+        "hotel": {
+          "id": "osm:node:368707442",
+          "name": "New International Motel",
+          "lat": 35.16177,
+          "lon": 129.163822
+        },
+        "source_url": "https://www.openstreetmap.org/node/368707442"
+      },
+      {
+        "catalog_id": "node-368707612",
+        "hotel": {
+          "id": "osm:node:368707612",
+          "name": "Uju Motel",
+          "lat": 35.158147,
+          "lon": 129.172124
+        },
+        "source_url": "https://www.openstreetmap.org/node/368707612"
+      },
+      {
+        "catalog_id": "node-368707620",
+        "hotel": {
+          "id": "osm:node:368707620",
+          "name": "Daeyeongjang Motel",
+          "lat": 35.161489,
+          "lon": 129.163939
+        },
+        "source_url": "https://www.openstreetmap.org/node/368707620"
+      },
+      {
+        "catalog_id": "node-368856409",
+        "hotel": {
+          "id": "osm:node:368856409",
+          "name": "Beach Leisure Tel Haesuion Jjimjilbang",
+          "lat": 35.1576537,
+          "lon": 129.1710232
+        },
+        "source_url": "https://www.openstreetmap.org/node/368856409"
+      },
+      {
+        "catalog_id": "node-3100806482",
+        "hotel": {
+          "id": "osm:node:3100806482",
+          "name": "Popcorn Hostel",
+          "lat": 35.1624483,
+          "lon": 129.1651693
+        },
+        "source_url": "https://www.openstreetmap.org/node/3100806482"
+      },
+      {
+        "catalog_id": "node-3785255104",
+        "hotel": {
+          "id": "osm:node:3785255104",
+          "name": "Benikea Hotel Haeundae",
+          "lat": 35.1615714,
+          "lon": 129.164547
+        },
+        "source_url": "https://www.openstreetmap.org/node/3785255104"
+      },
+      {
+        "catalog_id": "node-3785255112",
+        "hotel": {
+          "id": "osm:node:3785255112",
+          "name": "Pobi Guest House",
+          "lat": 35.1622421,
+          "lon": 129.1634159
+        },
+        "source_url": "https://www.openstreetmap.org/node/3785255112"
+      },
+      {
+        "catalog_id": "node-4199814292",
+        "hotel": {
+          "id": "osm:node:4199814292",
+          "name": "Paradise Hotel Busan",
+          "lat": 35.1602041,
+          "lon": 129.1652071
+        },
+        "source_url": "https://www.openstreetmap.org/node/4199814292"
+      },
+      {
+        "catalog_id": "node-7858128118",
+        "hotel": {
+          "id": "osm:node:7858128118",
+          "name": "SIGNIEL BUSAN",
+          "lat": 35.1598007,
+          "lon": 129.169609
+        },
+        "source_url": "https://www.openstreetmap.org/node/7858128118"
+      },
+      {
+        "catalog_id": "node-12200914903",
+        "hotel": {
+          "id": "osm:node:12200914903",
+          "name": "Mipo Oceanside Hotel",
+          "lat": 35.1589984,
+          "lon": 129.1703835
+        },
+        "source_url": "https://www.openstreetmap.org/node/12200914903"
+      },
+      {
+        "catalog_id": "node-13447858318",
+        "hotel": {
+          "id": "osm:node:13447858318",
+          "name": "Fairfield by Marriott",
+          "lat": 35.1616468,
+          "lon": 129.1647592
+        },
+        "source_url": "https://www.openstreetmap.org/node/13447858318"
+      },
+      {
+        "catalog_id": "node-13456654596",
+        "hotel": {
+          "id": "osm:node:13456654596",
+          "name": "MAMA Guesthouse",
+          "lat": 35.1620819,
+          "lon": 129.1632864
+        },
+        "source_url": "https://www.openstreetmap.org/node/13456654596"
+      },
+      {
+        "catalog_id": "way-843161717",
+        "hotel": {
+          "id": "osm:way:843161717",
+          "name": "Grand Josun Busan",
+          "lat": 35.160034181481485,
+          "lon": 129.16315205555554
+        },
+        "source_url": "https://www.openstreetmap.org/way/843161717"
+      },
+      {
+        "catalog_id": "way-992385533",
+        "hotel": {
+          "id": "osm:way:992385533",
+          "name": "호텔더이엘",
+          "lat": 35.161484671428575,
+          "lon": 129.16340628571427
+        },
+        "source_url": "https://www.openstreetmap.org/way/992385533"
+      },
+      {
+        "catalog_id": "node-368707405",
+        "hotel": {
+          "id": "osm:node:368707405",
+          "name": "Hwangtobangcheongha Motel",
+          "lat": 35.163809,
+          "lon": 129.161732
+        },
+        "source_url": "https://www.openstreetmap.org/node/368707405"
+      },
+      {
+        "catalog_id": "node-4318458994",
+        "hotel": {
+          "id": "osm:node:4318458994",
+          "name": "Show",
+          "lat": 35.1626019,
+          "lon": 129.1578237
+        },
+        "source_url": "https://www.openstreetmap.org/node/4318458994"
+      },
+      {
+        "catalog_id": "node-5583783140",
+        "hotel": {
+          "id": "osm:node:5583783140",
+          "name": "Felix by STX",
+          "lat": 35.1629764,
+          "lon": 129.1584423
+        },
+        "source_url": "https://www.openstreetmap.org/node/5583783140"
+      },
+      {
+        "catalog_id": "node-12335993401",
+        "hotel": {
+          "id": "osm:node:12335993401",
+          "name": "Myeongwolga Poolvilla",
+          "lat": 35.1640432,
+          "lon": 129.1602315
+        },
+        "source_url": "https://www.openstreetmap.org/node/12335993401"
+      },
+      {
+        "catalog_id": "node-13011853720",
+        "hotel": {
+          "id": "osm:node:13011853720",
+          "name": "라마다 앙코르 부산 해운대",
+          "lat": 35.1633004,
+          "lon": 129.1596309
+        },
+        "source_url": "https://www.openstreetmap.org/node/13011853720"
+      },
+      {
+        "catalog_id": "way-1494488365",
+        "hotel": {
+          "id": "osm:way:1494488365",
+          "name": "Hanok & Modern Stay Haeundae",
+          "lat": 35.16935176,
+          "lon": 129.15622334
+        },
+        "source_url": "https://www.openstreetmap.org/way/1494488365"
+      },
+      {
+        "catalog_id": "way-988011833",
+        "hotel": {
+          "id": "osm:way:988011833",
+          "name": "금호장",
+          "lat": 35.163015477777776,
+          "lon": 129.1660719333333
+        },
+        "source_url": "https://www.openstreetmap.org/way/988011833"
       }
     ],
     "limitations": [

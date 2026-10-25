@@ -133,7 +133,11 @@ def prepare(request, scene, observations=None):
         ring = building["polygons"][0]["outer"][:-1]
         if not ring:
             continue
-        point = min(ring, key=lambda p: distance(hotel, {"lat": p[0], "lon": p[1]}))
+        # A supplied window can be on a different side of the hotel point.
+        # Select the roof sample relative to the actual observer; using the
+        # hotel point can select a far-side corner behind the target's wall.
+        target_origin = window if complete else hotel
+        point = min(ring, key=lambda p: distance(target_origin, {"lat": p[0], "lon": p[1]}))
         if distance(window if complete else hotel, {"lat": point[0], "lon": point[1]}) > min(500, max_radius):
             continue
         selected.append({"id": "roof:" + building["id"], "kind": "neighbor_building",
@@ -206,8 +210,10 @@ def estimate(request, scene, observations=None):
     for observer in observers:
         results = []
         for target in targets:
-            excludes = observer["exclude_building_ids"] + ([target["target_building_id"]] if target.get("target_building_id") else [])
-            result = _sensitivity(assess_target, {**observer, "exclude_building_ids": excludes}, target, scene["buildings"], scene.get("terrain"))
+            # The target's footprint can itself obscure a far-side/concave
+            # roof corner. Geometry ignores endpoint contact, so the whole
+            # target prism must remain in the intervening-obstacle trace.
+            result = _sensitivity(assess_target, observer, target, scene["buildings"], scene.get("terrain"))
             if target.get("target_building_id") and target.get("height_m") is None and result["status"] != "outside_fov":
                 result["status"], result["visible_in_model"], result["elevation_angle_deg"] = "unknown", None, None
                 result.setdefault("uncertainties", []).append("roof_height_unknown")

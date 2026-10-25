@@ -38,7 +38,7 @@ async function fetchCoreSnapshot() {
   const elements: OsmElement[] = [];
   for (const e of merged.values()) {
     const t = e.tags || {};
-    const needed = t.highway || t.entrance || t.barrier || t.foot || t.access || t.tourism === "hotel" || t.railway === "rail" || ["beach", "coastline"].includes(t.natural || "") || ["bar", "pub", "nightclub"].includes(t.amenity || "");
+    const needed = t.highway || t.entrance || t.barrier || t.foot || t.access || ["hotel", "guest_house", "motel", "hostel", "apartment"].includes(t.tourism || "") || t.railway === "rail" || ["beach", "coastline"].includes(t.natural || "") || ["bar", "pub", "nightclub"].includes(t.amenity || "");
     if (!needed) continue;
     if (e.type === "way" && e.nodes) {
       const geometry = e.nodes.map(id => nodes.get(id));
@@ -62,7 +62,7 @@ if (process.argv.includes("--osm-api") || coreCachePresent.every(Boolean)) {
   process.exit(0);
 }
 const parts = [
-  `nwr[tourism=hotel](${bbox});`,
+  `nwr[tourism~"^(hotel|guest_house|motel|hostel|apartment)$"](${bbox});`,
   ...[
     "35.150,129.145,35.1625,129.1625",
     "35.150,129.1625,35.1625,129.180",

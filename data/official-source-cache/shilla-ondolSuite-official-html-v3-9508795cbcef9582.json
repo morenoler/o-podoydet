@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "sourceId": "shilla-ondolSuite",
+  "hotelId": "way-627150752",
+  "url": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/ondolSuite.do",
+  "obtainedAt": "2026-10-25T09:18:47.118Z",
+  "sourceUpdatedAt": null,
+  "responseSha256": "9508795cbcef958294a7399abd2ddd336eba87d1235aca9138e1ff3ad37cd699",
+  "responseBytes": 210411,
+  "parserVersion": "official-html-v3",
+  "projection": {
+    "name": "Ondol Suite",
+    "capacity": 4,
+    "publishedView": "City",
+    "family": true,
+    "wifi": true,
+    "extraChildCapacity": 5,
+    "childMaxAge": 12,
+    "excerpts": [
+      "Ondol Suite",
+      "1–4 guests",
+      "City",
+      "up to 5 guests",
+      "37 months to 12 years",
+      "Wi-Fi"
+    ],
+    "evidenceSelectors": {
+      "name": "title before |",
+      "capacity": ".room-detail .property-overview .room-info-box dt=Guests + dd",
+      "publishedView": ".room-detail .property-overview .room-info-box dt=View + dd",
+      "childRule": ".room-detail .property-overview child occupancy sentence",
+      "childAge": "official booking-form Children age definition",
+      "amenities": ".room-detail .amenities-list, excluding navigation and related content"
+    },
+    "limitations": [
+      "Категория номера, а не физический номер; наличие на даты не проверялось.",
+      "City/Ocean — варианты вида в категории, а не обещание каждого вида в одном номере.",
+      "Ступени, вход, лифт и полный доступ до номера не подтверждены.",
+      "Увеличение вместимости условно: нужен ребёнок; возрастная категория издателя требует проверки возраста. Младенцы до 36 месяцев учитываются отдельно, это правило их размещение не устанавливает."
+    ]
+  },
+  "projectionSha256": "3bbc964def557d2d062d313e0b037c182feae7e32ce175eb7be162967b8e109b",
+  "method": "official",
+  "demo": false,
+  "cacheLimitations": "Bounded extracted fields and <=25 words of excerpts are retained. Full HTML is not distributed. The response hash cannot be recomputed offline; projection integrity can. A fresh collection is required to rerun HTML extraction."
+}

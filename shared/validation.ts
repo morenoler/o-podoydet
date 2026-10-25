@@ -5,6 +5,9 @@ export const featureSchema = z.enum([
   "courtyard",
   "step_free_access",
   "family",
+  "area_safety",
+  "clean_air",
+  "low_noise",
 ]);
 const date = z
   .string()
@@ -26,7 +29,7 @@ export const tripSchema = z
       .refine((s) => new Set(s).size === s.length, "Сценарии повторяются"),
     preferences: z
       .array(z.object({ feature: featureSchema, required: z.boolean() }))
-      .max(5)
+      .max(8)
       .refine(
         (p) => new Set(p.map((x) => x.feature)).size === p.length,
         "Пожелания повторяются",
@@ -38,7 +41,7 @@ export const tripSchema = z
     path: ["checkOut"],
   });
 export const extractionSchema = z.object({
-  feature: featureSchema,
+  feature: z.enum(["courtyard", "step_free_access", "family"]),
   value: z.boolean(),
   quote: z.string().min(1).max(1500),
 });

@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "sourceId": "josun-family-policy",
+  "hotelId": "way-843161717",
+  "url": "https://gjb.josunhotel.com/about/faq.do?_method=list",
+  "obtainedAt": "2026-10-25T09:05:22.253Z",
+  "sourceUpdatedAt": null,
+  "responseSha256": "adf6a32cc9574c19c3bd6e13f41ab2db0f01f9133fd4eeb68dadebf658c6add5",
+  "responseBytes": 71259,
+  "parserVersion": "official-html-v1",
+  "projection": {
+    "policy": {
+      "maxAdults": 2,
+      "maxChildren": 2,
+      "maxGuests": 4,
+      "childMaxAge": 12
+    },
+    "excerpts": [
+      "한 객실 당 성인 2인과 어린이 2인으로 4인 가족 기준입니다.",
+      "투숙 기준 소인 나이는 0세부터 12세입니다."
+    ],
+    "evidenceSelectors": {
+      "composition": "FAQ: standard room occupancy answer",
+      "childAge": "FAQ: child age definition answer"
+    },
+    "limitations": [
+      "Правило отеля относится к составу семьи, не даёт безусловную вместимость четырёх взрослых.",
+      "Доплата и исключения для дополнительных гостей не импортируются как безусловное разрешение."
+    ]
+  },
+  "projectionSha256": "4d9685ba50e83eb638cb40a4b594566a08a136202ad1cc876c0a689790a9e691",
+  "method": "official",
+  "demo": false,
+  "cacheLimitations": "Bounded extracted fields and <=25 words of excerpts are retained. Full HTML is not distributed. The response hash cannot be recomputed offline; projection integrity can. A fresh collection is required to rerun HTML extraction."
+}

@@ -109,13 +109,17 @@ test("saved real routes consist only of connected graph edges; alternatives cont
       if (!e.steps) stepFree.add(key);
     }
   assert.equal(dataset.region, "Пусан");
-  assert.ok(dataset.hotels.length >= 15 && dataset.hotels.length <= 25);
+  assert.ok(dataset.hotels.length >= 60 && dataset.hotels.length <= 130);
   assert.deepEqual(dataset.bbox, [129.145,35.150,129.180,35.175]);
   for (const h of dataset.hotels) {
     assert.ok(h.coordinates[0] >= dataset.bbox[0] && h.coordinates[0] <= dataset.bbox[2]);
     assert.ok(h.coordinates[1] >= dataset.bbox[1] && h.coordinates[1] <= dataset.bbox[3]);
     assert.ok(h.osmUrl.startsWith("https://www.openstreetmap.org/"));
-    assert.ok(h.route && h.route.meters > 0);
+    if (!h.route) {
+      assert.ok(!dataset.facts.some(f => f.hotelId === h.id && f.feature === "beach_walk"));
+      continue;
+    }
+    assert.ok(h.route.meters > 0);
     const paths = [
       { ...h.route!, avoidSteps: false },
       ...(h.route!.noStepsAlternative

@@ -10,6 +10,10 @@
   --line: #dce3ee;
   --paper: #fff;
   --yellow: #f8b84e;
+  --wish-match-ink: #176247;
+  --wish-match-bg: #edf8f1;
+  --wish-mismatch-ink: #973a34;
+  --wish-mismatch-bg: #fff2ef;
 }
 * {
   box-sizing: border-box;
@@ -980,10 +984,6 @@ textarea::placeholder {
   border-radius: 5px;
   line-height: 1.5;
 }
-.match-badge.clarify {
-  color: #8a601c;
-  background: #fff4d9;
-}
 .match-badge.excluded {
   color: #9e4938;
   background: #fff0eb;
@@ -1054,6 +1054,118 @@ textarea::placeholder {
   color: #62718a;
   line-height: 1.6;
 }
+.wish-matches {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.wish-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 14px;
+}
+.wish-summary > span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.wish-group {
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-radius: 12px;
+  padding: 14px;
+}
+.wish-match {
+  color: var(--wish-match-ink);
+  background: var(--wish-match-bg);
+}
+.wish-mismatch {
+  color: var(--wish-mismatch-ink);
+  background: var(--wish-mismatch-bg);
+}
+.wish-group-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.wish-group-title > svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+.wish-group-title > span {
+  margin-left: auto;
+  font-weight: 700;
+}
+.wish-group ul {
+  display: grid;
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.wish-group .criterion strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.wish-group .criterion small {
+  font-size: 12px;
+  color: #4e5f73;
+  line-height: 1.55;
+}
+.wish-group .required-label {
+  font-size: 11px;
+  color: #79551c;
+}
+.wish-group .criterion > svg {
+  flex: 0 0 auto;
+}
+.wish-demo {
+  display: block;
+  margin: 4px 0 0 25px;
+  font-size: 11px;
+  color: #5b6269;
+}
+.wish-no-match {
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 0;
+  color: var(--muted);
+}
+.wish-match:has(.wish-no-match) {
+  background: #f7f9fc;
+  color: var(--muted);
+}
+.wish-empty {
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.wish-empty p {
+  color: var(--muted);
+  margin: 8px 0;
+}
+.wish-empty a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-weight: 600;
+}
+.room-panel > .wish-matches,
+.room-panel > .wish-empty {
+  margin-top: 24px;
+}
+.room-criteria h3 {
+  font-size: 14px;
+}
 .criterion > svg {
   margin-top: 1px;
   color: #8998ae;
@@ -1061,11 +1173,10 @@ textarea::placeholder {
 .criterion.match > svg {
   color: #2c8068;
 }
-.criterion.mismatch > svg,
-.criterion.conflict > svg {
+.criterion.mismatch > svg {
   color: #b16a3f;
 }
-.criterion > span {
+.criterion-body {
   min-width: 0;
 }
 .criterion strong {
@@ -2133,4 +2244,94 @@ textarea::placeholder {
     border-top: 1px solid #e2e8ef;
     padding-top: 24px;
   }
+}
+.trip-environment {
+  background: #f4f7fb;
+  border: 1px solid #dce5ef;
+  border-radius: 16px;
+  padding: 26px;
+}
+.environment-heading {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+.environment-heading h2,
+.environment-heading p {
+  margin: 0 0 6px;
+}
+.environment-criteria {
+  display: grid;
+  gap: 0;
+}
+.environment-criterion {
+  padding: 18px 0;
+  border-top: 1px solid #dce5ef;
+}
+.environment-criterion > .muted {
+  display: block;
+  margin: 8px 0 0 29px;
+  font-size: 12px;
+}
+.criterion-evidence {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #53647b;
+  font-weight: 400;
+}
+.criterion-evidence summary {
+  cursor: pointer;
+  color: #285899;
+  padding-block: 3px;
+}
+.criterion-evidence p {
+  margin: 9px 0;
+  overflow-wrap: anywhere;
+}
+.criterion-evidence a {
+  color: #285899;
+}
+.criterion-body {
+  min-width: 0;
+}
+@media (max-width: 680px) {
+  .trip-environment {
+    padding: 18px;
+  }
+}
+
+/* A decision and its evidence basis are separate: estimates keep their label in both groups. */
+.assumption-label {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  padding: 3px 7px;
+  border: 1px solid #c6b8dc;
+  border-radius: 6px;
+  background: #f5f0fc;
+  color: #594272;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+.criterion-body > .assumption-label {
+  margin: 5px 0 2px;
+}
+.capacity-summary {
+  margin: 10px 0;
+  color: #5d6261;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.capacity-summary p {
+  margin: 4px 0 0;
+}
+.capacity-mismatch {
+  color: #a53d31;
+}
+
+.wish-requirements {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 12px;
 }

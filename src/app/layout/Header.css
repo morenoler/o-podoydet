@@ -1,0 +1,26 @@
+/* The test build adds one navigation item; ordinary navigation is unchanged. */
+@media (max-width: 760px) {
+  .lab-header {
+    height: auto;
+  }
+  .lab-header .header-inner {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 14px;
+    padding-bottom: 12px;
+  }
+  .lab-header nav {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+    height: 32px;
+  }
+  .lab-header nav .nav-link:first-child {
+    display: flex;
+  }
+  .lab-header .lab-nav {
+    margin-left: auto;
+    height: 34px;
+    font-size: 11px;
+  }
+}

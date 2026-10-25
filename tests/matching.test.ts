@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { evaluate, rankHotels } from "../shared/matching";
-import { tripSchema } from "../shared/validation";
+import { tripSchema, extractionSchema } from "../shared/validation";
+import { featureIds, features } from "../shared/features";
 import type { Fact, Hotel, Preference, Trip } from "../shared/types";
 
 // These tests retain the UI evaluator contract; Java API behavior is tested by Maven/JUnit.
@@ -23,8 +24,26 @@ const hotel: Hotel = {
   coordinates: [129.16, 35.16],
   osmUrl: "https://www.openstreetmap.org/",
   rooms: [
-    { id: "room-a", name: "Во двор", capacity: 4, demo: true },
-    { id: "room-b", name: "У входа", capacity: 4, demo: true },
+    {
+      id: "room-a",
+      name: "Во двор",
+      capacity: 4,
+      demo: false,
+      evidenceStatus: "verified",
+      sourceUrl: "https://example.com/rooms/a",
+      obtainedAt: "2026-10-01T00:00:00Z",
+      quote: "Synthetic verified category A",
+    },
+    {
+      id: "room-b",
+      name: "У входа",
+      capacity: 4,
+      demo: false,
+      evidenceStatus: "verified",
+      sourceUrl: "https://example.com/rooms/b",
+      obtainedAt: "2026-10-01T00:00:00Z",
+      quote: "Synthetic verified category B",
+    },
   ],
   route: null,
   noise: [],
@@ -36,14 +55,15 @@ function fact(overrides: Partial<Fact> = {}): Fact {
     roomId: "room-a",
     feature: "courtyard",
     value: true,
-    source: "Демо",
+    source: "Synthetic official-shaped test fixture",
+    sourceUrl: "https://example.com/rooms/a",
     quote: "Окна во двор",
-    method: "demo",
+    method: "official",
     confidence: "low",
     confidenceReason: "Демонстрация",
     obtainedAt: "2026-10-01T00:00:00Z",
     expiresAt: "2030-01-01T00:00:00Z",
-    demo: true,
+    demo: false,
     ...overrides,
   };
 }
@@ -82,7 +102,7 @@ test("unknown, expired, invalid and out-of-period evidence never becomes a match
     );
   assert.equal(
     rankHotels([hotel], [], [pref("courtyard")], trip, now)[0].best.status,
-    "clarify",
+    "excluded",
   );
 });
 test("room advantages cannot combine across categories or leak between hotels", () => {
@@ -97,7 +117,7 @@ test("room advantages cannot combine across categories or leak between hotels", 
     trip,
     now,
   )[0];
-  assert.equal(result.best.status, "clarify");
+  assert.equal(result.best.status, "excluded");
   assert.ok(
     result.rooms.every(
       (r) => r.criteria.filter((c) => c.status === "match").length === 1,
@@ -111,7 +131,7 @@ test("room advantages cannot combine across categories or leak between hotels", 
       trip,
       now,
     )[0].best.criteria[0].status,
-    "unknown",
+    "mismatch",
   );
 });
 test("conflicting current evidence requires clarification and stale evidence cannot override it", () => {
@@ -151,5 +171,82 @@ test("mandatory mismatches and capacity shortages are excluded without relaxatio
   assert.equal(
     rankHotels([hotel], [], [], { ...trip, adults: 5 }, now)[0].best.status,
     "excluded",
+  );
+});
+
+test("all eight selectable features validate once while unknown and duplicate features fail", () => {
+  assert.equal(featureIds.length, 8);
+  const preferences = featureIds.map((feature) => pref(feature));
+  const parsed = tripSchema.safeParse({ ...trip, preferences });
+  assert.equal(parsed.success, true);
+  if (parsed.success) assert.deepEqual(parsed.data.preferences, preferences);
+  assert.equal(
+    tripSchema.safeParse({
+      ...trip,
+      preferences: [...preferences, pref("clean_air")],
+    }).success,
+    false,
+  );
+  assert.equal(
+    tripSchema.safeParse({
+      ...trip,
+      preferences: [{ feature: "arbitrary_safety_score", required: true }],
+    }).success,
+    false,
+  );
+});
+
+test("persisted host or demo facts cannot confirm or reject environmental criteria", () => {
+  for (const feature of ["area_safety", "clean_air", "low_noise"] as const) {
+    assert.equal(features[feature].tool, "area");
+    for (const method of ["host", "demo"] as const) {
+      for (const value of [true, false, 0, 999]) {
+        const persisted = fact({ roomId: undefined, feature, method, value });
+        const criterion = evaluate(
+          [persisted],
+          pref(feature),
+          hotel.rooms[0],
+          trip,
+          now,
+        );
+        assert.equal(
+          criterion.status,
+          "unknown",
+          `${feature}/${method}/${value}`,
+        );
+        assert.deepEqual(criterion.facts, []);
+        const ranked = rankHotels(
+          [hotel],
+          [persisted],
+          [pref(feature)],
+          trip,
+          now,
+        )[0];
+        assert.equal(ranked.best.status, "excluded");
+        assert.ok(
+          ranked.rooms.every(
+            (room) =>
+              room.criteria[0].status === "mismatch" &&
+              room.criteria[0].evidenceStatus === "unknown",
+          ),
+        );
+      }
+    }
+    assert.equal(
+      extractionSchema.safeParse({
+        feature,
+        value: true,
+        quote: "Отельер утверждает, что всё безопасно",
+      }).success,
+      false,
+    );
+  }
+  assert.equal(
+    extractionSchema.safeParse({
+      feature: "courtyard",
+      value: true,
+      quote: "Окна во двор",
+    }).success,
+    true,
   );
 });
