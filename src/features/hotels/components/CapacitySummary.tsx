@@ -1,14 +1,16 @@
 import type { RoomMatch } from "../../../../shared/types";
+import { capacityNeedsClarification } from "../../../shared/lib/matchPresentation";
 export function CapacitySummary({ match }: { match: RoomMatch }) {
+  const unconfirmed = capacityNeedsClarification(match);
   return (
     <div
-      className={`capacity-summary ${match.capacityStatus === "mismatch" ? "capacity-mismatch" : ""}`}
+      className={`capacity-summary ${match.capacityStatus === "mismatch" && !unconfirmed ? "capacity-mismatch" : ""}`}
     >
-      {match.capacityAssumed && (
+      {unconfirmed && (
         <span className="assumption-label">Вместимость не подтверждена</span>
       )}
       <p>
-        {match.capacityStatus === "mismatch" && !match.capacityAssumed && (
+        {match.capacityStatus === "mismatch" && !unconfirmed && (
           <strong>Не вмещает всех гостей. </strong>
         )}
         {match.capacityRule

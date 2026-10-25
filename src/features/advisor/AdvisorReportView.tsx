@@ -1,6 +1,10 @@
 import { ArrowRight, ExternalLink, HelpCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { AdvisorEvidence, AdvisorRun } from "../../../shared/advisor";
+import {
+  accountListingId,
+  accommodationPath,
+} from "../../shared/lib/accommodation";
 
 function sourceUrl(value: string) {
   try {
@@ -115,13 +119,18 @@ export function AdvisorReportView({ run }: { run: AdvisorRun }) {
                 <div className="advisor-candidate-heading">
                   <div>
                     <Link
-                      to={`/hotels/${encodeURIComponent(candidate.hotelId)}`}
+                      to={accommodationPath({ id: candidate.hotelId })}
                       className="advisor-hotel-link"
                     >
                       {candidate.hotelName}
                       <ArrowRight size={16} aria-hidden="true" />
                     </Link>
                     <p className="advisor-muted">{candidate.roomName}</p>
+                    {accountListingId({ id: candidate.hotelId }) && (
+                      <p className="advisor-muted">
+                        Сведения отельера; независимая проверка не проведена.
+                      </p>
+                    )}
                   </div>
                   <span
                     className={

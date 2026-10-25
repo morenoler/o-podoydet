@@ -217,6 +217,12 @@ class WindowViewClientTest {
       assertEquals(1, upstream.calls.get());
       assertEquals(405, http.send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + api.port()
           + "/api/views/estimate")).GET().build(), HttpResponse.BodyHandlers.ofString()).statusCode());
+      var account = http.send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + api.port()
+          + "/api/auth/me")).GET().build(), HttpResponse.BodyHandlers.ofString());
+      assertEquals(200, account.statusCode());
+      assertTrue(Json.read(account.body()).path("user").isNull());
+      assertEquals(403, http.send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + api.port()
+          + "/api/questions")).GET().build(), HttpResponse.BodyHandlers.ofString()).statusCode());
     }
   }
 

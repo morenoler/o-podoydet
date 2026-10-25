@@ -22,15 +22,20 @@
     "backend:build": "node --env-file-if-exists=.env scripts/backend.mjs build",
     "backend:test": "node --env-file-if-exists=.env scripts/backend.mjs test",
     "agents:test": "node --env-file-if-exists=.env scripts/agents-test.mjs",
-    "test:all": "npm test && npm run backend:test && npm run agents:test",
+    "test:all": "npm test && npm run backend:test && npm run agents:test && npm run demo:test",
     "build:all": "npm run build && npm run backend:build",
     "area:assess": "tsx --env-file-if-exists=.env scripts/assess-area.ts",
     "traffic:fetch": "tsx --env-file-if-exists=.env scripts/fetch-traffic.ts",
     "noise:assess": "tsx --env-file-if-exists=.env scripts/assess-noise.ts",
-    "data:collect": "tsx scripts/import-official-hotel-pages.ts"
+    "data:collect": "tsx scripts/import-official-hotel-pages.ts",
+    "demo:seed": "node scripts/demo.mjs seed",
+    "demo:setup": "node scripts/demo.mjs setup",
+    "demo:start": "node --env-file-if-exists=.env scripts/demo.mjs start",
+    "demo:test": "node --test scripts/demo.test.mjs"
   },
   "dependencies": {
     "@fontsource/golos-text": "^5.2.8",
+    "@fontsource/nunito-sans": "^5.3.0",
     "lucide-react": "^0.468.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

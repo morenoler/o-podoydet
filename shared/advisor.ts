@@ -5,7 +5,7 @@ export type AdvisorStatus =
   "queued" | "running" | "completed" | "failed" | "cancelled";
 export interface AdvisorEvidence {
   id: string;
-  feature: FeatureId | "capacity";
+  feature: FeatureId | "capacity" | "floor" | "window_direction";
   label: string;
   required: boolean;
   status: "match" | "mismatch";

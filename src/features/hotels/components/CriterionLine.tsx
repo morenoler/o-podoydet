@@ -2,6 +2,7 @@ import type { CriterionDecision } from "../../../../shared/types";
 import { CheckCircle2, CircleHelp, X, ExternalLink } from "lucide-react";
 import { features } from "../../../../shared/features";
 import { dateFull } from "../../../shared/lib/date";
+import { criterionNeedsClarification } from "../../../shared/lib/matchPresentation";
 
 export function CriterionLine({
   criterion,
@@ -10,7 +11,7 @@ export function CriterionLine({
   criterion: CriterionDecision;
   detailed?: boolean;
 }) {
-  const unconfirmed = criterion.assumed;
+  const unconfirmed = criterionNeedsClarification(criterion);
   const Icon = unconfirmed ? CircleHelp : criterion.status === "match" ? CheckCircle2 : X;
   return (
     <div className={`criterion ${unconfirmed ? "unknown" : criterion.status}`}>
@@ -30,7 +31,7 @@ export function CriterionLine({
             <span className="required-label">Обязательно</span>
           )}
         </strong>
-        {criterion.assumed && (
+        {unconfirmed && (
           <span className="assumption-label">Требует уточнения</span>
         )}
         <small>{criterion.explanation}</small>
@@ -47,7 +48,7 @@ export function CriterionLine({
                   ? "Доступные сведения и ограничения"
                   : "Расчёт и источники"}
               </summary>
-              {criterion.assumed && (
+              {unconfirmed && (
                 <p className="muted">
                   Этих сведений недостаточно, чтобы подтвердить условие.
                   Обязательный фильтр пропускает только подтверждённые совпадения.

@@ -94,7 +94,7 @@ export function prepareDataset(raw: Snapshot, previous?: Dataset): Dataset {
         (h) =>
           h.name.trim().toLocaleLowerCase() ===
             label(e)!.trim().toLocaleLowerCase() &&
-          distance(h.coordinates, coordinates) < 150,
+          h.coordinates !== null && distance(h.coordinates, coordinates) < 150,
       )
     )
       continue;

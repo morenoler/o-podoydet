@@ -1,0 +1,263 @@
+.site-header {
+  height: 80px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+.site-logout {
+  margin-top: 20px;
+  width: 100%;
+}
+.site-header-inner {
+  height: 100%;
+  max-width: 1440px;
+  margin: auto;
+  padding: 0 48px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.site-brand:hover {
+  text-decoration: none;
+}
+.site-brand > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--blue);
+  color: #fff;
+  border-radius: 13px;
+  width: 40px;
+  height: 40px;
+  font-size: 26px;
+  font-weight: 800;
+}
+.site-brand strong {
+  font-size: 25px;
+  font-weight: 800;
+}
+.site-navigation {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  gap: 36px;
+  margin-left: 72px;
+  flex: 1;
+}
+.site-navigation a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.site-navigation a:hover {
+  text-decoration: none;
+  color: var(--blue);
+}
+.site-navigation a.active {
+  font-weight: 700;
+  color: var(--blue);
+}
+.site-navigation a.active:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--blue);
+  border-radius: 2px;
+}
+.site-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin-left: auto;
+}
+.site-favorites {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  font-size: 15px;
+  min-height: 44px;
+}
+.site-favorites:hover {
+  text-decoration: none;
+  color: var(--blue);
+}
+.site-login {
+  min-width: 104px;
+  min-height: 44px;
+}
+.site-account-button {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: var(--ink);
+  font-weight: 700;
+  min-height: 44px;
+}
+.site-avatar {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--soft-blue);
+  color: var(--blue);
+  font-size: 19px;
+  font-weight: 800;
+}
+.site-user-name {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.site-account-loading {
+  font-size: 13px;
+  color: var(--muted);
+}
+.site-mobile-context,
+.site-header .site-menu-toggle {
+  display: none;
+}
+.site-menu-dialog {
+  max-width: 420px;
+}
+.site-menu-dialog nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.site-menu-dialog nav a {
+  padding: 12px 16px;
+  border-radius: 8px;
+}
+.site-menu-dialog nav a:hover {
+  background: var(--soft-blue);
+  text-decoration: none;
+}
+@media (max-width: 1270px) {
+  .site-navigation {
+    margin-left: 16px;
+    gap: 24px;
+  }
+  .site-header-inner {
+    gap: 24px;
+    padding: 0 32px;
+  }
+  .site-header-actions {
+    gap: 20px;
+  }
+  .site-navigation a {
+    font-size: 14px;
+  }
+  .site-user-name {
+    max-width: 85px;
+  }
+}
+@media (max-width: 1050px) {
+  .site-navigation {
+    display: none;
+  }
+  .site-header .site-menu-toggle {
+    display: inline-flex;
+  }
+  .site-header-inner {
+    gap: 20px;
+  }
+  .site-header-actions {
+    gap: 16px;
+  }
+}
+@media (max-width: 700px) {
+  .site-header {
+    height: 72px;
+  }
+  .site-header-inner {
+    padding: 0 20px;
+    gap: 12px;
+  }
+  .site-brand > span {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    font-size: 24px;
+  }
+  .site-brand {
+    gap: 10px;
+  }
+  .site-brand strong {
+    font-size: 22px;
+  }
+  .site-header-actions {
+    gap: 12px;
+  }
+  .site-favorites {
+    width: 32px;
+    justify-content: center;
+  }
+  .site-favorites span,
+  .site-login,
+  .site-user-name,
+  .site-account-button > svg {
+    display: none;
+  }
+  .site-account-button {
+    display: none;
+  }
+  .has-mobile-context .site-brand {
+    display: none;
+  }
+  .site-mobile-context {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .site-mobile-context strong {
+    font-size: 20px;
+    line-height: 1.2;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+  }
+  .site-mobile-context .icon-button {
+    margin-left: -8px;
+    flex-shrink: 0;
+    background: transparent;
+  }
+  .site-header.has-mobile-context .site-menu-toggle {
+    display: none;
+  }
+  .has-mobile-context .site-account-button {
+    display: flex;
+  }
+  .has-mobile-context .site-favorites {
+    display: none;
+  }
+  .site-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+  .site-menu-dialog .v2-modal-heading h2 {
+    overflow-wrap: anywhere;
+  }
+}

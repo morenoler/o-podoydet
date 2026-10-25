@@ -1,0 +1,101 @@
+.listing-ai-profile .listing-ai-privacy {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 16px 18px;
+  margin: 0 0 24px;
+  color: #405a7d;
+  background: #edf3fb;
+  border: 1px solid #d5e2f4;
+  border-radius: 9px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.listing-ai-privacy svg {
+  margin-top: 2px;
+}
+.account-page .listing-ai-profile .field > .listing-ai-notes-hint {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  color: #53657d;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.listing-ai-notes-hint > span:last-child {
+  white-space: nowrap;
+}
+.listing-ai-floor {
+  max-width: 400px;
+}
+.listing-ai-floor input {
+  max-width: 170px;
+}
+.listing-window-directions > span {
+  font-size: 14px;
+  font-weight: 600;
+}
+.listing-window-directions > p {
+  margin: 8px 0 14px;
+  color: #53657d;
+  font-size: 12px;
+}
+.listing-window-options {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.listing-window-option {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  min-height: 48px;
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.listing-window-option.selected {
+  color: var(--blue);
+  border-color: #8eaad3;
+  background: #eaf1fb;
+}
+.listing-ai-profile .listing-window-option input {
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  margin: 0;
+  padding: 0;
+  flex: 0 0 18px;
+  accent-color: var(--blue);
+}
+.listing-window-option span {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.listing-window-option:focus-within {
+  outline: 3px solid #d18b16;
+  outline-offset: 3px;
+}
+@media (max-width: 1060px) {
+  .listing-window-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 480px) {
+  .listing-ai-profile .listing-ai-privacy {
+    padding: 14px;
+    font-size: 13px;
+  }
+  .account-page .listing-ai-profile .field > .listing-ai-notes-hint {
+    flex-direction: column;
+    gap: 5px;
+  }
+  .listing-window-option {
+    font-size: 12px;
+    padding: 10px;
+  }
+}

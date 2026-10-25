@@ -8,6 +8,12 @@ import { lodgingLabel } from "../../../shared/lib/presentation";
 import { CriterionLine } from "./CriterionLine";
 import { Link } from "react-router-dom";
 import { Notice } from "../../../shared/ui/Feedback";
+import {
+  accountListingId,
+  accommodationPath,
+} from "../../../shared/lib/accommodation";
+import { OwnerCriteriaSummary } from "./OwnerCriteriaSummary";
+import { criterionMatches } from "../../../shared/lib/matchPresentation";
 
 export function CompareDialog({
   matches,
@@ -63,20 +69,29 @@ export function CompareDialog({
         {matches.map((m) => (
           <section key={m.hotel.id}>
             <MatchBadge match={m} />
-            {m.best.criteria.length > 0 && (
+            {(m.best.criteria.length > 0 || !!m.ownerCriteria?.length) && (
               <p className="muted">
                 Совпало{" "}
-                {m.best.criteria.filter((c) => c.status === "match").length} из{" "}
-                {m.best.criteria.length}
+                {m.best.criteria.filter(criterionMatches).length +
+                  (m.ownerCriteria?.filter((c) => c.status === "match" && c.evidenceStatus === "match")
+                    .length || 0)}{" "}
+                из {m.best.criteria.length + (m.ownerCriteria?.length || 0)}
               </p>
             )}
             <h3>{m.hotel.name}</h3>
             <p>{lodgingLabel(m.hotel)}</p>
             <p>{m.best.room.name}</p>
+            {accountListingId(m.hotel) && (
+              <p className="hotel-owner-source">
+                Сведения отельера. Независимая проверка не проведена.
+              </p>
+            )}
             <CapacitySummary match={m.best} />
             <div className="comparison-distance">
               <Footprints size={18} />
-              {m.hotel.route?.meters ?? "—"} м до пляжа
+              {accountListingId(m.hotel)
+                ? "Нет данных о маршруте до пляжа"
+                : `${m.hotel.route?.meters ?? "—"} м до пляжа`}
             </div>
             {ids.map((id) => {
               const c = m.best.criteria.find((c) => c.feature === id);
@@ -86,8 +101,9 @@ export function CompareDialog({
                 <p key={id}>Нет сведений</p>
               );
             })}
+            <OwnerCriteriaSummary criteria={m.ownerCriteria} detailed />
             <Link
-              to={`/hotels/${m.hotel.id}?room=${m.best.room.id}`}
+              to={accommodationPath(m.hotel, m.best.room.id)}
               className="button secondary"
               onClick={onClose}
             >

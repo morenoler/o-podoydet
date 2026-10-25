@@ -1,96 +1,210 @@
-import { CapacitySummary } from "./CapacitySummary";
-import type { Dataset, HotelMatch } from "../../../../shared/types";
+import type { Dataset, Hotel, HotelMatch } from "../../../../shared/types";
 import { Link } from "react-router-dom";
-import { GeoMap } from "../../map/components/GeoMap";
 import {
-  Footprints,
+  Check,
+  CircleHelp,
   GitCompareArrows,
   MapPin,
-  Building2,
-  ArrowRight,
+  Waves,
 } from "lucide-react";
-import { MatchBadge } from "./MatchBadge";
-import { lodgingLabel } from "../../../shared/lib/presentation";
-import { WishMatches } from "./WishMatches";
+import {
+  accommodationPath,
+  accountListingId,
+} from "../../../shared/lib/accommodation";
+import { AccommodationPhoto } from "../../../shared/ui/AccommodationPhoto";
+import { FavoriteButton } from "../../favorites/FavoriteButton";
+import { features } from "../../../../shared/features";
+import { directionLabels } from "../../account/format";
+import {
+  capacityNeedsClarification,
+  criterionNeedsClarification,
+  matchLabel,
+  matchPresentationState,
+} from "../../../shared/lib/matchPresentation";
 
 export function HotelCard({
   match,
-  dataset,
-  compared,
+  hotel: previewHotel,
+  compared = false,
   onCompare,
   compareDisabled = false,
+  selected = false,
+  onSelect,
+  onShowMap,
 }: {
-  match: HotelMatch;
-  dataset: Dataset | null;
-  compared: boolean;
-  onCompare: () => void;
+  match?: HotelMatch;
+  hotel?: Hotel;
+  dataset?: Dataset | null;
+  compared?: boolean;
+  onCompare?: () => void;
   compareDisabled?: boolean;
+  selected?: boolean;
+  onSelect?: () => void;
+  onShowMap?: () => void;
 }) {
-  const { hotel, best } = match;
+  const hotel = match?.hotel || previewHotel;
+  if (!hotel) return null;
+  const ownerId = accountListingId(hotel);
+  const detailsPath = accommodationPath(hotel, match?.best.room.id);
+  const capacityUnknown = match && capacityNeedsClarification(match.best);
+  const needsClarification = capacityUnknown ||
+    match?.best.criteria.some(criterionNeedsClarification) ||
+    match?.ownerCriteria?.some((c) => c.evidenceStatus === "unknown");
+  const declared = match?.ownerCriteria?.some((c) => c.assumed);
+  const estimated = needsClarification || declared;
+  const uncertain = match?.best.criteria.find(
+    (c) => criterionNeedsClarification(c) || c.status !== "match",
+  );
+  const missingOwner = match?.ownerCriteria?.find(
+    (c) => c.assumed || c.evidenceStatus !== "match",
+  );
+  const sourceHint = ownerId
+    ? "Сведения отельера · без независимой проверки"
+    : match?.best.room.evidenceStatus === "verified" && match.best.room.scope === "room_category"
+      ? `Категория: ${match.best.room.name}`
+      : "Категорию и условия номера нужно уточнить";
+  const hasPrice =
+    typeof hotel.pricePerNight === "number" &&
+    hotel.pricePerNight > 0 &&
+    hotel.currency === "KRW";
+  const resultLabel = match ? matchLabel(match) : "Условия и источники";
+  const presentationState = match ? matchPresentationState(match) : "unknown";
   return (
-    <article className="hotel-card">
-      <Link
-        to={`/hotels/${hotel.id}?room=${best.room.id}`}
-        className="hotel-map-link"
-        aria-label={`Подробнее об отеле ${hotel.name}`}
-      >
-        {dataset && <GeoMap dataset={dataset} hotel={hotel} compact />}
-        <span className="distance-pill">
-          <Footprints size={15} />
-          {hotel.route
-            ? `${hotel.route.meters} м до пляжа`
-            : "Маршрут не найден"}
-        </span>
-      </Link>
-      <div className="hotel-card-body">
-        <div className="card-top">
-          <MatchBadge match={match} />
+    <article
+      className={`search-hotel-card${selected ? " is-selected" : ""}`}
+      onClick={onSelect}
+      onFocus={onSelect}
+      aria-label={hotel.name}
+    >
+      <div className="search-hotel-photo">
+        <Link to={detailsPath} tabIndex={-1} aria-hidden="true">
+          <AccommodationPhoto
+            name={hotel.name}
+            hotelId={hotel.id}
+            photos={hotel.photos}
+          />
+        </Link>
+        <FavoriteButton
+          item={{
+            id: ownerId ? `listing:${ownerId}` : hotel.id,
+            name: hotel.name,
+            path: detailsPath,
+            hotelId: hotel.id,
+            photos: hotel.photos,
+            address: hotel.address,
+          }}
+        />
+      </div>
+      <div className="search-hotel-content">
+        <div className="search-hotel-heading">
+          <Link to={detailsPath}>
+            <h2>
+              {hotel.name}
+              {hotel.synthetic && (
+                <span className="search-demo-label">ДЕМО</span>
+              )}
+            </h2>
+          </Link>
+          {onCompare && (
+            <button
+              type="button"
+              className={`search-compare-toggle${compared ? " is-selected" : ""}`}
+              aria-pressed={compared}
+              aria-label={`${compared ? "Убрать из сравнения" : "Сравнить"} ${hotel.name}`}
+              title={
+                compareDisabled
+                  ? "Можно сравнить до трёх отелей"
+                  : "Добавить к сравнению"
+              }
+              disabled={compareDisabled}
+              onClick={(event) => {
+                event.stopPropagation();
+                onCompare();
+              }}
+            >
+              <GitCompareArrows size={19} aria-hidden="true" />
+            </button>
+          )}
+        </div>
+        <p className="search-hotel-meta">{hotel.address || "Пусан, Хэундэ"}</p>
+        <p className="search-hotel-room">
+          {hotel.floor == null ? "Этаж: Не указано" : `Этаж: ${hotel.floor}`} ·{" "}
+          {hotel.windowDirections?.length
+            ? `Окна: ${hotel.windowDirections.map((value) => directionLabels[value]).join(", ")}`
+            : "Окна: Не указано"}
+        </p>
+        {hotel.route && !hotel.synthetic ? (
           <button
             type="button"
-            className={`compare-button ${compared ? "selected" : ""}`}
-            aria-pressed={compared}
-            aria-label={`${compared ? "Убрать из сравнения" : "Сравнить"} ${hotel.name}`}
-            onClick={onCompare}
-            disabled={compareDisabled}
-            title={
-              compareDisabled
-                ? "Можно сравнить не больше трёх отелей"
-                : undefined
-            }
+            className="search-route-button"
+            onClick={(event) => {
+              event.stopPropagation();
+              (onShowMap || onSelect)?.();
+            }}
+            disabled={!onSelect && !onShowMap}
           >
-            <GitCompareArrows size={18} />
+            <Waves size={20} aria-hidden="true" />
+            {hotel.route.meters} м пешком до пляжа
           </button>
-        </div>
-        <Link
-          to={`/hotels/${hotel.id}?room=${best.room.id}`}
-          className="hotel-title"
-        >
-          <h2>{hotel.name}</h2>
-        </Link>
-        <p className="address">
-          <MapPin size={14} />
-          {lodgingLabel(hotel)} · {hotel.address}
-        </p>
-        <div className="room-label">
-          <Building2 size={15} />
-          {best.room.name}
+        ) : (
+          <p className="search-hotel-unknown">
+            <MapPin size={18} aria-hidden="true" />
+            {ownerId
+              ? "Расположение на карте не добавлено"
+              : "Маршрут до пляжа не рассчитан"}
+          </p>
+        )}
+        <p className="search-hotel-evidence">
+          <CircleHelp size={18} aria-hidden="true" />
           <span>
-            {best.room.evidenceStatus === "verified"
-              ? "Официальный источник"
-              : "Нет данных о категории"}
+            {capacityUnknown
+              ? "Вместимость требует уточнения"
+              : missingOwner
+              ? `${missingOwner.label}: ${missingOwner.evidenceStatus === "unknown" ? "нет данных" : missingOwner.evidenceStatus === "match" ? "по сведениям отельера" : "не совпадает"}`
+              : uncertain
+                ? `${features[uncertain.feature].label}: ${criterionNeedsClarification(uncertain) ? "требует уточнения" : "не совпадает"}`
+                : sourceHint}
           </span>
-        </div>
-        <CapacitySummary match={best} />
-        <div className="card-criteria">
-          <WishMatches criteria={best.criteria} />
-        </div>
-        <div className="card-bottom">
-          <span>Цена и наличие не проверены</span>
+        </p>
+        <div className="search-hotel-bottom">
+          <div>
+            {hasPrice ? (
+              <>
+                <strong className="search-hotel-price">
+                  {new Intl.NumberFormat("ru-RU").format(hotel.pricePerNight!)}{" "}
+                  ₩ <small>/ ночь</small>
+                </strong>
+                <span className="search-hotel-price-note">
+                  Цена отельера · наличие уточняйте
+                </span>
+              </>
+            ) : (
+              <>
+                <strong
+                  className={`search-hotel-result${presentationState === "mismatch" ? " is-mismatch" : estimated ? " is-estimate" : ""}`}
+                >
+                  {match ? (
+                    <>
+                      {presentationState !== "match"
+                        ? <CircleHelp size={17} aria-hidden="true" />
+                        : <Check size={17} aria-hidden="true" />}
+                      {resultLabel}
+                    </>
+                  ) : (
+                    resultLabel
+                  )}
+                </strong>
+                <span className="search-hotel-price-note">
+                  Цена и наличие не проверены
+                </span>
+              </>
+            )}
+          </div>
           <Link
-            to={`/hotels/${hotel.id}?room=${best.room.id}`}
-            className="text-link"
+            to={detailsPath}
+            className={`button ${selected ? "primary" : "secondary"}`}
           >
-            Подробнее <ArrowRight size={16} />
+            Подробнее
           </Link>
         </div>
       </div>

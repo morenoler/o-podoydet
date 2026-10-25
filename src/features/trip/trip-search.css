@@ -1,0 +1,403 @@
+/* Scoped to the test-copy search page; the main site's presentation is unchanged. */
+.trip-search-page {
+  --trip-surface: #fff;
+  --trip-sea: #dceef4;
+  --trip-subtle: #53657d;
+  --trip-danger: #973a34;
+  padding-top: 38px;
+}
+.trip-search-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 30px;
+}
+.trip-search-heading h1 {
+  font-size: clamp(32px, 3.8vw, 48px);
+  line-height: 1.12;
+  letter-spacing: -1.8px;
+}
+.trip-search-heading > p {
+  max-width: 370px;
+  color: var(--trip-subtle);
+  font-size: 16px;
+  line-height: 1.7;
+  padding-bottom: 4px;
+}
+.trip-search-page .steps {
+  margin-bottom: 24px;
+  font-size: 13px;
+  gap: 24px;
+}
+.trip-search-page .steps li > span {
+  width: 26px;
+  height: 26px;
+}
+.trip-search-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 32px;
+  align-items: stretch;
+}
+.trip-search-form {
+  min-width: 0;
+  background: var(--trip-surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 28px;
+}
+.trip-search-form-heading {
+  margin-bottom: 24px;
+}
+.trip-search-form-heading h2 {
+  font-size: 23px;
+  margin-bottom: 7px;
+}
+.trip-search-form-heading p {
+  color: var(--trip-subtle);
+  font-size: 14px;
+}
+.trip-search-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.trip-search-field > span {
+  font-size: 13px;
+  font-weight: 600;
+}
+.trip-search-field input,
+.trip-search-field select {
+  min-width: 0;
+  width: 100%;
+  height: 50px;
+  color: var(--ink);
+  border: 1px solid #aab9cd;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--trip-surface);
+  font-size: 16px;
+  line-height: 1.5;
+}
+.trip-search-field input:hover,
+.trip-search-field select:hover {
+  border-color: var(--blue);
+}
+.trip-search-field input[aria-invalid="true"],
+.trip-search-field select[aria-invalid="true"] {
+  border-color: var(--trip-danger);
+}
+.trip-search-field small {
+  color: var(--trip-subtle);
+  font-size: 12px;
+}
+.trip-search-field .trip-search-field-error {
+  color: var(--trip-danger);
+}
+.trip-search-region {
+  position: relative;
+}
+.trip-search-region > svg {
+  position: absolute;
+  left: 12px;
+  top: 15px;
+  color: var(--blue);
+  pointer-events: none;
+}
+.trip-search-region select {
+  padding-left: 42px;
+}
+.trip-search-fields-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.trip-search-duration {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--trip-subtle);
+  font-size: 13px;
+  min-height: 24px;
+  margin-bottom: 16px;
+}
+.trip-search-submit {
+  width: 100%;
+  min-height: 52px;
+  font-size: 15px;
+}
+.trip-search-next {
+  margin-top: 12px;
+  color: var(--trip-subtle);
+  font-size: 12px;
+  line-height: 1.55;
+  text-align: center;
+}
+.trip-search-errors {
+  border: 1px solid #d69c91;
+  border-radius: 8px;
+  padding: 14px 16px;
+  background: #fff6f3;
+  color: var(--trip-danger);
+  margin-bottom: 20px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.trip-search-errors ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+.trip-search-errors li + li {
+  margin-top: 4px;
+}
+.trip-search-errors a {
+  color: inherit;
+  text-decoration: underline;
+}
+.trip-search-destination {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--trip-sea);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.trip-search-map {
+  height: 340px;
+  flex: 1 0 340px;
+}
+.trip-search-map .geo-map,
+.trip-search-map .geo-map > svg {
+  height: 100%;
+  width: 100%;
+}
+.trip-search-map .map-controls button {
+  min-width: 44px;
+  min-height: 44px;
+}
+.trip-search-map-loading {
+  min-height: 340px;
+  display: grid;
+  place-items: center;
+  color: var(--trip-subtle);
+  font-size: 14px;
+}
+.trip-search-destination-copy {
+  padding: 24px 28px;
+}
+.trip-search-destination-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.trip-search-destination-title p {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #436075;
+  margin-bottom: 6px;
+}
+.trip-search-destination-title > svg {
+  color: var(--blue);
+}
+.trip-search-destination-title h2 {
+  font-size: 25px;
+}
+.trip-search-destination-copy > p {
+  color: #36556c;
+  font-size: 14px;
+}
+.trip-search-map-note {
+  color: #436075;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #bad5df;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.trip-search-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+  margin-top: 30px;
+}
+.trip-search-shortcut {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+}
+.trip-search-shortcut:hover {
+  text-decoration: none;
+  color: var(--blue);
+}
+.trip-search-shortcut > span:nth-child(2) {
+  min-width: 0;
+  flex: 1;
+}
+.trip-search-shortcut strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.trip-search-shortcut > span > span {
+  display: block;
+  font-size: 13px;
+  color: var(--trip-subtle);
+  line-height: 1.5;
+}
+.trip-search-shortcut-icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: #eaf0fa;
+  color: var(--blue);
+  flex-shrink: 0;
+}
+.trip-search-shortcut > svg {
+  color: var(--blue);
+}
+.trip-search-host-link {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  padding-top: 24px;
+  color: var(--trip-subtle);
+  font-size: 13px;
+}
+.trip-search-host-link p,
+.trip-search-host-link a {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+@media (max-width: 1024px) {
+  .trip-search-heading > p {
+    max-width: 320px;
+  }
+  .trip-search-layout {
+    gap: 24px;
+  }
+  .trip-search-form {
+    padding: 24px;
+  }
+  .trip-search-destination-copy {
+    padding: 24px;
+  }
+  .trip-search-destination-title h2 {
+    font-size: 23px;
+  }
+  .trip-search-shortcuts {
+    gap: 24px;
+  }
+}
+@media (max-width: 760px) {
+  .trip-search-page {
+    padding: 28px 20px 40px;
+  }
+  .trip-search-heading {
+    display: block;
+    margin-bottom: 24px;
+  }
+  .trip-search-heading h1 {
+    letter-spacing: -1px;
+    font-size: 36px;
+  }
+  .trip-search-heading > p {
+    margin-top: 14px;
+    max-width: 520px;
+    font-size: 15px;
+  }
+  .trip-search-page .steps {
+    gap: 14px;
+    font-size: 11px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .trip-search-page .steps li {
+    gap: 6px;
+  }
+  .trip-search-page .steps .step-arrow {
+    display: none;
+  }
+  .trip-search-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .trip-search-form {
+    padding: 22px;
+  }
+  .trip-search-map {
+    height: 280px;
+    flex: 0 0 280px;
+  }
+  .trip-search-map-loading {
+    min-height: 280px;
+  }
+  .trip-search-shortcuts {
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin-top: 24px;
+  }
+  .trip-search-shortcut + .trip-search-shortcut {
+    border-top: 0;
+  }
+  .trip-search-destination-copy {
+    padding: 22px;
+  }
+}
+@media (max-width: 400px) {
+  .trip-search-page {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .trip-search-heading h1 {
+    font-size: 32px;
+  }
+  .trip-search-form {
+    padding: 20px 16px;
+  }
+  .trip-search-fields-row {
+    gap: 10px;
+  }
+  .trip-search-field input {
+    padding: 10px 8px;
+  }
+  .trip-search-page .steps {
+    gap: 12px;
+    font-size: 10px;
+  }
+  .trip-search-page .steps li > span {
+    width: 23px;
+    height: 23px;
+  }
+  .trip-search-shortcut {
+    gap: 12px;
+  }
+  .trip-search-shortcut strong {
+    font-size: 15px;
+  }
+  .trip-search-destination-copy {
+    padding: 20px;
+  }
+  .trip-search-destination-title h2 {
+    font-size: 22px;
+  }
+  .trip-search-destination-title > svg {
+    display: none;
+  }
+}

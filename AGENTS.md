@@ -22,7 +22,7 @@
 
 ## Проверки
 
-- Приложение: `npm test`, `npm run backend:test`, `npm run agents:test`, `npm run build:all`, `npm run lab:build`.
+- Приложение: `npm test`, `npm run backend:test`, `npm run agents:test`, `npm run build:all`, `npm run lab:build`, `npm run demo:test`.
 - Микросервис: из `services/window-view` — `python -m unittest discover -s tests -v`.
 - Расширенная проверка: из `services/window-view` — `python verify_busan.py --workers 4`; 288 запросов по 96 объектам.
 - Парсер шумового отчёта: `python -m unittest discover -s scripts/tests`.
@@ -31,6 +31,7 @@
 ## Интеграция
 
 - Java разделён на application, domain, persistence, shared, web, advisor. Клиент вида находится в application.
+- Кабинеты используют отдельные таблицы account_* в DB_PATH; проверки запускаются на новых временных БД и с отдельным UPLOADS_PATH. Не перезаписывать рабочие базы или демонстрационный образец.
 - Основной сайт использует verified-only; синтетическая лаборатория работает отдельно на 8081 со своей SQLite.
 - Неизвестность не даёт положительного допуска. API сохраняет evidenceStatus; UI отделяет неизвестность от установленного несоответствия.
 - Публиковать целый проект в отдельную ветку. Пользователь запретил прямой push в main.

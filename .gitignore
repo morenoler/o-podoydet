@@ -24,3 +24,6 @@ services/window-view/data/open/*.scene.json
 services/window-view/examples/real-hotel.result.json
 *.py[cod]
 .venv/
+
+# Deliberately synthetic, session-free demo database.
+!data/demo/preview.sqlite3

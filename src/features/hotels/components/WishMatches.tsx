@@ -2,6 +2,7 @@ import type { CriterionDecision } from "../../../../shared/types";
 import { Link } from "react-router-dom";
 import { ArrowRight, CheckCircle2, CircleHelp, X } from "lucide-react";
 import { CriterionLine } from "./CriterionLine";
+import { criterionMatches, criterionNeedsClarification } from "../../../shared/lib/matchPresentation";
 
 export function WishMatches({ criteria }: { criteria: CriterionDecision[] }) {
   if (!criteria.length)
@@ -14,7 +15,7 @@ export function WishMatches({ criteria }: { criteria: CriterionDecision[] }) {
         </Link>
       </div>
     );
-  const matched = criteria.filter((c) => c.status === "match");
+  const matched = criteria.filter(criterionMatches);
   const groups = [
     {
       key: "match",
@@ -26,13 +27,13 @@ export function WishMatches({ criteria }: { criteria: CriterionDecision[] }) {
       key: "mismatch",
       title: "Не совпадает",
       Icon: X,
-      items: criteria.filter((c) => c.status === "mismatch" && !c.assumed),
+      items: criteria.filter((c) => c.status === "mismatch" && !criterionNeedsClarification(c)),
     },
     {
       key: "unknown",
       title: "Требует уточнения",
       Icon: CircleHelp,
-      items: criteria.filter((c) => c.assumed),
+      items: criteria.filter(criterionNeedsClarification),
     },
   ];
   return (
@@ -48,7 +49,7 @@ export function WishMatches({ criteria }: { criteria: CriterionDecision[] }) {
       </div>
       {matched.length < criteria.length &&
         criteria.some((c) => c.required) &&
-        criteria.every((c) => !c.required || c.status === "match") && (
+        criteria.every((c) => !c.required || criterionMatches(c)) && (
           <p className="wish-requirements">Обязательные условия выполнены</p>
         )}
       {groups

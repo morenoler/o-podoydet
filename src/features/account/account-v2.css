@@ -1,0 +1,955 @@
+.app-shell .page.account-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 40px;
+  max-width: 1440px;
+  padding: 32px 48px 64px 32px;
+  font-size: 16px;
+}
+.account-layout .account-content {
+  min-width: 0;
+}
+.account-layout .account-sidebar {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  min-height: max(620px, calc(100vh - 180px));
+  padding: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.account-layout .account-identity {
+  padding: 12px 12px 24px;
+  margin: 0 12px 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--line);
+}
+.account-layout .account-identity > div {
+  flex: 1 1 max-content;
+  max-width: 100%;
+}
+.account-layout .account-avatar {
+  width: 48px;
+  height: 48px;
+  background: #eaf0fb;
+  color: var(--blue);
+  font-size: 23px;
+  font-weight: 800;
+}
+.account-layout .account-identity strong {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.3;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+.account-layout .account-identity div > span {
+  color: var(--muted);
+  font-size: 12px;
+}
+.account-layout .account-nav {
+  gap: 8px;
+}
+.account-layout .account-nav-link {
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 0;
+  gap: 13px;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 10px;
+}
+.account-layout .account-nav-link svg {
+  width: 23px;
+  height: 23px;
+  color: var(--muted);
+}
+.account-layout .account-nav-link.selected {
+  color: var(--blue);
+  background: #eaf0fb;
+  font-weight: 800;
+}
+.account-layout .account-nav-link.selected svg {
+  color: var(--blue);
+}
+.account-nav-mobile-label {
+  display: none;
+}
+.account-layout .account-sidebar-bottom {
+  margin: auto 0 0;
+  padding: 40px 12px 6px;
+  border: 0;
+  gap: 22px;
+}
+.account-help strong {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.account-help summary {
+  cursor: pointer;
+  color: var(--blue);
+  font-size: 13px;
+  list-style: none;
+}
+.account-help summary::-webkit-details-marker {
+  display: none;
+}
+.account-help p {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 10px;
+}
+.account-layout .account-signout {
+  min-height: 40px;
+  width: 100%;
+  padding: 7px 14px;
+  color: var(--blue);
+  justify-content: center;
+  font-size: 14px;
+}
+.account-layout .account-page-heading {
+  margin: 4px 0 32px;
+  gap: 24px;
+  align-items: flex-start;
+}
+.account-layout .account-page-heading h1 {
+  font-size: 32px;
+  line-height: 1.35;
+  letter-spacing: -0.5px;
+  font-weight: 800;
+  margin: 0 0 7px;
+}
+.account-layout .account-page-heading p {
+  color: var(--muted);
+  font-size: 15px;
+}
+.account-layout .account-page-heading > .button {
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.account-layout .button {
+  min-height: 44px;
+  padding: 11px 24px;
+  font-size: 15px;
+  font-weight: 800;
+  border-radius: 10px;
+}
+.account-layout .account-page-heading > .button {
+  min-height: 48px;
+}
+.account-layout .account-panel {
+  border-radius: 16px;
+  padding: 30px;
+  border-color: var(--line);
+}
+.account-layout .field {
+  gap: 9px;
+  margin-bottom: 26px;
+}
+.account-layout .field > span {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+}
+.account-layout .field input,
+.account-layout .field select,
+.account-layout .field textarea {
+  min-height: 48px;
+  font-size: 16px;
+  border-radius: 10px;
+  border-color: var(--line);
+  padding: 12px 15px;
+}
+.account-layout .field textarea {
+  min-height: 100px;
+}
+.account-layout .field small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.account-layout .field input[readonly] {
+  background: #fff;
+  border-style: solid;
+  color: var(--ink);
+}
+.account-layout .account-text-button {
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+  font-weight: 600;
+}
+.account-layout .account-soft-button {
+  background: #eaf0fb;
+  color: var(--blue);
+}
+.account-layout .account-status {
+  border-radius: 999px;
+  padding: 7px 22px;
+  min-width: 138px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 800;
+  max-width: 220px;
+}
+.account-layout .status-confirmed,
+.account-layout .status-completed {
+  color: #2c7864;
+  background: #e9f5f0;
+}
+.account-layout .status-pending {
+  color: #97691d;
+  background: #fff4d9;
+}
+.account-layout .status-draft {
+  color: var(--blue);
+  background: #eaf0fb;
+}
+.account-layout .status-cancelled {
+  color: #66758d;
+  background: #f0f3f7;
+}
+.account-section-tabs {
+  display: flex;
+  gap: 44px;
+  min-height: 48px;
+  border-bottom: 1px solid var(--line);
+  margin: 0 0 28px;
+}
+.account-section-tabs > button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 16px;
+  padding: 9px 0 17px;
+  position: relative;
+}
+.account-section-tabs > button.selected {
+  color: var(--blue);
+  font-weight: 800;
+}
+.account-section-tabs > button.selected::after {
+  content: "";
+  position: absolute;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--blue);
+  left: 0;
+  right: 0;
+  bottom: -1px;
+}
+.account-mobile-section-heading {
+  display: none;
+}
+.account-layout .account-records {
+  gap: 22px;
+}
+.account-layout .account-record {
+  border-color: var(--line);
+  border-radius: 16px;
+}
+.account-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 22px 24px;
+  background: #eaf0fb;
+  border-radius: 14px;
+  margin-bottom: 28px;
+}
+.account-callout > svg {
+  color: var(--blue);
+  margin-top: 2px;
+}
+.account-callout > div {
+  flex: 1;
+  min-width: 0;
+}
+.account-callout strong {
+  font-size: 19px;
+  line-height: 1.4;
+  font-weight: 800;
+}
+.account-callout p {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 7px;
+}
+.account-callout > .button {
+  min-width: 168px;
+  align-self: center;
+  background: white;
+}
+.account-bookings > .account-callout {
+  margin-top: 24px;
+  margin-bottom: 0;
+}
+.account-page-footnote {
+  margin-top: 44px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.account-layout .booking-record-v2 {
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
+  gap: 24px;
+  padding: 16px;
+  min-height: 300px;
+}
+.account-layout .booking-record-v2 .booking-photo {
+  width: 100%;
+  min-height: 268px;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+.booking-content {
+  position: relative;
+  padding: 4px 6px 0 0;
+  min-width: 0;
+}
+.booking-record-v2 .account-record-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-right: 195px;
+  margin-bottom: 22px;
+}
+.booking-record-v2 .account-record-heading > .account-status {
+  order: -1;
+}
+.account-layout .booking-record-v2 h2 {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  line-height: 1.3;
+}
+.booking-record-v2 h2 a {
+  color: var(--ink);
+}
+.booking-record-v2 .account-record-meta {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 5px 0 0;
+}
+.account-layout .booking-facts {
+  margin: 0 0 22px;
+  gap: 14px 32px;
+  color: var(--ink);
+  font-size: 16px;
+}
+.booking-record-v2 .booking-facts span:first-child {
+  font-weight: 800;
+}
+.booking-record-v2 .booking-facts svg {
+  width: 21px;
+  height: 21px;
+  color: var(--blue);
+}
+.booking-extra-details {
+  margin-top: 10px;
+  font-size: 12px;
+}
+.booking-extra-details > summary {
+  width: fit-content;
+  padding: 4px 0;
+  color: var(--blue);
+  cursor: pointer;
+}
+.booking-extra-details > summary:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+.booking-extra-details .booking-address {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.booking-extra-details .booking-address > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.booking-extra-details .booking-address > svg {
+  flex-shrink: 0;
+}
+.booking-record-v2 .booking-price {
+  position: absolute;
+  right: 12px;
+  top: 54px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-start;
+  margin: 0;
+}
+.account-layout .booking-price strong {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.booking-record-v2 .booking-price span {
+  color: var(--muted);
+  font-size: 13px;
+}
+.booking-status-message {
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  margin-top: 12px;
+  font-size: 13px;
+}
+.status-text-confirmed,
+.status-text-completed {
+  color: #458a77;
+}
+.status-text-pending {
+  color: #a77b2b;
+}
+.status-text-cancelled {
+  color: var(--muted);
+}
+.booking-primary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 15px;
+  margin-top: 18px;
+  padding-right: 4px;
+}
+.booking-primary-actions .button {
+  min-width: 180px;
+}
+.booking-content > .account-record-actions {
+  margin-top: 12px;
+}
+.booking-record-v2 .booking-cancel-action {
+  min-height: 32px;
+  padding: 3px 0;
+  font-size: 13px;
+}
+.booking-primary-actions .booking-cancel-action {
+  min-width: 0;
+  margin-left: auto;
+}
+.booking-record-v2 .account-record-date {
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.account-layout .booking-pending {
+  grid-template-columns: 184px minmax(0, 1fr);
+  min-height: 222px;
+}
+.account-layout .booking-pending .booking-photo {
+  min-height: 190px;
+}
+.account-layout .host-listing-v2 {
+  display: grid;
+  grid-template-columns: 184px minmax(0, 1fr);
+  padding: 16px;
+  gap: 24px;
+  min-height: 216px;
+}
+.host-listing-v2 .host-listing-photo {
+  width: 184px;
+  height: 100%;
+  min-height: 184px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+.host-listing-v2 .host-listing-content {
+  position: relative;
+  padding: 1px 200px 0 0;
+}
+.host-listing-v2 .account-record-heading {
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 7px;
+}
+.host-listing-v2 .account-record-heading .account-status {
+  order: -1;
+}
+.account-layout .host-listing-v2 h2 {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.3px;
+}
+.host-listing-v2 .account-muted {
+  font-size: 14px;
+  color: var(--muted);
+}
+.host-listing-room-details {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 7px;
+}
+.host-listing-v2 .host-listing-details {
+  position: absolute;
+  right: 14px;
+  top: 44px;
+  margin: 0;
+}
+.host-listing-v2 .host-listing-details strong {
+  font-size: 26px;
+  font-weight: 800;
+}
+.host-listing-v2 .host-listing-details strong span {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.host-listing-v2 .account-record-actions {
+  gap: 16px;
+  margin-top: 16px;
+}
+.host-listing-v2 .account-record-actions .button {
+  min-width: 164px;
+  min-height: 40px;
+  padding: 9px 20px;
+}
+.host-listing-updated {
+  position: absolute;
+  right: 0;
+  bottom: 11px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.host-draft-hint {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  margin-top: 30px;
+}
+.host-draft-hint strong {
+  font-size: 18px;
+  font-weight: 800;
+}
+.host-draft-hint p {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 8px;
+}
+.host-draft-hint .button {
+  min-width: 175px;
+  flex-shrink: 0;
+}
+.account-layout .account-profile-layout {
+  grid-template-columns: minmax(0, 728fr) minmax(230px, 328fr);
+  gap: 24px;
+}
+.account-layout .profile-editor {
+  padding: 32px;
+}
+.profile-identity {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 36px;
+}
+.account-layout .profile-identity .account-avatar {
+  width: 64px;
+  height: 64px;
+  font-size: 28px;
+}
+.account-layout .profile-identity h2 {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.profile-identity p {
+  color: var(--muted);
+  font-size: 14px;
+}
+.profile-editor .field {
+  margin-bottom: 27px;
+}
+.profile-editor .account-form-actions {
+  margin-top: 32px;
+  gap: 16px;
+}
+.profile-editor .account-form-actions .primary {
+  min-width: 260px;
+  min-height: 48px;
+}
+.account-layout .account-profile-note {
+  background: #eaf0fb;
+  border-radius: 14px;
+  padding: 24px;
+}
+.account-profile-note h2 {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 800;
+}
+.account-profile-note h2 svg {
+  color: var(--blue);
+}
+.account-layout .account-profile-note > p {
+  margin: 28px 0;
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+.account-profile-note small {
+  color: var(--blue);
+  font-size: 12px;
+}
+.account-layout .question-record {
+  padding: 25px;
+}
+.account-layout .question-record h2 {
+  font-size: 21px;
+  font-weight: 800;
+}
+.account-layout .account-filter-row {
+  margin-bottom: 10px;
+}
+.account-layout .account-filter {
+  border-radius: 999px;
+  padding: 11px 20px;
+  font-size: 14px;
+}
+.account-layout .question-answer {
+  background: #eef3fb;
+  border-radius: 10px;
+  border-left: 0;
+  padding: 20px;
+}
+.account-layout .question-answer strong {
+  font-weight: 800;
+}
+@media (max-width: 1190px) {
+  .app-shell .page.account-layout {
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 26px;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  .account-layout .account-page-heading {
+    flex-wrap: wrap;
+  }
+  .account-layout .booking-record-v2 {
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 20px;
+  }
+  .booking-record-v2 .account-record-heading {
+    padding-right: 0;
+  }
+  .booking-record-v2 .booking-price {
+    position: static;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  .host-listing-v2 .host-listing-content {
+    padding-right: 0;
+  }
+  .host-listing-v2 .host-listing-details {
+    position: static;
+    margin-top: 15px;
+  }
+  .host-listing-v2 .host-listing-details strong span {
+    display: inline;
+    margin-left: 10px;
+  }
+  .host-listing-updated {
+    position: static;
+    display: block;
+    margin-top: 15px;
+  }
+  .account-layout .account-profile-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .account-layout .account-profile-note {
+    max-width: none;
+  }
+  .account-layout .account-profile-note > p {
+    margin: 15px 0;
+  }
+}
+@media (max-width: 800px) {
+  .app-shell .page.account-layout {
+    display: block;
+    padding: 16px 20px 50px;
+  }
+  .account-layout .account-sidebar {
+    position: static;
+    min-height: 0;
+    margin: 0 0 26px;
+    padding: 3px;
+    border-radius: 11px;
+  }
+  .account-layout .account-identity,
+  .account-layout .account-sidebar-bottom,
+  .account-nav-desktop-label {
+    display: none;
+  }
+  .account-layout .account-nav {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0;
+  }
+  .account-layout .account-nav-link {
+    min-height: 40px;
+    flex: 1;
+    justify-content: center;
+    padding: 8px 6px;
+    border-radius: 8px;
+    background: transparent;
+    border: 0;
+    font-size: 13px;
+  }
+  .account-layout .account-nav-link svg,
+  .account-layout .account-nav-link[href="/favorites"] {
+    display: none;
+  }
+  .account-nav-mobile-label {
+    display: inline;
+  }
+  .account-layout .account-page-heading {
+    margin: 0;
+  }
+  .account-layout .account-page-heading > div {
+    display: contents;
+  }
+  .account-layout .account-page-heading h1 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .account-layout .account-page-heading p,
+  .account-layout .account-find-action {
+    display: none;
+  }
+  .account-layout .account-add-action {
+    width: 100%;
+    justify-content: flex-start;
+    min-height: 48px;
+    margin: -6px 0 16px;
+    font-size: 16px;
+  }
+  .account-layout .button {
+    font-size: 15px;
+  }
+  .account-mobile-section-heading {
+    display: block;
+    margin: 22px 0 24px;
+  }
+  .account-layout .account-mobile-section-heading h2 {
+    font-size: 23px;
+    font-weight: 800;
+  }
+  .account-mobile-section-heading p {
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 5px;
+  }
+  .account-section-tabs {
+    min-height: 36px;
+    gap: 30px;
+    margin: 0 0 20px;
+  }
+  .account-section-tabs > button {
+    font-size: 14px;
+    padding-bottom: 9px;
+  }
+  .account-layout .account-records {
+    gap: 16px;
+  }
+  .account-layout .booking-record-v2,
+  .account-layout .host-listing-v2 {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 0;
+    padding: 12px;
+  }
+  .account-layout .booking-record-v2 .booking-photo,
+  .host-listing-v2 .host-listing-photo {
+    width: 100%;
+    height: 180px;
+    min-height: 180px;
+    border-radius: 11px;
+  }
+  .booking-content,
+  .host-listing-v2 .host-listing-content {
+    padding: 0 4px 4px;
+  }
+  .booking-record-v2 .account-record-heading {
+    gap: 24px;
+    padding: 0;
+    margin-bottom: 20px;
+  }
+  .account-layout .booking-record-v2 h2,
+  .account-layout .host-listing-v2 h2 {
+    font-size: 21px;
+    line-height: 1.35;
+  }
+  .account-layout .account-status {
+    font-size: 12px;
+    min-width: 142px;
+    padding: 6px 20px;
+    align-self: flex-start;
+  }
+  .booking-record-v2 .account-record-meta {
+    margin-top: 8px;
+    font-size: 13px;
+  }
+  .account-layout .booking-facts {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    font-size: 15px;
+    margin-bottom: 23px;
+  }
+  .booking-record-v2 .booking-price {
+    gap: 20px;
+    margin-bottom: 18px;
+  }
+  .account-layout .booking-price strong {
+    font-size: 25px;
+  }
+  .booking-status-message {
+    font-size: 12px;
+  }
+  .booking-primary-actions {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 17px;
+    padding: 0;
+  }
+  .booking-primary-actions .button {
+    width: 100%;
+    min-height: 42px;
+  }
+  .booking-content .account-record-actions {
+    margin-top: 6px;
+  }
+  .booking-record-v2 .booking-cancel-action {
+    font-size: 12px;
+  }
+  .account-callout {
+    display: grid;
+    grid-template-columns: 23px minmax(0, 1fr);
+    padding: 16px;
+    margin: 0 0 20px;
+    gap: 11px;
+    flex-wrap: wrap;
+  }
+  .account-callout strong {
+    font-size: 15px;
+  }
+  .account-callout p {
+    font-size: 12px;
+  }
+  .account-callout > .button {
+    grid-column: 2;
+    justify-self: start;
+    margin-left: 0;
+    padding: 0;
+    min-height: 30px;
+    border: 0;
+    background: none;
+    justify-content: flex-start;
+    min-width: 0;
+  }
+  .account-bookings > .account-callout {
+    margin-top: 20px;
+  }
+  .host-listing-v2 .account-record-heading {
+    gap: 19px;
+    margin-bottom: 8px;
+  }
+  .host-listing-room-details {
+    font-size: 13px;
+    color: var(--blue);
+    margin-top: 18px;
+  }
+  .host-listing-v2 .host-listing-details {
+    margin-top: 18px;
+  }
+  .host-listing-v2 .host-listing-details strong {
+    font-size: 25px;
+  }
+  .host-listing-v2 .account-record-actions {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .host-listing-v2 .account-record-actions .button {
+    width: 100%;
+    min-height: 42px;
+  }
+  .host-listing-updated {
+    font-size: 11px;
+  }
+  .host-draft-hint {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 20px 16px;
+    margin-top: 20px;
+    gap: 20px;
+  }
+  .host-draft-hint strong {
+    font-size: 19px;
+  }
+  .host-draft-hint .button {
+    width: 100%;
+  }
+  .account-layout .profile-editor {
+    padding: 22px 20px;
+  }
+  .profile-identity {
+    margin-bottom: 28px;
+    gap: 16px;
+  }
+  .account-layout .profile-identity h2 {
+    font-size: 23px;
+  }
+  .profile-editor .account-form-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .profile-editor .account-form-actions .button {
+    width: 100%;
+    min-width: 0;
+  }
+  .account-layout .account-profile-note {
+    padding: 20px;
+  }
+  .account-layout .account-profile-note > p {
+    font-size: 14px;
+  }
+  .account-page-footnote {
+    margin-top: 30px;
+    font-size: 11px;
+  }
+}

@@ -1,0 +1,1380 @@
+.account-page {
+  --account-success: #176247;
+  --account-success-bg: #edf8f1;
+  --account-waiting: #80520d;
+  --account-waiting-bg: #fff4d8;
+  --account-danger: #973a34;
+  --account-soft: #eef3fa;
+  font-size: 15px;
+}
+.account-page h1 {
+  font-size: clamp(29px, 3.1vw, 39px);
+  letter-spacing: -1.1px;
+}
+.account-page h2 {
+  font-size: 21px;
+  letter-spacing: -0.35px;
+}
+.account-page h3 {
+  font-size: 17px;
+}
+.account-page p,
+.account-page li {
+  overflow-wrap: anywhere;
+}
+.account-page h1,
+.account-page h2,
+.account-page h3,
+.account-page strong,
+.account-page a {
+  overflow-wrap: anywhere;
+}
+.booking-facts span,
+.host-listing-details > span,
+.listing-host > div,
+.listing-room-type > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.account-page .field > span {
+  font-size: 14px;
+}
+.account-page .field input,
+.account-page .field select,
+.account-page .field textarea {
+  font-size: 15px;
+}
+.account-page .field small {
+  color: #53657d;
+  font-size: 12px;
+}
+.account-page .field input[readonly] {
+  background: #f1f4f8;
+  color: #52637a;
+  border-style: dashed;
+}
+.account-page .button {
+  font-size: 14px;
+  min-height: 46px;
+}
+.account-page .field-row > * {
+  min-width: 0;
+}
+.account-page .field input[type="date"] {
+  min-width: 0;
+  max-width: 100%;
+}
+.account-muted {
+  color: #56667e;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.account-kicker {
+  display: block;
+  color: var(--blue);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+.account-optional {
+  font-weight: 400;
+  color: #617087;
+}
+.account-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.account-stack > .button {
+  align-self: flex-start;
+}
+.account-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 0;
+  color: var(--muted);
+}
+.account-form-error {
+  padding: 16px 18px;
+  background: #fff2ef;
+  color: var(--account-danger);
+  border-left: 3px solid var(--account-danger);
+  border-radius: 5px;
+  line-height: 1.6;
+  margin: 8px 0 20px;
+}
+.account-success {
+  color: var(--account-success);
+  background: var(--account-success-bg);
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+.account-page-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 8px 0 30px;
+}
+.account-page-heading h1 {
+  margin-bottom: 12px;
+}
+.account-page-heading p {
+  color: #56667e;
+  max-width: 62ch;
+}
+.account-panel {
+  background: white;
+  border: 1px solid var(--line);
+  padding: 28px;
+  border-radius: 14px;
+}
+.account-form h2 {
+  margin-bottom: 10px;
+}
+.account-form > p.account-muted {
+  margin-bottom: 24px;
+}
+.account-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.account-form-actions .account-success {
+  background: transparent;
+  padding: 0;
+}
+.account-form fieldset {
+  min-width: 0;
+  padding: 0;
+  margin: 0 0 26px;
+  border: 0;
+}
+.account-form legend {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+.account-empty {
+  padding: 52px 28px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 18px;
+}
+.account-empty p {
+  color: #56667e;
+  max-width: 52ch;
+}
+.account-empty-icon {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  color: var(--blue);
+  background: #eaf1fb;
+  border-radius: 24px 24px 24px 6px;
+  margin-bottom: 3px;
+}
+.account-empty .account-form-actions {
+  justify-content: center;
+}
+.account-inline-empty {
+  padding: 24px;
+  background: var(--account-soft);
+  border-radius: 8px;
+  color: #56667e;
+}
+.account-layout {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: 42px;
+  padding-top: 40px;
+}
+.account-sidebar {
+  align-self: start;
+  position: sticky;
+  top: 28px;
+}
+.account-identity {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding-bottom: 28px;
+}
+.account-avatar {
+  display: grid;
+  place-items: center;
+  height: 46px;
+  width: 46px;
+  background: #dce8fa;
+  color: var(--blue);
+  border-radius: 50%;
+  font-size: 20px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.account-identity > div {
+  min-width: 0;
+}
+.account-identity strong {
+  display: block;
+  overflow-wrap: anywhere;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+.account-identity div > span {
+  color: #617087;
+  font-size: 12px;
+}
+.account-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.account-nav-link {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  color: #53657b;
+  font-size: 14px;
+}
+.account-nav-link:hover {
+  background: #edf2f9;
+  text-decoration: none;
+}
+.account-nav-link.selected {
+  background: var(--blue);
+  color: white;
+  font-weight: 600;
+}
+.account-sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 30px;
+  padding: 22px 14px 0;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+}
+.account-signout {
+  border: 0;
+  background: none;
+  padding: 8px 0;
+  min-height: 40px;
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  color: #617087;
+  font-size: 13px;
+  text-align: left;
+}
+.account-content {
+  min-width: 0;
+}
+.account-profile-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 200px;
+  align-items: start;
+  gap: 25px;
+}
+.account-profile-note {
+  padding-top: 8px;
+}
+.account-profile-note h2 {
+  font-size: 17px;
+}
+.account-profile-note dl {
+  margin: 22px 0;
+}
+.account-profile-note dt {
+  color: #617087;
+  font-size: 12px;
+  margin-top: 18px;
+}
+.account-profile-note dd {
+  margin: 7px 0 0;
+  font-size: 14px;
+}
+.account-profile-note p {
+  font-size: 13px;
+  color: #617087;
+}
+.account-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.account-filter {
+  padding: 11px 15px;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: white;
+  color: #52637a;
+  font-size: 13px;
+}
+.account-filter.selected {
+  background: #e5edf9;
+  color: var(--blue);
+  border-color: #9eb6dc;
+  font-weight: 600;
+}
+.account-records {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.account-record {
+  background: white;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  min-width: 0;
+}
+.account-record-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.account-record-heading > :first-child {
+  min-width: 0;
+}
+.account-record-heading h2 {
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+.account-record-meta {
+  color: #617087;
+  font-size: 13px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.account-status {
+  font-size: 11px;
+  line-height: 1.45;
+  font-weight: 600;
+  padding: 6px 9px;
+  border-radius: 5px;
+  flex-shrink: 0;
+  max-width: 180px;
+}
+.status-pending {
+  background: var(--account-waiting-bg);
+  color: var(--account-waiting);
+}
+.status-confirmed {
+  background: #e5edf9;
+  color: var(--blue);
+}
+.status-completed {
+  background: var(--account-success-bg);
+  color: var(--account-success);
+}
+.status-cancelled,
+.status-draft {
+  background: #edf0f4;
+  color: #536179;
+}
+.account-record-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 22px;
+}
+.account-record-date {
+  color: #617087;
+  font-size: 12px;
+  margin-top: 19px;
+}
+.booking-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 22px;
+  color: #52637a;
+  font-size: 14px;
+  margin: 18px 0;
+}
+.booking-facts span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.booking-price {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: baseline;
+  margin-bottom: 16px;
+}
+.booking-price strong {
+  font-size: 23px;
+}
+.booking-price span {
+  color: #617087;
+  font-size: 13px;
+}
+.booking-note {
+  border-left: 3px solid var(--line);
+  padding-left: 16px;
+  margin-top: 18px;
+  font-size: 14px;
+}
+.booking-note strong {
+  font-weight: 600;
+  font-size: 13px;
+}
+.booking-note p {
+  margin-top: 5px;
+  white-space: pre-wrap;
+}
+.account-confirm {
+  background: #fff7f5;
+  padding: 16px;
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.account-confirm p {
+  width: 100%;
+  font-size: 14px;
+}
+.account-page .account-danger {
+  background: #973a34;
+  color: white;
+}
+.question-text {
+  white-space: pre-wrap;
+  margin: 12px 0 20px;
+}
+.question-answer {
+  background: #f0f5fc;
+  border-left: 3px solid #9bb5df;
+  padding: 17px 20px;
+  margin-top: 14px;
+}
+.question-answer strong {
+  color: var(--blue);
+  font-size: 13px;
+}
+.question-answer p {
+  margin-top: 8px;
+  white-space: pre-wrap;
+}
+.question-answer small {
+  display: block;
+  color: #617087;
+  margin-top: 12px;
+}
+.question-reply {
+  margin-top: 22px;
+}
+.account-edit-answer {
+  margin-top: 16px;
+  min-height: 44px;
+}
+.account-list-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+}
+.account-list-summary p {
+  color: #617087;
+  font-size: 14px;
+}
+.host-listing {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+.host-listing-symbol {
+  width: 66px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  background: #edf3fa;
+  color: #5578a9;
+  border-radius: 9px;
+  flex-shrink: 0;
+}
+.host-listing-content {
+  flex: 1;
+  min-width: 0;
+}
+.host-listing-content .account-record-heading {
+  margin-bottom: 7px;
+}
+.host-listing-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  align-items: center;
+  margin-top: 16px;
+  font-size: 13px;
+  color: #52637a;
+}
+.host-listing-details > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.host-listing-details strong {
+  color: var(--ink);
+  font-size: 17px;
+}
+.host-listing-details strong span {
+  font-weight: 400;
+  color: #617087;
+  font-size: 12px;
+}
+.account-section-heading {
+  margin-bottom: 28px;
+}
+.account-section-heading p {
+  color: #617087;
+  font-size: 14px;
+  margin-top: 8px;
+}
+.listing-editor fieldset + fieldset {
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
+.listing-editor fieldset + fieldset legend {
+  padding-right: 10px;
+}
+.listing-amenities-field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-bottom: 20px;
+  min-width: 0;
+}
+.listing-amenities-field > span {
+  color: #40516a;
+  font-size: 14px;
+  font-weight: 600;
+}
+.listing-amenity-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
+}
+.listing-amenity-options label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  min-width: 0;
+  font-size: 14px;
+  cursor: pointer;
+}
+/* Choice controls must not inherit text-field sizing from a surrounding form. */
+.listing-amenity-options input[type="checkbox"] {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--blue);
+}
+.listing-amenity-options label > span {
+  min-width: 0;
+  overflow-wrap: break-word;
+  line-height: 1.5;
+}
+.listing-publication > label {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+  cursor: pointer;
+}
+.listing-publication input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--blue);
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+.listing-publication strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+.listing-publication small {
+  display: block;
+  margin-top: 5px;
+  color: #617087;
+}
+.auth-page {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 70px;
+  padding-top: 60px;
+  padding-bottom: 70px;
+  align-items: start;
+}
+.auth-story {
+  padding: 22px 0;
+}
+.auth-story h1 {
+  font-size: clamp(34px, 3.5vw, 45px);
+  line-height: 1.18;
+  margin-bottom: 22px;
+}
+.auth-story > p {
+  color: #617087;
+  max-width: 44ch;
+  font-size: 16px;
+}
+.auth-benefits {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin: 35px 0;
+}
+.auth-benefits li {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+.auth-benefits svg {
+  margin-top: 2px;
+  color: var(--blue);
+}
+.auth-benefits strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.auth-benefits span {
+  display: block;
+  font-size: 13px;
+  color: #617087;
+  line-height: 1.6;
+}
+.auth-story > .text-link {
+  font-size: 14px;
+}
+.auth-panel {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 32px;
+  box-shadow: 0 10px 30px #163e8e08;
+}
+.auth-panel > h2 {
+  margin-bottom: 10px;
+  font-size: 26px;
+}
+.auth-panel > p {
+  margin-bottom: 25px;
+}
+.auth-role-picker {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 10px;
+}
+.auth-role-picker legend {
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+.auth-role {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 13px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.auth-role.selected {
+  color: var(--blue);
+  background: #eaf1fb;
+  border-color: #8eaad3;
+  font-weight: 600;
+}
+.auth-role:focus-within {
+  outline: 3px solid #7094cf;
+  outline-offset: 3px;
+}
+.auth-role input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.auth-password {
+  position: relative;
+}
+.auth-password input {
+  padding-right: 54px !important;
+}
+.auth-password button {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  bottom: 4px;
+  width: 44px;
+  border: 0;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  color: #52637a;
+}
+.auth-switch {
+  text-align: center;
+  margin: 25px 0 0 !important;
+  font-size: 14px;
+  color: #617087;
+}
+.auth-switch a {
+  font-weight: 600;
+}
+.listings-heading {
+  margin: 12px 0 32px;
+}
+.listings-heading .button {
+  margin-top: 22px;
+  flex-shrink: 0;
+}
+.listing-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 140px 210px;
+  align-items: start;
+  gap: 18px;
+  background: white;
+  border: 1px solid var(--line);
+  padding: 22px;
+  border-radius: 12px;
+}
+.listing-filters .field {
+  margin: 0;
+}
+.listing-search-input {
+  position: relative;
+}
+.listing-search-input svg {
+  position: absolute;
+  top: 16px;
+  left: 15px;
+  color: #617087;
+}
+.listing-search-input input {
+  padding-left: 44px !important;
+}
+.listing-result-summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 24px 0;
+  font-size: 13px;
+  color: #617087;
+}
+.listing-result-summary p:first-child {
+  color: var(--ink);
+  white-space: nowrap;
+  font-weight: 600;
+}
+.listing-result-summary p:last-child {
+  max-width: 64ch;
+  text-align: right;
+}
+.public-listings {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.public-listing {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr) 180px;
+  gap: 24px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px;
+}
+.public-listing-symbol {
+  background: #e9f1fa;
+  border-radius: 8px;
+  color: #5073a7;
+  min-height: 180px;
+  padding: 24px 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  text-align: center;
+}
+.public-listing-symbol span {
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.public-listing-content {
+  min-width: 0;
+}
+.public-listing-content h2 {
+  margin-bottom: 13px;
+}
+.public-listing-description {
+  color: #617087;
+  font-size: 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.public-listing-capacity {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: #52637a;
+  margin-top: 13px;
+}
+.listing-amenities {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 0;
+  margin: 17px 0 0;
+}
+.listing-amenities li {
+  padding: 6px 10px;
+  background: #f2f5f9;
+  border-radius: 5px;
+  color: #52637a;
+  font-size: 12px;
+}
+.public-listing-action {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 17px;
+  padding-left: 20px;
+  border-left: 1px solid var(--line);
+}
+.public-listing-action strong {
+  display: block;
+  font-size: 23px;
+  letter-spacing: -0.5px;
+}
+.public-listing-action span,
+.public-listing-action small {
+  display: block;
+  color: #617087;
+  font-size: 12px;
+  margin-top: 5px;
+}
+.listing-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+.listing-title {
+  margin-bottom: 32px;
+}
+.listing-title h1 {
+  margin-bottom: 16px;
+  max-width: 30ch;
+  overflow-wrap: anywhere;
+}
+.listing-title > p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #617087;
+}
+.listing-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 365px;
+  gap: 40px;
+  align-items: start;
+}
+.listing-detail-layout > aside {
+  position: sticky;
+  top: 24px;
+}
+.listing-main {
+  min-width: 0;
+}
+.listing-overview {
+  border-top: 1px solid var(--line);
+  padding-top: 28px;
+}
+.listing-overview > h2 {
+  margin: 28px 0 14px;
+}
+.listing-room-type {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.listing-building-icon {
+  display: grid;
+  place-items: center;
+  width: 80px;
+  height: 80px;
+  background: #e8f0fa;
+  color: #5275a8;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+.listing-room-type p {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #617087;
+  font-size: 14px;
+  margin-top: 8px;
+}
+.listing-description {
+  color: #52637a;
+  white-space: pre-wrap;
+}
+.listing-host {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+  margin-top: 35px;
+  padding-top: 25px;
+  border-top: 1px solid var(--line);
+}
+.listing-host strong {
+  font-size: 15px;
+}
+.listing-host p {
+  font-size: 13px;
+  color: #617087;
+  margin-top: 7px;
+}
+.listing-booking {
+  padding: 25px;
+}
+.listing-booking > h2 {
+  font-size: 20px;
+}
+.listing-night-price {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 18px 0 25px;
+}
+.listing-night-price strong {
+  font-size: 30px;
+  letter-spacing: -0.7px;
+}
+.listing-night-price span {
+  font-size: 14px;
+  color: #617087;
+}
+.listing-booking .field-row {
+  gap: 10px;
+}
+.listing-booking .field input[type="date"] {
+  padding: 12px 8px;
+  font-size: 13px;
+}
+.listing-booking .field > span {
+  font-size: 13px;
+}
+.listing-total {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 0;
+  border-top: 1px solid var(--line);
+  margin: 4px 0 8px;
+}
+.listing-total span {
+  color: #617087;
+  font-size: 14px;
+}
+.listing-total strong {
+  font-size: 20px;
+}
+.listing-booking-note {
+  color: #617087;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 15px;
+}
+.listing-request-success {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+}
+.listing-request-success > svg {
+  color: var(--account-success);
+}
+.listing-request-success p {
+  font-size: 14px;
+  color: #617087;
+}
+.listing-questions {
+  margin-top: 40px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+.listing-questions > h2 {
+  margin-bottom: 12px;
+}
+.listing-questions > .account-muted {
+  margin-bottom: 20px;
+}
+.public-questions article {
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line);
+}
+.public-questions h3 {
+  font-weight: 400;
+  white-space: pre-wrap;
+}
+.listing-question-form {
+  margin-top: 28px;
+}
+.listing-question-form > .button {
+  margin-top: 18px;
+}
+.listing-question-form > .account-muted {
+  display: block;
+  margin-top: -5px;
+  font-size: 12px;
+}
+.listing-questions > .button,
+.listing-questions > .text-link {
+  margin-top: 22px;
+}
+@media (max-width: 1060px) {
+  .account-layout {
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 25px;
+  }
+  .account-profile-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .account-profile-note {
+    padding: 0 5px;
+  }
+  .account-profile-note dl {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px 12px;
+  }
+  .account-profile-note dt,
+  .account-profile-note dd {
+    margin: 0;
+  }
+  .auth-page {
+    gap: 35px;
+  }
+  .auth-panel {
+    padding: 26px;
+  }
+  .listing-detail-layout {
+    grid-template-columns: minmax(0, 1fr) 335px;
+    gap: 26px;
+  }
+  .public-listing {
+    grid-template-columns: 120px minmax(0, 1fr) 160px;
+    gap: 18px;
+  }
+  .account-record-heading {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 800px) {
+  .account-layout {
+    display: block;
+    padding-top: 24px;
+  }
+  .account-sidebar {
+    position: static;
+    margin-bottom: 28px;
+  }
+  .account-identity {
+    padding-bottom: 18px;
+  }
+  .account-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .account-nav-link {
+    padding: 10px 13px;
+    font-size: 13px;
+    border: 1px solid var(--line);
+    background: white;
+  }
+  .account-nav-link.selected {
+    border-color: var(--blue);
+  }
+  .account-sidebar-bottom {
+    margin: 0;
+    border: 0;
+    padding: 15px 0 0;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .account-page-heading {
+    margin-top: 0;
+  }
+  .auth-page {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 600px;
+    padding-top: 28px;
+    gap: 25px;
+  }
+  .auth-story {
+    padding: 0;
+  }
+  .auth-story h1 {
+    font-size: 32px;
+    margin-bottom: 13px;
+  }
+  .auth-benefits {
+    display: none;
+  }
+  .auth-story > .text-link {
+    display: inline-block;
+    margin-top: 15px;
+  }
+  .listing-detail-layout {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 28px;
+  }
+  .listing-detail-layout > aside {
+    position: static;
+    width: 100%;
+  }
+  .listing-main {
+    width: 100%;
+  }
+  .listing-booking .field-row {
+    gap: 16px;
+  }
+  .listing-booking .field input[type="date"] {
+    font-size: 16px;
+  }
+  .listing-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+  .listing-search {
+    grid-column: 1 / -1;
+  }
+  .listing-result-summary {
+    flex-direction: column;
+    gap: 7px;
+  }
+  .listing-result-summary p:last-child {
+    text-align: left;
+  }
+  .public-listing {
+    grid-template-columns: 110px minmax(0, 1fr);
+  }
+  .public-listing-action {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    padding: 18px 0 0;
+    gap: 12px;
+  }
+  .public-listing-action small {
+    display: none;
+  }
+}
+@media (max-width: 480px) {
+  .account-page {
+    padding-left: 18px;
+    padding-right: 18px;
+    font-size: 15px;
+  }
+  .account-page .field input,
+  .account-page .field select,
+  .account-page .field textarea {
+    font-size: 16px;
+  }
+  .account-page .field-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .account-panel,
+  .account-record,
+  .auth-panel {
+    padding: 21px 18px;
+  }
+  .account-page-heading {
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .account-page-heading h1 {
+    font-size: 29px;
+  }
+  .account-nav-link {
+    font-size: 12px;
+    padding: 9px 10px;
+    gap: 7px;
+  }
+  .account-nav-link svg {
+    width: 17px;
+  }
+  .account-sidebar-bottom {
+    font-size: 12px;
+  }
+  .account-signout {
+    font-size: 12px;
+  }
+  .account-empty {
+    padding: 32px 20px;
+  }
+  .account-empty .account-form-actions > .button {
+    width: 100%;
+  }
+  .account-list-summary {
+    flex-wrap: wrap;
+  }
+  .host-listing {
+    padding: 20px 18px;
+  }
+  .host-listing-symbol {
+    display: none;
+  }
+  .host-listing .account-record-heading {
+    gap: 9px;
+  }
+  .listing-amenity-options {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+  .account-filter {
+    padding: 9px 11px;
+    font-size: 12px;
+  }
+  .booking-price strong {
+    font-size: 21px;
+  }
+  .booking-facts {
+    gap: 12px;
+    font-size: 13px;
+  }
+  .question-answer {
+    padding: 15px;
+  }
+  .auth-story h1 {
+    font-size: 29px;
+  }
+  .auth-story > p {
+    font-size: 14px;
+  }
+  .auth-panel > h2 {
+    font-size: 24px;
+  }
+  .auth-role-picker {
+    gap: 8px;
+  }
+  .auth-role {
+    padding: 13px 7px;
+    font-size: 11px;
+  }
+  .auth-role svg {
+    width: 18px;
+  }
+  .listing-filters {
+    padding: 18px;
+    gap: 16px;
+  }
+  .listings-heading .button {
+    margin-top: 0;
+  }
+  .public-listing {
+    display: block;
+    padding: 21px 18px;
+  }
+  .public-listing-symbol {
+    min-height: 0;
+    padding: 12px;
+    flex-direction: row;
+    justify-content: flex-start;
+    text-align: left;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .public-listing-symbol svg {
+    width: 25px;
+    height: 25px;
+  }
+  .public-listing-action {
+    display: flex;
+    margin-top: 20px;
+  }
+  .public-listing-action strong {
+    font-size: 21px;
+  }
+  .listing-title h1 {
+    font-size: 29px;
+  }
+  .listing-title > p {
+    align-items: flex-start;
+    font-size: 14px;
+  }
+  .listing-title > p svg {
+    margin-top: 4px;
+  }
+  .listing-building-icon {
+    height: 64px;
+    width: 64px;
+  }
+  .listing-room-type h2 {
+    font-size: 19px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .account-page *,
+  .account-page *::before,
+  .account-page *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

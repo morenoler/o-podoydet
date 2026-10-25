@@ -376,6 +376,7 @@ def main():
             report["inputSha256"][file] = digest(ROOT / file)
         env = os.environ.copy()
         env.update(LLM_API_KEY="", ADVISOR_LOCAL_MODEL="", ADVISOR_PYTHON=sys.executable,
+                   ACCOUNT_MODE="true", SESSION_COOKIE_SECURE="false",
                    WINDOW_VIEW_URL=f"http://127.0.0.1:{args.view_port}", PYTHONUTF8="1", FRONTEND_ORIGIN="")
         tmp = run_dir / "tmp"
         tmp.mkdir()
@@ -387,16 +388,19 @@ def main():
                                      stderr=subprocess.STDOUT, creationflags=FLAGS)
             processes.append(child)
             process_rows.append({"name": name, "pid": child.pid, "port": port,
-                                 "log": str(run_dir / (name + ".log")), "database": overrides.get("DB_PATH")})
+                                 "log": str(run_dir / (name + ".log")), "database": overrides.get("DB_PATH"),
+                                 "uploads": overrides.get("UPLOADS_PATH")})
             return f"http://127.0.0.1:{port}"
         view = launch("window-view", [sys.executable, "-X", "utf8", "-m", "window_view", "serve", "--port", str(args.view_port)],
                       ROOT / "services/window-view", {}, args.view_port)
         java_command = [java, "-Dstdout.encoding=UTF-8", "-Dstderr.encoding=UTF-8", "-jar", str(jar)]
         app = launch("app", java_command, ROOT, {"PORT": str(args.app_port), "LAB_MODE": "false",
                      "DATA_PATH": str(ROOT / "data/verified-hotels.json"), "DIST_PATH": str(ROOT / "dist"),
+                     "UPLOADS_PATH": str(run_dir / "app-uploads"),
                      "DB_PATH": str(run_dir / "app.sqlite3")}, args.app_port)
         lab = launch("lab", java_command, ROOT, {"PORT": str(args.lab_port), "LAB_MODE": "true",
                      "DATA_PATH": str(run_dir / "lab-hotels.json"), "DIST_PATH": str(ROOT / "dist-lab"),
+                     "UPLOADS_PATH": str(run_dir / "lab-uploads"),
                      "DB_PATH": str(run_dir / "lab.sqlite3")}, args.lab_port)
         write(run_dir / "processes.json", process_rows)
         for base, endpoint in ((view, "/health"), (app, "/api/health"), (lab, "/api/health")):
@@ -412,6 +416,10 @@ def main():
         report["health"] = {"app": request(app, "/api/health"), "lab": request(lab, "/api/health"),
                             "windowView": request(view, "/health")}
         require(report["health"]["windowView"]["network_enabled"] is False, "View service unexpectedly allows collection")
+        for base in (app, lab):
+            require(request(base, "/api/auth/me")["user"] is None, "Fresh account database has a session")
+            require(request(base, "/api/listings") == [], "Fresh database contains owner listings")
+            request(base, "/api/host/listings", expected=401)
         for base in (app, lab):
             require("<html" in request(base, "/").lower(), "Built frontend is not served")
         catalog = request(app, "/api/catalog")
