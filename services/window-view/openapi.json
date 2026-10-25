@@ -29,6 +29,15 @@
         }
       }
     },
+    "/v1/regions": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Pilot regions, OSM hotel identities and request defaults; floor and date must be supplied"
+          }
+        }
+      }
+    },
     "/v1/views/estimate": {
       "post": {
         "operationId": "estimateWindowView",

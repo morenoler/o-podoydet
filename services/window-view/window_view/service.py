@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 import math
 
 from . import __version__
-from .elevation import distance, nearest_elevation
+from .elevation import distance, nearest_elevation, reconcile_elevations
 from .geometry import assess_target, assess_sun, point_in_polygon
 from .solar import solar_events
 from .validation import validate_request, validate_source, validate_window, ValidationError
@@ -100,8 +100,12 @@ def prepare(request, scene, observations=None):
         elevation = terrain.get("flat_elevation_m")
         if elevation is None:
             elevation = nearest_elevation(point, terrain.get("samples", []), 70)
+        ground_conflict = bool(subject and subject.get("ground_elevation_conflict"))
+        if ground_conflict:
+            elevation = None
         return {"id": label, "lat": point["lat"], "lon": point["lon"],
                 "ground_elevation_m": elevation, "height_agl_m": height["height_agl_m"],
+                "ground_elevation_conflict": ground_conflict,
                 "height_range_m": height["height_range_m"], "bearing_deg": direction,
                 "horizontal_fov_deg": (window or {}).get("horizontal_fov_deg", 90) if complete else 45,
                 "vertical_fov_deg": (window or {}).get("vertical_fov_deg", 90) if complete else 90,
@@ -111,7 +115,8 @@ def prepare(request, scene, observations=None):
         observers = [observer(window, window["bearing_deg"], "requested_window")]
     else:
         observers = [observer(hotel, angle, label) for angle, label in DIRECTIONS]
-    events = solar_events(request["date"], hotel["lat"], hotel["lon"], request["utc_offset_minutes"])
+    # JSON integer-valued numbers (e.g. 540.0) satisfy the API schema.
+    events = solar_events(request["date"], hotel["lat"], hotel["lon"], int(request["utc_offset_minutes"]))
     max_radius = min(request.get("radius_m", 1200), available_radius)
     if complete:
         max_radius = min(max_radius, scene["radius_m"] - distance(window, scene["origin"]))
@@ -134,6 +139,7 @@ def prepare(request, scene, observations=None):
         selected.append({"id": "roof:" + building["id"], "kind": "neighbor_building",
                          "name": building.get("name") or building["id"], "lat": point[0], "lon": point[1],
                          "height_m": building.get("height_m"),
+                         "ground_elevation_conflict": bool(building.get("ground_elevation_conflict")),
                          "elevation_m": (building["ground_elevation_m"] + building["height_m"])
                          if building.get("ground_elevation_m") is not None and building.get("height_m") is not None else None,
                          "source_ids": building["source_ids"], "target_building_id": building["id"],
@@ -192,6 +198,7 @@ def _coverage_guard(result, scene):
 
 def estimate(request, scene, observations=None):
     scene = deepcopy(scene)
+    reconcile_elevations(scene)
     resolution, observers, targets, events = prepare(request, scene, observations)
     scene.setdefault("terrain", {})["radius_m"] = resolution["evaluated_radius_m"]
     scene["terrain"]["coverage_radius_m"] = resolution["evaluated_radius_m"]
@@ -245,6 +252,7 @@ def estimate(request, scene, observations=None):
                          "buildings_with_tagged_height": sum(b.get("height_basis") == "osm_height" for b in scene["buildings"]),
                          "buildings_with_estimated_height": sum(b.get("height_basis") == "estimated_levels" for b in scene["buildings"]),
                          "buildings_with_unknown_height": sum(b.get("height_basis") == "unknown" for b in scene["buildings"]),
+                         "buildings_with_ground_conflict": sum(bool(b.get("ground_elevation_conflict")) for b in scene["buildings"]),
                          "synthetic_buildings": len(scene["buildings"]) if scene.get("is_demo") else 0,
                          "candidate_targets": len(scene["targets"]), "evaluated_targets_per_observer": len(targets),
                          "terrain_samples": len(scene.get("terrain", {}).get("samples", [])),

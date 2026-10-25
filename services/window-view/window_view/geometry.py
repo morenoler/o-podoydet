@@ -217,6 +217,11 @@ def _trace(observer, vector, distance, azimuth, altitude, origin_elevation, buil
                 uncertainties.append("invalid_building_geometry:" + building_id)
         if not intervals:
             continue
+        if building.get("ground_elevation_conflict"):
+            # Do not turn a disputed OSM ele/DSM datum into a solid mountain or
+            # silently substitute another elevation while tracing this prism.
+            uncertainties.append("building_ground_elevation_conflict:" + building_id)
+            continue
         ground = building.get("ground_elevation_m")
         if not _number(ground):
             # Do not transfer observer elevation or sea level onto another building.
@@ -312,6 +317,9 @@ def assess_target(observer, target, buildings, terrain=None):
         return _result("outside_fov", distance, azimuth, None)
     if distance > MAX_RANGE_M:
         return _result("unknown", distance, azimuth, None, uncertainties=["target_distance_outside_model_range"])
+    if observer.get("ground_elevation_conflict") or target.get("ground_elevation_conflict"):
+        reason = "observer_ground_elevation_conflict" if observer.get("ground_elevation_conflict") else "target_ground_elevation_conflict"
+        return _result("unknown", distance, azimuth, None, uncertainties=[reason])
     profile = _Terrain(terrain, observer)
     ground = observer.get("ground_elevation_m")
     if ground is None:
@@ -350,6 +358,8 @@ def assess_sun(observer, azimuth_deg, elevation_deg, buildings, terrain=None):
         raise ValueError("invalid solar model radius")
     if not _fov(observer, azimuth_deg, elevation_deg):
         return _result("outside_fov", radius, azimuth_deg, elevation_deg)
+    if observer.get("ground_elevation_conflict"):
+        return _result("unknown", radius, azimuth_deg, elevation_deg, uncertainties=["observer_ground_elevation_conflict"])
     profile = _Terrain(terrain, observer)
     ground = observer.get("ground_elevation_m")
     if ground is None:

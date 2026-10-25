@@ -47,6 +47,7 @@ import {
 } from "lucide-react";
 import { api } from "./api";
 import { GeoMap } from "./GeoMap";
+import { AreaPanel } from "./AreaPanel";
 import { features, featureIds, scenarios } from "../shared/features";
 import { rankHotels } from "../shared/matching";
 import type {
@@ -65,7 +66,7 @@ import type {
 
 type Catalog = Dataset & { mode: "rules" | "llm" };
 const initialTrip: Trip = {
-  region: "Адлер",
+  region: "Пусан",
   checkIn: "",
   checkOut: "",
   adults: 2,
@@ -76,7 +77,7 @@ const initialTrip: Trip = {
 };
 function readTrip() {
   try {
-    const saved = JSON.parse(localStorage.getItem("o-trip") || "null");
+    const saved = JSON.parse(localStorage.getItem("o-trip-busan") || "null");
     return saved &&
       typeof saved === "object" &&
       Array.isArray(saved.preferences) &&
@@ -133,7 +134,7 @@ export function App() {
     preferences: Preference[];
   } | null>(() => {
     try {
-      return JSON.parse(sessionStorage.getItem("o-resolved") || "null");
+      return JSON.parse(sessionStorage.getItem("o-resolved-busan") || "null");
     } catch {
       return null;
     }
@@ -146,7 +147,7 @@ export function App() {
     const value = { key: JSON.stringify(requestTrip), preferences };
     setResolved(value);
     try {
-      sessionStorage.setItem("o-resolved", JSON.stringify(value));
+      sessionStorage.setItem("o-resolved-busan", JSON.stringify(value));
     } catch {
       /* optional cache */
     }
@@ -155,7 +156,7 @@ export function App() {
   const setTrip = (value: Trip) => {
     setTripState(value);
     try {
-      localStorage.setItem("o-trip", JSON.stringify(value));
+      localStorage.setItem("o-trip-busan", JSON.stringify(value));
     } catch {
       /* storage can be unavailable in private mode */
     }
@@ -394,11 +395,11 @@ function TripPage() {
                   value={form.region}
                   onChange={(e) => setForm({ ...form, region: e.target.value })}
                 >
-                  <option value="Адлер">Адлер, Краснодарский край</option>
+                  <option value="Пусан">Пусан, Южная Корея</option>
                 </select>
                 <ChevronDown size={17} />
               </div>
-              <small>В первой версии исследуем побережье Адлера</small>
+              <small>В этой версии исследуем район пляжа Хэундэ</small>
             </label>
             <div className="field-row">
               <label className="field">
@@ -485,7 +486,7 @@ function TripPage() {
           <div className="destination-title">
             <div>
               <span>Место для вашей истории</span>
-              <h2>Адлер</h2>
+              <h2>Пусан</h2>
               <p>Море, прогулки и свой ритм.</p>
             </div>
             <span className="destination-symbol">
@@ -1431,6 +1432,7 @@ function HotelPage() {
           </Link>
         </aside>
       </div>
+      <AreaPanel hotelId={hotel.id} />
       <section className="subsection evidence-section">
         <h2>Почему мы так считаем</h2>
         <p>

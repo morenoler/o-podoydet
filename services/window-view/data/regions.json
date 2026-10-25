@@ -1,0 +1,264 @@
+{
+  "busan-haeundae": {
+    "name": "Busan / Haeundae coastal pilot",
+    "country_code": "KR",
+    "timezone": "Asia/Seoul",
+    "scene_id": "busan-haeundae",
+    "request_defaults": {
+      "data_mode": "cached",
+      "scene_id": "busan-haeundae",
+      "utc_offset_minutes": 540,
+      "radius_m": 1200
+    },
+    "catalog_source": "../../data/demo.json",
+    "catalog_source_date": "2026-10-24T10:07:47.270Z",
+    "identity_method": "OSM identifiers and coordinates from main application catalog; no room/category/demo claims imported",
+    "hotels": [
+      {
+        "catalog_id": "node-368662694",
+        "hotel": {
+          "id": "osm:node:368662694",
+          "name": "Haeundae Geullori Condominium",
+          "lat": 35.1595133,
+          "lon": 129.1578105
+        },
+        "source_url": "https://www.openstreetmap.org/node/368662694"
+      },
+      {
+        "catalog_id": "node-368663565",
+        "hotel": {
+          "id": "osm:node:368663565",
+          "name": "Geullori Condominium",
+          "lat": 35.1592621,
+          "lon": 129.1580012
+        },
+        "source_url": "https://www.openstreetmap.org/node/368663565"
+      },
+      {
+        "catalog_id": "node-368952148",
+        "hotel": {
+          "id": "osm:node:368952148",
+          "name": "The Westin Chosun Hotel Busan",
+          "lat": 35.1559704,
+          "lon": 129.1541972
+        },
+        "source_url": "https://www.openstreetmap.org/node/368952148"
+      },
+      {
+        "catalog_id": "node-368952155",
+        "hotel": {
+          "id": "osm:node:368952155",
+          "name": "Hotel Riviera Haeundae",
+          "lat": 35.162375,
+          "lon": 129.1612537
+        },
+        "source_url": "https://www.openstreetmap.org/node/368952155"
+      },
+      {
+        "catalog_id": "node-368952200",
+        "hotel": {
+          "id": "osm:node:368952200",
+          "name": "Ssikeullaudeu Hotel",
+          "lat": 35.1607468,
+          "lon": 129.1617349
+        },
+        "source_url": "https://www.openstreetmap.org/node/368952200"
+      },
+      {
+        "catalog_id": "node-3785255114",
+        "hotel": {
+          "id": "osm:node:3785255114",
+          "name": "Sunset",
+          "lat": 35.1603388,
+          "lon": 129.1613881
+        },
+        "source_url": "https://www.openstreetmap.org/node/3785255114"
+      },
+      {
+        "catalog_id": "node-3856628577",
+        "hotel": {
+          "id": "osm:node:3856628577",
+          "name": "Hotel Camellia",
+          "lat": 35.1598598,
+          "lon": 129.1610633
+        },
+        "source_url": "https://www.openstreetmap.org/node/3856628577"
+      },
+      {
+        "catalog_id": "node-4426268904",
+        "hotel": {
+          "id": "osm:node:4426268904",
+          "name": "Best Western",
+          "lat": 35.1604524,
+          "lon": 129.1612674
+        },
+        "source_url": "https://www.openstreetmap.org/node/4426268904"
+      },
+      {
+        "catalog_id": "node-6640051687",
+        "hotel": {
+          "id": "osm:node:6640051687",
+          "name": "Society Hotel Haeundae",
+          "lat": 35.1617476,
+          "lon": 129.1579515
+        },
+        "source_url": "https://www.openstreetmap.org/node/6640051687"
+      },
+      {
+        "catalog_id": "node-11074220074",
+        "hotel": {
+          "id": "osm:node:11074220074",
+          "name": "Kolon Seacloud Hotel",
+          "lat": 35.1605269,
+          "lon": 129.1623734
+        },
+        "source_url": "https://www.openstreetmap.org/node/11074220074"
+      },
+      {
+        "catalog_id": "node-11164247205",
+        "hotel": {
+          "id": "osm:node:11164247205",
+          "name": "Kwangsu hotel",
+          "lat": 35.1602861,
+          "lon": 129.15652
+        },
+        "source_url": "https://www.openstreetmap.org/node/11164247205"
+      },
+      {
+        "catalog_id": "node-12308280501",
+        "hotel": {
+          "id": "osm:node:12308280501",
+          "name": "The solid residence - Elbon the stay by haeundae",
+          "lat": 35.1622413,
+          "lon": 129.1607691
+        },
+        "source_url": "https://www.openstreetmap.org/node/12308280501"
+      },
+      {
+        "catalog_id": "node-13011853719",
+        "hotel": {
+          "id": "osm:node:13011853719",
+          "name": "L7 해운대",
+          "lat": 35.1601581,
+          "lon": 129.159975
+        },
+        "source_url": "https://www.openstreetmap.org/node/13011853719"
+      },
+      {
+        "catalog_id": "way-627150752",
+        "hotel": {
+          "id": "osm:way:627150752",
+          "name": "Shilla Stay Haeundae",
+          "lat": 35.15983896,
+          "lon": 129.1586863
+        },
+        "source_url": "https://www.openstreetmap.org/way/627150752"
+      },
+      {
+        "catalog_id": "way-627347066",
+        "hotel": {
+          "id": "osm:way:627347066",
+          "name": "더베이호텔",
+          "lat": 35.16149678,
+          "lon": 129.15810896
+        },
+        "source_url": "https://www.openstreetmap.org/way/627347066"
+      },
+      {
+        "catalog_id": "way-627350916",
+        "hotel": {
+          "id": "osm:way:627350916",
+          "name": "Toyoko Inn Haeundae II",
+          "lat": 35.159503944444445,
+          "lon": 129.15742485555558
+        },
+        "source_url": "https://www.openstreetmap.org/way/627350916"
+      },
+      {
+        "catalog_id": "way-627350927",
+        "hotel": {
+          "id": "osm:way:627350927",
+          "name": "이비스버젯앰배서더해운대",
+          "lat": 35.159081,
+          "lon": 129.15451615555554
+        },
+        "source_url": "https://www.openstreetmap.org/way/627350927"
+      },
+      {
+        "catalog_id": "way-780727746",
+        "hotel": {
+          "id": "osm:way:780727746",
+          "name": "해운대그린나래호텔",
+          "lat": 35.15896284,
+          "lon": 129.15698228
+        },
+        "source_url": "https://www.openstreetmap.org/way/780727746"
+      },
+      {
+        "catalog_id": "way-992363537",
+        "hotel": {
+          "id": "osm:way:992363537",
+          "name": "호텔블루스토리",
+          "lat": 35.159906039999996,
+          "lon": 129.15745636
+        },
+        "source_url": "https://www.openstreetmap.org/way/992363537"
+      },
+      {
+        "catalog_id": "way-992363538",
+        "hotel": {
+          "id": "osm:way:992363538",
+          "name": "소노문 해운대",
+          "lat": 35.159896971428566,
+          "lon": 129.15799064285713
+        },
+        "source_url": "https://www.openstreetmap.org/way/992363538"
+      },
+      {
+        "catalog_id": "way-992363541",
+        "hotel": {
+          "id": "osm:way:992363541",
+          "name": "베이몬드호텔",
+          "lat": 35.15954672,
+          "lon": 129.15676474
+        },
+        "source_url": "https://www.openstreetmap.org/way/992363541"
+      },
+      {
+        "catalog_id": "way-992363542",
+        "hotel": {
+          "id": "osm:way:992363542",
+          "name": "아크블루호텔",
+          "lat": 35.15961814,
+          "lon": 129.1565399
+        },
+        "source_url": "https://www.openstreetmap.org/way/992363542"
+      },
+      {
+        "catalog_id": "way-992363545",
+        "hotel": {
+          "id": "osm:way:992363545",
+          "name": "Best Louis Hamilton Hotel",
+          "lat": 35.15962164,
+          "lon": 129.15458655999998
+        },
+        "source_url": "https://www.openstreetmap.org/way/992363545"
+      },
+      {
+        "catalog_id": "way-992363562",
+        "hotel": {
+          "id": "osm:way:992363562",
+          "name": "Haerium hotel",
+          "lat": 35.15944114444445,
+          "lon": 129.15378122222222
+        },
+        "source_url": "https://www.openstreetmap.org/way/992363562"
+      }
+    ],
+    "limitations": [
+      "Haeundae pilot, not all of Busan.",
+      "Caller must supply floor and travel date; no default floor.",
+      "No exact room window geometry or room availability established."
+    ]
+  }
+}

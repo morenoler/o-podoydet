@@ -1,0 +1,12 @@
+{
+  "hotel": {
+    "id": "osm:way:627150752",
+    "name": "Shilla Stay Haeundae",
+    "lat": 35.15983896,
+    "lon": 129.1586863
+  },
+  "floor": 5,
+  "date": "2026-10-24",
+  "utc_offset_minutes": 540,
+  "radius_m": 2000
+}

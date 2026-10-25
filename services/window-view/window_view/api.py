@@ -94,6 +94,8 @@ def create_server(host="127.0.0.1", port=8011, application=None):
             elif self.path == "/v1/scenes":
                 index = {key: {k: v for k, v in item.items() if k not in {"sha256", "path"}} for key, item in read_json(ROOT / "data/scenes.json").items()}
                 self.send_json(200, index)
+            elif self.path == "/v1/regions":
+                self.send_json(200, read_json(ROOT / "data/regions.json"))
             else:
                 self.send_json(404, {"error": "not_found"})
 

@@ -61,6 +61,54 @@
         "Published category description; no physical room, floor, window position or bearing established.",
         "Not independently verified on site."
       ]
+    },
+    {
+      "hotel_id": "osm:way:627150752",
+      "scope": "room_category",
+      "category_name": "Standard",
+      "feature": "view_options",
+      "value": [
+        "city",
+        "ocean"
+      ],
+      "floor_range": [
+        3,
+        8
+      ],
+      "status": "reported",
+      "source": {
+        "url": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/standard.do",
+        "quote": "Floors 3–8; City, Ocean",
+        "retrieved_at": "2026-10-24T10:45:34.764206+00:00",
+        "source_updated_at": null,
+        "method": "manual review of official category page; no photo or physical room matching",
+        "recheck_after_days": 90
+      },
+      "limitations": [
+        "Alternative category variants, not simultaneous views from every room.",
+        "No physical room number, window position or bearing established.",
+        "Category floor range does not prove room availability on a requested date."
+      ]
+    },
+    {
+      "hotel_id": "osm:way:627150752",
+      "scope": "facility",
+      "facility_name": "Rooftop Pool & Bar",
+      "feature": "facility_floor",
+      "value": 18,
+      "status": "reported",
+      "source": {
+        "url": "https://www.shillahotels.com/en/shillastay/haeundae/introduction/about.do",
+        "quote": "Floor 18; Rooftop Pool & Bar",
+        "retrieved_at": "2026-10-24T10:45:34.764206+00:00",
+        "source_updated_at": null,
+        "method": "manual review of official floor guide",
+        "recheck_after_days": 90
+      },
+      "limitations": [
+        "Facility floor, not a guest-room floor.",
+        "OSM lists 17 building:levels; rooftop numbering and building-level count are not automatically equivalent. No correction to the mapped geometry inferred."
+      ]
     }
   ],
   "limitations": [

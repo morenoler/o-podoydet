@@ -7,8 +7,14 @@
   },
   "batumi-radisson": {
     "path": "data/open/batumi-radisson.scene.json.gz",
-    "sha256": "4adba23ac23157d727e65b55062bd10aac8c50bd52415793bad3d21052498ffd",
+    "sha256": "dcd7725949fbabee56c7ece49cb37b00960c27d408517c05d87d17f780a2bb72",
     "is_demo": false,
-    "description": "Public OSM + Open-Meteo snapshot around Radisson Blu Batumi; no physical room geometry verified"
+    "description": "Public OSM + Open-Meteo snapshot: Radisson Blu Batumi (retained regression snapshot); no physical room geometry verified"
+  },
+  "busan-haeundae": {
+    "path": "data/open/busan-haeundae.scene.json.gz",
+    "sha256": "9a403807fcfc9db3c305b390d1bd074f3a41f12dfcf0013c91a78e8f3045a64b",
+    "is_demo": false,
+    "description": "Public OSM + Open-Meteo snapshot: Busan / Haeundae, centred on Shilla Stay; no physical room geometry verified"
   }
 }

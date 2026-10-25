@@ -12,8 +12,13 @@ import time
 from urllib.parse import urlencode
 from urllib.request import Request, HTTPRedirectHandler, build_opener
 
+from .sources import parse_measure
+
 URL = "https://api.open-meteo.com/v1/elevation"
 MAX_POINTS = 600
+# A conflict detector, not a certified DEM error bound. Smaller disagreements
+# remain an explicit limitation of the approximate surface model.
+GROUND_CONFLICT_THRESHOLD_M = 100.0
 
 
 class _NoRedirect(HTTPRedirectHandler):
@@ -42,6 +47,83 @@ def nearest_elevation(point, samples, max_m=100):
         return None
     gap, elevation = min(candidates)
     return elevation if gap <= max_m else None
+
+
+def reconcile_elevations(scene):
+    """Retain contradictory OSM/DSM elevations instead of choosing a winner.
+
+    This is offline and idempotent, so it also protects previously saved scenes.
+    In OSM, ele on a building denotes surrounding ground, not its rooftop.
+    A nearby DSM sample differing by over 100 m is evidence of a substantial
+    unresolved inconsistency; neither source is promoted to ground truth.
+    """
+    terrain = scene.get("terrain", {})
+    samples = terrain.get("samples", [])
+    conflicted = {}
+    for building in scene.get("buildings", []):
+        if building.get("ground_elevation_conflict"):
+            # Even a later failed/partial enrichment may have assigned a DSM
+            # fallback. An unresolved conflict always withholds a single value.
+            building["ground_elevation_m"] = None
+            building["ground_basis"] = "conflict"
+        tagged = parse_measure(building.get("tags", {}).get("ele"), signed=True)
+        if tagged is None:
+            if building.get("ground_elevation_conflict"):
+                conflicted[building["id"]] = building
+            continue
+        polygons = building.get("polygons", [])
+        ring = polygons[0].get("outer", [])[:-1] if polygons else []
+        if not ring or not samples:
+            if building.get("ground_elevation_conflict"):
+                conflicted[building["id"]] = building
+            continue
+        point = {"lat": sum(p[0] for p in ring) / len(ring),
+                 "lon": sum(p[1] for p in ring) / len(ring)}
+        gap, sample = min(((distance(point, s), s) for s in samples), key=lambda pair: pair[0])
+        if gap > 100:
+            if building.get("ground_elevation_conflict"):
+                conflicted[building["id"]] = building
+            continue
+        dsm = sample.get("elevation_m")
+        if isinstance(dsm, bool) or not isinstance(dsm, (int, float)) or not math.isfinite(dsm):
+            continue
+        candidates = [
+            {"elevation_m": tagged, "basis": "osm_ele", "source_ids": list(building.get("source_ids", []))},
+            {"elevation_m": dsm, "basis": "approximate_dsm", "source_ids": list(terrain.get("source_ids", [])),
+             "sample_lat": sample["lat"], "sample_lon": sample["lon"], "distance_m": round(gap, 3)},
+        ]
+        if building.get("ground_elevation_conflict"):
+            history = building.setdefault("ground_elevation_candidates", [])
+            history.extend(candidate for candidate in candidates if candidate not in history)
+        else:
+            building["ground_elevation_candidates"] = candidates
+        if abs(tagged - dsm) > GROUND_CONFLICT_THRESHOLD_M:
+            building["ground_elevation_conflict"] = True
+            building["ground_elevation_m"] = None
+            building["ground_basis"] = "conflict"
+            building["ground_conflict_threshold_m"] = GROUND_CONFLICT_THRESHOLD_M
+            conflicted[building["id"]] = building
+            warning = (building["id"] + ": OSM ele and nearby DSM differ by more than 100 m; "
+                       "ground elevation is conflicted, both source values retained.")
+            if warning not in scene.setdefault("warnings", []):
+                scene["warnings"].append(warning)
+        elif not building.get("ground_elevation_conflict"):
+            # Agreement within this broad threshold is not independent
+            # verification, and must not overwrite the tagged elevation.
+            building["ground_elevation_m"] = tagged
+        else:
+            # An existing conflict requires explicit review; a later nearby
+            # sample alone must not silently erase its recorded history.
+            conflicted[building["id"]] = building
+    for target in scene.get("targets", []):
+        building = conflicted.get(target.get("id")) or conflicted.get(target.get("target_building_id"))
+        if building:
+            target["ground_elevation_conflict"] = True
+            target["ground_elevation_m"] = None
+            target["elevation_m"] = None
+            target["elevation_basis"] = "conflict"
+            target["ground_elevation_candidates"] = building.get("ground_elevation_candidates", [])
+    return scene
 
 
 def sample_points(scene, observers, targets, solar_events):
@@ -152,4 +234,4 @@ def enrich(scene, points, cache_dir, allow_network=False):
             base = nearest_elevation(target, samples)
             target["elevation_m"] = base + (target.get("height_m") or 0) if base is not None else None
             target["elevation_basis"] = "approximate_dsm"
-    return scene
+    return reconcile_elevations(scene)

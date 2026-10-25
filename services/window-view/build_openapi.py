@@ -41,6 +41,7 @@ def main():
                 "servers": [{"url": "http://127.0.0.1:8011"}], "paths": {
                     "/health": {"get": {"responses": {"200": {"description": "Service health"}}}},
                     "/v1/scenes": {"get": {"responses": {"200": {"description": "Packaged real/synthetic scene identifiers"}}}},
+                    "/v1/regions": {"get": {"responses": {"200": {"description": "Pilot regions, OSM hotel identities and request defaults; floor and date must be supplied"}}}},
                     "/v1/views/estimate": {"post": {"operationId": "estimateWindowView", "requestBody": {"required": True, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/EstimateRequest"}}}}, "responses": responses}}},
                 "components": {"schemas": {"EstimateRequest": request, "EstimateResponse": response, "Visibility": result}}}
     (Path(__file__).parent / "openapi.json").write_text(json.dumps(document, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

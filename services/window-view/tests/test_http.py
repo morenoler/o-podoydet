@@ -65,6 +65,14 @@ class HttpTests(unittest.TestCase):
         self.assertEqual(headers["Content-Type"], "application/json; charset=utf-8")
         self.assertEqual(headers["X-Content-Type-Options"], "nosniff")
 
+    def test_regions_publish_busan_identities_without_a_default_floor(self):
+        status, _, regions = self.call("GET", "/v1/regions")
+        self.assertEqual(status, 200)
+        busan = regions["busan-haeundae"]
+        self.assertEqual(len(busan["hotels"]), 24)
+        self.assertEqual(busan["request_defaults"]["utc_offset_minutes"], 540)
+        self.assertNotIn("floor", busan["request_defaults"])
+
     def test_successful_fixture_is_real_http_json(self):
         with patch("window_view.sources.urllib.request.build_opener", side_effect=AssertionError("no external requests")), patch("window_view.elevation.urlopen", side_effect=AssertionError("no external requests")):
             status, headers, result = self.call()
