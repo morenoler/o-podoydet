@@ -1,0 +1,199 @@
+.hotel-detail-page {
+  max-width: 1440px;
+}
+.hotel-detail-page > .back-link {
+  margin-bottom: 22px;
+  font-size: 14px;
+}
+.hotel-detail-page > .search-bar {
+  margin-bottom: 28px;
+}
+.hotel-detail-page .detail-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin: 24px 0;
+}
+.hotel-detail-page .detail-heading h1 {
+  font-size: 30px;
+  line-height: 1.3;
+  margin-bottom: 8px;
+  overflow-wrap: anywhere;
+}
+.hotel-detail-page .detail-heading > div:first-child {
+  flex: 1;
+  min-width: 0;
+}
+.hotel-detail-page .detail-heading .address {
+  margin: 0;
+  font-size: 14px;
+  color: #617087;
+}
+.hotel-detail-page .hotel-detail-room-meta {
+  color: #617087;
+  font-size: 13px;
+  margin-top: 5px;
+}
+.hotel-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.hotel-detail-gallery {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  height: 300px;
+  border-radius: 16px;
+  overflow: hidden;
+  gap: 8px;
+  margin: 24px 0;
+}
+.hotel-detail-gallery.has-room-photo {
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+}
+.hotel-detail-gallery .accommodation-photo {
+  border-radius: 0;
+}
+.hotel-detail-page .detail-grid {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 28px;
+  margin-top: 28px;
+}
+.hotel-detail-page .detail-grid > section {
+  min-width: 0;
+}
+.hotel-detail-page .detail-grid > section > h2 {
+  margin-bottom: 18px;
+  font-size: 22px;
+}
+.hotel-detail-page .room-panel {
+  padding: 26px;
+  border: 1px solid #dce5ef;
+  border-radius: 16px;
+  background: white;
+}
+.hotel-detail-page .room-panel > h2 {
+  font-size: 24px;
+}
+.hotel-detail-page .room-panel > p {
+  color: #617087;
+  font-size: 14px;
+}
+.hotel-detail-page .subsection {
+  padding-top: 28px;
+  margin-top: 28px;
+  border-color: #dce5ef;
+}
+.hotel-detail-page .subsection h2 {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+.hotel-detail-page .subsection > p {
+  color: #617087;
+  font-size: 14px;
+}
+.hotel-detail-page .route-stats {
+  border: 1px solid #dce5ef;
+  background: white;
+  border-radius: 14px;
+  margin-top: 16px;
+}
+.hotel-detail-page .map-caveat {
+  font-size: 12px;
+  line-height: 1.6;
+}
+.hotel-detail-page .evidence {
+  background: white;
+  border-color: #dce5ef;
+  border-radius: 12px;
+}
+.hotel-detail-page .notice {
+  border-radius: 12px;
+  font-size: 13px;
+}
+.hotel-detail-page .trip-summary {
+  border: 1px solid #dce5ef;
+  background: white;
+  border-radius: 12px;
+}
+.hotel-preview-prompt {
+  padding: 22px 24px;
+  border-radius: 14px;
+  background: #eaf0fc;
+  margin: 24px 0;
+}
+.hotel-preview-prompt h2 {
+  font-size: 22px;
+  margin: 0 0 6px;
+}
+.hotel-preview-prompt p {
+  color: #617087;
+  font-size: 14px;
+  margin: 0;
+}
+.hotel-preview-room {
+  padding-top: 18px;
+  margin-top: 18px;
+  border-top: 1px solid #dce5ef;
+}
+.hotel-preview-room h3 {
+  font-size: 17px;
+  margin: 0;
+}
+.hotel-preview-room p {
+  font-size: 13px;
+  margin: 8px 0;
+}
+@media (max-width: 900px) {
+  .hotel-detail-page .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .hotel-detail-page .detail-heading {
+    flex-wrap: wrap;
+  }
+  .hotel-detail-page .detail-heading > div:first-child {
+    flex-basis: 100%;
+  }
+  .hotel-detail-page .detail-heading h1 {
+    font-size: 26px;
+  }
+  .hotel-detail-gallery {
+    height: 230px;
+  }
+  .hotel-detail-gallery.has-room-photo {
+    grid-template-columns: 1fr 1fr;
+  }
+  .hotel-detail-page .room-panel {
+    padding: 20px;
+  }
+  .hotel-detail-page .v2-map {
+    height: 350px;
+  }
+  .hotel-detail-page .detail-heading .button {
+    min-height: 44px;
+    font-size: 14px;
+  }
+  .hotel-detail-actions {
+    width: 100%;
+  }
+  .hotel-detail-actions > * {
+    flex: 1;
+  }
+  .hotel-detail-page .route-stats strong {
+    font-size: 24px;
+  }
+}
+@media (max-width: 500px) {
+  .hotel-detail-gallery.has-room-photo {
+    height: 260px;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+  }
+  .hotel-detail-gallery.has-room-photo > :last-child {
+    display: none;
+  }
+  .hotel-preview-prompt {
+    padding: 20px;
+  }
+}

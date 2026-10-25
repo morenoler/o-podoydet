@@ -25,6 +25,7 @@ public final class SearchService {
   private final Agents agents;
   private final Environment environment;
   private final Clock clock;
+  private final SearchExtension extension;
   private final Map<String, SearchSnapshot> snapshots = new LinkedHashMap<>();
   private static final Duration SNAPSHOT_LIFETIME = Duration.ofMinutes(10);
   private static final int MAX_SNAPSHOTS = 20;
@@ -36,17 +37,24 @@ public final class SearchService {
       List<JsonNode> facts,
       Instant now,
       Map<String, Map<String, JsonNode>> environments,
-      String policy) {}
+      String policy,
+      SearchExtension.Snapshot extension) {}
 
   public SearchService(Store store, Agents agents, Environment environment) {
     this(store, agents, environment, Clock.systemUTC());
   }
 
   public SearchService(Store store, Agents agents, Environment environment, Clock clock) {
+    this(store, agents, environment, clock, null);
+  }
+
+  public SearchService(
+      Store store, Agents agents, Environment environment, Clock clock, SearchExtension extension) {
     this.store = store;
     this.agents = agents;
     this.environment = environment;
     this.clock = clock;
+    this.extension = extension;
   }
 
   public ObjectNode search(JsonNode input) throws SQLException {
@@ -78,15 +86,13 @@ public final class SearchService {
     }
     Instant now = clock.instant();
     Map<String, Map<String, JsonNode>> environments = environment.evaluate(hotels, trip, now);
+    List<JsonNode> preferences = Json.list(interpreted.path("preferences"));
+    SearchExtension.Snapshot extra =
+        !syntheticOnly && extension != null ? extension.snapshot(trip) : SearchExtension.EMPTY;
     List<JsonNode> ranked =
-        Matching.rank(
-            hotels,
-            facts,
-            Json.list(interpreted.path("preferences")),
-            trip,
-            now,
-            environments,
-            policy);
+        extra.apply(
+            Matching.rank(hotels, facts, preferences, trip, now, environments, policy),
+            preferences);
     String searchId = UUID.randomUUID().toString();
     synchronized (snapshots) {
       expireSnapshots();
@@ -110,7 +116,8 @@ public final class SearchService {
                                       Collectors.toUnmodifiableMap(
                                           Map.Entry::getKey,
                                           value -> value.getValue().deepCopy())))),
-              policy));
+              policy,
+              extra));
     }
     interpreted.put("searchId", searchId);
     if (!interpreted.path("conflicts").isEmpty())
@@ -150,7 +157,7 @@ public final class SearchService {
                     "Подбор",
                     "detail",
                     "Проверены "
-                        + hotels.size()
+                        + (hotels.size() + extra.additionalHotels())
                         + " отелей. Обязательные условия и вместимость определяют, подходит ли"
                         + " вариант.",
                     "tool",
@@ -186,7 +193,8 @@ public final class SearchService {
             snapshot.facts(),
             snapshot.now(),
             snapshot.environments(),
-            snapshot.policy())
+            snapshot.policy(),
+            snapshot.extension())
         .put("searchId", searchId);
   }
 
@@ -259,6 +267,13 @@ public final class SearchService {
                       .toList()));
       if (Json.str(room.path("room"), "id").equals(bestId)) match.set("best", room.deepCopy());
     }
+    if (extension != null)
+      match =
+          (ObjectNode)
+              extension.snapshot(trip).apply(List.of(match), preferences).stream()
+                  .filter(value -> Json.str(value.path("hotel"), "id").equals(id))
+                  .findFirst()
+                  .orElseThrow();
     if (!interpreted.path("conflicts").isEmpty()) excludeForConflict(match);
     for (String key : List.of("preferences", "warnings", "conflicts", "mode"))
       match.set(key, interpreted.path(key));

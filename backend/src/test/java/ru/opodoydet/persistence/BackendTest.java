@@ -607,8 +607,11 @@ class BackendTest {
                 new Agents(Agents.Config.from(Map.of())),
                 temp,
                 temp.resolve("areas.json"),
+                temp.resolve("noise.json"),
+                temp.resolve("traffic.json"),
                 "",
-                0)) {
+                0,
+                Map.of("ACCOUNT_MODE", "false"))) {
       api.start();
       String base = "http://127.0.0.1:" + api.port();
       assertEquals(

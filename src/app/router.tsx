@@ -1,70 +1,175 @@
-import { Navigate, Route, Routes } from "react-router-dom";
-import type { ReactNode } from "react";
+import { lazy, Suspense, type ReactNode } from "react";
+import { Link, Navigate, Route, Routes } from "react-router-dom";
+import { RequireAuth } from "../features/auth/RequireAuth";
 import { useApp } from "./providers/TripProvider";
-import { TripPage } from "../pages/TripPage";
-import { WishesPage } from "../pages/WishesPage";
-import { ResultsPage } from "../pages/ResultsPage";
-import { HotelPage } from "../pages/HotelPage";
-import { HostPage } from "../pages/HostPage";
-import { lazy, Suspense } from "react";
+import { ErrorMessage } from "../shared/ui/Feedback";
+
+const TripPage = lazy(() =>
+  import("../pages/TripPage").then((m) => ({ default: m.TripPage })),
+);
+const WishesPage = lazy(() =>
+  import("../pages/WishesPage").then((m) => ({ default: m.WishesPage })),
+);
+const ResultsPage = lazy(() =>
+  import("../pages/ResultsPage").then((m) => ({ default: m.ResultsPage })),
+);
+const HotelPage = lazy(() =>
+  import("../pages/HotelPage").then((m) => ({ default: m.HotelPage })),
+);
 const LabPage =
   import.meta.env.VITE_LAB_MODE === "true"
     ? lazy(() =>
-        import("../pages/LabPage").then((module) => ({
-          default: module.LabPage,
-        })),
+        import("../pages/LabPage").then((m) => ({ default: m.LabPage })),
       )
     : null;
-function RequireTrip({ children }: { children: ReactNode }) {
-  const { trip } = useApp();
-  return trip.checkIn && trip.checkOut ? children : <Navigate to="/" replace />;
+const AuthPage = lazy(() =>
+  import("../pages/AuthPage").then((m) => ({ default: m.AuthPage })),
+);
+const AccountPage = lazy(() =>
+  import("../pages/AccountPage").then((m) => ({ default: m.AccountPage })),
+);
+const HostAccountPage = lazy(() =>
+  import("../pages/HostAccountPage").then((m) => ({
+    default: m.HostAccountPage,
+  })),
+);
+const ListingsPage = lazy(() =>
+  import("../pages/ListingsPage").then((m) => ({ default: m.ListingsPage })),
+);
+const ListingPage = lazy(() =>
+  import("../pages/ListingPage").then((m) => ({ default: m.ListingPage })),
+);
+
+const FavoritesPage = lazy(() =>
+  import("../pages/FavoritesPage").then((m) => ({
+    default: m.FavoritesPage,
+  })),
+);
+const AboutPage = lazy(() =>
+  import("../pages/AboutPage").then((m) => ({ default: m.AboutPage })),
+);
+
+function SearchScreen({
+  children,
+  tripRequired = true,
+}: {
+  children: ReactNode;
+  tripRequired?: boolean;
+}) {
+  const { trip, catalogError } = useApp();
+  if (catalogError)
+    return (
+      <div className="page">
+        <h1>Каталог пока недоступен</h1>
+        <ErrorMessage text={catalogError} />
+        <button
+          className="button secondary"
+          onClick={() => window.location.reload()}
+        >
+          Повторить загрузку
+        </button>
+      </div>
+    );
+  if (tripRequired && (!trip.checkIn || !trip.checkOut))
+    return <Navigate to="/" replace />;
+  return children;
 }
+
 export function AppRouter() {
   return (
-    <Routes>
-      <Route path="/" element={<TripPage />} />
-      <Route
-        path="/wishes"
-        element={
-          <RequireTrip>
-            <WishesPage />
-          </RequireTrip>
-        }
-      />
-      <Route
-        path="/results"
-        element={
-          <RequireTrip>
-            <ResultsPage />
-          </RequireTrip>
-        }
-      />
-      <Route
-        path="/hotels/:id"
-        element={
-          <RequireTrip>
-            <HotelPage />
-          </RequireTrip>
-        }
-      />
-      <Route path="/host" element={<HostPage />} />
-      {LabPage && (
+    <Suspense
+      fallback={
+        <p className="loading" role="status">
+          Загружаем страницу…
+        </p>
+      }
+    >
+      <Routes>
         <Route
-          path="/lab"
+          path="/"
           element={
-            <Suspense
-              fallback={
-                <p className="loading" role="status">
-                  Открываем лабораторию…
-                </p>
-              }
-            >
-              <LabPage />
-            </Suspense>
+            <SearchScreen tripRequired={false}>
+              <ResultsPage />
+            </SearchScreen>
           }
         />
-      )}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        <Route
+          path="/trip"
+          element={
+            <SearchScreen tripRequired={false}>
+              <TripPage />
+            </SearchScreen>
+          }
+        />
+        <Route path="/favorites" element={<FavoritesPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route
+          path="/wishes"
+          element={
+            <SearchScreen>
+              <WishesPage />
+            </SearchScreen>
+          }
+        />
+        <Route
+          path="/results"
+          element={
+            <SearchScreen tripRequired={false}>
+              <ResultsPage />
+            </SearchScreen>
+          }
+        />
+        <Route
+          path="/hotels/:id"
+          element={
+            <SearchScreen tripRequired={false}>
+              <HotelPage />
+            </SearchScreen>
+          }
+        />
+        {LabPage && (
+          <Route
+            path="/lab"
+            element={
+              <SearchScreen tripRequired={false}>
+                <LabPage />
+              </SearchScreen>
+            }
+          />
+        )}
+        <Route path="/login" element={<AuthPage mode="login" />} />
+        <Route path="/register" element={<AuthPage mode="register" />} />
+        <Route
+          path="/account/*"
+          element={
+            <RequireAuth role="user">
+              <AccountPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/host/*"
+          element={
+            <RequireAuth role="host">
+              <HostAccountPage />
+            </RequireAuth>
+          }
+        />
+        <Route path="/stays" element={<ListingsPage />} />
+        <Route path="/stays/:id" element={<ListingPage />} />
+        <Route
+          path="*"
+          element={
+            <div className="page page-not-found">
+              <h1>Страница не найдена</h1>
+              <p>Проверьте ссылку или начните новую поездку.</p>
+              <Link className="button primary" to="/">
+                На главную
+              </Link>
+            </div>
+          }
+        />
+      </Routes>
+    </Suspense>
   );
 }

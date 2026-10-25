@@ -1,13 +1,15 @@
 :root {
-  font-family: "Golos Text", sans-serif;
+  font-family: "Nunito Sans", sans-serif;
   color: #172c4c;
   background: #f7f9fc;
   font-synthesis: none;
   font-weight: 400;
   --ink: #172c4c;
   --blue: #163e8e;
-  --muted: #617087;
-  --line: #dce3ee;
+  --muted: #71819a;
+  --line: #dce5f1;
+  --bg: #f7f9fc;
+  --sea: #dceef4;
   --paper: #fff;
   --yellow: #f8b84e;
   --wish-match-ink: #176247;
@@ -58,7 +60,7 @@ input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
 summary:focus-visible {
-  outline: 3px solid #d18b16;
+  outline: 3px solid #7094cf;
   outline-offset: 4px;
 }
 button {

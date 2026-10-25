@@ -913,7 +913,16 @@ class EnvironmentTest {
         Json.write(Json.obj("region", "Пусан", "assessments", List.of(area(forecast(20))))));
     try (Store store = new Store(":memory:", seed);
         Api api =
-            new Api(store, new Agents(Agents.Config.from(Map.of())), temporary, areaFile, "", 0)) {
+            new Api(
+                store,
+                new Agents(Agents.Config.from(Map.of())),
+                temporary,
+                areaFile,
+                temporary.resolve("noise.json"),
+                temporary.resolve("traffic.json"),
+                "",
+                0,
+                Map.of("ACCOUNT_MODE", "false"))) {
       api.start();
       String base = "http://127.0.0.1:" + api.port();
       ObjectNode query = trip().put("text", "Обязательно чистый воздух");

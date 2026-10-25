@@ -1,0 +1,21 @@
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.app-shell > main {
+  flex: 1;
+  outline: none;
+}
+.app-shell :where(input, select, textarea) {
+  max-width: 100%;
+}
+.app-shell :where(.button, .icon-button) {
+  min-height: 44px;
+}
+.page-not-found {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: 24px;
+}

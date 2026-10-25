@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import ru.opodoydet.accounts.web.AccountApi;
 import ru.opodoydet.advisor.AdvisorService;
 import ru.opodoydet.application.Agents;
 import ru.opodoydet.application.Environment;
@@ -32,10 +33,7 @@ import ru.opodoydet.domain.Validation;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.shared.Json;
 
-/**
- * Local demo API. A production service would additionally need user authentication and
- * authorization.
- */
+/** Application API with account-scoped mutations and an isolated experimental search route. */
 public final class Api implements AutoCloseable {
   private final Store store;
   private final Agents agents;
@@ -46,6 +44,7 @@ public final class Api implements AutoCloseable {
   private final SearchService searchService;
   private final AdvisorService advisor;
   private final boolean labMode;
+  private final AccountApi accounts;
   private final HttpServer server;
   private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
@@ -112,8 +111,21 @@ public final class Api implements AutoCloseable {
     this.frontendOrigin = frontendOrigin;
     this.labMode = "true".equals(advisorEnvironment.get("LAB_MODE"));
     this.environment = new Environment(areaData, noiseData, trafficData);
-    this.searchService = new SearchService(store, agents, environment);
     try {
+      this.accounts =
+          !"false".equalsIgnoreCase(advisorEnvironment.get("ACCOUNT_MODE"))
+              ? new AccountApi(
+                  store.databasePath(),
+                  "true".equals(advisorEnvironment.get("SESSION_COOKIE_SECURE")),
+                  Path.of(advisorEnvironment.getOrDefault("UPLOADS_PATH", ".local/uploads")))
+              : null;
+      this.searchService =
+          new SearchService(
+              store,
+              agents,
+              environment,
+              java.time.Clock.systemUTC(),
+              accounts == null ? null : accounts.searchExtension());
       this.advisor = new AdvisorService(store, searchService, advisorEnvironment);
     } catch (SQLException error) {
       throw new IOException("Не удалось открыть историю помощника", error);
@@ -142,6 +154,9 @@ public final class Api implements AutoCloseable {
           return;
         }
         route(exchange);
+      } else if (exchange.getRequestURI().getPath().startsWith("/uploads/")) {
+        if (accounts == null) notFound(exchange, "Фотография не найдена.");
+        else accounts.asset(exchange);
       } else staticFile(exchange);
     } catch (IllegalArgumentException error) {
       send(
@@ -173,6 +188,18 @@ public final class Api implements AutoCloseable {
 
   private void route(HttpExchange exchange) throws IOException, SQLException {
     String path = exchange.getRequestURI().getPath(), method = exchange.getRequestMethod();
+    if (accounts != null) {
+      if (accounts.handle(exchange)) return;
+      if (path.equals("/api/questions")
+          || path.startsWith("/api/questions/")
+          || path.startsWith("/api/drafts/")) {
+        send(
+            exchange,
+            403,
+            Json.obj("error", "Ответы принимаются только по вашим объявлениям в личном кабинете."));
+        return;
+      }
+    }
     if (path.equals("/api/lab/search")) {
       if (!labMode || !method.equals("POST")) notFound(exchange, "Метод не найден");
       else send(exchange, 200, searchService.searchLab(body(exchange)));
@@ -194,6 +221,8 @@ public final class Api implements AutoCloseable {
                 store.hotels().size(),
                 "mode",
                 agents.mode(),
+                "accountsEnabled",
+                accounts != null,
                 "runtime",
                 "Java " + Runtime.version().feature(),
                 "database",
@@ -546,6 +575,12 @@ public final class Api implements AutoCloseable {
   public void close() {
     server.stop(0);
     advisor.close();
+    if (accounts != null)
+      try {
+        accounts.close();
+      } catch (SQLException error) {
+        System.err.println("Could not close account storage");
+      }
     executor.close();
   }
 }

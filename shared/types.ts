@@ -1,3 +1,4 @@
+import type { WindowDirection } from "./account";
 export type Point = [number, number]; // longitude, latitude
 export type FeatureId =
   | "beach_walk"
@@ -59,6 +60,13 @@ export interface NoiseSource {
   coordinates: Point;
 }
 export interface Hotel {
+  /** Published owner listing; has no fabricated OpenStreetMap geometry. */
+  accountListingId?: string;
+  floor?: number | null;
+  windowDirections?: WindowDirection[];
+  photos?: string[];
+  pricePerNight?: number;
+  currency?: "KRW";
   /** Fictional lab listing: its placeholder coordinates must not produce environmental claims. */
   synthetic?: boolean;
   dataNotes?: string[];
@@ -66,7 +74,7 @@ export interface Hotel {
   name: string;
   lodgingType?: "hotel" | "motel" | "guest_house" | "hostel" | "apartment";
   address: string;
-  coordinates: Point;
+  coordinates: Point | null;
   osmUrl: string;
   rooms: Room[];
   route: Route | null;
@@ -158,6 +166,18 @@ export interface HotelMatch {
   warnings?: string[];
   conflicts?: string[];
   mode?: "rules" | "llm";
+  ownerCriteria?: OwnerCriterion[];
+}
+export interface OwnerCriterion {
+  id: string;
+  feature: "floor" | "window_direction";
+  label: string;
+  required: boolean;
+  status: "match" | "mismatch";
+  evidenceStatus: "match" | "mismatch" | "unknown";
+  assumed: boolean;
+  explanation: string;
+  sourceExplanation: string;
 }
 export interface Trace {
   step: string;

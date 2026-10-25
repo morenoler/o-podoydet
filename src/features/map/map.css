@@ -1,0 +1,119 @@
+.v2-map {
+  position: relative;
+  height: 440px;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #dceef4;
+  isolation: isolate;
+}
+.v2-map > svg {
+  display: block;
+  height: 100%;
+  width: 100%;
+  touch-action: none;
+  cursor: grab;
+}
+.v2-map > svg:active {
+  cursor: grabbing;
+}
+.v2-map > svg:focus-visible {
+  outline: 3px solid #163e8e;
+  outline-offset: -4px;
+}
+.v2-map-marker {
+  cursor: pointer;
+}
+.v2-map-marker:focus-visible {
+  outline: none;
+}
+.v2-map-marker:focus-visible rect {
+  stroke: #172c4c;
+  stroke-width: 4px;
+}
+.v2-map-marker:hover rect {
+  stroke: #163e8e;
+  stroke-width: 2px;
+}
+.v2-map-heading {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: #172c4c;
+  font-size: 15px;
+  font-weight: 800;
+  pointer-events: none;
+}
+.v2-map-heading svg {
+  color: #163e8e;
+}
+.v2-map-controls {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  display: grid;
+  gap: 1px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 2px 6px #172c4c0d;
+  overflow: hidden;
+}
+.v2-map button {
+  width: 44px;
+  height: 44px;
+  display: inline-grid;
+  place-items: center;
+  background: white;
+  border: 0;
+  color: #172c4c;
+  cursor: pointer;
+}
+.v2-map button:hover {
+  background: #eaf0fc;
+}
+.v2-map button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.v2-map button:focus-visible {
+  outline: 3px solid #163e8e;
+  outline-offset: -3px;
+}
+.v2-map-credit {
+  position: absolute;
+  bottom: 12px;
+  left: 16px;
+  color: #536777;
+  font-size: 11px;
+  background: #ffffffb8;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+.v2-map-navigation {
+  position: absolute;
+  top: 70px;
+  left: 16px;
+  background: white;
+  border-radius: 9px;
+  font-size: 12px;
+  color: #52637a;
+}
+.v2-map-navigation summary {
+  padding: 9px 10px;
+  cursor: pointer;
+}
+.v2-map-navigation > div {
+  display: flex;
+}
+.v2-map.is-compact {
+  height: 220px;
+  border-radius: 0;
+  pointer-events: none;
+}

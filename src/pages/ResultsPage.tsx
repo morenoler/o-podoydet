@@ -1,233 +1,343 @@
-import { useApp } from "../app/providers/TripProvider";
-import { useState, useEffect } from "react";
-import type { SearchResult } from "../../shared/types";
-import { api } from "../shared/api/client";
-import { Steps } from "../app/layout/Steps";
-import { TripSummary } from "../features/trip/components/TripSummary";
+import { useEffect, useMemo, useState } from "react";
 import {
-  SlidersHorizontal,
-  ArrowRight,
-  ChevronDown,
-  Search,
+  Check,
   GitCompareArrows,
+  List,
+  Map,
+  Search,
+  SlidersHorizontal,
+  Sparkles,
   X,
 } from "lucide-react";
-import { PreferencePicker } from "../features/preferences/PreferencePicker";
-import { Link } from "react-router-dom";
-import { Notice, ErrorMessage, Loading } from "../shared/ui/Feedback";
-import { features } from "../../shared/features";
+import type { FeatureId, Hotel, SearchResult, Trip } from "../../shared/types";
+import { useApp } from "../app/providers/TripProvider";
+import { api } from "../shared/api/client";
+import { ErrorMessage, Loading } from "../shared/ui/Feedback";
+import { accommodationPhotos } from "../shared/lib/hotelPhotos";
 import { HotelCard } from "../features/hotels/components/HotelCard";
 import { CompareDialog } from "../features/hotels/components/CompareDialog";
-import { AdvisorPanel } from "../features/advisor/AdvisorPanel";
-import { advisorTripKey } from "../features/advisor/useAdvisor";
+import { AdvisorDrawer } from "../features/advisor/AdvisorDrawer";
+import { SearchBar } from "../features/search/SearchBar";
+import { SearchDiagnostics } from "../features/search/SearchDiagnostics";
+import { SearchMapPanel } from "../features/search/SearchMapPanel";
+import { SearchFilters } from "../features/search/SearchFilters";
+import { canSearch } from "../features/search/searchTrip";
+import "../features/search/search.css";
 
 export function ResultsPage() {
-  const { trip, setTrip, catalog, revision, rememberSearch, refresh } =
-    useApp();
-  const [data, setData] = useState<SearchResult | null>(null),
-    [error, setError] = useState(""),
-    [loading, setLoading] = useState(true),
-    [compare, setCompare] = useState<string[]>([]),
-    [showCompare, setShowCompare] = useState(false),
-    [filter, setFilter] = useState(false),
-    [limit, setLimit] = useState(8);
+  const {
+    trip,
+    setTrip,
+    catalog,
+    catalogError,
+    revision,
+    rememberSearch,
+    refresh,
+  } = useApp();
+  const [data, setData] = useState<SearchResult | null>(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [compare, setCompare] = useState<string[]>([]);
+  const [showCompare, setShowCompare] = useState(false);
+  const [filters, setFilters] = useState(false);
+  const [advisor, setAdvisor] = useState(false);
+  const [mapView, setMapView] = useState(false);
+  const [selectedId, setSelectedId] = useState("");
+  const [limit, setLimit] = useState(8);
+  const [sort, setSort] = useState("recommended");
+  const validTrip = canSearch(trip);
   useEffect(() => {
     let active = true;
-    setLoading(true);
+    setData(null);
     setError("");
+    setLimit(8);
+    setCompare([]);
+    setShowCompare(false);
+    if (!validTrip) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
     api<SearchResult>("/search", trip)
-      .then((d) => {
-        if (active) {
-          setData(d);
-          rememberSearch(trip, d.preferences);
-          setLoading(false);
-        }
+      .then((result) => {
+        if (!active) return;
+        setData(result);
+        rememberSearch(trip, result.preferences);
+        setLoading(false);
       })
-      .catch((e) => {
+      .catch((cause) => {
         if (active) {
-          setError(e.message);
+          setError(cause.message);
           setLoading(false);
         }
       });
     return () => {
       active = false;
     };
-  }, [trip, revision]);
-  const toggle = (id: string) =>
-    setCompare((prev) =>
-      prev.includes(id)
-        ? prev.filter((x) => x !== id)
-        : prev.length < 3
-          ? [...prev, id]
-          : prev,
+  }, [trip, revision, validTrip]);
+  const hotels = useMemo(() => {
+    const items = data
+      ? data.results.map((result) => result.hotel)
+      : validTrip
+        ? []
+        : [...(catalog?.hotels || [])];
+    if (sort === "distance")
+      return [...items].sort(
+        (a, b) => (a.route?.meters ?? Infinity) - (b.route?.meters ?? Infinity),
+      );
+    if (sort === "name")
+      return [...items].sort((a, b) => a.name.localeCompare(b.name, "ru"));
+    if (!data)
+      return [...items].sort(
+        (a, b) =>
+          Number(!!accommodationPhotos(b.id, b.photos).length) -
+          Number(!!accommodationPhotos(a.id, a.photos).length),
+      );
+    return items;
+  }, [data, catalog, sort, validTrip]);
+  const visible = hotels.slice(0, limit);
+  const selected =
+    visible.find((hotel) => hotel.id === selectedId) || visible[0];
+  const plotted = visible.filter(
+    (hotel) => hotel.coordinates && !hotel.synthetic,
+  );
+  function submit(nextTrip: Trip) {
+    if (JSON.stringify(nextTrip) === JSON.stringify(trip)) refresh();
+    else setTrip(nextTrip);
+  }
+  function toggleCompare(id: string) {
+    setCompare((previous) =>
+      previous.includes(id)
+        ? previous.filter((value) => value !== id)
+        : previous.length < 3
+          ? [...previous, id]
+          : previous,
     );
+  }
+  function quickFilter(feature: FeatureId) {
+    const preferences = trip.preferences.some(
+      (value) => value.feature === feature,
+    )
+      ? trip.preferences.filter((value) => value.feature !== feature)
+      : [...trip.preferences, { feature, required: false }];
+    setTrip({ ...trip, preferences });
+  }
+  function selectHotel(hotel: Hotel) {
+    setSelectedId(hotel.id);
+  }
+  const sea = (data?.preferences || trip.preferences).some(
+    (value) => value.feature === "beach_walk",
+  );
   return (
-    <div className="page">
-      <Steps current={2} />
-      <TripSummary trip={trip} />
-      <div className="results-heading">
-        <div>
-          <h1>Место, где вам подойдёт</h1>
-          <p>
-            {data && !loading
-              ? `${data.results.length} вариантов по вашим условиям`
-              : "Подбираем варианты для вашей поездки"}
-          </p>
-        </div>
+    <div className={`search-page${mapView ? " is-map-view" : ""}`}>
+      <SearchBar trip={trip} onSearch={submit} busy={loading} />
+      <div className="search-toolbar">
         <button
-          className="button secondary"
-          onClick={() => setFilter((x) => !x)}
-          aria-expanded={filter}
+          type="button"
+          className="search-chip"
+          onClick={() => setFilters(true)}
         >
-          <SlidersHorizontal size={17} />
-          Пожелания
-          {(data?.preferences.length ?? trip.preferences.length) > 0 && (
-            <span className="count">
-              {data?.preferences.length ?? trip.preferences.length}
+          <SlidersHorizontal size={21} aria-hidden="true" />
+          Фильтры
+          {!!trip.preferences.length && (
+            <span className="search-filter-count">
+              {trip.preferences.length}
             </span>
           )}
         </button>
+        {(
+          [
+            { id: "beach_walk", label: "У моря" },
+            { id: "family", label: "Для семьи" },
+            { id: "step_free_access", label: "С коляской" },
+          ] as const
+        ).map((item, index) => (
+          <button
+            type="button"
+            className={`search-chip ${index > 0 ? "search-chip-extra " : ""}${trip.preferences.some((value) => value.feature === item.id) ? "is-active" : ""}`}
+            key={item.id}
+            aria-pressed={trip.preferences.some(
+              (value) => value.feature === item.id,
+            )}
+            onClick={() => quickFilter(item.id)}
+          >
+            {trip.preferences.some((value) => value.feature === item.id) && (
+              <Check size={19} aria-hidden="true" />
+            )}
+            {item.label}
+          </button>
+        ))}
+        <button
+          type="button"
+          className="search-ai-trigger"
+          onClick={() => setAdvisor(true)}
+        >
+          <Sparkles size={23} aria-hidden="true" />
+          <span className="search-ai-full">AI-помощник</span>
+          <span className="search-ai-short">AI</span>
+        </button>
       </div>
-      {filter && (
-        <section className="filter-panel">
-          <PreferencePicker
-            preferences={trip.preferences}
-            onChange={(preferences) => setTrip({ ...trip, preferences })}
-          />
-          <Link to="/wishes" className="text-link">
-            Изменить сценарий и текстовое пожелание <ArrowRight size={16} />
-          </Link>
-        </section>
+      {(error || catalogError) && (
+        <div className="search-error">
+          <ErrorMessage text={error || catalogError} />
+          <button
+            className="button secondary"
+            onClick={error ? refresh : () => window.location.reload()}
+          >
+            Повторить
+          </button>
+        </div>
       )}
-      <Notice>
-        {import.meta.env.VITE_LAB_MODE === "true" &&
-        catalog?.evidencePolicy === "demo" ? (
-          "Тестовый подбор: объявления с пометкой «ДЕМО» полностью вымышленные. Демонстрационные доказательства и ответы участвуют только в подборе этой копии. Цена, наличие и бронирование не проверяются."
-        ) : (
-          <>
-            География — из OpenStreetMap, условия номеров — из официальных
-            источников. Когда данных недостаточно, используем оценку с пометкой
-            «Предположение». Наличие номеров на ваши даты не проверено.
-          </>
-        )}
-      </Notice>
-      {error && <ErrorMessage text={error} />}{" "}
-      {loading ? (
-        <Loading />
-      ) : (
-        data && (
-          <>
-            {data.conflicts.map((c) => (
-              <ErrorMessage key={c} text={c} />
-            ))}
-            {data.conflicts.length > 0 && (
-              <Link to="/wishes" className="button secondary">
-                Исправить пожелания
-              </Link>
-            )}
-            {data.warnings.length > 0 && (
-              <details className="disclosure text-recognition">
-                <summary>
-                  Как поняли текстовое пожелание <ChevronDown size={16} />
-                </summary>
-                {data.warnings.map((w) => (
-                  <p key={w}>{w}</p>
-                ))}
-                <div className="tag-row">
-                  {data.preferences.map((p) => (
-                    <span className="tag" key={p.feature}>
-                      {features[p.feature].label}
-                      {p.required ? " · обязательно" : ""}
-                    </span>
-                  ))}
-                </div>
-                <Link to="/wishes" className="text-link">
-                  Исправить
-                </Link>
-              </details>
-            )}
-            {!data.results.length && !data.conflicts.length && (
-              <div className="empty">
-                <Search size={32} />
-                <h2>Точного совпадения пока нет</h2>
-                <p>
-                  Обязательные условия сохранены. Помощник ниже объяснит, что
-                  исключило варианты и какие сведения стоит уточнить.
-                </p>
-                <Link to="/wishes" className="button primary">
-                  Пересмотреть пожелания
-                </Link>
-              </div>
-            )}
-            <AdvisorPanel
-              key={`${advisorTripKey(trip)}:${data.searchId || "missing"}`}
-              trip={trip}
-              searchId={data.searchId}
-              noMatches={!data.results.length}
-              needsClarification={data.conflicts.length > 0}
-              onRefreshSearch={refresh}
-            />
-            <div className="hotel-grid">
-              {data.results.slice(0, limit).map((m) => (
-                <HotelCard
-                  key={m.hotel.id}
-                  match={m}
-                  dataset={catalog}
-                  compared={compare.includes(m.hotel.id)}
-                  compareDisabled={
-                    compare.length >= 3 && !compare.includes(m.hotel.id)
-                  }
-                  onCompare={() => toggle(m.hotel.id)}
-                />
-              ))}
+      <div className="search-workspace">
+        <section className="search-list-section" aria-label="Список отелей">
+          <div className="search-results-heading">
+            <div>
+              <h1>
+                {sea && validTrip ? "Отели у моря в Пусане" : "Отели в Пусане"}
+              </h1>
+              <p role="status" aria-live="polite">
+                {loading
+                  ? "Подбираем варианты…"
+                  : validTrip
+                    ? `${hotels.length} вариантов по вашим условиям`
+                    : `${hotels.length} вариантов в каталоге Хэундэ`}
+              </p>
             </div>
-            {data.results.length > limit && (
-              <button
-                className="button secondary load-more"
-                onClick={() => setLimit((x) => x + 8)}
+            <label className="search-sort">
+              <span>Сначала</span>
+              <select
+                value={sort}
+                onChange={(event) => setSort(event.target.value)}
               >
-                Показать ещё {Math.min(8, data.results.length - limit)}{" "}
-                вариантов
-              </button>
-            )}
-            {data.excluded.length > 0 && (
-              <details className="disclosure">
-                <summary>
-                  {data.excluded.length} вариантов не прошли обязательные
-                  условия <ChevronDown size={16} />
-                </summary>
-                {data.excluded.map((m) => (
-                  <div className="excluded-row" key={m.hotel.id}>
-                    <Link to={`/hotels/${m.hotel.id}`}>{m.hotel.name}</Link>
-                    <span>
-                      {m.best.capacityStatus === "mismatch"
-                        ? "Недостаточная вместимость категорий"
-                        : m.best.criteria
-                            .filter(
-                              (c) => c.required && c.status === "mismatch",
-                            )
-                            .map((c) => features[c.feature].label)
-                            .join(", ")}
-                    </span>
-                  </div>
-                ))}
-              </details>
-            )}
-            <details className="disclosure">
-              <summary>
-                Как получен подбор <ChevronDown size={16} />
-              </summary>
-              {data.trace.map((t) => (
-                <p key={t.step}>
-                  <strong>{t.step}.</strong> {t.detail}
-                </p>
+                <option value="recommended">
+                  {validTrip ? "Подходящие" : "С фотографиями"}
+                </option>
+                <option value="distance">Ближе к пляжу</option>
+                <option value="name">По названию</option>
+              </select>
+            </label>
+          </div>
+          {!validTrip && (
+            <p className="search-preview-prompt">
+              Выберите даты и гостей для подбора по вашим условиям.
+            </p>
+          )}
+          {loading || (!catalog && !catalogError) ? (
+            <Loading />
+          ) : (
+            <>
+              {data?.conflicts.map((conflict) => (
+                <ErrorMessage key={conflict} text={conflict} />
               ))}
-            </details>
-          </>
-        )
+              {!!data?.conflicts.length && (
+                <button
+                  type="button"
+                  className="button secondary"
+                  onClick={() => setFilters(true)}
+                >
+                  Исправить пожелания
+                </button>
+              )}
+              {!hotels.length && !error && validTrip && (
+                <div className="search-empty">
+                  <Search size={30} aria-hidden="true" />
+                  <h2>Точного совпадения пока нет</h2>
+                  <p>
+                    Обязательные условия сохранены. Помощник объяснит, что
+                    исключило варианты и какие сведения стоит уточнить.
+                  </p>
+                  <button
+                    className="button primary"
+                    onClick={() => setAdvisor(true)}
+                  >
+                    Разобраться с помощником
+                  </button>
+                  <button
+                    className="button secondary"
+                    onClick={() => setFilters(true)}
+                  >
+                    Изменить фильтры
+                  </button>
+                </div>
+              )}
+              <div className="search-hotel-list">
+                {visible.map((hotel) => (
+                  <HotelCard
+                    key={hotel.id}
+                    hotel={hotel}
+                    match={data?.results.find(
+                      (result) => result.hotel.id === hotel.id,
+                    )}
+                    selected={hotel.id === selected?.id}
+                    onSelect={() => selectHotel(hotel)}
+                    onShowMap={() => {
+                      selectHotel(hotel);
+                      if (window.matchMedia("(max-width: 900px)").matches) {
+                        setMapView(true);
+                        window.scrollTo({ top: 0 });
+                      }
+                    }}
+                    compared={compare.includes(hotel.id)}
+                    onCompare={data ? () => toggleCompare(hotel.id) : undefined}
+                    compareDisabled={
+                      compare.length >= 3 && !compare.includes(hotel.id)
+                    }
+                  />
+                ))}
+              </div>
+              {hotels.length > limit && (
+                <button
+                  className="button secondary search-load-more"
+                  onClick={() => setLimit((value) => value + 8)}
+                >
+                  Показать ещё {Math.min(8, hotels.length - limit)} вариантов
+                </button>
+              )}
+              <p className="search-data-note">
+                Условия и наличие уточняйте у отельера. Источники и
+                предположения указаны в подробностях.
+                {catalog?.evidencePolicy === "demo" &&
+                  " Варианты «ДЕМО» вымышлены."}
+              </p>
+              {data && <SearchDiagnostics data={data} />}
+            </>
+          )}
+        </section>
+        <SearchMapPanel
+          catalog={catalog}
+          selected={selected}
+          plotted={plotted}
+          onSelect={selectHotel}
+        />
+      </div>
+      <button
+        className="button primary search-map-toggle"
+        onClick={() => setMapView((value) => !value)}
+        aria-pressed={mapView}
+      >
+        {mapView ? (
+          <List size={23} aria-hidden="true" />
+        ) : (
+          <Map size={23} aria-hidden="true" />
+        )}
+        {mapView ? "Списком" : "На карте"}
+      </button>
+      {filters && (
+        <SearchFilters
+          trip={trip}
+          onApply={submit}
+          onClose={() => setFilters(false)}
+        />
       )}
+      <AdvisorDrawer
+        open={advisor}
+        onClose={() => setAdvisor(false)}
+        trip={trip}
+        result={data}
+        onRefresh={refresh}
+      />
       {compare.length > 0 && (
-        <div className="compare-tray" role="status">
+        <div className="compare-tray search-compare-tray" role="status">
           <span>
             <strong>{compare.length} из 3</strong> для сравнения
           </span>
@@ -236,22 +346,22 @@ export function ResultsPage() {
             disabled={compare.length < 2}
             onClick={() => setShowCompare(true)}
           >
-            Сравнить <GitCompareArrows size={17} />
+            Сравнить <GitCompareArrows size={18} aria-hidden="true" />
           </button>
           <button
             className="icon-button"
             aria-label="Очистить сравнение"
             onClick={() => setCompare([])}
           >
-            <X size={18} />
+            <X size={20} />
           </button>
         </div>
       )}
       {showCompare && data && (
         <CompareDialog
           trip={trip}
-          matches={[...data.results, ...data.excluded].filter((m) =>
-            compare.includes(m.hotel.id),
+          matches={[...data.results, ...data.excluded].filter((match) =>
+            compare.includes(match.hotel.id),
           )}
           onClose={() => setShowCompare(false)}
         />

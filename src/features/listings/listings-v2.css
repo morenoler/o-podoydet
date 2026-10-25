@@ -1,0 +1,508 @@
+.listing-v2.page {
+  max-width: 1440px;
+  padding: 28px 48px 48px;
+}
+.listing-v2 .listing-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 28px;
+  min-height: 32px;
+}
+.listing-v2 .listing-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.listing-v2 .listing-title > div {
+  min-width: 0;
+}
+.listing-v2 .listing-title h1 {
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  letter-spacing: 0;
+  max-width: none;
+}
+.listing-v2 .listing-title p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  margin: 10px 0 0;
+  line-height: 1.5;
+  font-size: 15px;
+}
+.listing-v2 .listing-title .favorite-button {
+  flex-shrink: 0;
+}
+.listing-gallery {
+  display: grid;
+  grid-template-columns: minmax(0, 1.81fr) minmax(0, 1fr);
+  gap: 16px;
+  height: 388px;
+  position: relative;
+  margin-bottom: 40px;
+}
+.listing-gallery > .accommodation-photo,
+.listing-gallery-side {
+  border-radius: 16px;
+  overflow: hidden;
+  min-width: 0;
+}
+.listing-gallery.single {
+  grid-template-columns: 1fr;
+}
+.listing-gallery .photo-placeholder {
+  height: 100%;
+  min-height: 240px;
+}
+.listing-gallery-side {
+  position: relative;
+}
+.listing-gallery-side .button {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+}
+.listing-gallery-mobile-count {
+  display: none;
+}
+.listing-gallery-modal {
+  width: min(980px, calc(100vw - 32px));
+}
+.listing-gallery-large {
+  height: min(62vh, 600px);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.listing-gallery-large img {
+  object-fit: contain;
+  background: var(--bg);
+}
+.gallery-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 16px;
+}
+.listing-v2 .listing-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.81fr) minmax(320px, 1fr);
+  gap: 48px;
+  align-items: start;
+}
+.listing-v2 .listing-main {
+  min-width: 0;
+}
+.listing-v2 .listing-overview {
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+}
+.listing-detail-tabs {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  border-bottom: 1px solid var(--line);
+  margin: 0 0 32px;
+}
+.listing-detail-tabs a {
+  padding: 0 0 18px;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 600;
+}
+.listing-detail-tabs a:first-child {
+  color: var(--blue);
+  border-bottom: 3px solid var(--blue);
+  font-weight: 700;
+}
+.listing-v2 .listing-overview > h2 {
+  font-size: 28px;
+  margin: 0 0 16px;
+}
+.listing-room-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+.listing-room-details > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.listing-room-details dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+.listing-room-details dd {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 600;
+}
+.listing-owner-source {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 20px;
+}
+.listing-v2 .listing-description {
+  margin: 16px 0 30px;
+  white-space: pre-line;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.listing-v2 .listing-amenity-section h2 {
+  font-size: 23px;
+  margin-bottom: 20px;
+}
+.listing-v2 .listing-amenities {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 28px;
+  padding: 0;
+  list-style: none;
+  margin: 0 0 32px;
+}
+.listing-v2 .listing-amenities li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.listing-v2 .listing-amenities li::before {
+  display: none;
+}
+.listing-v2 .listing-amenities svg {
+  color: var(--success);
+  flex-shrink: 0;
+}
+.listing-v2 .listing-host {
+  margin: 24px 0 32px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  background: white;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.listing-v2 .listing-host strong {
+  font-size: 18px;
+}
+.listing-v2 .listing-host p {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.listing-v2 .account-avatar {
+  width: 48px;
+  height: 48px;
+  background: var(--soft-blue);
+  color: var(--blue);
+}
+.listing-booking-column {
+  position: sticky;
+  top: 24px;
+}
+.listing-v2 .listing-booking {
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  box-shadow: none;
+  background: #fff;
+}
+.listing-v2 .listing-booking h2 {
+  font-size: 18px;
+}
+.listing-v2 .listing-night-price strong {
+  font-size: 30px;
+  font-weight: 800;
+}
+.listing-v2 .listing-night-price {
+  margin: 12px 0 24px;
+}
+.listing-v2 .listing-booking .field > span {
+  font-size: 13px;
+}
+.listing-v2 .listing-booking .button {
+  width: 100%;
+}
+.listing-v2 #listing-questions {
+  scroll-margin-top: 24px;
+}
+.listing-v2 #listing-about,
+.listing-v2 #listing-amenities {
+  scroll-margin-top: 24px;
+}
+.listing-v2 #listing-questions > section {
+  border: 0;
+  background: none;
+  padding: 0;
+  box-shadow: none;
+}
+.listing-v2 .listing-mobile-booking {
+  display: none;
+}
+.booking-sheet .listing-booking {
+  border: 0;
+  background: white;
+  padding: 0;
+  box-shadow: none;
+}
+.booking-sheet .listing-booking > h2 {
+  display: none;
+}
+.booking-sheet .field-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.booking-sheet .field input[type="date"] {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 9px;
+  font-size: 14px;
+}
+.booking-sheet .field textarea {
+  min-height: 100px;
+}
+.booking-sheet-property {
+  color: var(--muted);
+  margin: -12px 0 24px;
+}
+.public-listings-v2 .public-listing {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr) 210px;
+  gap: 24px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.public-listings-v2 .public-listing-photo {
+  height: 200px;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.public-listings-v2 .public-listing-photo .favorite-button {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+}
+.public-listings-v2 .public-listing-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.public-listings-v2 .public-listing-content h2 {
+  font-size: 23px;
+}
+.public-listings-v2 .public-listing-details {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.public-listings-v2 .public-listing-action {
+  border: 0;
+  padding: 12px;
+}
+.public-listings-v2 .public-listing-action strong {
+  font-size: 26px;
+}
+.public-listings-v2 .public-listing .listing-amenities {
+  margin-top: 16px;
+}
+@media (max-width: 1100px) {
+  .listing-v2.page {
+    padding: 28px 32px;
+  }
+  .listing-v2 .listing-detail-layout {
+    gap: 28px;
+    grid-template-columns: minmax(0, 1.5fr) minmax(290px, 1fr);
+  }
+  .listing-gallery {
+    height: 320px;
+  }
+  .public-listings-v2 .public-listing {
+    grid-template-columns: 180px minmax(0, 1fr);
+  }
+  .public-listings-v2 .public-listing-action {
+    grid-column: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 0;
+  }
+  .public-listings-v2 .public-listing-action small {
+    display: none;
+  }
+}
+@media (max-width: 700px) {
+  .listing-v2.page {
+    padding: 24px 20px 110px;
+  }
+  .listing-v2 .listing-back {
+    display: none;
+  }
+  .listing-v2 .listing-title {
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .listing-v2 .listing-title h1 {
+    font-size: 25px;
+  }
+  .listing-v2 .listing-title p {
+    font-size: 14px;
+  }
+  .listing-gallery {
+    display: block;
+    height: 234px;
+    margin-bottom: 28px;
+  }
+  .listing-gallery > .accommodation-photo {
+    height: 100%;
+    border-radius: 12px;
+  }
+  .listing-gallery-side {
+    display: none;
+  }
+  .listing-gallery-mobile-count {
+    display: block;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    border: 0;
+    border-radius: 20px;
+    padding: 7px 16px;
+    background: var(--soft-blue);
+    color: var(--blue);
+    font-weight: 700;
+    min-height: 36px;
+  }
+  .listing-gallery .photo-placeholder {
+    min-height: 0;
+  }
+  .listing-v2 .listing-detail-layout {
+    display: block;
+  }
+  .listing-detail-tabs {
+    display: none;
+  }
+  .listing-v2 .listing-overview > h2 {
+    font-size: 22px;
+  }
+  .listing-room-details {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    font-size: 15px;
+  }
+  .listing-room-details > div {
+    flex-wrap: wrap;
+  }
+  .listing-room-details dt {
+    color: var(--ink);
+  }
+  .listing-v2 .listing-description {
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 20px 0 28px;
+  }
+  .listing-v2 .listing-amenities {
+    gap: 20px 16px;
+    font-size: 15px;
+  }
+  .listing-v2 .listing-host {
+    padding: 20px;
+    gap: 16px;
+    margin: 28px 0;
+  }
+  .listing-v2 .listing-host strong {
+    font-size: 17px;
+  }
+  .listing-v2 .listing-mobile-booking {
+    position: fixed;
+    z-index: 20;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid var(--line);
+    padding: 16px 20px max(18px, env(safe-area-inset-bottom));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .listing-mobile-booking > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .listing-mobile-booking strong {
+    font-size: 21px;
+    white-space: nowrap;
+    font-weight: 800;
+  }
+  .listing-mobile-booking span {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .listing-mobile-booking .button {
+    font-size: 14px;
+    padding: 12px 16px;
+  }
+  .booking-sheet {
+    margin: auto 0 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100dvh - 16px);
+    border-radius: 20px 20px 0 0;
+    padding: 24px 20px 32px;
+  }
+  .public-listings-v2 .public-listing {
+    display: block;
+    padding: 12px;
+  }
+  .public-listings-v2 .public-listing-photo {
+    height: 190px;
+  }
+  .public-listings-v2 .public-listing-content {
+    padding: 18px 6px;
+  }
+  .public-listings-v2 .public-listing-action {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 6px 10px;
+  }
+  .public-listings-v2 .public-listing-action .button {
+    min-width: 135px;
+  }
+  .public-listings-v2 .public-listing-content h2 {
+    font-size: 22px;
+  }
+}

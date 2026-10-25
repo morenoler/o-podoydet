@@ -176,8 +176,8 @@ if (option("--validate")) {
   await writeFile("data/noise-context.json", JSON.stringify(context, null, 2));
   if (option("--hotel")) {
     const hotel = dataset.hotels.find((h) => h.id === option("--hotel"));
-    if (!hotel || !option("--check-in") || !option("--check-out"))
-      throw new Error("A known hotel and both trip dates are required");
+    if (!hotel?.coordinates || !option("--check-in") || !option("--check-out"))
+      throw new Error("A known hotel with coordinates and both trip dates are required");
     console.log(
       JSON.stringify(
         evaluateNoise(

@@ -1,0 +1,567 @@
+.account-editor-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 728fr) minmax(230px, 328fr);
+  gap: 24px;
+  align-items: start;
+}
+.account-layout .listing-editor-v2 {
+  display: flex;
+  flex-direction: column;
+  padding: 30px 32px 24px;
+  min-width: 0;
+}
+.account-layout .listing-editor-v2 fieldset {
+  margin: 0;
+  padding: 0 0 28px;
+  min-width: 0;
+}
+.account-layout .listing-editor-v2 fieldset + fieldset {
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+.account-layout .listing-editor-v2 legend {
+  font-size: 23px;
+  line-height: 1.4;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 24px;
+  padding: 0;
+}
+.account-layout .listing-editor-v2 .field > span {
+  font-size: 13px;
+  font-weight: 600;
+}
+.account-layout .listing-editor-v2 .field {
+  margin-bottom: 24px;
+}
+.account-layout .listing-editor-v2 .field input,
+.account-layout .listing-editor-v2 .field textarea {
+  font-size: 15px;
+}
+.account-layout .listing-editor-v2 .field textarea {
+  min-height: 100px;
+}
+.account-layout .editor-address-row {
+  grid-template-columns: 1fr 1.6fr;
+  gap: 16px;
+}
+.editor-field-label {
+  display: block;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+.listing-photos-field {
+  margin: 4px 0 30px;
+}
+.listing-photos-field > small {
+  color: var(--muted);
+  font-size: 12px;
+  display: block;
+  margin-top: 12px;
+}
+.listing-photo-help {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+.listing-photo-add-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.listing-photo-add-actions .button {
+  gap: 9px;
+  min-height: 44px;
+}
+.listing-editor-photos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.listing-editor-photo {
+  position: relative;
+  min-width: 0;
+  align-self: start;
+}
+.listing-editor-photo > .accommodation-photo {
+  width: 100%;
+  height: 132px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.listing-photo-position {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  max-width: calc(100% - 16px);
+  padding: 4px 8px;
+  background: white;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 6px;
+}
+.listing-photo-controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  margin-top: 8px;
+}
+.listing-photo-controls > button {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  color: var(--blue);
+  cursor: pointer;
+}
+.listing-photo-controls > button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.listing-photo-controls > button:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
+.listing-photo-filename {
+  display: block;
+  margin-top: 8px;
+  color: var(--ink);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.listing-photo-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 9px;
+  font-size: 12px;
+  color: var(--blue);
+}
+.listing-photo-progress progress {
+  width: 100%;
+  height: 8px;
+  accent-color: var(--blue);
+}
+.listing-photo-error {
+  margin-top: 9px;
+  font-size: 12px;
+  color: #a5362e;
+  overflow-wrap: anywhere;
+}
+.listing-upload-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.account-layout .listing-upload-actions .button {
+  min-height: 44px;
+  padding: 8px 10px;
+  font-size: 13px;
+  gap: 6px;
+}
+.listing-photo-errors {
+  margin-top: 16px;
+  overflow-wrap: anywhere;
+}
+.listing-photo-errors p + p {
+  margin-top: 8px;
+}
+.listing-photo-announcement {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.listing-photo-url {
+  padding: 18px;
+  background: var(--bg, #f7f9fc);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  margin-top: 16px;
+}
+.listing-photo-url .field {
+  margin-bottom: 15px !important;
+}
+.editor-room-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0 16px;
+}
+.editor-room-type {
+  grid-column: span 8;
+}
+.editor-capacity {
+  grid-column: span 4;
+}
+.editor-floor {
+  grid-column: span 4;
+}
+.editor-price {
+  grid-column: span 8;
+}
+.editor-window-directions {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+}
+.account-layout .editor-window-directions h3 {
+  font-size: 17px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.editor-window-directions > p {
+  color: var(--muted);
+  font-size: 13px;
+}
+.editor-window-options {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px 16px;
+  margin: 18px 0 24px;
+}
+.editor-window-option {
+  position: relative;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 7px;
+  gap: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.editor-window-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.editor-window-option svg {
+  display: none;
+}
+.editor-window-option span::first-letter {
+  text-transform: uppercase;
+}
+.editor-window-option.selected {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: #eaf0fb;
+  font-weight: 800;
+}
+.editor-window-option.selected svg {
+  display: block;
+}
+.editor-window-option:focus-within {
+  outline: 3px solid #d18b16;
+  outline-offset: 3px;
+}
+.editor-mobile-title,
+.editor-mobile-subtitle,
+.editor-mobile-room-help {
+  display: none;
+}
+.account-layout .listing-editor-v2 .editor-missing-hint {
+  font-size: 12px;
+}
+.editor-amenities-section .listing-amenity-options {
+  gap: 4px 14px;
+}
+.account-layout .listing-editor-v2 .listing-ai-profile legend {
+  font-size: 20px;
+}
+.account-layout .listing-editor-v2 .listing-ai-privacy {
+  font-size: 13px;
+  background: #eaf0fb;
+  border: 0;
+}
+.account-layout .listing-editor-v2 .listing-publication legend {
+  font-size: 20px;
+}
+.account-layout .listing-editor-v2 .listing-publication label {
+  align-items: flex-start;
+}
+.account-layout .listing-editor-v2 .listing-publication strong {
+  font-size: 14px;
+}
+.account-layout .listing-editor-v2 .listing-publication small {
+  font-size: 12px;
+}
+.editor-save-actions {
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  gap: 16px;
+}
+.account-layout .editor-save-actions .button {
+  min-height: 48px;
+}
+.editor-save-actions .primary {
+  min-width: 278px;
+}
+.editor-save-actions .secondary {
+  min-width: 160px;
+}
+.editor-photo-pending-hint {
+  flex-basis: 100%;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.editor-side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.editor-room-help {
+  border-radius: 14px;
+  background: #eaf0fb;
+  padding: 24px;
+  min-height: 236px;
+}
+.account-layout .editor-room-help h2 {
+  font-size: 19px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+.editor-room-help h2 svg {
+  color: var(--blue);
+}
+.editor-room-help p {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 18px;
+}
+.editor-listing-preview {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  padding: 12px;
+  scroll-margin-top: 24px;
+}
+.editor-listing-preview > .accommodation-photo {
+  height: 144px;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.editor-listing-preview > div:not(.accommodation-photo) {
+  padding: 14px 3px 12px;
+}
+.account-layout .editor-listing-preview h2 {
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.35;
+  margin-bottom: 6px;
+}
+.editor-listing-preview p {
+  font-size: 12px;
+  color: var(--muted);
+}
+.editor-listing-preview strong {
+  display: block;
+  font-size: 15px;
+  margin-top: 20px;
+}
+.editor-listing-preview .preview-directions {
+  color: var(--blue);
+  margin-top: 8px;
+  font-size: 13px;
+}
+@media (max-width: 1190px) {
+  .account-editor-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .editor-side-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .editor-room-help {
+    min-height: 0;
+  }
+  .editor-window-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 800px) {
+  .account-layout:has(.account-editor-layout) .account-sidebar {
+    display: none;
+  }
+  .account-layout:has(.account-editor-layout) .editor-preview-action {
+    display: none;
+  }
+  .account-layout .listing-editor-v2 {
+    padding: 14px 0 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+  .account-layout .listing-editor-v2 fieldset {
+    padding-bottom: 30px;
+  }
+  .account-layout .listing-editor-v2 fieldset + fieldset {
+    border: 0;
+    padding-top: 0;
+  }
+  .account-layout .listing-editor-v2 legend {
+    font-size: 23px;
+    margin-bottom: 24px;
+  }
+  .account-layout .listing-editor-v2 .field > span {
+    font-size: 14px;
+  }
+  .account-layout .listing-editor-v2 .field input,
+  .account-layout .listing-editor-v2 .field textarea {
+    min-height: 48px;
+    font-size: 16px;
+  }
+  .editor-desktop-title {
+    display: none;
+  }
+  .editor-mobile-title {
+    display: inline;
+    font-size: 27px;
+  }
+  .editor-mobile-subtitle {
+    display: block;
+    font-size: 15px;
+    color: var(--muted);
+    margin: -15px 0 30px;
+  }
+  .editor-room-section {
+    order: 0;
+  }
+  .editor-main-section {
+    order: 1;
+  }
+  .editor-amenities-section {
+    order: 2;
+  }
+  .listing-ai-profile {
+    order: 3;
+  }
+  .listing-publication {
+    order: 4;
+  }
+  .editor-save-actions {
+    order: 5;
+  }
+  .listing-editor-v2 > .account-form-error {
+    order: -1;
+  }
+  .editor-room-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 16px;
+  }
+  .editor-room-type {
+    grid-column: 1 / -1;
+    order: 0;
+  }
+  .editor-capacity {
+    grid-column: span 1;
+    order: 1;
+  }
+  .editor-floor {
+    grid-column: span 1;
+    order: 2;
+  }
+  .editor-window-directions {
+    grid-column: 1 / -1;
+    order: 3;
+    margin-top: 8px;
+  }
+  .editor-price {
+    grid-column: 1 / -1;
+    order: 4;
+    margin-top: 30px;
+  }
+  .account-layout .editor-window-directions h3 {
+    font-size: 22px;
+  }
+  .editor-window-directions > p {
+    font-size: 14px;
+  }
+  .editor-window-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 16px;
+    margin: 20px 0 26px;
+  }
+  .editor-window-option {
+    font-size: 15px;
+    min-height: 46px;
+    padding: 10px 8px;
+    border-radius: 10px;
+    background: white;
+  }
+  .account-layout .listing-editor-v2 .editor-missing-hint {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .editor-mobile-room-help {
+    display: flex;
+    gap: 12px;
+    border-radius: 13px;
+    padding: 20px 16px;
+    background: #eaf0fb;
+    margin: 12px 0 4px;
+  }
+  .editor-mobile-room-help svg {
+    color: var(--blue);
+    margin-top: 3px;
+  }
+  .editor-mobile-room-help p {
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .account-layout .editor-address-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .listing-editor-photos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .listing-editor-photo > .accommodation-photo {
+    min-height: 120px;
+    height: 120px;
+  }
+  .listing-photo-add-actions .button {
+    width: 100%;
+    min-height: 48px;
+  }
+  .editor-save-actions {
+    flex-direction: column;
+    align-items: stretch;
+    padding-top: 24px;
+    border-top: 0;
+  }
+  .account-layout .editor-save-actions .button {
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+  }
+  .editor-side-panel {
+    display: none;
+  }
+}
+@media (max-width: 360px) {
+  .listing-editor-photos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

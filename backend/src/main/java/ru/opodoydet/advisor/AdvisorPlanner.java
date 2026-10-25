@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import ru.opodoydet.application.SearchExtension;
 import ru.opodoydet.domain.Features;
 import ru.opodoydet.domain.Matching;
 import ru.opodoydet.shared.Json;
@@ -25,9 +26,23 @@ public final class AdvisorPlanner {
       Instant now,
       Map<String, Map<String, JsonNode>> environments,
       String policy) {
+    return plan(trip, interpreted, hotels, facts, now, environments, policy, SearchExtension.EMPTY);
+  }
+
+  public static ObjectNode plan(
+      JsonNode trip,
+      ObjectNode interpreted,
+      List<JsonNode> hotels,
+      List<JsonNode> facts,
+      Instant now,
+      Map<String, Map<String, JsonNode>> environments,
+      String policy,
+      SearchExtension.Snapshot extension) {
     List<JsonNode> preferences = Json.list(interpreted.path("preferences"));
     List<JsonNode> ranked =
-        Matching.rank(hotels, facts, preferences, trip, now, environments, policy);
+        extension.apply(
+            Matching.rank(hotels, facts, preferences, trip, now, environments, policy),
+            preferences);
     boolean conflict = !interpreted.path("conflicts").isEmpty();
     List<JsonNode> fit =
         conflict ? List.of() : ranked.stream().filter(AdvisorPlanner::fits).toList();
@@ -85,7 +100,11 @@ public final class AdvisorPlanner {
                       })
                   .toList();
           List<JsonNode> possible =
-              Matching.rank(hotels, facts, changed, trip, now, environments, policy).stream()
+              extension
+                  .apply(
+                      Matching.rank(hotels, facts, changed, trip, now, environments, policy),
+                      changed)
+                  .stream()
                   .filter(AdvisorPlanner::fits)
                   .toList();
           scenarios.add(
@@ -136,7 +155,7 @@ public final class AdvisorPlanner {
                   && !Set.of("unknown", "stale", "conflict")
                       .contains(Json.str(evidence, "evidenceStatus")))) continue;
           String feature = Json.str(evidence, "feature");
-          if (feature.equals("capacity")
+          if (!Features.ids().contains(feature)
               || questions.stream().anyMatch(q -> Json.str(q, "feature").equals(feature))) continue;
           ObjectNode question =
               Json.obj(
@@ -165,7 +184,7 @@ public final class AdvisorPlanner {
             "preferences",
             preferences,
             "totalHotels",
-            hotels.size(),
+            hotels.size() + extension.additionalHotels(),
             "fitCount",
             fit.size(),
             "conflicts",
@@ -201,6 +220,11 @@ public final class AdvisorPlanner {
             Json.list(room.path("criteria")).stream()
                 .filter(
                     c -> c.path("required").asBoolean() && Json.str(c, "status").equals("mismatch"))
+                .count()
+        + (int)
+            Json.list(match.path("ownerCriteria")).stream()
+                .filter(
+                    c -> c.path("required").asBoolean() && Json.str(c, "status").equals("mismatch"))
                 .count();
   }
 
@@ -214,6 +238,10 @@ public final class AdvisorPlanner {
                         c.path("assumed").asBoolean()
                             || Set.of("unknown", "stale", "conflict")
                                 .contains(Json.str(c, "evidenceStatus")))
+                .count()
+        + (int)
+            Json.list(match.path("ownerCriteria")).stream()
+                .filter(c -> c.path("assumed").asBoolean())
                 .count();
   }
 
@@ -302,6 +330,12 @@ public final class AdvisorPlanner {
               criterion.path("explanation"),
               "sources",
               sources.stream().distinct().limit(3).toList()));
+    }
+    for (JsonNode criterion : match.path("ownerCriteria")) {
+      ObjectNode derived = criterion.deepCopy();
+      derived.put("id", id + "::owner-" + Json.str(criterion, "id"));
+      derived.set("sources", Json.array(List.of()));
+      criteria.add(derived);
     }
     return Json.obj(
         "id",

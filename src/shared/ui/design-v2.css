@@ -1,0 +1,332 @@
+:root {
+  --ink: #172c4c;
+  --blue: #163e8e;
+  --bg: #f7f9fc;
+  --line: #dce5f1;
+  --muted: #64758f;
+  --paper: #fff;
+  --sea: #dceef4;
+  --soft-blue: #eaf0fb;
+  --success: #246651;
+  --warning: #89601a;
+  font-family: "Nunito Sans", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+body {
+  background: var(--bg);
+  color: var(--ink);
+}
+h1 {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+h2 {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+h3 {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+.page {
+  max-width: 1440px;
+  padding: 32px 48px 56px;
+  margin: 0 auto;
+}
+.page-intro {
+  color: var(--muted);
+  margin: 8px 0 28px;
+}
+.button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  min-height: 48px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+}
+.button.primary {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
+}
+.button.primary:hover:not(:disabled) {
+  background: #103275;
+}
+.button.secondary {
+  background: #fff;
+  border-color: var(--line);
+  color: var(--blue);
+}
+.button.secondary:hover:not(:disabled) {
+  background: var(--soft-blue);
+  border-color: #b8c9e3;
+}
+.button:hover {
+  text-decoration: none;
+}
+.button svg,
+.icon-button svg,
+.inline-icon svg {
+  display: block;
+  flex: 0 0 auto;
+}
+.inline-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.icon-button {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--ink);
+  padding: 0;
+}
+.icon-button:hover {
+  background: var(--soft-blue);
+  text-decoration: none;
+}
+.field {
+  min-width: 0;
+  gap: 8px;
+}
+.field > span {
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.field input:not([type="checkbox"]):not([type="radio"]),
+.field select,
+.field textarea {
+  border: 1px solid var(--line);
+  color: var(--ink);
+  border-radius: 10px;
+  min-height: 48px;
+  padding: 12px 16px;
+  background: #fff;
+  font-size: 16px;
+}
+.field textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+.field small {
+  color: var(--muted);
+  font-size: 12px;
+}
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--blue);
+}
+:where(button, a, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid #4476c8;
+  outline-offset: 3px;
+}
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.accommodation-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+.photo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 140px;
+  background: #eaf0f5;
+  color: #657994;
+  font-size: 13px;
+  text-align: center;
+}
+.favorite-button {
+  background: #fff;
+  color: var(--ink);
+}
+.favorite-button.is-favorite {
+  color: var(--blue);
+}
+.v2-modal {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 24px;
+  color: var(--ink);
+  background: #fff;
+  width: min(640px, calc(100vw - 32px));
+  max-height: calc(100dvh - 40px);
+  overflow: auto;
+  box-shadow: 0 20px 70px #172c4c24;
+}
+.v2-modal::backdrop {
+  background: #172c4c55;
+}
+.v2-modal-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.v2-modal-heading h2 {
+  padding-top: 7px;
+}
+.v2-empty {
+  min-height: 300px;
+  padding: 40px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  gap: 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+}
+.v2-empty p {
+  color: var(--muted);
+  max-width: 560px;
+}
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+.favorite-card {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: white;
+  overflow: hidden;
+}
+.favorite-photo {
+  position: relative;
+  height: 220px;
+}
+.favorite-photo .favorite-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+.favorite-card > div:last-child {
+  padding: 20px;
+}
+.favorite-card h2 {
+  font-size: 22px;
+  overflow-wrap: anywhere;
+}
+.favorite-card h2 a {
+  color: var(--ink);
+}
+.favorite-card p {
+  margin: 8px 0 20px;
+  color: var(--muted);
+}
+.help-page {
+  max-width: 960px;
+}
+.help-page section {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 28px;
+  margin-top: 24px;
+}
+.help-page p {
+  margin-top: 12px;
+}
+.v2-footer {
+  max-width: 1440px;
+  padding: 24px 48px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.v2-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+@media (max-width: 1100px) {
+  .page {
+    padding: 28px 32px 48px;
+  }
+  .favorites-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 700px) {
+  h1 {
+    font-size: 26px;
+  }
+  h2 {
+    font-size: 22px;
+  }
+  .page {
+    padding: 24px 20px 40px;
+  }
+  .button {
+    font-size: 15px;
+    padding: 12px 18px;
+  }
+  .favorites-grid {
+    grid-template-columns: 1fr;
+  }
+  .v2-footer {
+    padding: 24px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .v2-modal {
+    padding: 20px;
+    border-radius: 20px;
+    width: calc(100vw - 24px);
+    max-height: calc(100dvh - 24px);
+  }
+  .v2-modal-heading h2 {
+    font-size: 22px;
+  }
+  .field input:not([type="checkbox"]):not([type="radio"]),
+  .field select,
+  .field textarea {
+    font-size: 16px;
+  }
+  .favorite-card .button {
+    width: 100%;
+  }
+}

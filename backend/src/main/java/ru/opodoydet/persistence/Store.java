@@ -27,6 +27,7 @@ import ru.opodoydet.shared.Json;
  */
 public final class Store implements AutoCloseable {
   final Connection connection;
+  private final String databasePath;
   public final String region;
   private String evidencePolicy = "verified-only";
 
@@ -35,6 +36,7 @@ public final class Store implements AutoCloseable {
   }
 
   public Store(String path, JsonNode seed) throws SQLException, IOException {
+    databasePath = path;
     region = Validation.text(seed, "region", 1, 100);
     if (!path.equals(":memory:")) {
       Path parent = Path.of(path).toAbsolutePath().getParent();
@@ -50,6 +52,11 @@ public final class Store implements AutoCloseable {
       connection.close();
       throw error;
     }
+  }
+
+  /** Allows opt-in modules to use their own connection and transaction boundary. */
+  public String databasePath() {
+    return databasePath;
   }
 
   /**
