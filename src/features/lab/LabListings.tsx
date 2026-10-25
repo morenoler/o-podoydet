@@ -5,6 +5,7 @@ import type { Hotel, Trip } from "../../../shared/types";
 export function listingTestTrip(trip: Trip): Trip {
   return {
     ...trip,
+    admissionMode: "verified",
     adults: 2,
     children: 1,
     scenarios: [],

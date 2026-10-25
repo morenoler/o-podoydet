@@ -24,6 +24,7 @@ export function hasKnownRequiredMismatch(match: HotelMatch) {
 export function matchLabel(match: HotelMatch) {
   if (match.best.status === "excluded")
     return hasKnownRequiredMismatch(match) ? "Не подходит под фильтры" : "Нужны уточнения";
+  if (match.best.provisional) return "Вариант для уточнения";
   if (capacityNeedsClarification(match.best) ||
       match.best.criteria.some(criterionNeedsClarification) ||
       match.ownerCriteria?.some((c) => c.evidenceStatus === "unknown"))
@@ -37,7 +38,7 @@ export function matchLabel(match: HotelMatch) {
 
 export function matchPresentationState(match: HotelMatch): "match" | "unknown" | "mismatch" {
   if (hasKnownRequiredMismatch(match)) return "mismatch";
-  if (match.best.status === "excluded" || capacityNeedsClarification(match.best) ||
+  if (match.best.status === "excluded" || match.best.provisional || capacityNeedsClarification(match.best) ||
       match.best.criteria.some(criterionNeedsClarification) ||
       match.ownerCriteria?.some((c) => c.evidenceStatus === "unknown")) return "unknown";
   return match.best.criteria.some((c) => c.status === "mismatch") ||

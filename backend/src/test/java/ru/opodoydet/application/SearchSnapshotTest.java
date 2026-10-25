@@ -287,6 +287,37 @@ class SearchSnapshotTest {
   }
 
   @Test
+  void explorationIsBoundToSnapshotAndTextConflictCannotKeepProvisionalAdmission() throws Exception {
+    try (Store store = new Store(":memory:", seed(4))) {
+      SearchService service = new SearchService(store, new Agents(Agents.Config.from(Map.of())), environment());
+      ObjectNode query = trip().put("admissionMode", "explore");
+      query.set("preferences", Json.array(List.of(Json.obj("feature", "courtyard", "required", true))));
+      ObjectNode result = service.search(query);
+      assertEquals("explore", Json.str(result, "admissionMode"));
+      assertTrue(result.path("results").get(0).path("best").path("provisional").asBoolean());
+      String id = Json.str(result, "searchId");
+      assertThrows(IllegalArgumentException.class,
+          () -> service.advisorContext(query.deepCopy().put("admissionMode", "verified"), id));
+      assertEquals("explore", service.advisorContext(query, id).path("trip").path("admissionMode").asText());
+      assertTrue(service.detail("hotel", query).path("best").path("provisional").asBoolean());
+
+      ObjectNode conflict = query.deepCopy().put("text", "Окна во двор не нужны");
+      ObjectNode blocked = service.search(conflict);
+      assertFalse(blocked.path("conflicts").isEmpty());
+      assertTrue(blocked.path("results").isEmpty());
+      assertFalse(blocked.path("excluded").get(0).path("best").path("provisional").asBoolean());
+      for (JsonNode room : blocked.path("excluded").get(0).path("rooms")) {
+        assertEquals("excluded", Json.str(room, "status"));
+        assertFalse(room.path("provisional").asBoolean());
+      }
+      assertFalse(service.detail("hotel", conflict).path("best").path("provisional").asBoolean());
+      JsonNode context = service.advisorContext(conflict, Json.str(blocked, "searchId"));
+      assertEquals(0, context.path("fitCount").asInt());
+      assertFalse(context.path("candidates").get(0).path("provisional").asBoolean());
+    }
+  }
+
+  @Test
   void unknownChangedExpiredAndEvictedSearchesRequireRefresh() throws Exception {
     MutableClock clock = new MutableClock();
     try (Store store = new Store(":memory:", seed(4))) {

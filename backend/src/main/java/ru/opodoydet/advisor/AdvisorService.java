@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import ru.opodoydet.application.SearchService;
 import ru.opodoydet.domain.Validation;
+import ru.opodoydet.domain.AdmissionPolicy;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.shared.Json;
 
@@ -224,15 +225,20 @@ public final class AdvisorService implements AutoCloseable {
       if (!step.isTextual() || step.asText().length() > 1000)
         throw new IllegalArgumentException("Invalid next step");
     List<JsonNode> cautions = new ArrayList<>();
+    boolean selectedProvisional = false;
     for (JsonNode candidate : context.path("candidates")) {
       if (!candidateIds.contains(Json.str(candidate, "id"))) continue;
+      boolean preliminary = AdmissionPolicy.explore(context.path("trip")) && candidate.path("provisional").asBoolean();
+      selectedProvisional |= preliminary;
       if (expected.equals("shortlist")
           && (!Json.str(candidate, "status").equals("fits")
               || Json.list(candidate.path("criteria")).stream()
                   .anyMatch(
                       c ->
                           c.path("required").asBoolean()
-                              && !Json.str(c, "status").equals("match"))))
+                              && (Json.str(c, "evidenceStatus").equals("conflict")
+                                  || (!Json.str(c, "status").equals("match")
+                                      && !(preliminary && AdmissionPolicy.permits(c, context.path("trip"))))))))
         throw new IllegalArgumentException("Excluded recommendation");
       if (expected.equals("no_matches") && !Json.str(candidate, "status").equals("excluded"))
         throw new IllegalArgumentException("Invalid excluded alternative");
@@ -250,6 +256,8 @@ public final class AdvisorService implements AutoCloseable {
     }
     // Rebuild every risky criterion from server evidence, including optional tradeoffs.
     report.set("cautions", Json.array(cautions));
+    if (expected.equals("shortlist") && selectedProvisional)
+      report.put("summary", "В подборе есть предварительные варианты. Неизвестные или устаревшие условия и вместимость требуют уточнения; это не подтверждение соответствия всем пожеланиям.");
     return report;
   }
 

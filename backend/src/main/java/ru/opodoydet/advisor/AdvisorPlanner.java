@@ -63,13 +63,16 @@ public final class AdvisorPlanner {
         new ArrayList<>(
             Json.list(interpreted.path("warnings")).stream().map(JsonNode::asText).toList());
     warnings.add("Цены, наличие номеров на даты и бронирование не проверены.");
+    if (fit.stream().anyMatch(item -> item.path("best").path("provisional").asBoolean()))
+      warnings.add("Есть предварительные варианты: неизвестные или устаревшие условия и вместимость требуют уточнения. Они не подтверждены.");
     if (!conflict) {
       for (JsonNode preference : preferences) {
         String feature = Json.str(preference, "feature"), label = Features.get(feature).label();
         boolean required = preference.path("required").asBoolean();
         if (!fit.isEmpty() && !required) {
           List<JsonNode> ordered = new ArrayList<>(fit);
-          ordered.sort(Comparator.comparingInt(item -> optionalPriority(item, feature)));
+          ordered.sort(Comparator.comparing((JsonNode item) -> item.path("best").path("provisional").asBoolean())
+              .thenComparingInt(item -> optionalPriority(item, feature)));
           scenarios.add(
               Json.obj(
                   "id",
@@ -350,6 +353,8 @@ public final class AdvisorPlanner {
         room.path("name"),
         "status",
         conflict ? "excluded" : Json.str(best, "status"),
+        "provisional",
+        !conflict && best.path("provisional").asBoolean(),
         "score",
         best.path("score"),
         "criteria",

@@ -205,16 +205,16 @@ class PhotoApiTest {
       assertEquals(
           400,
           call(api, host, "/api/host/photos", new byte[0], "image/png", base(api)).statusCode());
-      assertEquals(
-          413,
-          call(
+      var oversized = call(
                   api,
                   host,
                   "/api/host/photos",
                   new byte[PhotoService.MAX_BYTES + 1],
                   "image/png",
-                  base(api))
-              .statusCode());
+                  base(api));
+      assertEquals(413, oversized.statusCode());
+      assertEquals("close", oversized.headers().firstValue("Connection").orElseThrow());
+      assertTrue(json(oversized).path("error").asText().contains("8 МиБ"));
       var chunked =
           HttpRequest.newBuilder(URI.create(base(api) + "/api/host/photos"))
               .header("Origin", base(api))

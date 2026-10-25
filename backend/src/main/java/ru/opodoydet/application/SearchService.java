@@ -13,6 +13,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import ru.opodoydet.advisor.AdvisorPlanner;
 import ru.opodoydet.domain.BinaryDecisionPolicy;
+import ru.opodoydet.domain.AdmissionPolicy;
 import ru.opodoydet.domain.Features;
 import ru.opodoydet.domain.Matching;
 import ru.opodoydet.domain.Validation;
@@ -120,6 +121,7 @@ public final class SearchService {
               extra));
     }
     interpreted.put("searchId", searchId);
+    interpreted.put("admissionMode", AdmissionPolicy.explore(trip) ? "explore" : "verified");
     if (!interpreted.path("conflicts").isEmpty())
       for (JsonNode match : ranked) excludeForConflict((ObjectNode) match);
     interpreted.set(
@@ -281,8 +283,8 @@ public final class SearchService {
   }
 
   private static void excludeForConflict(ObjectNode match) {
-    for (JsonNode room : match.path("rooms")) ((ObjectNode) room).put("status", "excluded");
-    ((ObjectNode) match.path("best")).put("status", "excluded");
+    for (JsonNode room : match.path("rooms")) ((ObjectNode) room).put("status", "excluded").put("provisional", false);
+    ((ObjectNode) match.path("best")).put("status", "excluded").put("provisional", false);
     match.put(
         "decisionExplanation",
         "Противоречащие друг другу обязательные пожелания не позволяют рекомендовать вариант.");

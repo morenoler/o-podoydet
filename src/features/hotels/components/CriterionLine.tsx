@@ -51,7 +51,7 @@ export function CriterionLine({
               {unconfirmed && (
                 <p className="muted">
                   Этих сведений недостаточно, чтобы подтвердить условие.
-                  Обязательный фильтр пропускает только подтверждённые совпадения.
+                  Неизвестное условие не считается подтверждённым совпадением.
                 </p>
               )}
               {criterion.sourceExplanation !== criterion.explanation && (

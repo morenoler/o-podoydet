@@ -22,6 +22,9 @@ import { SearchDiagnostics } from "../features/search/SearchDiagnostics";
 import { SearchMapPanel } from "../features/search/SearchMapPanel";
 import { SearchFilters } from "../features/search/SearchFilters";
 import { canSearch } from "../features/search/searchTrip";
+import { AdmissionModePicker } from "../features/search/AdmissionModePicker";
+import { listLimitForSelection, uiAdmissionMode } from "../features/search/searchPolicy";
+import { features } from "../../shared/features";
 import "../features/search/search.css";
 
 export function ResultsPage() {
@@ -97,8 +100,8 @@ export function ResultsPage() {
   }, [data, catalog, sort, validTrip]);
   const visible = hotels.slice(0, limit);
   const selected =
-    visible.find((hotel) => hotel.id === selectedId) || visible[0];
-  const plotted = visible.filter(
+    hotels.find((hotel) => hotel.id === selectedId) || hotels[0];
+  const plotted = hotels.filter(
     (hotel) => hotel.coordinates && !hotel.synthetic,
   );
   function submit(nextTrip: Trip) {
@@ -124,7 +127,9 @@ export function ResultsPage() {
   }
   function selectHotel(hotel: Hotel) {
     setSelectedId(hotel.id);
+    setLimit((current) => listLimitForSelection(hotels, current, hotel.id));
   }
+  const provisionalCount = data?.results.filter((result) => result.best.provisional).length || 0;
   const sea = (data?.preferences || trip.preferences).some(
     (value) => value.feature === "beach_walk",
   );
@@ -177,6 +182,20 @@ export function ResultsPage() {
           <span className="search-ai-short">AI</span>
         </button>
       </div>
+      <AdmissionModePicker value={trip.admissionMode}
+        onChange={(admissionMode) => setTrip({ ...trip, admissionMode })} />
+      {!!trip.preferences.length && (
+        <div className="search-selected-preferences" aria-label="Выбранные пожелания">
+          {trip.preferences.map((preference) => (
+            <button type="button" key={preference.feature}
+              onClick={() => quickFilter(preference.feature)}
+              aria-label={`Убрать пожелание: ${features[preference.feature].label}`}>
+              <span>{features[preference.feature].label} · {preference.required ? "обязательно" : "желательно"}</span>
+              <X size={14} aria-hidden="true" />
+            </button>
+          ))}
+        </div>
+      )}
       {(error || catalogError) && (
         <div className="search-error">
           <ErrorMessage text={error || catalogError} />
@@ -202,6 +221,11 @@ export function ResultsPage() {
                     ? `Вариантов по вашим условиям: ${hotels.length}`
                     : `${hotels.length} вариантов в каталоге Хэундэ`}
               </p>
+              {validTrip && !loading && provisionalCount > 0 && (
+                <p className="search-provisional-count">
+                  В {provisionalCount} вариантах нужно уточнить вместимость или обязательные условия.
+                </p>
+              )}
             </div>
             <label className="search-sort">
               <span>Сначала</span>
@@ -243,11 +267,18 @@ export function ResultsPage() {
                   <Search size={30} aria-hidden="true" />
                   <h2>Точного совпадения пока нет</h2>
                   <p>
-                    Обязательные условия сохранены. Помощник объяснит, что
-                    исключило варианты и какие сведения стоит уточнить.
+                    {uiAdmissionMode(trip.admissionMode) === "verified"
+                      ? "Для этих условий пока нет полностью подтверждённых вариантов. Можно посмотреть варианты для уточнения, сохранив ваши пожелания."
+                      : "По выбранным обязательным условиям есть несоответствия или противоречивые сведения. Измените пожелания или посмотрите объяснения ниже."}
                   </p>
-                  <button
+                  {uiAdmissionMode(trip.admissionMode) === "verified" && <button
                     className="button primary"
+                    onClick={() => setTrip({ ...trip, admissionMode: "explore" })}
+                  >
+                    Посмотреть варианты для уточнения
+                  </button>}
+                  <button
+                    className="button secondary"
                     onClick={() => setAdvisor(true)}
                   >
                     Разобраться с помощником
@@ -294,9 +325,8 @@ export function ResultsPage() {
                 </button>
               )}
               <p className="search-data-note">
-                Недостающие сведения отмечены «Требует уточнения» и не
-                засчитываются как выполнение обязательного условия. Источники
-                указаны в подробностях. Наличие на ваши даты не проверено.
+                Недостающие сведения отмечены отдельно и не считаются подтверждением.
+                Источники указаны в подробностях. Наличие на ваши даты не проверено.
                 {catalog?.evidencePolicy === "demo" &&
                   " Варианты «ДЕМО» вымышлены."}
               </p>

@@ -134,6 +134,94 @@
 .search-ai-short {
   display: none;
 }
+.search-admission {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 18px 0 0;
+}
+.search-admission fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  flex-shrink: 0;
+}
+.search-admission legend {
+  padding: 0;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.search-admission-options {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.search-admission-options label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 9px 12px;
+  border: 1px solid #dce5ef;
+  border-radius: 8px;
+  color: #43556f;
+  background: white;
+  font-size: 13px;
+  cursor: pointer;
+}
+.search-admission-options label.is-selected {
+  border-color: #163e8e;
+  color: #163e8e;
+  background: #eaf0fc;
+  font-weight: 700;
+}
+.search-admission-options label:has(input:focus-visible) {
+  outline: 2px solid #163e8e;
+  outline-offset: 3px;
+}
+.search-admission-options input {
+  width: 16px;
+  height: 16px;
+  accent-color: #163e8e;
+  margin: 0;
+  flex-shrink: 0;
+}
+.search-admission > p {
+  color: #52637b;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 20px 0 0;
+  max-width: 62ch;
+}
+.search-selected-preferences {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.search-selected-preferences button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  text-align: left;
+  padding: 7px 10px;
+  border: 1px solid #dce5ef;
+  border-radius: 8px;
+  color: #43556f;
+  background: white;
+  font-size: 12px;
+  cursor: pointer;
+}
+.search-selected-preferences button:hover {
+  border-color: #163e8e;
+  color: #163e8e;
+}
+.search-selected-preferences svg {
+  flex-shrink: 0;
+}
 .search-workspace {
   display: grid;
   grid-template-columns: minmax(0, 768fr) minmax(0, 552fr);
@@ -163,6 +251,12 @@
   font-size: 15px;
   margin: 0;
   color: #617087;
+}
+.search-results-heading .search-provisional-count {
+  margin-top: 6px;
+  color: #765313;
+  font-size: 13px;
+  max-width: 55ch;
 }
 .search-sort {
   display: grid;
@@ -310,6 +404,9 @@
   margin: 0 0 5px;
   line-height: 1.4;
   overflow-wrap: anywhere;
+}
+.search-hotel-result.is-preview {
+  color: #52637b;
 }
 .search-route-button {
   display: inline-flex;
@@ -584,6 +681,53 @@
 }
 .v2-modal.search-filters-modal {
   width: min(640px, calc(100vw - 32px));
+  overflow: hidden;
+}
+.v2-modal.search-filters-modal[open] {
+  display: flex;
+  flex-direction: column;
+}
+.search-filters-modal .v2-modal-heading {
+  flex-shrink: 0;
+  margin-bottom: 16px;
+}
+.search-filters-body {
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  scrollbar-color: #b8c9e9 #f7f9fc;
+  padding-right: 10px;
+}
+.search-filters-body .search-admission {
+  display: block;
+  padding-top: 0;
+  margin-bottom: 20px;
+}
+.search-filters-body .search-admission > p {
+  margin-top: 10px;
+}
+.search-filter-group {
+  margin-top: 24px;
+}
+.search-filter-group h3 {
+  font-size: 17px;
+  margin: 0 0 12px;
+}
+.search-filters-footer {
+  flex-shrink: 0;
+  align-items: center;
+  background: white;
+  margin-top: 12px;
+  padding-top: 16px;
+}
+.search-filters-footer > .primary {
+  min-width: 140px;
+  margin-left: 0;
+}
+.search-filters-count {
+  margin-right: auto;
+  font-size: 13px;
+  color: #52637b;
 }
 .search-filters-modal .preference-list {
   grid-template-columns: 1fr;
@@ -606,6 +750,14 @@
 .search-filters-modal .preference-button small {
   color: #617087;
   font-size: 12px;
+}
+.preference-priority {
+  display: block;
+  margin-top: 4px;
+  color: #163e8e;
+}
+.search-filters-modal .preference-button .preference-priority {
+  color: #163e8e;
 }
 .search-filters-modal .required-toggle {
   font-size: 13px;
@@ -1011,5 +1163,32 @@
 @media (max-width: 900px) {
   .search-page .search-compare-tray {
     bottom: 82px;
+  }
+  .search-workspace {
+    margin-top: 20px;
+  }
+  .search-admission {
+    display: block;
+    padding-top: 14px;
+  }
+  .search-admission > p {
+    margin-top: 10px;
+  }
+  .search-admission-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .search-admission-options label {
+    padding: 8px;
+    font-size: 12px;
+  }
+  .search-filters-footer {
+    flex-wrap: wrap;
+  }
+  .search-filters-count {
+    flex-basis: 100%;
+  }
+  .search-filters-footer > .button {
+    flex: 1;
   }
 }

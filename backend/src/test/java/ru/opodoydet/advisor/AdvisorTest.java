@@ -133,6 +133,35 @@ class AdvisorTest {
   }
 
   @Test
+  void provisionalAdviceNeedsExploreModeAndPreservesUnknownCapacityAndMandatoryEvidence() {
+    ObjectNode hotel = hotel();
+    ((ObjectNode) hotel.path("rooms").get(0)).putNull("capacity");
+    ObjectNode query = trip(List.of(preference("family",true))).put("admissionMode","explore");
+    ObjectNode context = plan(hotel,query,List.of());
+    assertEquals(1,context.path("fitCount").asInt());
+    JsonNode candidate = context.path("candidates").get(0);
+    assertTrue(candidate.path("provisional").asBoolean());
+    assertEquals("unknown",Json.str(candidate.path("criteria").get(0),"evidenceStatus"));
+    assertEquals("mismatch",Json.str(candidate.path("criteria").get(0),"status"));
+    JsonNode before = context.deepCopy();
+    ObjectNode checked = AdvisorService.checkedReport(context,report(context).put("summary","Всё подтверждено"));
+    assertTrue(Json.str(checked,"summary").contains("предварительные"));
+    assertEquals(2,checked.path("cautions").get(0).path("evidenceIds").size());
+    assertEquals(before,context);
+    ObjectNode strict = context.deepCopy();
+    ((ObjectNode) strict.path("trip")).put("admissionMode","verified");
+    assertThrows(IllegalArgumentException.class,()->AdvisorService.checkedReport(strict,report(strict)));
+    for (String evidence : List.of("mismatch","conflict")) {
+      ObjectNode forged = context.deepCopy();
+      ((ObjectNode) forged.path("candidates").get(0).path("criteria").get(0)).put("evidenceStatus",evidence);
+      assertThrows(IllegalArgumentException.class,()->AdvisorService.checkedReport(forged,report(forged)));
+    }
+    ObjectNode conflict = context.deepCopy();
+    conflict.set("conflicts",Json.array(List.of("Несовместимые пожелания")));
+    assertEquals("clarification_needed",Json.str(AdvisorService.checkedReport(conflict,report(conflict)),"outcome"));
+  }
+
+  @Test
   void counterfactualRequiresConsentAndDoesNotChangeOriginalEligibilityOrCapacity() {
     ObjectNode trip = trip(List.of(preference("courtyard", true)));
     ObjectNode context = plan(hotel(), trip, List.of(fact("room", "courtyard", false)));

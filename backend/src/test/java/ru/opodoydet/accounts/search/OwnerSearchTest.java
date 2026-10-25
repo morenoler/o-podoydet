@@ -130,6 +130,19 @@ class OwnerSearchTest {
     assertEquals(false, OwnerNotesExtractor.extract("Окна выходят на улицу.").get("courtyard"));
     assertEquals(
         false, OwnerNotesExtractor.extract("Не подходит для семей с детьми.").get("family"));
+    assertEquals(false, OwnerNotesExtractor.extract("Не разрешено проживание с детьми.").get("family"));
+    assertEquals(false, OwnerNotesExtractor.extract("Окна на улицу. Возможно, есть детская кроватка.").get("courtyard"));
+    assertEquals(false, OwnerNotesExtractor.extract("Не подходит для семей с детьми. Есть лифт?").get("family"));
+    assertTrue(OwnerNotesExtractor.extract("Окна на улицу?").isEmpty());
+    assertTrue(OwnerNotesExtractor.extract("Возможно, окна на улицу.").isEmpty());
+    assertTrue(OwnerNotesExtractor.extract("Не уверен. Окна на улицу.").isEmpty());
+    assertEquals(false, OwnerNotesExtractor.extract("Лифт есть, но до номера есть лестница.").get("step_free_access"));
+    assertEquals(false, OwnerNotesExtractor.extract("Перед входом три ступени, пандуса нет.").get("step_free_access"));
+    for (String scoped : List.of("Возможно, перед входом три ступени, пандуса нет.",
+        "Если перед входом три ступени, пандуса нет.",
+        "Перед входом в другой корпус три ступени, пандуса нет.",
+        "До номера 203 есть лестница.", "У части номеров перед входом три ступени, пандуса нет."))
+      assertTrue(OwnerNotesExtractor.extract(scoped).isEmpty(), scoped);
     assertEquals(false, OwnerNotesExtractor.extract("До пляжа 2 км пешком.").get("beach_walk"));
     assertNull(OwnerNotesExtractor.extract("Окна во двор. Окна на улицу.").get("courtyard"));
     for (String notes :
@@ -137,7 +150,6 @@ class OwnerSearchTest {
             "Подходит для семинаров.",
             "Предусмотрено место для деталей.",
             "Если окна во двор.",
-            "Не разрешено проживание с детьми.",
             "Путь до номера не без ступеней.",
             "Маршрут до пляжа не без ступеней.",
             "Не уверен. Окна во двор.",
@@ -252,6 +264,33 @@ class OwnerSearchTest {
         }
       }
       privateAbsent(result);
+    }
+  }
+
+  @Test
+  void exploreRetainsUnknownOwnerAndCatalogEvidenceButBlocksKnownNegativeAndConflictingClaims() throws Exception {
+    try (Store store = new Store(temp.resolve("explore.sqlite3").toString(), seed());
+        AccountDatabase db = new AccountDatabase(store.databasePath())) {
+      user(db);
+      ListingService listings = new ListingService(db);
+      String unknown = Json.str(listings.create("host", input("Без сведений", "published", "", null)), "id");
+      String negative = Json.str(listings.create("host", input("Не соответствует", "published", "Окна на улицу.", 2)), "id");
+      String conflict = Json.str(listings.create("host", input("Противоречия", "published", "Окна во двор. Окна на улицу.", 2)), "id");
+      SearchService service = search(store,db);
+      ObjectNode query = trip("Не выше 3 этажа",true).put("admissionMode","explore");
+      JsonNode result = service.search(query);
+      JsonNode candidate = owner(result,"results",unknown);
+      assertNotNull(candidate);
+      assertTrue(candidate.path("best").path("provisional").asBoolean());
+      assertEquals("unknown",Json.str(candidate.path("best").path("criteria").get(0),"evidenceStatus"));
+      assertEquals("mismatch",Json.str(candidate.path("best").path("criteria").get(0),"status"));
+      assertEquals("unknown",Json.str(candidate.path("ownerCriteria").get(0),"evidenceStatus"));
+      assertNotNull(owner(result,"excluded",negative));
+      assertEquals("conflict",Json.str(owner(result,"excluded",conflict).path("best").path("criteria").get(0),"evidenceStatus"));
+      JsonNode context = service.advisorContext(query,Json.str(result,"searchId"));
+      assertTrue(Json.list(context.path("candidates")).stream().anyMatch(c -> c.path("provisional").asBoolean()));
+      privateAbsent(context);
+      assertTrue(service.search(query.deepCopy().put("admissionMode","verified")).path("results").isEmpty());
     }
   }
 

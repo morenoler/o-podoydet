@@ -27,3 +27,6 @@ services/window-view/examples/real-hotel.result.json
 
 # Deliberately synthetic, session-free demo database.
 !data/demo/preview.sqlite3
+
+# Local design reviews and skill artifacts are not project deliverables.
+.impeccable/

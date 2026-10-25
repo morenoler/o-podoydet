@@ -1,4 +1,5 @@
 import { decideCapacity, decideCriterion } from "./domain/binaryDecisionPolicy";
+import { decideAdmission } from "./domain/admissionPolicy";
 import { features } from "./features";
 import type {
   Criterion,
@@ -159,15 +160,10 @@ export function rankHotels(
           decideCriterion(evaluate(hotelFacts, p, room, trip, now), hotel),
         );
         const capacity = decideCapacity(hotel, room, trip, now);
-        const status: RoomMatch["status"] =
-          capacity.capacityStatus === "mismatch" ||
-          criteria.some((c) => c.required && c.status === "mismatch")
-            ? "excluded"
-            : "fits";
         return {
           room,
           criteria,
-          status,
+          ...decideAdmission(capacity, criteria, trip),
           ...capacity,
           score: criteria.reduce(
             (s, c) =>
@@ -183,7 +179,8 @@ export function rankHotels(
       });
       const order = { fits: 0, excluded: 1 };
       rooms.sort(
-        (a, b) => order[a.status] - order[b.status] || b.score - a.score,
+        (a, b) => order[a.status] - order[b.status] ||
+          Number(!!a.provisional) - Number(!!b.provisional) || b.score - a.score,
       );
       return { hotel, best: rooms[0], rooms };
     })
@@ -191,6 +188,7 @@ export function rankHotels(
       (a, b) =>
         ({ fits: 0, excluded: 1 })[a.best.status] -
           { fits: 0, excluded: 1 }[b.best.status] ||
+        Number(!!a.best.provisional) - Number(!!b.best.provisional) ||
         b.best.score - a.best.score ||
         (a.hotel.route?.meters ?? Infinity) -
           (b.hotel.route?.meters ?? Infinity),

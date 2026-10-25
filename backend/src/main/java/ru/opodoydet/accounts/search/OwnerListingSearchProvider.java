@@ -9,6 +9,7 @@ import ru.opodoydet.accounts.listings.ListingRepository;
 import ru.opodoydet.accounts.persistence.AccountDatabase;
 import ru.opodoydet.application.SearchExtension;
 import ru.opodoydet.domain.Features;
+import ru.opodoydet.domain.AdmissionPolicy;
 import ru.opodoydet.shared.Json;
 
 /**
@@ -21,7 +22,7 @@ public final class OwnerListingSearchProvider implements SearchExtension {
   private final SearchProfileRepository profiles;
 
   private record Source(
-      ObjectNode listing, Map<String, Boolean> assertions, Integer floor, Set<String> directions) {}
+      ObjectNode listing, Map<String, Boolean> assertions, Set<String> conflicts, Integer floor, Set<String> directions) {}
 
   public OwnerListingSearchProvider(AccountDatabase db) {
     this.db = db;
@@ -40,10 +41,11 @@ public final class OwnerListingSearchProvider implements SearchExtension {
               for (ObjectNode listing : listings.published()) {
                 if (!Json.str(listing, "city").equalsIgnoreCase(Json.str(trip, "region"))) continue;
                 ObjectNode profile = profiles.find(Json.str(listing, "id"));
+                var evidence = OwnerNotesExtractor.assess(Json.str(profile, "notes"));
                 values.add(
                     new Source(
                         listing.deepCopy(),
-                        OwnerNotesExtractor.extract(Json.str(profile, "notes")),
+                        evidence.values(), evidence.conflicts(),
                         listing.path("floor").isIntegralNumber()
                             ? listing.path("floor").asInt()
                             : null,
@@ -63,19 +65,20 @@ public final class OwnerListingSearchProvider implements SearchExtension {
         for (JsonNode match : baseline) {
           ObjectNode decorated = match.deepCopy();
           if (requirements.any())
-            decorate(decorated, requirements.decisions(null, Set.of(), false));
+            decorate(decorated, requirements.decisions(null, Set.of(), false), trip);
           ranked.add(decorated);
         }
         for (Source source : sources) {
-          ObjectNode match = rank(source, preferences, guests);
+          ObjectNode match = rank(source, preferences, guests, trip);
           if (requirements.any())
-            decorate(match, requirements.decisions(source.floor(), source.directions(), true));
+            decorate(match, requirements.decisions(source.floor(), source.directions(), true), trip);
           ranked.add(match);
         }
         ranked.sort(
             Comparator.comparingInt(
                     (JsonNode match) ->
                         Json.str(match.path("best"), "status").equals("fits") ? 0 : 1)
+                .thenComparing(match -> match.path("best").path("provisional").asBoolean())
                 .thenComparing(
                     Comparator.comparingInt(
                             (JsonNode match) -> match.path("best").path("score").asInt())
@@ -92,7 +95,7 @@ public final class OwnerListingSearchProvider implements SearchExtension {
     };
   }
 
-  private static ObjectNode rank(Source source, List<JsonNode> preferences, int guests) {
+  private static ObjectNode rank(Source source, List<JsonNode> preferences, int guests, JsonNode trip) {
     JsonNode listing = source.listing();
     String listingId = Json.str(listing, "id"), hotelId = "account-listing:" + listingId;
     ObjectNode room =
@@ -140,13 +143,8 @@ public final class OwnerListingSearchProvider implements SearchExtension {
             "dataNotes",
             List.of(OwnerRequirements.SOURCE));
     List<JsonNode> criteria =
-        preferences.stream().map(preference -> criterion(preference, source.assertions())).toList();
+        preferences.stream().map(preference -> criterion(preference, source.assertions(), source.conflicts())).toList();
     boolean capacity = listing.path("capacity").asInt() >= guests;
-    boolean fits =
-        capacity
-            && criteria.stream()
-                .noneMatch(
-                    c -> c.path("required").asBoolean() && !Json.str(c, "status").equals("match"));
     int score =
         criteria.stream().mapToInt(c -> Json.str(c, "status").equals("match") ? 3 : -2).sum();
     ObjectNode best =
@@ -155,8 +153,6 @@ public final class OwnerListingSearchProvider implements SearchExtension {
             room,
             "criteria",
             criteria,
-            "status",
-            fits ? "fits" : "excluded",
             "score",
             score,
             "capacityStatus",
@@ -170,17 +166,21 @@ public final class OwnerListingSearchProvider implements SearchExtension {
                     ? "Заявленной вместимости достаточно для выбранного числа гостей. "
                     : "Заявленной вместимости недостаточно для выбранного числа гостей. ")
                 + OwnerRequirements.SOURCE);
+    best.setAll(AdmissionPolicy.decide(best, criteria, trip));
     return Json.obj("hotel", hotel, "best", best, "rooms", List.of(best.deepCopy()));
   }
 
-  private static JsonNode criterion(JsonNode preference, Map<String, Boolean> assertions) {
+  private static JsonNode criterion(JsonNode preference, Map<String, Boolean> assertions, Set<String> conflicts) {
     String feature = Json.str(preference, "feature");
-    Boolean value = assertions.get(feature);
+    Boolean value = Features.get(feature).tool().equals("area") ? null : assertions.get(feature);
+    boolean conflict = conflicts.contains(feature);
     String explanation;
     if (Features.get(feature).tool().equals("area"))
       explanation =
           "Нет независимых данных о районе на даты поездки; сведения отельера не заменяют такую"
               + " проверку.";
+    else if (conflict)
+      explanation = "Сведения отельера об этом условии противоречат друг другу. Требуется уточнение.";
     else if (value == null)
       explanation =
           "Из описания отельера нельзя однозначно установить выполнение этого пожелания. "
@@ -199,7 +199,7 @@ public final class OwnerListingSearchProvider implements SearchExtension {
         "status",
         Boolean.TRUE.equals(value) ? "match" : "mismatch",
         "evidenceStatus",
-        value == null ? "unknown" : value ? "match" : "mismatch",
+        conflict ? "conflict" : value == null ? "unknown" : value ? "match" : "mismatch",
         "assumed",
         true,
         "decisionBasis",
@@ -214,21 +214,25 @@ public final class OwnerListingSearchProvider implements SearchExtension {
         OwnerRequirements.SOURCE);
   }
 
-  private static void decorate(ObjectNode match, List<JsonNode> criteria) {
+  private static void decorate(ObjectNode match, List<JsonNode> criteria, JsonNode trip) {
     match.set("ownerCriteria", Json.array(criteria));
     boolean blocked =
         criteria.stream()
             .anyMatch(
-                c -> c.path("required").asBoolean() && !Json.str(c, "status").equals("match"));
+                c -> c.path("required").asBoolean() && !AdmissionPolicy.permits(c, trip));
+    boolean preliminary = criteria.stream().anyMatch(c -> c.path("required").asBoolean()
+        && !Json.str(c, "status").equals("match"));
     int score =
         criteria.stream().mapToInt(c -> Json.str(c, "status").equals("match") ? 3 : -2).sum();
     for (JsonNode room : match.path("rooms")) {
       ObjectNode changed = (ObjectNode) room;
       changed.put("score", room.path("score").asInt() + score);
-      if (blocked) changed.put("status", "excluded");
+      if (blocked) changed.put("status", "excluded").put("provisional", false);
+      else if (Json.str(changed, "status").equals("fits") && preliminary) changed.put("provisional", true);
     }
     ObjectNode best = (ObjectNode) match.path("best");
     best.put("score", best.path("score").asInt() + score);
-    if (blocked) best.put("status", "excluded");
+    if (blocked) best.put("status", "excluded").put("provisional", false);
+    else if (Json.str(best, "status").equals("fits") && preliminary) best.put("provisional", true);
   }
 }

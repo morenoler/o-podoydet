@@ -7,6 +7,7 @@ import { roomDetailsLabel } from "../features/account/format";
 import "../features/search/search.css";
 import "../features/hotels/hotel-details.css";
 import { CapacitySummary } from "../features/hotels/components/CapacitySummary";
+import { MatchBadge } from "../features/hotels/components/MatchBadge";
 import { useParams, useSearchParams, Link } from "react-router-dom";
 import { useApp } from "../app/providers/TripProvider";
 import { useState, useEffect } from "react";
@@ -260,7 +261,7 @@ export function HotelPage() {
           )}
         </section>
         <aside className="room-panel">
-          <h2>Проверим один номер</h2>
+          <h2>Проверим категорию номера</h2>
           <p>
             Сильные стороны разных категорий не складываются в один вариант.
           </p>
@@ -297,6 +298,7 @@ export function HotelPage() {
               )}
             </p>
           )}
+          <MatchBadge match={{ ...ranked, best: room }} />
           <CapacitySummary match={room} />
           {(selectedCriteria.length > 0 || !hasOwnerCriteria) && (
             <WishMatches criteria={selectedCriteria} />

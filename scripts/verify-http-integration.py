@@ -338,6 +338,7 @@ def main():
     parser.add_argument("--lab-port", type=int, default=8081)
     parser.add_argument("--view-port", type=int, default=8011)
     parser.add_argument("--keep-running", action="store_true")
+    parser.add_argument("--app-dist", default="dist", help="Isolated candidate frontend directory")
     parser.add_argument("--report", default="docs/HTTP_INTEGRATION_REPORT.json")
     args = parser.parse_args()
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
@@ -357,7 +358,7 @@ def main():
         for port in (args.app_port, args.lab_port, args.view_port):
             with socket.socket() as sock:
                 sock.bind(("127.0.0.1", port))
-        for file in ("dist/index.html", "dist-lab/index.html", "backend/target/o-podoydet-backend.jar"):
+        for file in (str(Path(args.app_dist) / "index.html"), "dist-lab/index.html", "backend/target/o-podoydet-backend.jar"):
             require((ROOT / file).is_file(), "Build missing: " + file)
         java_home = os.environ.get("JAVA_HOME")
         jdks = sorted(p for p in (ROOT / ".local/tools").glob("jdk-21*") if p.is_dir())
@@ -395,7 +396,7 @@ def main():
                       ROOT / "services/window-view", {}, args.view_port)
         java_command = [java, "-Dstdout.encoding=UTF-8", "-Dstderr.encoding=UTF-8", "-jar", str(jar)]
         app = launch("app", java_command, ROOT, {"PORT": str(args.app_port), "LAB_MODE": "false",
-                     "DATA_PATH": str(ROOT / "data/verified-hotels.json"), "DIST_PATH": str(ROOT / "dist"),
+                     "DATA_PATH": str(ROOT / "data/verified-hotels.json"), "DIST_PATH": str(ROOT / args.app_dist),
                      "UPLOADS_PATH": str(run_dir / "app-uploads"),
                      "DB_PATH": str(run_dir / "app.sqlite3")}, args.app_port)
         lab = launch("lab", java_command, ROOT, {"PORT": str(args.lab_port), "LAB_MODE": "true",

@@ -15,6 +15,7 @@ export interface AdvisorEvidence {
   sources: { url: string; label: string }[];
 }
 export interface AdvisorCandidate {
+  provisional?: boolean;
   id: string;
   hotelId: string;
   hotelName: string;

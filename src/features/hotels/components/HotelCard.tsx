@@ -51,18 +51,30 @@ export function HotelCard({
     match?.best.criteria.some(criterionNeedsClarification) ||
     match?.ownerCriteria?.some((c) => c.evidenceStatus === "unknown");
   const declared = match?.ownerCriteria?.some((c) => c.assumed);
-  const estimated = needsClarification || declared;
+  const estimated = needsClarification || declared || match?.best.provisional;
   const uncertain = match?.best.criteria.find(
     (c) => criterionNeedsClarification(c) || c.status !== "match",
   );
   const missingOwner = match?.ownerCriteria?.find(
     (c) => c.assumed || c.evidenceStatus !== "match",
   );
+  const publishedCategoryCount = hotel.rooms.filter(
+    (room) => room.scope === "room_category" && room.evidenceStatus === "verified",
+  ).length;
   const sourceHint = ownerId
     ? "Сведения отельера · без независимой проверки"
     : match?.best.room.evidenceStatus === "verified" && match.best.room.scope === "room_category"
-      ? `Категория: ${match.best.room.name}`
-      : "Категорию и условия номера нужно уточнить";
+      ? "Категория по сведениям официального сайта"
+      : !match && publishedCategoryCount > 0
+        ? `Категории с официального сайта: ${publishedCategoryCount}`
+        : "Категорию и условия номера нужно уточнить";
+  const category = match?.best.room.evidenceStatus === "verified" &&
+    match.best.room.scope === "room_category" ? match.best.room : undefined;
+  const roomDetails = [
+    hotel.floor == null ? "" : `Этаж: ${hotel.floor}`,
+    hotel.windowDirections?.length
+      ? `Окна: ${hotel.windowDirections.map((value) => directionLabels[value]).join(", ")}` : "",
+  ].filter(Boolean).join(" · ");
   const hasPrice =
     typeof hotel.pricePerNight === "number" &&
     hotel.pricePerNight > 0 &&
@@ -73,7 +85,6 @@ export function HotelCard({
     <article
       className={`search-hotel-card${selected ? " is-selected" : ""}`}
       onClick={onSelect}
-      onFocus={onSelect}
       aria-label={hotel.name}
     >
       <div className="search-hotel-photo">
@@ -127,12 +138,14 @@ export function HotelCard({
           )}
         </div>
         <p className="search-hotel-meta">{hotel.address || "Пусан, Хэундэ"}</p>
-        <p className="search-hotel-room">
-          {hotel.floor == null ? "Этаж: Не указано" : `Этаж: ${hotel.floor}`} ·{" "}
-          {hotel.windowDirections?.length
-            ? `Окна: ${hotel.windowDirections.map((value) => directionLabels[value]).join(", ")}`
-            : "Окна: Не указано"}
-        </p>
+        {category && (
+          <p className="search-hotel-room">
+            Категория: {category.name}
+            {!capacityUnknown && !match?.best.capacityRule && category.capacity !== null && !category.capacityMayVary
+              ? ` · до ${category.capacity} гостей` : ""}
+          </p>
+        )}
+        {roomDetails && <p className="search-hotel-room">{roomDetails}</p>}
         {hotel.route && !hotel.synthetic ? (
           <button
             type="button"
@@ -166,6 +179,14 @@ export function HotelCard({
                 : sourceHint}
           </span>
         </p>
+        {hasPrice && match && (
+          <p className={`search-hotel-result${presentationState === "mismatch" ? " is-mismatch" : estimated ? " is-estimate" : ""}`}>
+            {presentationState === "match"
+              ? <Check size={17} aria-hidden="true" />
+              : <CircleHelp size={17} aria-hidden="true" />}
+            {resultLabel}
+          </p>
+        )}
         <div className="search-hotel-bottom">
           <div>
             {hasPrice ? (
@@ -181,7 +202,7 @@ export function HotelCard({
             ) : (
               <>
                 <strong
-                  className={`search-hotel-result${presentationState === "mismatch" ? " is-mismatch" : estimated ? " is-estimate" : ""}`}
+                  className={`search-hotel-result${!match ? " is-preview" : presentationState === "mismatch" ? " is-mismatch" : presentationState === "unknown" || estimated ? " is-estimate" : ""}`}
                 >
                   {match ? (
                     <>

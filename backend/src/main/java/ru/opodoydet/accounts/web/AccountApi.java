@@ -206,8 +206,13 @@ public final class AccountApi implements AutoCloseable {
     exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
     exchange.getResponseHeaders().set("Cache-Control", "no-store");
     exchange.getResponseHeaders().set("X-Content-Type-Options", "nosniff");
+    // A rejected upload can still be in flight. Tell the client not to reuse this connection,
+    // and finish the response before the outer handler closes its unread request stream.
+    if (status == 413) exchange.getResponseHeaders().set("Connection", "close");
     exchange.sendResponseHeaders(status, bytes.length);
-    exchange.getResponseBody().write(bytes);
+    try (var response = exchange.getResponseBody()) {
+      response.write(bytes);
+    }
   }
 
   @Override

@@ -112,6 +112,8 @@ export interface Preference {
   required: boolean;
 }
 export interface Trip {
+  /** Omission keeps the legacy verified admission contract. */
+  admissionMode?: "explore" | "verified";
   region: string;
   checkIn: string;
   checkOut: string;
@@ -160,6 +162,8 @@ export interface CriterionDecision extends Criterion {
   sourceExplanation: string;
 }
 export interface RoomMatch {
+  /** True only when admission relies on missing or outdated mandatory evidence. */
+  provisional?: boolean;
   capacityStatus?: "match" | "mismatch";
   capacityEvidenceStatus?: "match" | "mismatch" | "unknown";
   capacityAssumed?: boolean;
@@ -198,6 +202,7 @@ export interface Trace {
   tool?: string;
 }
 export interface SearchResult {
+  admissionMode?: "explore" | "verified";
   searchId: string;
   results: HotelMatch[];
   excluded: HotelMatch[];

@@ -38,6 +38,9 @@ public final class Validation {
   }
 
   public static JsonNode trip(JsonNode input, String region) {
+    if (input.has("admissionMode") && (!input.path("admissionMode").isTextual()
+        || !Set.of("explore", "verified").contains(input.path("admissionMode").asText())))
+      throw new IllegalArgumentException("Некорректный режим подбора");
     if (!input.isObject() || !text(input, "region", 1, 100).equals(region))
       throw new IllegalArgumentException("Доступен регион: " + region);
     String from = text(input, "checkIn", 10, 10), to = text(input, "checkOut", 10, 10);
