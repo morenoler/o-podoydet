@@ -47,13 +47,13 @@ Java API принимает окончательные решения о под�
 
 ## Java-сервер
 
-Исходники расположены в `backend/src/main/java/ru/opodoydet/`:
+Исходники расположены в `server/src/main/java/ru/opodoydet/` (доменный код, перенесённый из прежнего сервера; Spring-часть — `ru.opodoydet.server`, см. [server/README.md](../server/README.md)):
 
 - `Main.java` — точка сборки и запуска приложения, конфигурация путей и порта.
 - `web/Api.java` — HTTP-маршруты, чтение запроса, статические файлы и преобразование результата в ответ.
 - `application/SearchService.java` — общий сценарий поиска и оценки карточки. `Agents.java` разбирает пожелания и ответы; `Environment.java` читает снимки района и выполняет оценки воздуха, безопасности и шума.
 - `domain/Matching.java` проверяет область фактов, категории, обязательность и порядок. `BinaryDecisionPolicy.java` переводит исходную оценку в двоичный итог и оценивает вместимость. `Evidence.java` проверяет пригодность свидетельств, `Features.java` описывает признаки; `Validation.java` проверяет входные данные и используется также хранением. Размещение Validation в domain предотвращает цикл между application и persistence.
-- `persistence/Store.java` — SQLite, импорт снимка, запросы, черновики и транзакции истории. SQL-схема остаётся в `backend/src/main/resources/schema.sql`.
+- `persistence/Store.java` — доступ к каталогу, демо-вопросам, черновикам и истории помощника в PostgreSQL. Схема — миграции Flyway в `server/src/main/resources/db/migration/`.
 - `shared/Json.java` — общие операции с JSON. Этот пакет не зависит от предметных правил.
 
 Направление зависимостей: web вызывает application; application координирует domain и persistence. Domain не импортирует application, web или persistence. Store может использовать проверки Evidence при выдаче пригодных данных; это допустимая зависимость внешнего слоя от правил. JSON пока служит внутренним и HTTP-контрактом; отдельный класс на каждое поле не вводится.

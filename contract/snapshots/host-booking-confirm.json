@@ -1,0 +1,29 @@
+{
+  "status": 200,
+  "body": {
+    "id": "<uuid>",
+    "listingId": "<uuid>",
+    "listingTitle": "Светлый номер у моря, 5 этаж",
+    "city": "Пусан",
+    "address": "Хэундэ, дом 10",
+    "userId": "<uuid>",
+    "guestName": "Гость Контракт",
+    "guestEmail": "guest-<run>@example.com",
+    "hostId": "<uuid>",
+    "checkIn": "2027-07-10",
+    "checkOut": "2027-07-13",
+    "guests": 2,
+    "nights": 3,
+    "pricePerNight": 95000,
+    "totalPrice": 285000,
+    "currency": "KRW",
+    "photos": [
+      "/uploads/listings/<uuid>.jpg"
+    ],
+    "roomType": "Двухместный номер",
+    "status": "confirmed",
+    "note": "Поздний заезд",
+    "createdAt": "<volatile>",
+    "updatedAt": "<volatile>"
+  }
+}

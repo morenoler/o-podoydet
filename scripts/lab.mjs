@@ -33,6 +33,8 @@ try {
     const mainDatabase = process.env.DB_PATH || ".local/busan.sqlite3";
     process.env.DB_PATH = process.env.LAB_DB_PATH || ".local/lab.sqlite3";
     process.env.UPLOADS_PATH = process.env.LAB_UPLOADS_PATH || ".local/lab-uploads";
+    // Отдельная схема PostgreSQL: опыты лаборатории не смешиваются с основным сайтом.
+    process.env.DB_SCHEMA = process.env.LAB_DB_SCHEMA || "lab";
     const canonicalPath = (path) => {
       const absolute = resolve(root, path);
       return process.platform === "win32" ? absolute.toLowerCase() : absolute;

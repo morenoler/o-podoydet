@@ -1,0 +1,22 @@
+# База для нового бэкенда. Запуск: docker compose up -d db
+# (npm run dev:spring поднимает её сам).
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: opodoydet-db
+    environment:
+      POSTGRES_DB: opodoydet
+      POSTGRES_USER: opodoydet
+      POSTGRES_PASSWORD: opodoydet
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - opodoydet-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U opodoydet -d opodoydet"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  opodoydet-db:

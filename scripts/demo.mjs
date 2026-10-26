@@ -63,7 +63,8 @@ try {
       throw new Error("DEMO_PORT должен быть числом от 1 до 65535.");
     Object.assign(process.env, {
       PORT: String(port),
-      DB_PATH: localDemoPath,
+      DB_PATH: localDemoPath, // переносится в схему demo при первом старте
+      DB_SCHEMA: "demo",
       UPLOADS_PATH: resolve(root, ".local/demo-uploads"),
       DIST_PATH: "dist",
       DATA_PATH: "data/verified-hotels.json",

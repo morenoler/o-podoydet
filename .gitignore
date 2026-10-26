@@ -9,7 +9,7 @@ dist-lab/
 *.sqlite-*
 *.sqlite3
 *.sqlite3-*
-backend/target/
+server/target/
 *.db
 *.db-*
 .codex/

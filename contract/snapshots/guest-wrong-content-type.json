@@ -1,0 +1,6 @@
+{
+  "status": 415,
+  "body": {
+    "error": "Используйте формат application/json."
+  }
+}

@@ -12,6 +12,7 @@
     "ollama:start": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ollama-local.ps1",
     "ollama:prepare": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prepare-local-model.ps1",
     "dev": "node --env-file-if-exists=.env scripts/dev.mjs",
+    "dev:spring": "node --env-file-if-exists=.env scripts/dev.mjs",
     "build": "tsc --noEmit && vite build",
     "start": "node --env-file-if-exists=.env scripts/backend.mjs start",
     "test": "tsx --test tests/*.test.ts",
@@ -21,6 +22,11 @@
     "check": "tsc --noEmit",
     "backend:build": "node --env-file-if-exists=.env scripts/backend.mjs build",
     "backend:test": "node --env-file-if-exists=.env scripts/backend.mjs test",
+    "server:build": "node --env-file-if-exists=.env scripts/backend.mjs build",
+    "server:test": "node --env-file-if-exists=.env scripts/backend.mjs test",
+    "contract:capture": "node scripts/contract.mjs capture --base http://127.0.0.1:8080",
+    "contract:check": "node scripts/contract.mjs check --base http://127.0.0.1:8080",
+    "contract:verify": "node --env-file-if-exists=.env scripts/contract-verify.mjs",
     "agents:test": "node --env-file-if-exists=.env scripts/agents-test.mjs",
     "test:all": "npm test && npm run backend:test && npm run agents:test && npm run demo:test",
     "build:all": "npm run build && npm run backend:build",
@@ -30,7 +36,8 @@
     "demo:seed": "node scripts/demo.mjs seed",
     "demo:setup": "node scripts/demo.mjs setup",
     "demo:start": "node --env-file-if-exists=.env scripts/demo.mjs start",
-    "demo:test": "node --test scripts/demo.test.mjs"
+    "demo:test": "node --test scripts/demo.test.mjs",
+    "db:up": "docker compose up -d --wait db"
   },
   "dependencies": {
     "@fontsource/golos-text": "^5.2.8",

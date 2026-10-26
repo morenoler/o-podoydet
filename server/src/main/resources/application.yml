@@ -1,0 +1,46 @@
+server:
+  port: ${PORT:8080}
+  max-http-request-header-size: 32KB
+  tomcat:
+    max-swallow-size: 25MB
+
+spring:
+  application:
+    name: o-podoydet
+  servlet:
+    multipart:
+      # Фото кабинета приходят «сырым» телом (image/jpeg, image/png), multipart не используется.
+      enabled: false
+  mvc:
+    # Собранный фронтенд раздаёт FrontendController (с переходом на index.html для SPA).
+    static-path-pattern: /static-unused/**
+  web:
+    resources:
+      add-mappings: false
+  datasource:
+    # DB_SCHEMA разделяет основную, лабораторную и демонстрационную копии в одной базе.
+    url: ${DATABASE_URL:jdbc:postgresql://127.0.0.1:5432/opodoydet?currentSchema=${DB_SCHEMA:public}}
+    username: ${DATABASE_USER:opodoydet}
+    password: ${DATABASE_PASSWORD:opodoydet}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    locations: classpath:db/migration
+    schemas: ${DB_SCHEMA:public}
+    default-schema: ${DB_SCHEMA:public}
+
+catalog:
+  data-path: ${DATA_PATH:data/verified-hotels.json}
+  import-on-startup: ${CATALOG_IMPORT:true}
+
+knowledge:
+  # Как часто пересчитывать факты (например, чтобы истёкшие стали stale).
+  resolve-interval: ${KNOWLEDGE_RESOLVE_INTERVAL:PT1H}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

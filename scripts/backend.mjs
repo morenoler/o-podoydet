@@ -66,7 +66,10 @@ export function verifyJava() {
     );
   }
 }
-export function buildBackend(goal = "package") {
+/** Бэкенд — Spring Boot (server/). */
+export const SERVER_POM = "server/pom.xml";
+
+export function buildBackend(goal = "package -DskipTests", pom = SERVER_POM) {
   verifyJava();
   return new Promise((accept, reject) => {
     // The command and arguments are fixed here; no user-supplied shell fragments.
@@ -78,7 +81,7 @@ export function buildBackend(goal = "package") {
               "/d",
               "/s",
               "/c",
-              `""${maven}" -B -f backend/pom.xml "-Dmaven.repo.local=${join(root, ".local", "m2")}" ${goal}"`,
+              `""${maven}" -B -f ${pom} "-Dmaven.repo.local=${join(root, ".local", "m2")}" ${goal}"`,
             ],
             {
               cwd: root,
@@ -93,9 +96,9 @@ export function buildBackend(goal = "package") {
             [
               "-B",
               "-f",
-              "backend/pom.xml",
+              pom,
               `-Dmaven.repo.local=${join(root, ".local", "m2")}`,
-              goal,
+              ...goal.split(" "),
             ],
             { cwd: root, env: runtimeEnv, stdio: "inherit" },
           );
@@ -107,9 +110,38 @@ export function buildBackend(goal = "package") {
     );
   });
 }
-export function startBackend() {
+/**
+ * PostgreSQL + PostGIS из docker-compose.yml. Пропускается, если задан свой DATABASE_URL.
+ */
+export function ensureDatabase() {
+  if (runtimeEnv.DATABASE_URL) return;
+  const result = spawnSync("docker", ["compose", "up", "-d", "--wait", "db"], {
+    cwd: root,
+    env: runtimeEnv,
+    stdio: "inherit",
+    windowsHide: true,
+  });
+  if (result.error || result.status !== 0)
+    throw new Error(
+      "Не удалось запустить базу через Docker. Запустите Docker Desktop или укажите свою базу в DATABASE_URL.",
+    );
+}
+
+/**
+ * Запуск Spring Boot. Прежний DB_PATH (SQLite старого бэкенда) передаётся как LEGACY_DB_PATH:
+ * при первом старте его кабинеты и история переносятся в PostgreSQL.
+ */
+export function startBackend({
+  jarPath = join("server", "target", "o-podoydet-server.jar"),
+  env = {},
+  database = true,
+} = {}) {
   verifyJava();
-  const jar = join(root, "backend", "target", "o-podoydet-backend.jar");
+  if (database) ensureDatabase();
+  const jar = join(root, jarPath);
+  const legacyDb = env.DB_PATH ?? runtimeEnv.DB_PATH ?? ".local/busan.sqlite3";
+  if (database && !env.LEGACY_DB_PATH && !runtimeEnv.LEGACY_DB_PATH && existsSync(join(root, legacyDb)))
+    env = { ...env, LEGACY_DB_PATH: legacyDb };
   if (!existsSync(jar))
     throw new Error("Сначала выполните npm run backend:build");
   // Run an immutable copy so rebuilding target/ cannot invalidate lazy class loading.
@@ -122,7 +154,7 @@ export function startBackend() {
     ["-Dstdout.encoding=UTF-8", "-Dstderr.encoding=UTF-8", "-jar", runtimeJar],
     {
       cwd: root,
-      env: runtimeEnv,
+      env: { ...runtimeEnv, ...env },
       stdio: "inherit",
       windowsHide: true,
     },
@@ -144,8 +176,8 @@ if (
 ) {
   try {
     const action = process.argv[2] || "start";
-    if (action === "build" || action === "test")
-      await buildBackend(action === "test" ? "test" : "package");
+    if (action === "build") await buildBackend("package -DskipTests", process.argv[3] || SERVER_POM);
+    else if (action === "test") await buildBackend("verify", process.argv[3] || SERVER_POM);
     else if (action === "start") {
       const child = startBackend();
       child.on("error", (e) => {

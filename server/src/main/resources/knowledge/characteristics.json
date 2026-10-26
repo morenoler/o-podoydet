@@ -1,0 +1,98 @@
+[
+  {
+    "code": "beach_walk",
+    "label": "До пляжа пешком",
+    "scope": "hotel",
+    "tool": "route",
+    "valueType": "meters",
+    "question": "Как пройти от входа к общедоступному пляжу?",
+    "positive": "Пляж в пределах 1 км",
+    "negative": "До пляжа больше 1 км",
+    "threshold": 1000,
+    "ttlDays": 30
+  },
+  {
+    "code": "step_free_route",
+    "label": "Дорога без лестниц",
+    "scope": "hotel",
+    "tool": "route",
+    "valueType": "boolean",
+    "question": "Есть ли лестницы на пути до пляжа и доступный обход?",
+    "positive": "Путь без ступеней подтверждён",
+    "negative": "На пути есть лестницы",
+    "threshold": null,
+    "ttlDays": 30
+  },
+  {
+    "code": "courtyard",
+    "label": "Номер во двор",
+    "scope": "room",
+    "tool": "host",
+    "valueType": "boolean",
+    "question": "Все окна этой категории номера выходят во двор или на улицу?",
+    "positive": "Окна номера выходят во двор",
+    "negative": "Номер выходит на улицу",
+    "threshold": null,
+    "ttlDays": 30
+  },
+  {
+    "code": "step_free_access",
+    "label": "Удобно с коляской",
+    "scope": "room",
+    "tool": "host",
+    "valueType": "boolean",
+    "question": "Можно ли пройти от улицы до этой категории номера без ступеней, включая вход и путь до лифта? Если есть ступени, есть ли доступный обход?",
+    "positive": "Путь до номера без ступеней подтверждён",
+    "negative": "На пути до номера есть препятствия",
+    "threshold": null,
+    "ttlDays": 30
+  },
+  {
+    "code": "family",
+    "label": "Семейное размещение",
+    "scope": "room",
+    "tool": "host",
+    "valueType": "boolean",
+    "question": "Подходит ли эта категория для размещения с детьми?",
+    "positive": "Предусмотрено семейное размещение",
+    "negative": "Семейное размещение не подтверждено отельером",
+    "threshold": null,
+    "ttlDays": 30
+  },
+  {
+    "code": "area_safety",
+    "label": "Безопасность района",
+    "scope": "hotel",
+    "tool": "area",
+    "valueType": "assessment",
+    "question": "Нужны сопоставимые официальные показатели зарегистрированных происшествий за один период.",
+    "positive": "Показатель не выше сопоставимого регионального",
+    "negative": "Показатель выше сопоставимого регионального",
+    "threshold": null,
+    "ttlDays": 365
+  },
+  {
+    "code": "clean_air",
+    "label": "Чистый воздух",
+    "scope": "hotel",
+    "tool": "area",
+    "valueType": "assessment",
+    "question": "Нужен почасовой прогноз US AQI на всё пребывание.",
+    "positive": "US AQI не выше 50 на всё пребывание по доступному прогнозу",
+    "negative": "В прогнозе есть часы с US AQI выше 50",
+    "threshold": 50,
+    "ttlDays": 1
+  },
+  {
+    "code": "low_noise",
+    "label": "Меньше внешнего шума",
+    "scope": "hotel",
+    "tool": "area",
+    "valueType": "assessment",
+    "question": "Нужны датированные данные о транспортной нагрузке и мероприятиях на время поездки.",
+    "positive": "Низкий расчётный риск внешнего шума",
+    "negative": "Есть факторы повышенного риска внешнего шума",
+    "threshold": null,
+    "ttlDays": 30
+  }
+]

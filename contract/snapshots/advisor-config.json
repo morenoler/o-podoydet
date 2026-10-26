@@ -1,0 +1,11 @@
+{
+  "status": 200,
+  "body": {
+    "modes": [
+      "rules"
+    ],
+    "defaultMode": "rules",
+    "maxModelCalls": 2,
+    "model": ""
+  }
+}
