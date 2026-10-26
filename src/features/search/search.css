@@ -508,6 +508,51 @@
   font-size: 15px;
   flex-shrink: 0;
 }
+.personal-wishes {
+  grid-column: 1 / -1;
+  min-width: 0;
+  padding: 12px 4px 2px;
+  border-top: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.personal-wishes-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+}
+.personal-wishes-heading svg { flex-shrink: 0; margin-top: 1px; }
+.personal-wishes-heading strong { font-weight: 800; }
+.personal-wishes-match .personal-wishes-heading { color: var(--wish-match-ink); }
+.personal-wishes-mismatch .personal-wishes-heading { color: var(--wish-mismatch-ink); }
+.personal-wishes-reported .personal-wishes-heading { color: var(--blue); }
+.personal-wishes-items {
+  display: grid;
+  gap: 3px;
+  margin: 7px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.personal-wishes-items li { display: flex; align-items: baseline; gap: 4px; }
+.personal-wishes-items b { font-weight: 700; }
+.personal-wishes-note {
+  margin-top: 7px;
+  color: #536579;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.personal-wishes-edit {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.listing-clarification-section .personal-wishes,
+.room-panel .personal-wishes { margin-top: 18px; padding-bottom: 12px; }
 .search-demo-label {
   display: inline-block;
   vertical-align: middle;

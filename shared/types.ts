@@ -112,6 +112,15 @@ export interface Preference {
   feature: FeatureId;
   required: boolean;
 }
+/** Text recognition is separate from chips and from evidence about any one room. */
+export interface PersonalWishes {
+  status: "not_requested" | "unrecognized" | "recognized";
+  /** No completeness claim is made for arbitrary free text. */
+  completeness: "unverified";
+  features: FeatureId[];
+  excludedFeatures: FeatureId[];
+  ownerCriteria: Pick<OwnerCriterion, "id" | "feature" | "label" | "required">[];
+}
 export interface Trip {
   /** Omission keeps the legacy verified admission contract. */
   admissionMode?: "explore" | "verified";
@@ -181,6 +190,7 @@ export interface RoomMatch {
   status: "fits" | "excluded";
 }
 export interface HotelMatch {
+  personalWishes?: PersonalWishes;
   hotel: Hotel;
   best: RoomMatch;
   rooms: RoomMatch[];
@@ -207,6 +217,7 @@ export interface Trace {
   tool?: string;
 }
 export interface SearchResult {
+  personalWishes?: PersonalWishes;
   admissionMode?: "explore" | "verified";
   searchId: string;
   results: HotelMatch[];

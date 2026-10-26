@@ -144,7 +144,7 @@ export function SavedGeoMap({
     ]);
   }
   return (
-    <div className={`v2-map${compact ? " is-compact" : ""}`}>
+    <div className={`v2-map saved-geo-map${compact ? " is-compact" : ""}`}>
       <svg
         viewBox={`${center[0] - WIDTH / zoom / 2} ${center[1] - HEIGHT / zoom / 2} ${WIDTH / zoom} ${HEIGHT / zoom}`}
         preserveAspectRatio="xMidYMid meet"

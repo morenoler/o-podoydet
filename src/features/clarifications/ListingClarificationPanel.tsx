@@ -16,6 +16,7 @@ import { SearchBar } from "../search/SearchBar";
 import { MatchBadge } from "../hotels/components/MatchBadge";
 import { CriterionLine } from "../hotels/components/CriterionLine";
 import { CapacitySummary } from "../hotels/components/CapacitySummary";
+import { PersonalWishesSummary } from "../hotels/components/PersonalWishesSummary";
 import {
   AccountLoading,
   ResourceError,
@@ -141,6 +142,7 @@ export function ListingClarificationPanel({ listing }: { listing: Listing }) {
                   />
                 ))}
             </div>
+            <PersonalWishesSummary match={match} />
             <PrivateQuestionComposer
               key={`${listing.id}:${tripKey}`}
               listing={listing}

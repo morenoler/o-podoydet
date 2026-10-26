@@ -35,6 +35,7 @@ export function AdvisorDrawer({
           searchId={result.searchId}
           noMatches={!result.results.length}
           needsClarification={!!result.conflicts.length}
+          personalWishes={result.personalWishes}
           onRefreshSearch={onRefresh}
         />
       ) : (

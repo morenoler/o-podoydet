@@ -79,6 +79,14 @@ public final class OwnerListingSearchProvider implements SearchExtension {
         return sources.size();
       }
 
+      public List<JsonNode> personalCriteria() {
+        return requirements.decisions(null, Set.of(), false).stream()
+            .map(criterion -> (JsonNode) Json.obj(
+                "id", criterion.path("id"), "feature", criterion.path("feature"),
+                "label", criterion.path("label"), "required", criterion.path("required")))
+            .toList();
+      }
+
       public List<JsonNode> apply(List<JsonNode> baseline, List<JsonNode> preferences) {
         List<JsonNode> ranked = new ArrayList<>();
         for (JsonNode match : baseline) {

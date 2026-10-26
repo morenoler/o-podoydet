@@ -281,6 +281,17 @@ public final class AdvisorService implements AutoCloseable {
     report.set("cautions", Json.array(cautions));
     if (expected.equals("shortlist") && selectedProvisional)
       report.put("summary", "В подборе есть предварительные варианты. Неизвестные или устаревшие условия и вместимость требуют уточнения; это не подтверждение соответствия всем пожеланиям.");
+    String personalNotice = ru.opodoydet.application.PersonalWishes.notice(context.path("personalWishes"));
+    if (!personalNotice.isBlank() && !Json.str(report, "summary").startsWith(personalNotice)) {
+      String summary = Json.str(report, "summary");
+      int budget = 1800 - personalNotice.length() - 1;
+      if (summary.length() > budget) {
+        int end = budget - 1;
+        if (Character.isHighSurrogate(summary.charAt(end - 1))) end--;
+        summary = summary.substring(0, end).stripTrailing() + "…";
+      }
+      report.put("summary", personalNotice + " " + summary);
+    }
     return report;
   }
 

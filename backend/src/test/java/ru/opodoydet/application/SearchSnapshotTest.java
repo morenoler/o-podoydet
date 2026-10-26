@@ -266,6 +266,9 @@ class SearchSnapshotTest {
       ObjectNode input = trip().put("text", "Условия для маленького путешественника обязательны");
       ObjectNode result = service.search(input);
       assertEquals("llm", Json.str(result, "mode"));
+      assertEquals("recognized", result.path("personalWishes").path("status").asText());
+      assertEquals("family", result.path("personalWishes").path("features").path(0).asText());
+      assertEquals("unverified", result.path("personalWishes").path("completeness").asText());
       assertEquals(1, calls.get());
       assertTrue(
           Agents.parseRules(Json.str(input, "text"), List.of()).path("preferences").isEmpty());
@@ -275,6 +278,7 @@ class SearchSnapshotTest {
       ObjectNode context = service.advisorContext(input, id);
       assertTrue(context.path("preferences").get(0).path("required").asBoolean());
       assertEquals("family", context.path("preferences").get(0).path("feature").asText());
+      assertEquals(result.path("personalWishes"), context.path("personalWishes"));
       assertEquals(
           1, context.path("fitCount").asInt(), "Cached capacity must survive catalog change");
       assertEquals("fits", context.path("candidates").get(0).path("status").asText());

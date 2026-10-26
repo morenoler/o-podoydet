@@ -12,6 +12,11 @@ public interface SearchExtension {
     List<JsonNode> apply(List<JsonNode> baseline, List<JsonNode> preferences);
 
     int additionalHotels();
+
+    /** Generated query constraints only: no raw user text or private owner data. */
+    default List<JsonNode> personalCriteria() {
+      return List.of();
+    }
   }
 
   Snapshot EMPTY =

@@ -1,4 +1,4 @@
-import type { FeatureId, Preference, Trip } from "./types";
+import type { FeatureId, PersonalWishes, Preference, Trip } from "./types";
 
 export type AdvisorMode = "rules" | "local";
 export type AdvisorStatus =
@@ -43,6 +43,7 @@ export interface AdvisorQuestion {
 }
 /** All facts and scenario counts originate from the Java matching engine. */
 export interface AdvisorContext {
+  personalWishes?: PersonalWishes;
   searchId: string;
   trip: Trip;
   preferences: Preference[];

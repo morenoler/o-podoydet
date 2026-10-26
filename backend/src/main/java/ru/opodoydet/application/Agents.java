@@ -111,7 +111,9 @@ public final class Agents {
       warnings.add(
           "Пожелание о тишине сопоставлено с окнами во двор. Это не гарантирует тишину внутри"
               + " номера.");
-    return merge(selected, inferred, excluded, warnings).put("mode", "rules");
+    ObjectNode result = merge(selected, inferred, excluded, warnings).put("mode", "rules");
+    result.set("personalWishes", PersonalWishes.recognized(!text.isBlank(), inferred, excluded));
+    return result;
   }
 
   private static ObjectNode merge(
@@ -191,12 +193,15 @@ public final class Agents {
         Features.get(feature.asText());
         excluded.add(feature.asText());
       }
-      return merge(
+      ObjectNode interpreted = merge(
               selected,
               Json.list(result.path("preferences")),
               excluded,
               Json.list(result.path("warnings")).stream().map(JsonNode::asText).toList())
           .put("mode", "llm");
+      interpreted.set("personalWishes", PersonalWishes.recognized(true,
+          Json.list(result.path("preferences")), excluded));
+      return interpreted;
     } catch (Exception error) {
       if (error instanceof InterruptedException) Thread.currentThread().interrupt();
       return warn(

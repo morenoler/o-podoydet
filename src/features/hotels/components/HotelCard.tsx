@@ -13,6 +13,7 @@ import {
 } from "../../../shared/lib/accommodation";
 import { AccommodationPhoto } from "../../../shared/ui/AccommodationPhoto";
 import { FavoriteButton } from "../../favorites/FavoriteButton";
+import { PersonalWishesSummary } from "./PersonalWishesSummary";
 import { features } from "../../../../shared/features";
 import { directionLabels } from "../../account/format";
 import {
@@ -229,6 +230,7 @@ export function HotelCard({
           </Link>
         </div>
       </div>
+      {match && <PersonalWishesSummary match={match} />}
     </article>
   );
 }

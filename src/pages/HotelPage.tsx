@@ -7,6 +7,7 @@ import { roomDetailsLabel } from "../features/account/format";
 import "../features/search/search.css";
 import "../features/hotels/hotel-details.css";
 import { CapacitySummary } from "../features/hotels/components/CapacitySummary";
+import { PersonalWishesSummary } from "../features/hotels/components/PersonalWishesSummary";
 import { MatchBadge } from "../features/hotels/components/MatchBadge";
 import { matchForSelectedPreferences } from "../shared/lib/matchPresentation";
 import { useParams, useSearchParams, Link } from "react-router-dom";
@@ -334,6 +335,7 @@ export function HotelPage() {
                 </div>
               ))}
           </div>
+          <PersonalWishesSummary match={{ ...ranked, best: room }} />
           {error && <ErrorMessage text={error} />}
           <Notice>
             Это объект из исследовательского каталога. Задать вопрос владельцу и

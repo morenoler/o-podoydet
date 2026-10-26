@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Map as MapIcon, Route } from "lucide-react";
+import { ArrowUp, Map as MapIcon, Route } from "lucide-react";
 import type * as Leaflet from "leaflet";
 import type { Hotel, Point } from "../../../../shared/types";
 import type { GeoMapProps } from "./GeoMap";
@@ -145,7 +145,7 @@ export function InteractiveMap({ dataset, hotel, hotels, onSelect, onUnavailable
       }).addTo(layers);
       const tooltip = document.createElement("span");
       tooltip.textContent = selectedHotel.name + (group.length > 1 ? ` · ещё ${group.length - 1}` : "");
-      marker.bindTooltip(tooltip, { permanent: selected, direction: "top", offset: [0, -15], className: "geo-hotel-tooltip" });
+      marker.bindTooltip(tooltip, { permanent: selected, direction: "top", offset: [0, -15], className: `geo-hotel-tooltip${selected ? " is-selected" : ""}` });
       const choose = () => {
         if (group.length === 1) {
           current.current.onSelect?.(group[0]);
@@ -193,7 +193,7 @@ export function InteractiveMap({ dataset, hotel, hotels, onSelect, onUnavailable
           <Route size={18} aria-hidden="true" /> {validPath(hotel?.route?.coordinates).length ? "Маршрут" : "Отель"}
         </button>
       </div>
-      <span className="interactive-map-north" aria-label="Север вверху">↑ С</span>
+      <span className="interactive-map-north" aria-label="Север вверху"><ArrowUp size={14} aria-hidden="true" /> С</span>
     </div>
   );
 }

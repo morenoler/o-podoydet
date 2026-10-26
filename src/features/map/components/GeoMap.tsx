@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { CloudOff, Layers } from "lucide-react";
+import { CloudOff, Layers, Map } from "lucide-react";
 import type { Dataset, Hotel } from "../../../../shared/types";
 import { InteractiveMap } from "./InteractiveMap";
 import { SavedGeoMap } from "./SavedGeoMap";
@@ -33,7 +33,7 @@ export function GeoMap(props: GeoMapProps) {
   return (
     <div className="geo-map-view">
       <div className="geo-map-mode">
-        <span>{saved ? "Сохранённая схема" : "Карта улиц и мест"}</span>
+        <span className="geo-map-mode-label"><Map size={17} aria-hidden="true" />{saved ? "Сохранённая схема" : "Карта улиц и мест"}</span>
         <button
           type="button"
           onClick={() => {

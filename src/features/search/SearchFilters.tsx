@@ -51,7 +51,7 @@ export function SearchFilters({
           maxLength={1500}
           value={draft.text}
           onChange={(event) => setDraft({ ...draft, text: event.target.value })}
-          placeholder="Например: нужен второй этаж и окна на восток"
+          placeholder="Например: не выше 3 этажа, окна на восток"
         />
       </label>
       <p className="search-dialog-intro">

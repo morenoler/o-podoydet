@@ -102,10 +102,13 @@ public final class SearchService {
     List<JsonNode> preferences = Json.list(interpreted.path("preferences"));
     SearchExtension.Snapshot extra =
         !syntheticOnly && extension != null ? extension.snapshot(trip) : SearchExtension.EMPTY;
+    PersonalWishes.includeOwnerCriteria(interpreted, extra.personalCriteria());
     List<JsonNode> ranked =
         extra.apply(
             Matching.rank(hotels, facts, preferences, trip, now, environments, policy),
             preferences);
+    for (JsonNode match : ranked)
+      ((ObjectNode) match).set("personalWishes", interpreted.path("personalWishes").deepCopy());
     String searchId = UUID.randomUUID().toString();
     synchronized (snapshots) {
       expireSnapshots();
@@ -261,6 +264,7 @@ public final class SearchService {
             .toList();
     SearchExtension.Snapshot extra =
         extension == null ? SearchExtension.EMPTY : extension.snapshot(trip);
+    PersonalWishes.includeOwnerCriteria(interpreted, extra.personalCriteria());
     // Published host units live in the account database, outside the research catalog.
     // The extra criteria explain the unit; they must not change the original admission/score.
     if (hotel == null) {
@@ -285,7 +289,7 @@ public final class SearchService {
         if (Json.str(room.path("room"), "id").equals(bestId)) match.set("best", room.deepCopy());
       }
       if (!interpreted.path("conflicts").isEmpty()) excludeForConflict(match);
-      for (String key : List.of("preferences", "warnings", "conflicts", "mode"))
+      for (String key : List.of("preferences", "warnings", "conflicts", "mode", "personalWishes"))
         match.set(key, interpreted.path(key));
       return match;
     }
@@ -335,7 +339,7 @@ public final class SearchService {
                   .findFirst()
                   .orElseThrow();
     if (!interpreted.path("conflicts").isEmpty()) excludeForConflict(match);
-    for (String key : List.of("preferences", "warnings", "conflicts", "mode"))
+    for (String key : List.of("preferences", "warnings", "conflicts", "mode", "personalWishes"))
       match.set(key, interpreted.path(key));
     return match;
   }

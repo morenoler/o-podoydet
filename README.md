@@ -158,6 +158,16 @@ npm run build:all
 npm run lab:build
 ```
 
+Проверка личных пожеланий на запущенной отдельной тестовой копии:
+
+```powershell
+python -X utf8 scripts/verify-personal-wishes.py --base http://127.0.0.1:8090 --report .local/wishes-map/personal-http.json
+```
+
+Она проверяет распознавание текста отдельно от выбранных фильтров, согласованность карточки
+и страницы отеля, неизвестные этаж/окна и сообщения помощника. Полный результат этого
+изменения: [карта и личные пожелания](docs/PERSONAL_WISHES_QUALITY.md).
+
 `backend/` — Java API, SQLite и JUnit; `agents/` — Python-агенты и их тесты; `src/` — интерфейс; `shared/` — типы и вычисления интерфейса/скриптов; `scripts/` — данные, оценка района и запуск; `tests/` — TypeScript-проверки; `data/` — воспроизводимые снимки.
 
 [Архитектура](docs/ARCHITECTURE.md) · [Проверенные данные](docs/VERIFIED_DATA.md) · [Концепция](CONCEPT.md) · [Реализация и ограничения](docs/IMPLEMENTATION.md) · [Ручная приёмка](docs/ACCEPTANCE.md)

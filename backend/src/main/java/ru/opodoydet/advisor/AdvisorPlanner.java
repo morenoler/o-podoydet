@@ -186,6 +186,8 @@ public final class AdvisorPlanner {
             trip,
             "preferences",
             preferences,
+            "personalWishes",
+            interpreted.path("personalWishes"),
             "totalHotels",
             hotels.size() + extension.additionalHotels(),
             "fitCount",

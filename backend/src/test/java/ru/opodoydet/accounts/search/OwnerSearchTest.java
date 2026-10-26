@@ -388,10 +388,18 @@ class OwnerSearchTest {
       assertEquals(1, floorResult.path("results").size());
       assertNotNull(owner(floorResult, "results", yes));
       assertEquals(2, floorResult.path("results").get(0).path("ownerCriteria").size());
+      JsonNode floorWishes = floorResult.path("personalWishes");
+      assertEquals("recognized", floorWishes.path("status").asText());
+      assertTrue(floorWishes.path("features").isEmpty(), "A selected chip is not text recognition");
+      assertEquals(2, floorWishes.path("ownerCriteria").size());
+      assertEquals("floor", floorWishes.path("ownerCriteria").path(0).path("feature").asText());
+      assertEquals("window_direction", floorWishes.path("ownerCriteria").path(1).path("feature").asText());
       JsonNode verifiedDetail = search.detail("verified-hotel", floorTrip);
+      assertEquals(floorWishes, verifiedDetail.path("personalWishes"));
       assertEquals("excluded", Json.str(verifiedDetail.path("best"), "status"));
       assertEquals(2, verifiedDetail.path("ownerCriteria").size());
       JsonNode floorContext = search.advisorContext(floorTrip, Json.str(floorResult, "searchId"));
+      assertEquals(floorWishes, floorContext.path("personalWishes"));
       privateAbsent(floorContext);
       JsonNode floorCandidate =
           Json.list(floorContext.path("candidates")).stream()
