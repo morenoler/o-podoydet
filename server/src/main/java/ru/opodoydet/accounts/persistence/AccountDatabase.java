@@ -9,6 +9,8 @@ import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import ru.opodoydet.shared.Json;
 
 /**
@@ -24,10 +26,15 @@ public final class AccountDatabase {
 
   private final DataSource dataSource;
   private final TransactionTemplate tx;
+  private final TransactionTemplate readTx;
 
   public AccountDatabase(DataSource dataSource, TransactionTemplate tx) {
     this.dataSource = dataSource;
-    this.tx = tx;
+    this.tx = new TransactionTemplate(tx.getTransactionManager());
+    this.tx.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
+    this.readTx = new TransactionTemplate(tx.getTransactionManager());
+    this.readTx.setIsolationLevel(TransactionDefinition.ISOLATION_REPEATABLE_READ);
+    this.readTx.setReadOnly(true);
   }
 
   public int execute(String sql, Object... values) throws SQLException {
@@ -92,9 +99,35 @@ public final class AccountDatabase {
     }
   }
 
+  /** Several projection queries must observe one committed snapshot. */
+  public <T> T readTransaction(Work<T> work) throws SQLException {
+    return inTransaction(readTx, work);
+  }
+
+  /** Serialize only the offer being changed, including revisions, bookings and scope changes. */
+  public void lockListing(String listing) throws SQLException {
+    requireTransaction();
+    one("SELECT id FROM account_listings WHERE id=? FOR UPDATE", listing);
+  }
+
+  /** Repeated request keys must serialize even if their payload names different listings. */
+  public void lockRequest(String owner, String key) throws SQLException {
+    requireTransaction();
+    execute("SELECT pg_advisory_xact_lock(hashtextextended(?, 0))", owner + ":" + key);
+  }
+
+  private static void requireTransaction() {
+    if (!TransactionSynchronizationManager.isActualTransactionActive())
+      throw new IllegalStateException("A write lock requires an active account transaction");
+  }
+
   public <T> T transaction(Work<T> work) throws SQLException {
+    return inTransaction(tx, work);
+  }
+
+  private <T> T inTransaction(TransactionTemplate template, Work<T> work) throws SQLException {
     try {
-      return tx.execute(
+      return template.execute(
           status -> {
             try {
               return work.run();

@@ -63,7 +63,7 @@ public final class Resolution {
     ToDoubleFunction<Evidence> weight =
         e ->
             methodPrior.getOrDefault(e.getMethod(), 0.0)
-                * LEVEL.getOrDefault(e.getConfidenceLevel(), UNKNOWN_LEVEL);
+                * (e.getConfidenceLevel() == null ? UNKNOWN_LEVEL : LEVEL.getOrDefault(e.getConfidenceLevel(), UNKNOWN_LEVEL));
 
     List<Evidence> withValue = admissible.stream().filter(e -> hasValue(e.getValue())).toList();
     List<Evidence> fresh =

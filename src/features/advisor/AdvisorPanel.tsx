@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Bot, Play, RefreshCw, Square } from "lucide-react";
 import type { AdvisorMode, AdvisorStatus } from "../../../shared/advisor";
-import type { Trip } from "../../../shared/types";
+import type { PersonalWishes, Trip } from "../../../shared/types";
 import { ErrorMessage } from "../../shared/ui/Feedback";
 import { advisorIsActive, useAdvisor } from "./useAdvisor";
 import { AdvisorReportView } from "./AdvisorReportView";
+import { PersonalWishesNotice } from "./PersonalWishesNotice";
 import "./advisor.css";
 
 const stages = [
@@ -26,12 +27,14 @@ export function AdvisorPanel({
   searchId,
   noMatches,
   needsClarification,
+  personalWishes,
   onRefreshSearch,
 }: {
   trip: Trip;
   searchId?: string;
   noMatches: boolean;
   needsClarification: boolean;
+  personalWishes?: PersonalWishes;
   onRefreshSearch: () => void;
 }) {
   const advisor = useAdvisor(trip, searchId);
@@ -68,6 +71,12 @@ export function AdvisorPanel({
               ? "Покажем, какие условия исключили варианты, где не хватает данных и что стоит уточнить первым."
               : "Выделим до трёх вариантов и объясним, на какие подтверждения и предположения стоит обратить внимание."}
         </p>
+      )}
+      {!(run?.status === "completed" && run.report) && (
+        <PersonalWishesNotice
+          wishes={personalWishes ?? run?.context.personalWishes}
+          hasText={!!trip.text.trim()}
+        />
       )}
       <div className="advisor-controls">
         <label className="field">

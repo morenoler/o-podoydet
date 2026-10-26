@@ -1,5 +1,7 @@
 package ru.opodoydet.server.knowledge;
 
+import org.springframework.test.context.ContextConfiguration;
+import ru.opodoydet.server.support.IsolatedPostgresInitializer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,6 +28,7 @@ import ru.opodoydet.server.support.FixedClockConfig;
 /**
  * Ядро на настоящем наборе данных Пусана.
  */
+@ContextConfiguration(initializers = IsolatedPostgresInitializer.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Import(FixedClockConfig.class)
 class KnowledgeCoreIntegrationTest {
@@ -49,19 +52,36 @@ class KnowledgeCoreIntegrationTest {
   }
 
   @Test
-  void importsWholeDatasetIntoEvidenceAndFacts() {
+  void importsWholeDatasetIntoEvidenceAndFacts() throws Exception {
+    JsonNode source = json.readTree(DATA.toFile());
+    Map<String, Scope> expected = new java.util.LinkedHashMap<>();
+    for (JsonNode fact : source.path("facts")) {
+      String id = fact.path("id").asText();
+      Scope scope = new Scope(fact.path("hotelId").asText(),
+          fact.path("roomId").asText(null), fact.path("feature").asText());
+      assertThat(expected.put(id, scope)).as("Unique source evidence ID: %s", id).isNull();
+    }
     assertThat(count("SELECT count(*) FROM hotel WHERE active")).isEqualTo(96);
-    assertThat(count("SELECT count(*) FROM evidence WHERE active")).isEqualTo(304);
+    assertThat(jdbc.sql("SELECT id FROM hotel WHERE active").query(String.class).list())
+        .containsExactlyInAnyOrderElementsOf(stream(source.path("hotels")).stream()
+            .map(h -> h.path("id").asText()).toList());
+    Map<String, Scope> actual = new java.util.LinkedHashMap<>();
+    jdbc.sql("SELECT id, hotel_id, room_id, characteristic FROM evidence WHERE active")
+        .query((rs, n) -> Map.entry(rs.getString(1),
+            new Scope(rs.getString(2), rs.getString(3), rs.getString(4))))
+        .list().forEach(entry -> actual.put(entry.getKey(), entry.getValue()));
+    // An equal count alone would miss reassigning an existing ID to another hotel/room/feature.
+    assertThat(actual).containsExactlyInAnyOrderEntriesOf(expected);
     assertThat(count("SELECT count(*) FROM characteristic")).isEqualTo(8);
     // Каждому предмету (отель/номер × характеристика) — ровно один факт.
-    assertThat(count("SELECT count(*) FROM fact"))
-        .isEqualTo(
-            count(
-                "SELECT count(*) FROM (SELECT DISTINCT hotel_id, room_id, characteristic"
-                    + " FROM evidence WHERE active) s"));
+    assertThat(jdbc.sql("SELECT hotel_id, room_id, characteristic FROM fact")
+        .query((rs, n) -> new Scope(rs.getString(1), rs.getString(2), rs.getString(3))).list())
+        .containsExactlyInAnyOrderElementsOf(new java.util.HashSet<>(expected.values()));
     assertThat(count("SELECT count(*) FROM fact WHERE status = 'confirmed'")).isPositive();
     assertThat(count("SELECT count(*) FROM fact WHERE status = 'unknown'")).isPositive();
   }
+
+  private record Scope(String hotelId, String roomId, String feature) {}
 
   @Test
   void reimportIsIdempotentAndKeepsOrder() throws Exception {

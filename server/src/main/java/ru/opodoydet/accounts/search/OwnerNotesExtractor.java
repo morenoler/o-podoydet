@@ -8,7 +8,8 @@ public final class OwnerNotesExtractor {
   private static final Pattern UNCERTAIN =
       Pattern.compile(
           "(?U)возможн|не знаю|неизвест|не уверен|уточн|вероят|кажется|не провер|не"
-              + " всегда|част[ьи]|некотор|при условии|\\bесли\\b|\\bно\\b|зависит");
+              + " всегда|част[ьи]|некотор|при условии|\\bесли\\b|зависит"
+              + "|(?:номер|комнат)\\p{L}*\\s*№?\\s*\\d|друг\\p{L}*\\s+(?:номер|корпус|здани)|соседн\\p{L}*\\s+корпус");
   private static final Pattern DISTANCE =
       Pattern.compile(
           "(?:до пляжа|пляж)(?:\\s+(?:пешком|по"
@@ -16,16 +17,25 @@ public final class OwnerNotesExtractor {
 
   private OwnerNotesExtractor() {}
 
+  public record Assertions(Map<String, Boolean> values, Set<String> conflicts) {}
+
   public static Map<String, Boolean> extract(String notes) {
-    // Qualified source material is deliberately treated as unknown rather than guessing its scope.
-    if (notes.contains("?") || UNCERTAIN.matcher(normalize(notes)).find()) return Map.of();
+    return assess(notes).values();
+  }
+
+  public static Assertions assess(String notes) {
+    String normalized = normalize(notes);
+    boolean qualified = notes.contains("?") || UNCERTAIN.matcher(normalized).find();
+    // A standalone qualification can refer to the whole description. Never guess its scope.
+    if (Pattern.compile("(?U)(?:^|[.!?;\\n]\\s*)(?:не уверен[а]?|не знаю|возможно|вероятно|кажется)[.!?;\\s]*(?:$|[.!?;\\n])")
+        .matcher(normalized).find()) return new Assertions(Map.of(), Set.of());
     Map<String, Set<Boolean>> observations = new HashMap<>();
     Set<String> uncertain = new HashSet<>();
-    // Decimal separators remain part of a distance; sentence boundaries do not erase negation.
-    for (String raw : normalize(notes).split("(?<!\\d)[.!?;\\n]+|[.!?;\\n]+(?!\\d)")) {
+    // Keep question marks attached, while decimal separators remain part of a distance.
+    for (String raw : normalized.split("(?<=[.!?;\\n])(?!\\d)")) {
       String text = raw.trim();
       if (text.isEmpty()) continue;
-      boolean doubtful = UNCERTAIN.matcher(text).find();
+      boolean doubtful = text.contains("?") || UNCERTAIN.matcher(text).find();
       observe(
           "family",
           text,
@@ -35,7 +45,7 @@ public final class OwnerNotesExtractor {
               + " детьми|дети).{0,20}(?:можно|разрешен|принимаются)",
           "(?U)не подходит.{0,35}(?:семей\\p{L}*|семь[яиюе]|дет(?:и|ей|ьми|ям|ях))\\b|(?:с"
               + " детьми|дети).{0,25}(?:нельзя|запрещен|не допускаются)|без детей|только для"
-              + " взрослых|не принимаем.{0,15}дет(?:ей|и|ьми)\\b",
+          + " взрослых|не принимаем.{0,15}дет(?:ей|и|ьми)\\b|не разрешено.{0,35}дет(?:ей|и|ьми)\\b",
           observations,
           uncertain);
       observe(
@@ -54,7 +64,7 @@ public final class OwnerNotesExtractor {
               + " (?:ступен|лестниц).{0,40}(?:от улицы|до номера)",
           "(?:до номера|в номер|пути к номеру).{0,35}(?:есть ступен|есть лестниц|со ступен|по"
               + " лестниц)|(?:ступени|лестница).{0,35}(?:до номера|в номер)|не.{0,15}без"
-              + " ступен.{0,30}до номера",
+              + " ступен.{0,30}до номера|(?:перед|у|на) вход.{0,45}(?:ступен[ьи]|лестниц).{0,40}(?:пандуса?\\s+нет|без пандуса)",
           observations,
           uncertain);
       observe(
@@ -87,12 +97,18 @@ public final class OwnerNotesExtractor {
       }
     }
     Map<String, Boolean> result = new HashMap<>();
+    Set<String> conflicts = new HashSet<>();
     observations.forEach(
         (feature, values) -> {
-          if (values.size() == 1 && !uncertain.contains(feature))
-            result.put(feature, values.iterator().next());
+          if (values.size() > 1) conflicts.add(feature);
+          if (values.size() == 1 && !uncertain.contains(feature)) {
+            boolean value = values.iterator().next();
+            // Unrelated uncertainty must not erase an explicit independent contraindication.
+            // Positive claims still fail closed if the overall description is qualified.
+            if (!qualified || !value) result.put(feature, value);
+          }
         });
-    return Map.copyOf(result);
+    return new Assertions(Map.copyOf(result), Set.copyOf(conflicts));
   }
 
   private static void observe(

@@ -38,11 +38,17 @@ public final class AdvisorPlanner {
       Map<String, Map<String, JsonNode>> environments,
       String policy,
       SearchExtension.Snapshot extension) {
+    java.util.function.Function<List<JsonNode>, List<JsonNode>> ranker = preferences ->
+        extension.apply(Matching.rank(hotels, facts, preferences, trip, now, environments, policy), preferences);
+    return plan(trip, interpreted, hotels.size() + extension.additionalHotels(), now,
+        ranker.apply(Json.list(interpreted.path("preferences"))), ranker);
+  }
+
+  /** Result and counterfactuals share one captured, post-overlay evidence snapshot. */
+  public static ObjectNode plan(JsonNode trip, ObjectNode interpreted, int totalHotels,
+      Instant now, List<JsonNode> ranked,
+      java.util.function.Function<List<JsonNode>, List<JsonNode>> ranker) {
     List<JsonNode> preferences = Json.list(interpreted.path("preferences"));
-    List<JsonNode> ranked =
-        extension.apply(
-            Matching.rank(hotels, facts, preferences, trip, now, environments, policy),
-            preferences);
     boolean conflict = !interpreted.path("conflicts").isEmpty();
     List<JsonNode> fit =
         conflict ? List.of() : ranked.stream().filter(AdvisorPlanner::fits).toList();
@@ -63,13 +69,16 @@ public final class AdvisorPlanner {
         new ArrayList<>(
             Json.list(interpreted.path("warnings")).stream().map(JsonNode::asText).toList());
     warnings.add("Цены, наличие номеров на даты и бронирование не проверены.");
+    if (fit.stream().anyMatch(item -> item.path("best").path("provisional").asBoolean()))
+      warnings.add("Есть предварительные варианты: неизвестные или устаревшие условия и вместимость требуют уточнения. Они не подтверждены.");
     if (!conflict) {
       for (JsonNode preference : preferences) {
         String feature = Json.str(preference, "feature"), label = Features.get(feature).label();
         boolean required = preference.path("required").asBoolean();
         if (!fit.isEmpty() && !required) {
           List<JsonNode> ordered = new ArrayList<>(fit);
-          ordered.sort(Comparator.comparingInt(item -> optionalPriority(item, feature)));
+          ordered.sort(Comparator.comparing((JsonNode item) -> item.path("best").path("provisional").asBoolean())
+              .thenComparingInt(item -> optionalPriority(item, feature)));
           scenarios.add(
               Json.obj(
                   "id",
@@ -99,14 +108,7 @@ public final class AdvisorPlanner {
                         return (JsonNode) copy;
                       })
                   .toList();
-          List<JsonNode> possible =
-              extension
-                  .apply(
-                      Matching.rank(hotels, facts, changed, trip, now, environments, policy),
-                      changed)
-                  .stream()
-                  .filter(AdvisorPlanner::fits)
-                  .toList();
+          List<JsonNode> possible = ranker.apply(changed).stream().filter(AdvisorPlanner::fits).toList();
           scenarios.add(
               Json.obj(
                   "id",
@@ -183,8 +185,10 @@ public final class AdvisorPlanner {
             trip,
             "preferences",
             preferences,
+            "personalWishes",
+            interpreted.path("personalWishes"),
             "totalHotels",
-            hotels.size() + extension.additionalHotels(),
+            totalHotels,
             "fitCount",
             fit.size(),
             "conflicts",
@@ -350,6 +354,8 @@ public final class AdvisorPlanner {
         room.path("name"),
         "status",
         conflict ? "excluded" : Json.str(best, "status"),
+        "provisional",
+        !conflict && best.path("provisional").asBoolean(),
         "score",
         best.path("score"),
         "criteria",

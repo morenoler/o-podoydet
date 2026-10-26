@@ -1,0 +1,22 @@
+{
+  "hotel": {
+    "id": "demo:hotel",
+    "name": "Synthetic hotel",
+    "lat": 0,
+    "lon": 0
+  },
+  "floor": 14,
+  "floor_height_m": 3,
+  "date": "2026-03-20",
+  "utc_offset_minutes": 0,
+  "data_mode": "fixture",
+  "scene_id": "synthetic",
+  "room": {
+    "id": "demo:west-room",
+    "window": {
+      "lat": 0.0,
+      "lon": -8.993203636009639e-05,
+      "bearing_deg": 270
+    }
+  }
+}

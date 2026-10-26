@@ -21,7 +21,7 @@
     "data:verify": "tsx scripts/prepare-verified-data.ts",
     "check": "tsc --noEmit",
     "backend:build": "node --env-file-if-exists=.env scripts/backend.mjs build",
-    "backend:test": "node --env-file-if-exists=.env scripts/backend.mjs test",
+    "backend:test": "node --test scripts/backend.test.mjs && node --env-file-if-exists=.env scripts/backend.mjs test",
     "server:build": "node --env-file-if-exists=.env scripts/backend.mjs build",
     "server:test": "node --env-file-if-exists=.env scripts/backend.mjs test",
     "contract:capture": "node scripts/contract.mjs capture --base http://127.0.0.1:8080",
@@ -33,15 +33,18 @@
     "area:assess": "tsx --env-file-if-exists=.env scripts/assess-area.ts",
     "traffic:fetch": "tsx --env-file-if-exists=.env scripts/fetch-traffic.ts",
     "noise:assess": "tsx --env-file-if-exists=.env scripts/assess-noise.ts",
+    "data:collect": "tsx scripts/import-official-hotel-pages.ts",
     "demo:seed": "node scripts/demo.mjs seed",
     "demo:setup": "node scripts/demo.mjs setup",
     "demo:start": "node --env-file-if-exists=.env scripts/demo.mjs start",
     "demo:test": "node --test scripts/demo.test.mjs",
-    "db:up": "docker compose up -d --wait db"
+    "db:up": "docker compose up -d --wait db",
+    "backend:launcher:test": "node --test scripts/backend.test.mjs"
   },
   "dependencies": {
     "@fontsource/golos-text": "^5.2.8",
     "@fontsource/nunito-sans": "^5.3.0",
+    "leaflet": "1.9.4",
     "lucide-react": "^0.468.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -49,6 +52,7 @@
     "zod": "^4.0.0"
   },
   "devDependencies": {
+    "@types/leaflet": "1.9.21",
     "@types/node": "^24.0.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",

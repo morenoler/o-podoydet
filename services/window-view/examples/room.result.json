@@ -1,0 +1,368 @@
+{
+  "schema_version": "1.0",
+  "service_version": "0.1.0",
+  "generated_at": "2026-10-24T10:29:56.702615+00:00",
+  "hotel": {
+    "id": "demo:hotel",
+    "name": "Synthetic hotel",
+    "lat": 0,
+    "lon": 0
+  },
+  "date": "2026-03-20",
+  "utc_offset_minutes": 0,
+  "is_demo": true,
+  "actual_visibility_confirmed": false,
+  "room_resolution": {
+    "requested_room_id": "demo:west-room",
+    "scope": "room_window",
+    "basis": "request_supplied_not_independently_verified",
+    "room_view_confirmed": false,
+    "input_source": null,
+    "floor": {
+      "floor": 4,
+      "ground_floor_number": 1,
+      "floor_height_m": 3,
+      "eye_height_m": 1.6,
+      "height_agl_m": 10.6,
+      "height_range_m": [
+        10.6,
+        10.6
+      ],
+      "basis": "request_supplied",
+      "assumptions": [
+        "eye_height_m=1.6 above the floor; window sill and seated viewing position unknown"
+      ]
+    },
+    "subject_building_id": "demo:hotel",
+    "conflicts": [],
+    "window_direction_known": true,
+    "window_position_known": true,
+    "evaluated_radius_m": 1190.0
+  },
+  "assessments": [
+    {
+      "observer": {
+        "id": "requested_window",
+        "lat": 0.0,
+        "lon": -8.993203636009639e-05,
+        "ground_elevation_m": 0,
+        "height_agl_m": 10.6,
+        "height_range_m": [
+          10.6,
+          10.6
+        ],
+        "bearing_deg": 270,
+        "horizontal_fov_deg": 90,
+        "vertical_fov_deg": 90,
+        "pitch_deg": 0,
+        "exclude_building_ids": [
+          "demo:hotel"
+        ]
+      },
+      "categories": {
+        "sea": {
+          "status": "unknown",
+          "visible_in_model": null,
+          "sample_count": 1,
+          "clear_sample_count": 0,
+          "blocked_sample_count": 1,
+          "outside_fov_sample_count": 0,
+          "unknown_sample_count": 0,
+          "reason": "sampled_points_only"
+        },
+        "neighbor_building": {
+          "status": "potential_view_in_model",
+          "visible_in_model": true,
+          "sample_count": 2,
+          "clear_sample_count": 1,
+          "blocked_sample_count": 0,
+          "outside_fov_sample_count": 1,
+          "unknown_sample_count": 0,
+          "reason": "sampled_points_only"
+        },
+        "landmark": {
+          "status": "unknown",
+          "visible_in_model": null,
+          "sample_count": 1,
+          "clear_sample_count": 0,
+          "blocked_sample_count": 0,
+          "outside_fov_sample_count": 1,
+          "unknown_sample_count": 0,
+          "reason": "sampled_points_only"
+        },
+        "water": {
+          "status": "unknown",
+          "visible_in_model": null,
+          "sample_count": 1,
+          "clear_sample_count": 0,
+          "blocked_sample_count": 0,
+          "outside_fov_sample_count": 1,
+          "unknown_sample_count": 0,
+          "reason": "sampled_points_only"
+        },
+        "park": {
+          "status": "unknown",
+          "visible_in_model": null,
+          "sample_count": 1,
+          "clear_sample_count": 0,
+          "blocked_sample_count": 0,
+          "outside_fov_sample_count": 1,
+          "unknown_sample_count": 0,
+          "reason": "sampled_points_only"
+        },
+        "mountain": {
+          "status": "unknown",
+          "visible_in_model": null,
+          "sample_count": 1,
+          "clear_sample_count": 0,
+          "blocked_sample_count": 0,
+          "outside_fov_sample_count": 1,
+          "unknown_sample_count": 0,
+          "reason": "sampled_points_only"
+        }
+      },
+      "targets": [
+        {
+          "id": "demo:sea",
+          "name": "demo:sea",
+          "kind": "sea",
+          "source_ids": [
+            "demo:scene"
+          ],
+          "sample_kind": "point",
+          "status": "blocked",
+          "visible_in_model": false,
+          "distance_m": 490.0,
+          "bearing_deg": 270.0,
+          "elevation_angle_deg": -1.241469,
+          "blockers": [
+            {
+              "id": "demo:west-building",
+              "reason": "building_prism_intersection",
+              "distance_m": 30.0,
+              "height_basis": "synthetic_known",
+              "height_range_m": [
+                12.0,
+                12.0
+              ]
+            }
+          ],
+          "uncertainties": [
+            "explicit_flat_terrain_model"
+          ],
+          "algorithm_version": "window_view_los_1.0.0",
+          "model_limits": [
+            "sampled_target_only",
+            "unmapped_buildings_and_vegetation_unchecked",
+            "nearest_sample_terrain_not_field_verified",
+            "atmospheric_refraction_ignored"
+          ]
+        },
+        {
+          "id": "demo:tower",
+          "name": "demo:tower",
+          "kind": "landmark",
+          "source_ids": [
+            "demo:scene"
+          ],
+          "sample_kind": "point",
+          "status": "outside_fov",
+          "visible_in_model": false,
+          "distance_m": 160.0,
+          "bearing_deg": 90.0,
+          "elevation_angle_deg": null,
+          "blockers": [],
+          "uncertainties": [],
+          "algorithm_version": "window_view_los_1.0.0"
+        },
+        {
+          "id": "demo:lake",
+          "name": "demo:lake",
+          "kind": "water",
+          "source_ids": [
+            "demo:scene"
+          ],
+          "sample_kind": "point",
+          "status": "outside_fov",
+          "visible_in_model": false,
+          "distance_m": 431.393,
+          "bearing_deg": 45.939191,
+          "elevation_angle_deg": null,
+          "blockers": [],
+          "uncertainties": [],
+          "algorithm_version": "window_view_los_1.0.0"
+        },
+        {
+          "id": "demo:park",
+          "name": "demo:park",
+          "kind": "park",
+          "source_ids": [
+            "demo:scene"
+          ],
+          "sample_kind": "point",
+          "status": "outside_fov",
+          "visible_in_model": false,
+          "distance_m": 300.167,
+          "bearing_deg": 178.090848,
+          "elevation_angle_deg": null,
+          "blockers": [],
+          "uncertainties": [],
+          "algorithm_version": "window_view_los_1.0.0"
+        },
+        {
+          "id": "demo:mountain",
+          "name": "demo:mountain",
+          "kind": "mountain",
+          "source_ids": [
+            "demo:scene"
+          ],
+          "sample_kind": "point",
+          "status": "outside_fov",
+          "visible_in_model": false,
+          "distance_m": 1000.05,
+          "bearing_deg": 0.572939,
+          "elevation_angle_deg": null,
+          "blockers": [],
+          "uncertainties": [],
+          "algorithm_version": "window_view_los_1.0.0"
+        },
+        {
+          "id": "roof:demo:east-building",
+          "name": "demo:east-building",
+          "kind": "neighbor_building",
+          "source_ids": [
+            "demo:scene"
+          ],
+          "sample_kind": "nearest_roof_corner",
+          "status": "outside_fov",
+          "visible_in_model": false,
+          "distance_m": 53.852,
+          "bearing_deg": 111.801409,
+          "elevation_angle_deg": null,
+          "blockers": [],
+          "uncertainties": [],
+          "algorithm_version": "window_view_los_1.0.0"
+        },
+        {
+          "id": "roof:demo:west-building",
+          "name": "demo:west-building",
+          "kind": "neighbor_building",
+          "source_ids": [
+            "demo:scene"
+          ],
+          "sample_kind": "nearest_roof_corner",
+          "status": "clear_in_model",
+          "visible_in_model": true,
+          "distance_m": 36.056,
+          "bearing_deg": 236.309932,
+          "elevation_angle_deg": 2.22346,
+          "blockers": [],
+          "uncertainties": [
+            "explicit_flat_terrain_model"
+          ],
+          "algorithm_version": "window_view_los_1.0.0",
+          "model_limits": [
+            "sampled_target_only",
+            "unmapped_buildings_and_vegetation_unchecked",
+            "nearest_sample_terrain_not_field_verified",
+            "atmospheric_refraction_ignored"
+          ]
+        }
+      ],
+      "sun": {
+        "sunrise": {
+          "time_utc": "2026-03-20T06:04:10Z",
+          "azimuth_deg": 90.1409928586598,
+          "elevation_deg": -0.8330000028816875,
+          "visibility": {
+            "status": "outside_fov",
+            "visible_in_model": false,
+            "distance_m": 1190.0,
+            "bearing_deg": 90.140993,
+            "elevation_angle_deg": 0.0,
+            "blockers": [],
+            "uncertainties": [],
+            "algorithm_version": "window_view_los_1.0.0"
+          },
+          "sightline": "approximate apparent upper limb at nominal horizon event; fixed refraction assumption",
+          "evaluated_elevation_deg": 0.0,
+          "actual_first_or_last_visible_time_computed": false
+        },
+        "sunset": {
+          "time_utc": "2026-03-20T18:10:41Z",
+          "azimuth_deg": 270.05845467405476,
+          "elevation_deg": -0.8329999977657256,
+          "visibility": {
+            "status": "blocked",
+            "visible_in_model": false,
+            "distance_m": null,
+            "bearing_deg": 270.058455,
+            "elevation_angle_deg": 0.0,
+            "blockers": [
+              {
+                "id": "demo:west-building",
+                "reason": "building_prism_intersection",
+                "distance_m": 30.0,
+                "height_basis": "synthetic_known",
+                "height_range_m": [
+                  12.0,
+                  12.0
+                ]
+              }
+            ],
+            "uncertainties": [
+              "explicit_flat_terrain_model"
+            ],
+            "algorithm_version": "window_view_los_1.0.0",
+            "model_limits": [
+              "sampled_target_only",
+              "unmapped_buildings_and_vegetation_unchecked",
+              "nearest_sample_terrain_not_field_verified",
+              "atmospheric_refraction_ignored",
+              "solar_horizon_beyond_radius_unchecked"
+            ],
+            "model_radius_m": 1190.0
+          },
+          "sightline": "approximate apparent upper limb at nominal horizon event; fixed refraction assumption",
+          "evaluated_elevation_deg": 0.0,
+          "actual_first_or_last_visible_time_computed": false
+        },
+        "polar_state": "normal",
+        "method": "noaa_meeus_v1"
+      }
+    }
+  ],
+  "published_claims": [],
+  "sources": [
+    {
+      "id": "demo:scene",
+      "url": null,
+      "retrieved_at": null,
+      "source_updated_at": null,
+      "license": "Synthetic test fixture",
+      "method": "hand-authored synthetic geometry; not a real hotel"
+    }
+  ],
+  "coverage": {
+    "buildings": 3,
+    "buildings_with_tagged_height": 0,
+    "buildings_with_estimated_height": 0,
+    "buildings_with_unknown_height": 0,
+    "synthetic_buildings": 3,
+    "candidate_targets": 5,
+    "evaluated_targets_per_observer": 7,
+    "terrain_samples": 0,
+    "field_verified": false
+  },
+  "limitations": [
+    "Entire scene is synthetic, including sea, hotel and all buildings. No real-world claim.",
+    "eye_height_m=1.6 above the floor; window sill and seated viewing position unknown",
+    "Visibility is a 2.5D geometric estimate, not a photograph or independent room verification.",
+    "Subject building is excluded: its own wings, balconies, window recesses, curtains and glazing are not modelled.",
+    "Trees, temporary construction, haze, clouds and weather are not fully modelled. Clear sky is an assumption.",
+    "OSM completeness is unknown; unmapped obstacles and objects beyond the evaluated radius may change the result.",
+    "Coastline water-side samples do not quantify the percentage of sea visible through a window.",
+    "Sunrise/sunset are nominal astronomical events; a blocked horizon may delay first sight of the sun or advance its disappearance."
+  ],
+  "attribution": "© OpenStreetMap contributors (ODbL); elevation when present: Open-Meteo / Copernicus GLO-90; solar equations: NOAA"
+}

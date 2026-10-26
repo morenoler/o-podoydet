@@ -7,8 +7,28 @@ import { calendarDate } from "../format";
 import { useResource } from "../useResource";
 import { ErrorMessage } from "../../../shared/ui/Feedback";
 import { AccountEmpty, AccountLoading, ResourceError } from "./AccountFeedback";
+import { ClarificationsPanel } from "../../clarifications/ClarificationsPanel";
+import "../../clarifications/clarifications.css";
 
 export function QuestionsPanel({ host = false }: { host?: boolean }) {
+  return (
+    <div className="account-stack">
+      <ClarificationsPanel host={host} />
+      <section
+        className="public-questions-section"
+        aria-labelledby="public-questions-title"
+      >
+        <h2 id="public-questions-title">Общие вопросы об объявлении</h2>
+        <p className="account-muted">
+          Это публичный раздел: ответы отельера доступны другим гостям.
+        </p>
+        <PublicQuestionsPanel host={host} />
+      </section>
+    </div>
+  );
+}
+
+function PublicQuestionsPanel({ host = false }: { host?: boolean }) {
   const resource = useResource<ListingQuestion[]>(
     host ? "/host/questions" : "/account/questions",
   );

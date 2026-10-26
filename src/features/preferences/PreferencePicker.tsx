@@ -35,6 +35,7 @@ export function PreferencePicker({
               <span>
                 <strong>{features[id].label}</strong>
                 <small>{features[id].detail}</small>
+                {selected && !selected.required && <small className="preference-priority">Желательно · влияет на порядок</small>}
               </span>
             </button>
             {selected && (

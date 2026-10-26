@@ -19,13 +19,13 @@ export function OwnerCriteriaSummary({
       <ul>
         {criteria.map((criterion) => {
           const unknown = criterion.evidenceStatus === "unknown";
-          const matches = criterion.status === "match";
+          const matches = criterion.status === "match" && criterion.evidenceStatus === "match";
           const Icon = unknown ? CircleHelp : matches ? CheckCircle2 : XCircle;
           return (
             <li
               key={criterion.id}
               className={
-                matches ? "owner-criterion-match" : "owner-criterion-mismatch"
+                unknown ? "owner-criterion-unknown" : matches ? "owner-criterion-match" : "owner-criterion-mismatch"
               }
             >
               <Icon size={17} aria-hidden="true" />

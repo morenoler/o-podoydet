@@ -48,6 +48,7 @@ public class QuestionPlanner {
   private final HostQuestionRepository questions;
   private final JdbcClient jdbc;
   private final Clock clock;
+  private final DemoHostGuard guard;
   private final java.time.Duration reaskAfter;
 
   QuestionPlanner(
@@ -55,24 +56,28 @@ public class QuestionPlanner {
       HostQuestionRepository questions,
       JdbcClient jdbc,
       Clock clock,
+      DemoHostGuard guard,
       @org.springframework.beans.factory.annotation.Value("${host.reask-after:PT24H}")
           java.time.Duration reaskAfter) {
     this.knowledge = knowledge;
     this.questions = questions;
     this.jdbc = jdbc;
     this.clock = clock;
+    this.guard = guard;
     this.reaskAfter = reaskAfter;
   }
 
   /** Создаёт вопросы по самым ценным пробелам. Уже открытые вопросы не дублируются. */
   @Transactional
   public List<HostQuestion> plan(String hotelIdOrNull, int limit) {
+    guard.requireHotel(hotelIdOrNull);
     return create(knowledge.gaps(hotelIdOrNull), limit);
   }
 
   /** Вопросы именно по этим предметам — например, уточнение после найденного противоречия. */
   @Transactional
   public List<HostQuestion> planFor(Set<Subject> subjects) {
+    for (Subject subject : subjects) guard.requireHotel(subject.hotelId());
     List<Fact> gaps =
         subjects.stream()
             .flatMap(s -> knowledge.gaps(s.hotelId()).stream())
@@ -93,8 +98,10 @@ public class QuestionPlanner {
         recentlyAsked.add(q.subject());
 
     record Candidate(Fact fact, Characteristic characteristic, double priority) {}
+    Set<String> allowed = guard.allowedHotels();
     List<Candidate> candidates = new ArrayList<>();
     for (Fact fact : gaps) {
+      if (!allowed.contains(fact.getHotelId())) continue;
       if (alreadyOpen.contains(fact.subject())) continue;
       if (fact.getStatus() != Fact.Status.conflict && recentlyAsked.contains(fact.subject())) continue;
       Characteristic c = knowledge.characteristic(fact.getCharacteristic()).orElse(null);

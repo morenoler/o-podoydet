@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "sourceId": "shilla-deluxeFamilyTwin",
+  "hotelId": "way-627150752",
+  "url": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/deluxeFamilyTwin.do",
+  "obtainedAt": "2026-10-25T09:18:42.964Z",
+  "sourceUpdatedAt": null,
+  "responseSha256": "8853c4cdcf6c39e7b1250d274c99d846937591a9ab60ecce6d9ef3e647ed2a5a",
+  "responseBytes": 210647,
+  "parserVersion": "official-html-v3",
+  "projection": {
+    "name": "Deluxe Family Twin",
+    "capacity": 3,
+    "publishedView": "City, Ocean",
+    "family": true,
+    "wifi": true,
+    "extraChildCapacity": 4,
+    "childMaxAge": 12,
+    "excerpts": [
+      "Deluxe Family Twin",
+      "1–3 guests",
+      "City, Ocean",
+      "up to 4 guests",
+      "37 months to 12 years",
+      "Wi-Fi"
+    ],
+    "evidenceSelectors": {
+      "name": "title before |",
+      "capacity": ".room-detail .property-overview .room-info-box dt=Guests + dd",
+      "publishedView": ".room-detail .property-overview .room-info-box dt=View + dd",
+      "childRule": ".room-detail .property-overview child occupancy sentence",
+      "childAge": "official booking-form Children age definition",
+      "amenities": ".room-detail .amenities-list, excluding navigation and related content"
+    },
+    "limitations": [
+      "Категория номера, а не физический номер; наличие на даты не проверялось.",
+      "City/Ocean — варианты вида в категории, а не обещание каждого вида в одном номере.",
+      "Ступени, вход, лифт и полный доступ до номера не подтверждены.",
+      "Увеличение вместимости условно: нужен ребёнок; возрастная категория издателя требует проверки возраста. Младенцы до 36 месяцев учитываются отдельно, это правило их размещение не устанавливает."
+    ]
+  },
+  "projectionSha256": "84d5959704f989b9cff9e60b0759af8ab3366e0d4bdcf49e68651654bb284368",
+  "method": "official",
+  "demo": false,
+  "cacheLimitations": "Bounded extracted fields and <=25 words of excerpts are retained. Full HTML is not distributed. The response hash cannot be recomputed offline; projection integrity can. A fresh collection is required to rerun HTML extraction."
+}

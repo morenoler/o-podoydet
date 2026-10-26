@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
+import { gunzipSync } from "node:zlib";
 import {
   airRequestUrl,
   normalizeAir,
@@ -224,12 +225,42 @@ test("packaged historical Haeundae values match source CSV and the identified ad
     assert.equal(evidenceContains(record, [129.05, 35.16]), false);
   }
 });
+
+test("all real Busan assessments replay byte-verified air responses and preserve missing hours", async () => {
+  const catalog = JSON.parse(await readFile("data/demo.json", "utf8"));
+  const report = JSON.parse(await readFile("data/area-assessments.json", "utf8"));
+  const packed = await readFile(report.sourceArchive.path);
+  assert.equal(createHash("sha256").update(packed).digest("hex"), report.sourceArchive.sha256);
+  const archive = JSON.parse(gunzipSync(packed).toString("utf8"));
+  assert.equal(archive.synthetic, false);
+  assert.equal(archive.sources.length, report.sourceArchive.entryCount);
+  const sources = new Map<string, any>(archive.sources.map((s: any) => [s.requestUrl, s]));
+  assert.equal(report.assessments.length, catalog.hotels.length);
+  assert.equal(report.skipped.length, 0);
+  for (const assessment of report.assessments) {
+    const hotel = catalog.hotels.find((h: any) => h.id === assessment.hotelId);
+    assert.ok(hotel && !hotel.synthetic, assessment.hotelId);
+    assert.deepEqual(assessment.coordinates, hotel.coordinates);
+    const source = sources.get(airRequestUrl(hotel.coordinates));
+    assert.ok(source, assessment.hotelId);
+    assert.equal(createHash("sha256").update(source.body).digest("hex"), source.sha256);
+    assert.equal(assessment.airQuality.sourceSnapshot.sha256, source.sha256);
+    assert.equal(Buffer.byteLength(source.body), assessment.airQuality.sourceSnapshot.byteLength);
+    const replay = normalizeAir(JSON.parse(source.body), source.fetchedAt, source.requestUrl,
+      new Date(assessment.assessedAt), hotel.coordinates);
+    const { sourceSnapshot, ...stored } = assessment.airQuality;
+    assert.deepEqual(JSON.parse(JSON.stringify(replay)), stored, assessment.hotelId);
+    assert.equal(assessment.safety.evidence.length, 2);
+    assert.ok(assessment.safety.evidence.every((e: any) => e.metric === "reported_incidents" && !e.comparator));
+  }
+});
 test("offline CLI batch preserves per-hotel values, skips invalid coordinates and reports missing responses", async () => {
   const dir = await mkdtemp(join(tmpdir(), "o-area-"));
   try {
     const input = join(dir, "input.json"),
       offline = join(dir, "offline.json"),
       output = join(dir, "output.json");
+    const archive = join(dir, "sources.json.gz");
     await writeFile(
       input,
       JSON.stringify({
@@ -238,6 +269,7 @@ test("offline CLI batch preserves per-hotel values, skips invalid coordinates an
           { id: "a", name: "A", coordinates: [129.16, 35.16] },
           { id: "b", name: "B", coordinates: [129.17, 35.17] },
           { id: "bad", name: "Invalid", coordinates: [null, 200] },
+          null,
         ],
       }),
     );
@@ -261,18 +293,68 @@ test("offline CLI batch preserves per-hotel values, skips invalid coordinates an
         now.toISOString(),
         "--output",
         output,
+        "--source-archive",
+        archive,
       ],
       { encoding: "utf8", timeout: 15000 },
     );
     assert.equal(result.status, 0, result.stderr);
     const data = JSON.parse(await readFile(output, "utf8"));
     assert.equal(data.assessments.length, 2);
-    assert.equal(data.skipped.length, 1);
+    assert.equal(data.skipped.length, 2);
     assert.equal(data.assessments[0].airQuality.status, "available");
     assert.equal(data.assessments[1].airQuality.status, "unknown");
     assert.equal(data.region, "Пусан");
+    const packed = await readFile(archive);
+    const sources = JSON.parse(gunzipSync(packed).toString("utf8"));
+    assert.equal(sources.synthetic, true);
+    assert.equal(sources.sources.length, 1);
+    assert.equal(data.sourceArchive.sha256, createHash("sha256").update(packed).digest("hex"));
+    const source = sources.sources[0];
+    assert.equal(source.sha256, createHash("sha256").update(source.body).digest("hex"));
+    assert.equal(source.sha256, data.assessments[0].airQuality.sourceSnapshot.sha256);
+    assert.equal(source.requestUrl, airRequestUrl([129.16, 35.16]));
   } finally {
     await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("Korean publication dates use UTC+9 consistently at midnight and cannot follow retrieval", () => {
+  const checkedAt = new Date("2026-10-24T15:01:00Z");
+  const e = comparableRate();
+  e.publishedAt = "2026-10-25";
+  e.retrievedAt = "2026-10-24T15:00:00Z";
+  e.comparator!.publishedAt = e.publishedAt;
+  e.comparator!.retrievedAt = e.retrievedAt;
+  assert.equal(officialImportSchema.safeParse({ version: 1, records: [e] }).success, true);
+  const assessed = assessSafety([129.2, 35.2], [e], checkedAt);
+  assert.equal(assessed.status, "evidence");
+  assert.ok(assessed.evidence[0].comparator);
+  assert.equal(assessSafety([129.2, 35.2], [e], new Date("2026-10-24T14:59:00Z")).status, "unknown");
+  e.retrievedAt = "2026-10-24T14:59:00Z";
+  assert.equal(officialImportSchema.safeParse({ version: 1, records: [e] }).success, false);
+});
+
+test("official import rejects fractional incident counts and credentials in source URLs", () => {
+  for (const bad of [
+    { ...evidence(), value: 1.5 },
+    { ...evidence(), sourceUrl: "https://user:password@www.busan.go.kr/source" },
+    { ...evidence(), geography: { ...evidence().geography, sourceUrl: "https://user:password@www.openstreetmap.org/relation/1" } },
+  ]) assert.equal(officialImportSchema.safeParse({ version: 1, records: [bad] }).success, false);
+});
+
+test("read-time freshness rejects future model or retrieval times without mutating source", () => {
+  const base = makeAssessment(
+    { hotelId: "test", name: "test", coordinates: [129.16, 35.16] },
+    normalizeAir(raw(), now.toISOString(), "test", now), [], now,
+  );
+  for (const change of [
+    { time: new Date(+now + 2 * 3600000).toISOString() },
+    { fetchedAt: new Date(+now + 2 * 60000).toISOString() },
+  ]) {
+    const source = { ...base, airQuality: { ...base.airQuality, ...change } };
+    assert.equal(refreshAreaFreshness(source, now).airQuality.status, "unknown");
+    assert.equal(source.airQuality.status, "available");
   }
 });
 

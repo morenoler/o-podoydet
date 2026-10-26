@@ -22,14 +22,14 @@ public final class EvidencePolicy {
   /** Старое правило verified-only; в demo-политике допускается всё. */
   public static boolean legacyAdmissible(Evidence e, Instant now, boolean demoPolicy) {
     if (demoPolicy) return true;
-    return !e.isDemo() && LEGACY_METHODS.contains(e.getMethod()) && sourced(e, now);
+    return !e.isDemo() && !e.isSimulated() && LEGACY_METHODS.contains(e.getMethod()) && sourced(e, now);
   }
 
   /** Правило нового ядра для расчёта фактов. */
   public static boolean admissible(Evidence e, Instant now, boolean demoPolicy) {
     if (!e.isCurrent()) return false;
     if (demoPolicy) return true;
-    if (e.isDemo() || "demo".equals(e.getMethod())) return false;
+    if (e.isDemo() || e.isSimulated() || "demo".equals(e.getMethod())) return false;
     if (SELF_SOURCED_METHODS.contains(e.getMethod()))
       return e.getObtainedAt() != null && !e.getObtainedAt().isAfter(now);
     return sourced(e, now);

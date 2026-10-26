@@ -64,6 +64,7 @@ public class HostDialogService {
   private final QuestionPlanner planner;
   private final TransactionTemplate tx;
   private final Clock clock;
+  private final DemoHostGuard guard;
 
   HostDialogService(
       HostQuestionRepository questions,
@@ -73,7 +74,8 @@ public class HostDialogService {
       FactResolver resolver,
       QuestionPlanner planner,
       TransactionTemplate tx,
-      Clock clock) {
+      Clock clock,
+      DemoHostGuard guard) {
     this.questions = questions;
     this.extraction = extraction;
     this.knowledge = knowledge;
@@ -82,14 +84,20 @@ public class HostDialogService {
     this.planner = planner;
     this.tx = tx;
     this.clock = clock;
+    this.guard = guard;
   }
 
   public HostQuestion question(UUID id) {
-    return questions.findById(id).orElseThrow(() -> new NotFoundException("Вопрос не найден"));
+    guard.requireEnabled();
+    HostQuestion question = questions.findById(id).orElseThrow(() -> new NotFoundException("Вопрос не найден"));
+    guard.requireHotel(question.getHotelId());
+    return question;
   }
 
   public List<HostQuestion> queue(String hotelIdOrNull, List<HostQuestion.Status> statuses) {
-    return questions.findQueue(statuses, hotelIdOrNull);
+    guard.requireHotel(hotelIdOrNull);
+    Set<String> allowed = guard.allowedHotels();
+    return questions.findQueue(statuses, hotelIdOrNull).stream().filter(q -> allowed.contains(q.getHotelId())).toList();
   }
 
   public AnswerResult answer(UUID id, String text, String channel) {
@@ -112,6 +120,8 @@ public class HostDialogService {
     List<Pending> pending = new ArrayList<>();
     tx.executeWithoutResult(
         status -> {
+          HostQuestion current = questions.locked(id).orElseThrow(() -> new NotFoundException("Вопрос не найден"));
+          if (!current.acceptsAnswer()) throw new IllegalArgumentException("Вопрос закрыт");
           boolean askedFound = false;
           for (AnswerExtractor.Extraction e : result.extractions()) {
             Characteristic c = byCode.get(e.characteristic());

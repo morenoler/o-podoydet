@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.opodoydet.server.host.DemoHostGuard;
 
 /**
  * Новый API ядра знаний. Здесь видно то, чего не было в старом: итоговый статус факта,
@@ -34,6 +35,8 @@ public class KnowledgeController {
       String confidenceReason,
       Instant obtainedAt,
       Instant expiresAt,
+      boolean demo,
+      boolean simulated,
       boolean admissible,
       boolean expired) {}
 
@@ -62,11 +65,13 @@ public class KnowledgeController {
   private final KnowledgeQueries queries;
   private final FactResolver resolver;
   private final Clock clock;
+  private final DemoHostGuard guard;
 
-  KnowledgeController(KnowledgeQueries queries, FactResolver resolver, Clock clock) {
+  KnowledgeController(KnowledgeQueries queries, FactResolver resolver, Clock clock, DemoHostGuard guard) {
     this.queries = queries;
     this.resolver = resolver;
     this.clock = clock;
+    this.guard = guard;
   }
 
   @GetMapping("/characteristics")
@@ -118,6 +123,8 @@ public class KnowledgeController {
                                         e.getConfidenceReason(),
                                         e.getObtainedAt(),
                                         e.getExpiresAt(),
+                                        e.isDemo(),
+                                        e.isSimulated(),
                                         EvidencePolicy.admissible(e, now, false),
                                         !Resolution.expiry(
                                                 e, byCode.get(e.getCharacteristic()).getTtlDays())
@@ -143,6 +150,7 @@ public class KnowledgeController {
   /** Принудительный пересчёт фактов (обычно идёт сам после импорта и по расписанию). */
   @PostMapping("/knowledge/resolve")
   public FactResolver.Summary resolve() {
+    guard.requireEnabled();
     return resolver.resolveAll();
   }
 }

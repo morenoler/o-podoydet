@@ -1,4 +1,5 @@
 import type { WindowDirection } from "./account";
+import type { ReportedEvidence } from "./clarifications";
 export type Point = [number, number]; // longitude, latitude
 export type FeatureId =
   | "beach_walk"
@@ -30,9 +31,20 @@ export interface Fact {
   supersededBy?: string;
   demo: boolean;
 }
+export interface OccupancyRule {
+  maxGuests: number;
+  maxAdults?: number;
+  maxChildren?: number;
+  minChildren?: number;
+  childMaxAge?: number;
+  sourceUrl: string;
+  obtainedAt: string;
+  quote: string;
+}
 export interface Room {
   id: string;
   name: string;
+  scope?: "room_category" | "unknown";
   capacity: number | null;
   demo: boolean;
   evidenceStatus?: "verified" | "unknown";
@@ -40,6 +52,7 @@ export interface Room {
   obtainedAt?: string;
   quote?: string;
   capacityMayVary?: boolean;
+  occupancyRules?: OccupancyRule[];
 }
 export interface Route {
   meters: number;
@@ -99,7 +112,18 @@ export interface Preference {
   feature: FeatureId;
   required: boolean;
 }
+/** Text recognition is separate from chips and from evidence about any one room. */
+export interface PersonalWishes {
+  status: "not_requested" | "unrecognized" | "recognized";
+  /** No completeness claim is made for arbitrary free text. */
+  completeness: "unverified";
+  features: FeatureId[];
+  excludedFeatures: FeatureId[];
+  ownerCriteria: Pick<OwnerCriterion, "id" | "feature" | "label" | "required">[];
+}
 export interface Trip {
+  /** Omission keeps the legacy verified admission contract. */
+  admissionMode?: "explore" | "verified";
   region: string;
   checkIn: string;
   checkOut: string;
@@ -116,6 +140,8 @@ export type MatchStatus =
   | "conflict"
   | "stale";
 export interface Criterion {
+  /** Sanitized owner statements; private dialogue never appears in search results. */
+  reportedEvidence?: ReportedEvidence[];
   feature: FeatureId;
   required: boolean;
   status: MatchStatus;
@@ -148,17 +174,23 @@ export interface CriterionDecision extends Criterion {
   sourceExplanation: string;
 }
 export interface RoomMatch {
+  /** An explicit reported capacity remains distinct from independently sourced category evidence. */
+  capacitySource?: "owner" | "official";
+  /** True only when admission relies on missing or outdated mandatory evidence. */
+  provisional?: boolean;
   capacityStatus?: "match" | "mismatch";
   capacityEvidenceStatus?: "match" | "mismatch" | "unknown";
   capacityAssumed?: boolean;
   estimatedCapacity?: number;
   capacityExplanation?: string;
+  capacityRule?: OccupancyRule;
   room: Room;
   criteria: CriterionDecision[];
   score: number;
   status: "fits" | "excluded";
 }
 export interface HotelMatch {
+  personalWishes?: PersonalWishes;
   hotel: Hotel;
   best: RoomMatch;
   rooms: RoomMatch[];
@@ -185,6 +217,8 @@ export interface Trace {
   tool?: string;
 }
 export interface SearchResult {
+  personalWishes?: PersonalWishes;
+  admissionMode?: "explore" | "verified";
   searchId: string;
   results: HotelMatch[];
   excluded: HotelMatch[];

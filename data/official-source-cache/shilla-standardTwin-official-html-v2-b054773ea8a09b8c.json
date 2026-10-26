@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "sourceId": "shilla-standardTwin",
+  "hotelId": "way-627150752",
+  "url": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/standardTwin.do",
+  "obtainedAt": "2026-10-25T09:07:36.196Z",
+  "sourceUpdatedAt": null,
+  "responseSha256": "b054773ea8a09b8cf8fdee83c6654099b7a2cd240a70cd5b2b6e2eb0bb39034b",
+  "responseBytes": 210656,
+  "parserVersion": "official-html-v2",
+  "projection": {
+    "name": "Standard Family Twin",
+    "capacity": 3,
+    "publishedView": "City, Ocean",
+    "family": true,
+    "wifi": true,
+    "extraChildCapacity": 4,
+    "childMaxAge": 12,
+    "excerpts": [
+      "Standard Family Twin",
+      "1–3 guests",
+      "City, Ocean",
+      "up to 4 guests",
+      "37 months to 12 years",
+      "Wi-Fi"
+    ],
+    "evidenceSelectors": {
+      "name": "title before |",
+      "capacity": ".room-info-box dt=Guests + dd",
+      "publishedView": ".room-info-box dt=View + dd",
+      "childRule": "room-detail sentence after room-info-box",
+      "childAge": "official booking-form Children age definition"
+    },
+    "limitations": [
+      "Категория номера, а не физический номер; наличие на даты не проверялось.",
+      "City/Ocean — варианты вида в категории, а не обещание каждого вида в одном номере.",
+      "Ступени, вход, лифт и полный доступ до номера не подтверждены.",
+      "Увеличение вместимости условно: нужен ребёнок; возрастная категория издателя требует проверки возраста. Младенцы до 36 месяцев учитываются отдельно, это правило их размещение не устанавливает."
+    ]
+  },
+  "projectionSha256": "1a6cdd14de73c98d6000a63d526130ea03cc6ce6a979c6e42744d3bf2bec3d7a",
+  "method": "official",
+  "demo": false,
+  "cacheLimitations": "Bounded extracted fields and <=25 words of excerpts are retained. Full HTML is not distributed. The response hash cannot be recomputed offline; projection integrity can. A fresh collection is required to rerun HTML extraction."
+}

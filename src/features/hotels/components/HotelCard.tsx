@@ -13,8 +13,15 @@ import {
 } from "../../../shared/lib/accommodation";
 import { AccommodationPhoto } from "../../../shared/ui/AccommodationPhoto";
 import { FavoriteButton } from "../../favorites/FavoriteButton";
+import { PersonalWishesSummary } from "./PersonalWishesSummary";
 import { features } from "../../../../shared/features";
 import { directionLabels } from "../../account/format";
+import {
+  capacityNeedsClarification,
+  criterionNeedsClarification,
+  matchLabel,
+  matchPresentationState,
+} from "../../../shared/lib/matchPresentation";
 
 export function HotelCard({
   match,
@@ -40,28 +47,45 @@ export function HotelCard({
   if (!hotel) return null;
   const ownerId = accountListingId(hotel);
   const detailsPath = accommodationPath(hotel, match?.best.room.id);
-  const estimated =
-    match?.best.capacityAssumed ||
-    match?.best.criteria.some((c) => c.assumed) ||
-    match?.ownerCriteria?.some((c) => c.assumed);
+  const capacityUnknown = match && capacityNeedsClarification(match.best);
+  const needsClarification = capacityUnknown ||
+    match?.best.criteria.some(criterionNeedsClarification) ||
+    match?.ownerCriteria?.some((c) => c.evidenceStatus === "unknown");
+  const declared = match?.ownerCriteria?.some((c) => c.assumed);
+  const estimated = needsClarification || declared || match?.best.provisional;
   const uncertain = match?.best.criteria.find(
-    (c) => c.assumed || c.evidenceStatus !== "match",
+    (c) => criterionNeedsClarification(c) || c.status !== "match",
   );
   const missingOwner = match?.ownerCriteria?.find(
     (c) => c.assumed || c.evidenceStatus !== "match",
   );
+  const publishedCategoryCount = hotel.rooms.filter(
+    (room) => room.scope === "room_category" && room.evidenceStatus === "verified",
+  ).length;
   const sourceHint = ownerId
     ? "Сведения отельера · без независимой проверки"
-    : "Категорию и условия номера нужно уточнить";
+    : match?.best.room.evidenceStatus === "verified" && match.best.room.scope === "room_category"
+      ? "Категория по сведениям официального сайта"
+      : !match && publishedCategoryCount > 0
+        ? `Категории с официального сайта: ${publishedCategoryCount}`
+        : "Категорию и условия номера нужно уточнить";
+  const category = match?.best.room.evidenceStatus === "verified" &&
+    match.best.room.scope === "room_category" ? match.best.room : undefined;
+  const roomDetails = [
+    hotel.floor == null ? "" : `Этаж: ${hotel.floor}`,
+    hotel.windowDirections?.length
+      ? `Окна: ${hotel.windowDirections.map((value) => directionLabels[value]).join(", ")}` : "",
+  ].filter(Boolean).join(" · ");
   const hasPrice =
     typeof hotel.pricePerNight === "number" &&
     hotel.pricePerNight > 0 &&
     hotel.currency === "KRW";
+  const resultLabel = match ? matchLabel(match) : "Условия и источники";
+  const presentationState = match ? matchPresentationState(match) : "unknown";
   return (
     <article
       className={`search-hotel-card${selected ? " is-selected" : ""}`}
       onClick={onSelect}
-      onFocus={onSelect}
       aria-label={hotel.name}
     >
       <div className="search-hotel-photo">
@@ -115,12 +139,14 @@ export function HotelCard({
           )}
         </div>
         <p className="search-hotel-meta">{hotel.address || "Пусан, Хэундэ"}</p>
-        <p className="search-hotel-room">
-          {hotel.floor == null ? "Этаж: Не указано" : `Этаж: ${hotel.floor}`} ·{" "}
-          {hotel.windowDirections?.length
-            ? `Окна: ${hotel.windowDirections.map((value) => directionLabels[value]).join(", ")}`
-            : "Окна: Не указано"}
-        </p>
+        {category && (
+          <p className="search-hotel-room">
+            Категория: {category.name}
+            {!capacityUnknown && !match?.best.capacityRule && category.capacity !== null && !category.capacityMayVary
+              ? ` · до ${category.capacity} гостей` : ""}
+          </p>
+        )}
+        {roomDetails && <p className="search-hotel-room">{roomDetails}</p>}
         {hotel.route && !hotel.synthetic ? (
           <button
             type="button"
@@ -145,13 +171,23 @@ export function HotelCard({
         <p className="search-hotel-evidence">
           <CircleHelp size={18} aria-hidden="true" />
           <span>
-            {missingOwner
+            {capacityUnknown
+              ? "Вместимость требует уточнения"
+              : missingOwner
               ? `${missingOwner.label}: ${missingOwner.evidenceStatus === "unknown" ? "нет данных" : missingOwner.evidenceStatus === "match" ? "по сведениям отельера" : "не совпадает"}`
               : uncertain
-                ? `${features[uncertain.feature].label}: ${uncertain.assumed ? "оценка, нужно уточнить" : "не совпадает"}`
+                ? `${features[uncertain.feature].label}: ${criterionNeedsClarification(uncertain) ? "требует уточнения" : "не совпадает"}`
                 : sourceHint}
           </span>
         </p>
+        {hasPrice && match && (
+          <p className={`search-hotel-result${presentationState === "mismatch" ? " is-mismatch" : estimated ? " is-estimate" : ""}`}>
+            {presentationState === "match"
+              ? <Check size={17} aria-hidden="true" />
+              : <CircleHelp size={17} aria-hidden="true" />}
+            {resultLabel}
+          </p>
+        )}
         <div className="search-hotel-bottom">
           <div>
             {hasPrice ? (
@@ -167,17 +203,17 @@ export function HotelCard({
             ) : (
               <>
                 <strong
-                  className={`search-hotel-result${estimated ? " is-estimate" : ""}`}
+                  className={`search-hotel-result${!match ? " is-preview" : presentationState === "mismatch" ? " is-mismatch" : presentationState === "unknown" || estimated ? " is-estimate" : ""}`}
                 >
                   {match ? (
                     <>
-                      <Check size={17} aria-hidden="true" />
-                      {estimated
-                        ? "Подходит с предположениями"
-                        : "Подходит под фильтры"}
+                      {presentationState !== "match"
+                        ? <CircleHelp size={17} aria-hidden="true" />
+                        : <Check size={17} aria-hidden="true" />}
+                      {resultLabel}
                     </>
                   ) : (
-                    "Условия и источники"
+                    resultLabel
                   )}
                 </strong>
                 <span className="search-hotel-price-note">
@@ -194,6 +230,7 @@ export function HotelCard({
           </Link>
         </div>
       </div>
+      {match && <PersonalWishesSummary match={match} />}
     </article>
   );
 }

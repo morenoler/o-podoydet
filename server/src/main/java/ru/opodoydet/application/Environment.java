@@ -265,7 +265,11 @@ public final class Environment {
           "clean_air", "Нет свежего почасового прогноза на даты поездки", details, evidence);
     if (!Json.str(forecast, "timezone").equals("UTC")
         || !Json.str(forecast, "tripTimezone").equals("Asia/Seoul")
-        || forecast.path("intervalSeconds").asInt() != 3600
+        || !forecast.path("intervalSeconds").isNumber()
+        || forecast.path("intervalSeconds").asDouble() != 3600
+        || !Json.str(forecast, "model").equals("CAMS Global")
+        || !forecast.path("resolutionKm").isNumber()
+        || forecast.path("resolutionKm").asDouble() != 45
         || !Json.str(forecast.path("units"), "usAqi").equals("USAQI")
         || evidence.isEmpty()
         || distance(area.path("coordinates"), forecast.path("modelCoordinates")) > 80000)
@@ -380,7 +384,7 @@ public final class Environment {
         LocalDate periodFrom = LocalDate.parse(Json.str(entry.path("period"), "from")),
             periodEnd = LocalDate.parse(Json.str(entry.path("period"), "to"));
         if (periodFrom.isAfter(periodEnd)
-            || periodEnd.isAfter(tripDate)
+            || !periodEnd.isBefore(tripDate)
             || periodEnd.isBefore(tripDate.minusYears(2))) continue;
       } catch (DateTimeParseException invalid) {
         continue;
@@ -480,6 +484,17 @@ public final class Environment {
     if (!Json.str(context, "region").equals(Json.str(trip, "region"))
         || !Json.str(context, "timeZone").equals("Asia/Seoul"))
       return noiseResult("unknown", 0, details, sources);
+    JsonNode ambient = context.path("ambientMeasurements");
+    if (Json.str(ambient, "kind").equals("annual_station_measurements")
+        && ambient.path("usableForHotelMatching").isBoolean()
+        && !ambient.path("usableForHotelMatching").asBoolean()
+        && datedSource(ambient.path("source"), now)) {
+      details.add("Доступен официальный отчёт о годовых измерениях на постах Пусана за "
+          + ambient.path("year").asInt() + " год. Пространственная применимость к этому отелю"
+          + " не установлена; эти децибелы не участвуют в фильтре.");
+      sources.addAll(provenance(ambient.path("source"), "retrievedAt", "Годовые измерения на постах Пусана;"
+          + " таблицы 3-7 и 3-8, страница PDF 33. Не уровень шума в отеле."));
+    }
     String trafficReason = Json.str(context.path("coverage").path("traffic"), "reason"),
         eventsReason = Json.str(context.path("coverage").path("events"), "reason");
     if (!trafficReason.isBlank()) details.add("Данные о движении: " + trafficReason);

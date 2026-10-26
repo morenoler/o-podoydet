@@ -113,13 +113,14 @@ export function buildBackend(goal = "package -DskipTests", pom = SERVER_POM) {
 /**
  * PostgreSQL + PostGIS из docker-compose.yml. Пропускается, если задан свой DATABASE_URL.
  */
-export function ensureDatabase() {
-  if (runtimeEnv.DATABASE_URL) return;
+export function ensureDatabase(environment = runtimeEnv) {
+  if (environment.DATABASE_URL) return;
   const result = spawnSync("docker", ["compose", "up", "-d", "--wait", "db"], {
     cwd: root,
-    env: runtimeEnv,
+    env: environment,
     stdio: "inherit",
     windowsHide: true,
+    timeout: 120000,
   });
   if (result.error || result.status !== 0)
     throw new Error(
@@ -127,9 +128,22 @@ export function ensureDatabase() {
     );
 }
 
+/** A named schema always applies, even when DATABASE_URL is supplied explicitly. */
+export function databaseEnvironment(environment) {
+  const schema = environment.DB_SCHEMA || "public";
+  if (!/^[a-z][a-z0-9_]{0,62}$/.test(schema))
+    throw new Error("DB_SCHEMA должен быть простым именем PostgreSQL (a-z, 0-9, _).");
+  const jdbc = environment.DATABASE_URL || "jdbc:postgresql://127.0.0.1:5432/opodoydet";
+  if (!jdbc.startsWith("jdbc:postgresql://"))
+    throw new Error("DATABASE_URL должен быть JDBC URL PostgreSQL.");
+  const url = new URL(jdbc.slice(5));
+  url.searchParams.set("currentSchema", schema);
+  return { ...environment, DB_SCHEMA: schema, DATABASE_URL: "jdbc:" + url.toString() };
+}
+
 /**
- * Запуск Spring Boot. Прежний DB_PATH (SQLite старого бэкенда) передаётся как LEGACY_DB_PATH:
- * при первом старте его кабинеты и история переносятся в PostgreSQL.
+ * Запуск Spring Boot из неизменяемой копии JAR. SQLite импортируется только по явно
+ * заданному LEGACY_DB_PATH; DB_PATH не является базой нового приложения.
  */
 export function startBackend({
   jarPath = join("server", "target", "o-podoydet-server.jar"),
@@ -137,11 +151,10 @@ export function startBackend({
   database = true,
 } = {}) {
   verifyJava();
-  if (database) ensureDatabase();
-  const jar = join(root, jarPath);
-  const legacyDb = env.DB_PATH ?? runtimeEnv.DB_PATH ?? ".local/busan.sqlite3";
-  if (database && !env.LEGACY_DB_PATH && !runtimeEnv.LEGACY_DB_PATH && existsSync(join(root, legacyDb)))
-    env = { ...env, LEGACY_DB_PATH: legacyDb };
+  const environment = { ...runtimeEnv, ...env };
+  if (database) ensureDatabase(environment);
+  const childEnv = databaseEnvironment(environment);
+  const jar = resolve(root, jarPath);
   if (!existsSync(jar))
     throw new Error("Сначала выполните npm run backend:build");
   // Run an immutable copy so rebuilding target/ cannot invalidate lazy class loading.
@@ -154,7 +167,7 @@ export function startBackend({
     ["-Dstdout.encoding=UTF-8", "-Dstderr.encoding=UTF-8", "-jar", runtimeJar],
     {
       cwd: root,
-      env: { ...runtimeEnv, ...env },
+      env: childEnv,
       stdio: "inherit",
       windowsHide: true,
     },

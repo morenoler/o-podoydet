@@ -25,23 +25,26 @@ public class CatalogService {
   private final KnowledgeQueries knowledge;
   private final ObjectMapper json;
   private final Clock clock;
+  private final org.springframework.jdbc.core.simple.JdbcClient jdbc;
 
   CatalogService(
       DatasetRepository datasets,
       HotelRepository hotels,
       KnowledgeQueries knowledge,
       ObjectMapper json,
-      Clock clock) {
+      Clock clock, org.springframework.jdbc.core.simple.JdbcClient jdbc) {
     this.datasets = datasets;
     this.hotels = hotels;
     this.knowledge = knowledge;
     this.json = json;
     this.clock = clock;
+    this.jdbc = jdbc;
   }
 
   /** Демо-прототип работает с одним регионом. */
   public Optional<Dataset> dataset() {
-    return datasets.findAll().stream().findFirst();
+    return jdbc.sql("SELECT region FROM catalog_runtime WHERE singleton")
+        .query(String.class).optional().flatMap(datasets::findById);
   }
 
   public java.util.Set<String> hotelIds() {
@@ -74,6 +77,7 @@ public class CatalogService {
     Instant now = clock.instant();
     return hotels
         .findByIdAndActiveTrue(id)
+        .filter(h -> h.getRegion().equals(dataset.get().getRegion()))
         .map(
             h -> {
               if (!allRooms) return hotelNode(h, now, dataset.get().isDemoPolicy());
@@ -103,6 +107,7 @@ public class CatalogService {
     Instant now = clock.instant();
     return hotels
         .findByIdAndActiveTrue(id)
+        .filter(h -> h.getRegion().equals(dataset.get().getRegion()))
         .map(
             hotel -> {
               ObjectNode result = json.createObjectNode();

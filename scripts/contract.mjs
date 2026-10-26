@@ -134,18 +134,21 @@ function normalize(value, run) {
 }
 
 /** Список расхождений в виде путей JSON. */
-function differences(expected, actual, path = "$", out = []) {
+export function differences(expected, actual, path = "$", out = [], valueChanges = []) {
   if (out.length > 20) return out;
+  // Exact scalar transition at one exact path; never skip the rest of a trace object.
+  if (valueChanges.some((change) => change.path === path
+      && Object.is(change.from, expected) && Object.is(change.to, actual))) return out;
   if (typeof expected !== typeof actual || Array.isArray(expected) !== Array.isArray(actual) || (expected === null) !== (actual === null)) {
     out.push(`${path}: ${short(expected)} → ${short(actual)}`);
   } else if (Array.isArray(expected)) {
     if (expected.length !== actual.length) out.push(`${path}.length: ${expected.length} → ${actual.length}`);
-    for (let i = 0; i < Math.min(expected.length, actual.length); i++) differences(expected[i], actual[i], `${path}[${i}]`, out);
+    for (let i = 0; i < Math.min(expected.length, actual.length); i++) differences(expected[i], actual[i], `${path}[${i}]`, out, valueChanges);
   } else if (expected && typeof expected === "object") {
     for (const k of new Set([...Object.keys(expected), ...Object.keys(actual)])) {
       if (!(k in actual)) out.push(`${path}.${k}: пропало поле`);
       else if (!(k in expected)) continue; // новые поля разрешены: фронт их игнорирует
-      else differences(expected[k], actual[k], `${path}.${k}`, out);
+      else differences(expected[k], actual[k], `${path}.${k}`, out, valueChanges);
     }
   } else if (expected !== actual) out.push(`${path}: ${short(expected)} → ${short(actual)}`);
   return out;
@@ -157,6 +160,7 @@ const short = (v) => {
 };
 
 const allowed = new Map(spec.requests.map((r) => [r.name, r.allowChanges ?? []]));
+const allowedValues = new Map(spec.requests.map((r) => [r.name, r.allowValueChanges ?? []]));
 
 function compare(expected, actual) {
   let failed = 0;
@@ -167,10 +171,10 @@ function compare(expected, actual) {
     total++;
     const problems = [];
     if (want.status !== got.status) problems.push(`HTTP ${want.status} → ${got.status}`);
-    // allowChanges: осознанные изменения (например, $.database после переезда на PostgreSQL).
+    // Прежние исключения по путям проверяются отдельно от точных переходов значений.
     const skip = allowed.get(name) ?? [];
     problems.push(
-      ...differences(want.body, got.body).filter(
+      ...differences(want.body, got.body, "$", [], allowedValues.get(name) ?? []).filter(
         (p) => !skip.some((prefix) => p.startsWith(prefix + ":") || p.startsWith(prefix + ".") || p.startsWith(prefix + "[")),
       ),
     );
@@ -185,27 +189,32 @@ function compare(expected, actual) {
   return failed;
 }
 
-const options = args();
-if (options.mode === "capture") {
-  mkdirSync(snapshots, { recursive: true });
-  const results = await runAll(options.base, options);
-  for (const [name, { status, body }] of results)
-    writeFileSync(join(snapshots, `${name}.json`), JSON.stringify({ status, body }, null, 2) + "\n");
-  const broken = [...results].filter(([, r]) => r.status === "NETWORK" || r.status >= 500);
-  console.log(`Сохранено эталонов: ${results.size} → contract/snapshots/`);
-  if (broken.length) {
-    console.log("Внимание, ответы с ошибкой сервера:", broken.map(([n]) => n).join(", "));
-    process.exit(1);
+async function main() {
+  const options = args();
+  if (options.mode === "capture") {
+    mkdirSync(snapshots, { recursive: true });
+    const results = await runAll(options.base, options);
+    for (const [name, { status, body }] of results)
+      writeFileSync(join(snapshots, `${name}.json`), JSON.stringify({ status, body }, null, 2) + "\n");
+    const broken = [...results].filter(([, r]) => r.status === "NETWORK" || r.status >= 500);
+    console.log(`Сохранено эталонов: ${results.size} → contract/snapshots/`);
+    if (broken.length) {
+      console.log("Внимание, ответы с ошибкой сервера:", broken.map(([n]) => n).join(", "));
+      process.exit(1);
+    }
+  } else if (options.mode === "check") {
+    const expected = new Map();
+    for (const r of spec.requests) {
+      if (options.only && !options.only.has(r.name)) continue;
+      const file = join(snapshots, `${r.name}.json`);
+      if (!existsSync(file)) throw new Error(`Нет эталона ${r.name}: сравнение неполно`);
+      expected.set(r.name, JSON.parse(readFileSync(file, "utf8")));
+    }
+    process.exit(compare(expected, await runAll(options.base, options)) ? 1 : 0);
+  } else {
+    const [left, right] = await Promise.all([runAll(options.base, options), runAll(options.against, options)]);
+    process.exit(compare(left, right) ? 1 : 0);
   }
-} else if (options.mode === "check") {
-  const expected = new Map();
-  for (const r of spec.requests) {
-    if (options.only && !options.only.has(r.name)) continue;
-    const file = join(snapshots, `${r.name}.json`);
-    if (existsSync(file)) expected.set(r.name, JSON.parse(readFileSync(file, "utf8")));
-  }
-  process.exit(compare(expected, await runAll(options.base, options)) ? 1 : 0);
-} else {
-  const [left, right] = await Promise.all([runAll(options.base, options), runAll(options.against, options)]);
-  process.exit(compare(left, right) ? 1 : 0);
 }
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) await main();

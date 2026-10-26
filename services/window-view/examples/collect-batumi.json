@@ -1,0 +1,8 @@
+{
+  "hotel": {"id": "osm:way:222982524", "name": "Radisson Blu Batumi", "lat": 41.65360865, "lon": 41.6376889},
+  "floor": 5,
+  "date": "2026-06-21",
+  "utc_offset_minutes": 240,
+  "radius_m": 1200,
+  "data_mode": "live"
+}

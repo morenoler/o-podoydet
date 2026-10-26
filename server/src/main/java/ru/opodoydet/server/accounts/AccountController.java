@@ -15,6 +15,7 @@ import ru.opodoydet.accounts.bookings.BookingService;
 import ru.opodoydet.accounts.listings.ListingService;
 import ru.opodoydet.accounts.photos.PhotoService;
 import ru.opodoydet.accounts.questions.QuestionService;
+import ru.opodoydet.accounts.clarifications.ClarificationService;
 import ru.opodoydet.server.config.DomainConfig.RuntimeEnv;
 import ru.opodoydet.server.web.JsonResponses;
 import ru.opodoydet.shared.Json;
@@ -31,6 +32,7 @@ public class AccountController {
   private final BookingService bookings;
   private final QuestionService questions;
   private final PhotoService photos;
+  private final ClarificationService clarifications;
   private final boolean enabled;
 
   AccountController(
@@ -39,12 +41,14 @@ public class AccountController {
       BookingService bookings,
       QuestionService questions,
       PhotoService photos,
+      ClarificationService clarifications,
       RuntimeEnv env) {
     this.auth = auth;
     this.listings = listings;
     this.bookings = bookings;
     this.questions = questions;
     this.photos = photos;
+    this.clarifications = clarifications;
     this.enabled = env.accountsEnabled();
   }
 
@@ -64,6 +68,7 @@ public class AccountController {
       }
       return route(ex, res, path, ex.getMethod());
     } catch (AccountProblem problem) {
+      if (problem.status == 413) res.setHeader("Connection", "close");
       return JsonResponses.send(problem.status, Json.obj("error", problem.getMessage()));
     }
   }
@@ -93,6 +98,8 @@ public class AccountController {
       String user = Json.str(auth.require(ex, "user"), "id");
       if (method.equals("GET") && path.equals("/api/account/bookings"))
         return JsonResponses.send(200, bookings.user(user));
+      if (method.equals("GET") && path.equals("/api/account/clarifications"))
+        return JsonResponses.send(200, clarifications.user(user));
       if (method.equals("GET") && path.equals("/api/account/questions"))
         return JsonResponses.send(200, questions.user(user));
       if (method.equals("POST")
@@ -116,9 +123,13 @@ public class AccountController {
       }
       if (method.equals("GET") && path.equals("/api/host/bookings"))
         return JsonResponses.send(200, bookings.host(host));
+      if (method.equals("GET") && path.equals("/api/host/clarifications"))
+        return JsonResponses.send(200, clarifications.host(host));
       if (method.equals("GET") && path.equals("/api/host/questions"))
         return JsonResponses.send(200, questions.host(host));
       if (method.equals("POST") && parts.length == 6) {
+        if (parts[3].equals("clarifications") && parts[5].equals("answers"))
+          return JsonResponses.send(200, clarifications.answer(host, parts[4], body(ex)));
         if (parts[3].equals("questions") && parts[5].equals("answer"))
           return JsonResponses.send(200, questions.answer(host, parts[4], body(ex)));
         if (parts[3].equals("bookings") && parts[5].equals("status"))
@@ -130,6 +141,8 @@ public class AccountController {
     if (parts.length == 4 && parts[2].equals("listings") && method.equals("GET"))
       return JsonResponses.send(200, listings.published(parts[3]));
     if (parts.length == 5 && parts[2].equals("listings")) {
+      if (parts[4].equals("clarifications") && method.equals("POST"))
+        return JsonResponses.send(201, clarifications.ask(Json.str(auth.require(ex, "user"), "id"), parts[3], body(ex)));
       if (parts[4].equals("questions")) {
         if (method.equals("GET")) return JsonResponses.send(200, questions.published(parts[3]));
         if (method.equals("POST"))

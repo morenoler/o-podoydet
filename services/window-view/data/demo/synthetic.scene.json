@@ -1,0 +1,224 @@
+{
+  "origin": {
+    "lat": 0,
+    "lon": 0
+  },
+  "radius_m": 1200,
+  "is_demo": true,
+  "buildings": [
+    {
+      "id": "demo:hotel",
+      "name": "demo:hotel",
+      "polygons": [
+        {
+          "outer": [
+            [
+              -8.99320363724538e-05,
+              -8.993203636009639e-05
+            ],
+            [
+              -8.99320363724538e-05,
+              8.993203636009639e-05
+            ],
+            [
+              8.99320363724538e-05,
+              8.993203636009639e-05
+            ],
+            [
+              8.99320363724538e-05,
+              -8.993203636009639e-05
+            ],
+            [
+              -8.99320363724538e-05,
+              -8.993203636009639e-05
+            ]
+          ],
+          "holes": []
+        }
+      ],
+      "height_m": 48,
+      "height_range_m": null,
+      "height_basis": "synthetic_known",
+      "min_height_m": 0,
+      "ground_elevation_m": 0,
+      "source_ids": [
+        "demo:scene"
+      ],
+      "tags": {
+        "building:levels": "15"
+      }
+    },
+    {
+      "id": "demo:east-building",
+      "name": "demo:east-building",
+      "polygons": [
+        {
+          "outer": [
+            [
+              -0.0001798640727449076,
+              0.000359728145497229
+            ],
+            [
+              -0.0001798640727449076,
+              0.0005395922182458435
+            ],
+            [
+              0.0001798640727449076,
+              0.0005395922182458435
+            ],
+            [
+              0.0001798640727449076,
+              0.000359728145497229
+            ],
+            [
+              -0.0001798640727449076,
+              0.000359728145497229
+            ]
+          ],
+          "holes": []
+        }
+      ],
+      "height_m": 25,
+      "height_range_m": null,
+      "height_basis": "synthetic_known",
+      "min_height_m": 0,
+      "ground_elevation_m": 0,
+      "source_ids": [
+        "demo:scene"
+      ],
+      "tags": {
+        "building:levels": "8"
+      }
+    },
+    {
+      "id": "demo:west-building",
+      "name": "demo:west-building",
+      "polygons": [
+        {
+          "outer": [
+            [
+              -0.0001798640727449076,
+              -0.0005395922182458435
+            ],
+            [
+              -0.0001798640727449076,
+              -0.000359728145497229
+            ],
+            [
+              0.0001798640727449076,
+              -0.000359728145497229
+            ],
+            [
+              0.0001798640727449076,
+              -0.0005395922182458435
+            ],
+            [
+              -0.0001798640727449076,
+              -0.0005395922182458435
+            ]
+          ],
+          "holes": []
+        }
+      ],
+      "height_m": 12,
+      "height_range_m": null,
+      "height_basis": "synthetic_known",
+      "min_height_m": 0,
+      "ground_elevation_m": 0,
+      "source_ids": [
+        "demo:scene"
+      ],
+      "tags": {
+        "building:levels": "4"
+      }
+    }
+  ],
+  "targets": [
+    {
+      "id": "demo:sea",
+      "kind": "sea",
+      "name": "demo:sea",
+      "lat": 0.0,
+      "lon": -0.004496601818630097,
+      "height_m": 0,
+      "elevation_m": 0,
+      "source_ids": [
+        "demo:scene"
+      ]
+    },
+    {
+      "id": "demo:tower",
+      "kind": "landmark",
+      "name": "demo:tower",
+      "lat": 0.0,
+      "lon": 0.0013489805456003978,
+      "height_m": 0,
+      "elevation_m": 80,
+      "source_ids": [
+        "demo:scene"
+      ]
+    },
+    {
+      "id": "demo:park",
+      "kind": "park",
+      "name": "demo:park",
+      "lat": -0.002697961091173614,
+      "lon": 0.0,
+      "height_m": 0,
+      "elevation_m": 0,
+      "source_ids": [
+        "demo:scene"
+      ]
+    },
+    {
+      "id": "demo:mountain",
+      "kind": "mountain",
+      "name": "demo:mountain",
+      "lat": 0.00899320363724538,
+      "lon": 0.0,
+      "height_m": 0,
+      "elevation_m": 250,
+      "source_ids": [
+        "demo:scene"
+      ]
+    },
+    {
+      "id": "demo:lake",
+      "kind": "water",
+      "name": "demo:lake",
+      "lat": 0.002697961091173614,
+      "lon": 0.002697961091172374,
+      "height_m": 0,
+      "elevation_m": 0,
+      "source_ids": [
+        "demo:scene"
+      ]
+    }
+  ],
+  "terrain": {
+    "flat_elevation_m": 0,
+    "samples": [],
+    "resolution_m": 1,
+    "radius_m": 1200,
+    "source_ids": [
+      "demo:flat"
+    ]
+  },
+  "sources": [
+    {
+      "id": "demo:scene",
+      "url": null,
+      "retrieved_at": null,
+      "source_updated_at": null,
+      "license": "Synthetic test fixture",
+      "method": "hand-authored synthetic geometry; not a real hotel"
+    }
+  ],
+  "completeness": {
+    "geometry_complete": true,
+    "osm_complete": false
+  },
+  "warnings": [
+    "Entire scene is synthetic, including sea, hotel and all buildings. No real-world claim."
+  ]
+}

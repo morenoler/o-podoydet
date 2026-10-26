@@ -26,10 +26,12 @@ public class SimulatedHotelier {
   private final HostDialogService dialog;
   private final QuestionPlanner planner;
   private final JsonNode script;
+  private final DemoHostGuard guard;
 
-  SimulatedHotelier(HostDialogService dialog, QuestionPlanner planner, ObjectMapper json) {
+  SimulatedHotelier(HostDialogService dialog, QuestionPlanner planner, ObjectMapper json, DemoHostGuard guard) {
     this.dialog = dialog;
     this.planner = planner;
+    this.guard = guard;
     try (InputStream input = getClass().getResourceAsStream("/knowledge/simulated-hosts.json")) {
       this.script = json.readTree(input);
     } catch (IOException e) {
@@ -38,6 +40,10 @@ public class SimulatedHotelier {
   }
 
   public Round answerOpenQuestions(String hotelId) {
+    guard.requireHotel(hotelId);
+    if (!script.path("is_demo").asBoolean(false)
+        || !script.path("hotels").path(hotelId).path("is_demo").asBoolean(false))
+      throw new IllegalArgumentException("Для этого вымышленного объекта нет демонстрационного сценария.");
     int planned = planner.plan(hotelId, 50).size();
     List<HostDialogService.AnswerResult> answers = new ArrayList<>();
     List<HostQuestion> open = dialog.queue(hotelId, List.of(HostQuestion.Status.open));

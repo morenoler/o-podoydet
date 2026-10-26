@@ -103,7 +103,7 @@ public class HostQuestion {
   }
 
   boolean acceptsAnswer() {
-    return status == Status.open || status == Status.unresolved;
+    return status == Status.open || status == Status.unresolved || status == Status.answered;
   }
 
   public Subject subject() {

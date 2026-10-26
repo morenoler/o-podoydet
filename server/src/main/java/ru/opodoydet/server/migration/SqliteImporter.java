@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ import ru.opodoydet.shared.Json;
 /**
  * Однократный перенос данных старого бэкенда из SQLite в PostgreSQL.
  *
- * <p>Если задан {@code LEGACY_DB_PATH} (npm-скрипты подставляют туда прежний {@code DB_PATH}) и
+ * <p>Если явно задан {@code LEGACY_DB_PATH} и
  * файл существует, при старте копируются: аккаунты и сессии, объявления и закрытые анкеты,
  * заявки, вопросы по объявлениям, загруженные фото, история помощника, демонстрационные вопросы
  * и ответы отельеров. Каталог отелей не копируется — он всегда загружается из набора данных.
@@ -82,10 +83,18 @@ public class SqliteImporter {
               "account_uploaded_photos",
               List.of("url", "owner_id", "mime", "width", "height", "byte_size", "created_at"),
               "created_at"),
-          new Copy("advisor_runs", "advisor_run", List.of("id", "created_at", "body"), "created_at"),
+          new Copy("account_listing_scopes", "account_listing_scopes", List.of("listing_id", "generation"), "listing_id"),
+          new Copy("account_clarifications", "account_clarifications",
+              List.of("id", "listing_id", "user_id", "feature", "question_text", "note", "trip", "context",
+                  "scope_fingerprint", "created_at", "version", "request_key", "payload_hash"), "created_at"),
+          new Copy("account_clarification_answers", "account_clarification_answers",
+              List.of("id", "clarification_id", "host_id", "version", "value", "answer_text", "observed_on",
+                  "recorded_at", "valid_from", "valid_to", "recheck_at", "scope_fingerprint", "supersedes",
+                  "superseded_by", "request_key", "payload_hash"), "recorded_at"),
+          new Copy("advisor_runs", "advisor_run", List.of("id", "created_at", "body", "owner_key", "region"), "created_at"),
           new Copy(
-              "questions", "catalog_question", List.of("id", "hotel_id", "room_id", "feature", "body"), "rowid"),
-          new Copy("drafts", "catalog_draft", List.of("id", "question_id", "body"), "rowid"));
+              "questions", "catalog_question", List.of("id", "hotel_id", "room_id", "feature", "body", "region"), "rowid"),
+          new Copy("drafts", "catalog_draft", List.of("id", "question_id", "body", "region"), "rowid"));
 
   private final JdbcClient jdbc;
   private final TransactionTemplate tx;
@@ -105,7 +114,7 @@ public class SqliteImporter {
     Path file = Path.of(path).toAbsolutePath().normalize();
     if (!Files.isRegularFile(file)) return;
     String marker =
-        "sqlite-import:" + file + ":" + Files.size(file) + ":" + Files.getLastModifiedTime(file).toMillis();
+        "sqlite-import:v2:" + file + ":" + Files.size(file) + ":" + Files.getLastModifiedTime(file).toMillis();
     boolean done =
         jdbc.sql("SELECT count(*) FROM migration_marker WHERE name = ?").param(marker).query(Long.class).single() > 0;
     if (done) return;
@@ -118,16 +127,18 @@ public class SqliteImporter {
       log.warn("Не удалось перенести данные из {}: {}", file, failure.getMessage());
       return;
     }
-    jdbc.sql("INSERT INTO migration_marker (name, applied_at) VALUES (?, ?)")
+    jdbc.sql("INSERT INTO migration_marker (name, applied_at) VALUES (?, ?) ON CONFLICT DO NOTHING")
         .params(marker, Timestamp.from(Instant.now()))
         .update();
     log.info("Перенесено из {}: {}", file, copied);
     if (copied.getOrDefault("evidence", 0) > 0) resolver.resolveAll();
   }
 
-  Map<String, Integer> importFile(Path file) throws SQLException {
+  public Map<String, Integer> importFile(Path file) throws SQLException {
     Map<String, Integer> copied = new LinkedHashMap<>();
     try (Connection sqlite = DriverManager.getConnection("jdbc:sqlite:" + file, sqliteProps())) {
+      // A live SQLite source must be one read snapshot across all related tables.
+      sqlite.setAutoCommit(false);
       Set<String> tables = tables(sqlite);
       tx.executeWithoutResult(
           status -> {
@@ -151,9 +162,26 @@ public class SqliteImporter {
 
   private int copyTable(Connection sqlite, Copy copy) throws SQLException {
     Set<String> available = columns(sqlite, copy.from());
-    List<String> columns = copy.columns().stream().filter(available::contains).toList();
+    List<String> columns = new ArrayList<>(copy.columns().stream().filter(available::contains).toList());
+    List<String> expressions = new ArrayList<>(columns);
+    // Main stored ownership separately, keyed by BOTH region and run id.
+    if (copy.from().equals("advisor_runs") && !available.contains("owner_key")
+        && available.contains("region") && tables(sqlite).contains("advisor_run_owners")) {
+      columns.add("owner_key");
+      expressions.add("COALESCE((SELECT o.owner_key FROM advisor_run_owners o WHERE o.region=advisor_runs.region AND o.run_id=advisor_runs.id),'legacy-unowned')");
+    }
+    if (copy.from().equals("account_listings") && tables(sqlite).contains("account_listing_search_profiles")) {
+      Set<String> profileColumns = columns(sqlite, "account_listing_search_profiles");
+      for (String name : List.of("floor", "window_directions")) {
+        if (!available.contains(name) && profileColumns.contains(name)) {
+          columns.add(name);
+          String value = "(SELECT p." + name + " FROM account_listing_search_profiles p WHERE p.listing_id=account_listings.id)";
+          expressions.add(name.equals("window_directions") ? "COALESCE(" + value + ",'[]')" : value);
+        }
+      }
+    }
     String select =
-        "SELECT " + String.join(",", columns) + " FROM " + copy.from() + " ORDER BY " + copy.order();
+        "SELECT " + String.join(",", expressions) + " FROM " + copy.from() + " ORDER BY " + copy.order();
     String insert =
         "INSERT INTO "
             + copy.to()
@@ -168,78 +196,136 @@ public class SqliteImporter {
       while (rows.next()) {
         Object[] values = new Object[columns.size()];
         for (int i = 0; i < values.length; i++) values[i] = rows.getObject(i + 1);
+        verifyRegionIdentity(copy, columns, values);
         count += jdbc.sql(insert).params(values).update();
+        // Also check after INSERT: a concurrent import may have won the unique id.
+        verifyRegionIdentity(copy, columns, values);
       }
     }
     return count;
   }
 
-  /** Ответы из демонстрационного кабинета (не из набора данных) — как доказательства с методом host. */
+  /** PostgreSQL uses global ids; SQLite used (region,id). Never silently lose a colliding region. */
+  private void verifyRegionIdentity(Copy copy, List<String> columns, Object[] values) throws SQLException {
+    if (!copy.columns().contains("region")) return;
+    String id = Objects.toString(values[columns.indexOf("id")], "");
+    int regionIndex = columns.indexOf("region");
+    String region = regionIndex < 0 ? "" : Objects.toString(values[regionIndex], "");
+    var existing = jdbc.sql("SELECT region FROM " + copy.to() + " WHERE id = ?")
+        .param(id).query(String.class).optional();
+    if (existing.isPresent() && !existing.get().equals(region))
+      throw new SQLException("Region/id collision in " + copy.to() + ": " + id);
+    if (copy.to().equals("catalog_question")) {
+      String hotel = Objects.toString(values[columns.indexOf("hotel_id")], "");
+      var hotelRegion = jdbc.sql("SELECT region FROM hotel WHERE id = ?")
+          .param(hotel).query(String.class).optional();
+      if (hotelRegion.isPresent() && !hotelRegion.get().equals(region))
+        throw new SQLException("Question/hotel region collision: " + id);
+    }
+    if (copy.to().equals("catalog_draft")) {
+      String question = Objects.toString(values[columns.indexOf("question_id")], "");
+      var questionRegion = jdbc.sql("SELECT region FROM catalog_question WHERE id = ?")
+          .param(question).query(String.class).optional();
+      if (questionRegion.isPresent() && !questionRegion.get().equals(region))
+        throw new SQLException("Draft/question region collision: " + id);
+    }
+  }
+
+  private record HostFact(JsonNode raw, String region, boolean active) {
+    String id() { return Json.str(raw, "id"); }
+    String hotel() { return Json.str(raw, "hotelId"); }
+    String room() { return raw.hasNonNull("roomId") ? Json.str(raw, "roomId") : null; }
+    String feature() { return Json.str(raw, "feature"); }
+  }
+
+  /** Non-seed SQLite assertions retain their region and exact subject during migration. */
   private int copyHostFacts(Connection sqlite) throws SQLException {
-    Set<String> hotels = new HashSet<>(jdbc.sql("SELECT id FROM hotel").query(String.class).list());
+    Map<String, String> hotels = new LinkedHashMap<>();
+    jdbc.sql("SELECT id, region FROM hotel").query((row, number) -> {
+      hotels.put(row.getString("id"), row.getString("region"));
+      return row.getString("id");
+    }).list();
     Set<String> characteristics =
         new HashSet<>(jdbc.sql("SELECT code FROM characteristic").query(String.class).list());
-    List<JsonNode> facts = new ArrayList<>();
+    Set<String> available = columns(sqlite, "facts");
+    List<HostFact> facts = new ArrayList<>();
     try (var statement = sqlite.createStatement();
-        ResultSet rows = statement.executeQuery("SELECT body, active FROM facts WHERE seeded = 0 ORDER BY rowid")) {
+        ResultSet rows = statement.executeQuery("SELECT * FROM facts WHERE seeded = 0 ORDER BY rowid")) {
       while (rows.next()) {
-        com.fasterxml.jackson.databind.node.ObjectNode fact =
-            (com.fasterxml.jackson.databind.node.ObjectNode) Json.read(rows.getString(1));
-        fact.put("__active", rows.getInt(2) == 1);
+        JsonNode raw = Json.read(rows.getString("body"));
+        if (!raw.isObject() || Json.str(raw, "id").isBlank())
+          throw new SQLException("Invalid SQLite fact identity");
+        String region = available.contains("region") ? Objects.toString(rows.getString("region"), "") : "";
+        HostFact fact = new HostFact(raw, region, rows.getInt("active") == 1);
+        // The JSON body cannot override the source table's identity or subject.
+        for (String column : List.of("id", "hotel_id", "room_id", "feature")) {
+          String expected = switch (column) {
+            case "id" -> fact.id(); case "hotel_id" -> fact.hotel();
+            case "room_id" -> fact.room(); default -> fact.feature();
+          };
+          if (available.contains(column) && !Objects.equals(rows.getString(column), expected))
+            throw new SQLException("SQLite fact column/body mismatch: " + fact.id() + "/" + column);
+        }
         facts.add(fact);
       }
     }
-    int count = 0;
-    for (JsonNode fact : facts) {
-      String hotel = Json.str(fact, "hotelId"), feature = Json.str(fact, "feature");
-      if (!hotels.contains(hotel) || !characteristics.contains(feature)) continue;
-      String room = fact.hasNonNull("roomId") ? Json.str(fact, "roomId") : null;
+    List<HostFact> inserted = new ArrayList<>();
+    for (HostFact fact : facts) {
+      verifyEvidenceIdentity(fact.id(), fact);
+      String hotel = fact.hotel(), feature = fact.feature(), room = fact.room();
+      if (!hotels.containsKey(hotel)) continue;
+      if (!hotels.get(hotel).equals(fact.region()))
+        throw new SQLException("Fact/hotel region collision: " + fact.id());
+      if (!characteristics.contains(feature)) continue;
       if (room != null
           && jdbc.sql("SELECT count(*) FROM room WHERE hotel_id = ? AND id = ?")
-                  .params(hotel, room)
-                  .query(Long.class)
-                  .single()
-              == 0) continue;
-      com.fasterxml.jackson.databind.node.ObjectNode raw = fact.deepCopy();
-      boolean active = raw.path("__active").asBoolean(true);
-      raw.remove("__active");
-      count +=
-          jdbc.sql(
+                  .params(hotel, room).query(Long.class).single() == 0) continue;
+      JsonNode raw = fact.raw();
+      int added = jdbc.sql(
                   """
                   INSERT INTO evidence (id, hotel_id, room_id, characteristic, value, method, source_name,
-                    quote, confidence_level, confidence_reason, obtained_at, expires_at, demo, origin,
-                    active, raw)
-                  VALUES (?, ?, ?, ?, CAST(? AS jsonb), 'host', ?, ?, ?, ?, ?, ?, ?, 'host', ?, ?)
+                    source_url, quote, confidence_level, confidence_reason, obtained_at, source_date,
+                    expires_at, demo, origin, active, raw)
+                  VALUES (?, ?, ?, ?, CAST(? AS jsonb), 'host', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'host', ?, ?)
                   ON CONFLICT DO NOTHING
                   """)
-              .params(
-                  Json.str(raw, "id"),
-                  hotel,
-                  room,
-                  feature,
+              .params(fact.id(), hotel, room, feature,
                   raw.hasNonNull("value") ? Json.write(raw.get("value")) : null,
-                  raw.path("source").asText(null),
-                  raw.path("quote").asText(null),
+                  raw.path("source").asText(null), raw.path("sourceUrl").asText(null), raw.path("quote").asText(null),
                   Set.of("low", "medium", "high").contains(Json.str(raw, "confidence"))
-                      ? Json.str(raw, "confidence")
-                      : null,
+                      ? Json.str(raw, "confidence") : null,
                   raw.path("confidenceReason").asText(null),
-                  timestamp(Json.str(raw, "obtainedAt")),
+                  timestamp(Json.str(raw, "obtainedAt")), timestamp(Json.str(raw, "sourceDate")),
                   timestamp(Json.str(raw, "expiresAt")),
                   !raw.path("demo").isBoolean() || raw.path("demo").asBoolean(),
-                  active,
-                  Json.write(raw))
-              .update();
+                  fact.active(), Json.write(raw)).update();
+      verifyEvidenceIdentity(fact.id(), fact);
+      if (added == 1) inserted.add(fact);
     }
-    // Замены внутри перенесённых ответов (supersededBy) восстанавливаем вторым проходом.
-    for (JsonNode fact : facts)
-      if (fact.hasNonNull("supersededBy"))
-        jdbc.sql(
-                "UPDATE evidence SET superseded_by = ? WHERE id = ? AND EXISTS (SELECT 1 FROM evidence"
-                    + " WHERE id = ?)")
-            .params(Json.str(fact, "supersededBy"), Json.str(fact, "id"), Json.str(fact, "supersededBy"))
-            .update();
-    return count;
+    // Only rows inserted by this import may be changed. Existing PostgreSQL corrections win.
+    for (HostFact fact : inserted) {
+      if (!fact.raw().hasNonNull("supersededBy")) continue;
+      String replacement = Json.str(fact.raw(), "supersededBy");
+      if (replacement.equals(fact.id()) || !verifyEvidenceIdentity(replacement, fact))
+        throw new SQLException("Invalid fact replacement: " + fact.id());
+      jdbc.sql("UPDATE evidence SET superseded_by = ? WHERE id = ?")
+          .params(replacement, fact.id()).update();
+    }
+    return inserted.size();
+  }
+
+  /** Returns false for absent evidence; a collision must abort the entire import transaction. */
+  private boolean verifyEvidenceIdentity(String id, HostFact expected) throws SQLException {
+    var found = jdbc.sql("SELECT e.hotel_id, e.room_id, e.characteristic, h.region FROM evidence e"
+            + " JOIN hotel h ON h.id=e.hotel_id WHERE e.id=?")
+        .param(id).query((row, number) ->
+            row.getString("hotel_id").equals(expected.hotel())
+                && Objects.equals(row.getString("room_id"), expected.room())
+                && row.getString("characteristic").equals(expected.feature())
+                && row.getString("region").equals(expected.region())).optional();
+    if (found.isPresent() && !found.get())
+      throw new SQLException("Evidence subject/region collision: " + id);
+    return found.isPresent();
   }
 
   private static Timestamp timestamp(String value) {

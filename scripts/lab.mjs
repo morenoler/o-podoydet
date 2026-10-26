@@ -30,18 +30,13 @@ try {
     process.env.PORT = process.env.LAB_PORT || "8081";
     process.env.LAB_MODE = "true";
     process.env.ACCOUNT_MODE = "true";
-    const mainDatabase = process.env.DB_PATH || ".local/busan.sqlite3";
-    process.env.DB_PATH = process.env.LAB_DB_PATH || ".local/lab.sqlite3";
-    process.env.UPLOADS_PATH = process.env.LAB_UPLOADS_PATH || ".local/lab-uploads";
-    // Отдельная схема PostgreSQL: опыты лаборатории не смешиваются с основным сайтом.
+    const mainSchema = process.env.DB_SCHEMA || "public";
     process.env.DB_SCHEMA = process.env.LAB_DB_SCHEMA || "lab";
-    const canonicalPath = (path) => {
-      const absolute = resolve(root, path);
-      return process.platform === "win32" ? absolute.toLowerCase() : absolute;
-    };
-    if (canonicalPath(process.env.DB_PATH) === canonicalPath(mainDatabase)) {
-      throw new Error("База лаборатории должна отличаться от базы основного сайта.");
-    }
+    if (process.env.DB_SCHEMA === mainSchema)
+      throw new Error("Схема лаборатории должна отличаться от схемы основного сайта.");
+    process.env.UPLOADS_PATH = process.env.LAB_UPLOADS_PATH || ".local/lab-uploads";
+    // Importing any historical data requires an explicit lab-specific choice.
+    process.env.LEGACY_DB_PATH = process.env.LAB_LEGACY_DB_PATH || "";
     const { writeLabDataset } = await import("./lab-data.ts");
     const labDataPath = resolve(root, ".local/lab-hotels.json");
     await writeLabDataset(

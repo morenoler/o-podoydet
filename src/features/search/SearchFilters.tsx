@@ -4,6 +4,14 @@ import { Modal } from "../../shared/ui/Modal";
 import { PreferencePicker } from "../preferences/PreferencePicker";
 import { Link } from "react-router-dom";
 import { canSearch } from "./searchTrip";
+import { AdmissionModePicker } from "./AdmissionModePicker";
+import type { FeatureId } from "../../../shared/types";
+
+const groups: { title: string; ids: FeatureId[] }[] = [
+  { title: "Пляж и дорога", ids: ["beach_walk", "step_free_route"] },
+  { title: "Номер и размещение", ids: ["family", "step_free_access", "courtyard"] },
+  { title: "Окружение", ids: ["area_safety", "clean_air", "low_noise"] },
+];
 
 export function SearchFilters({
   trip,
@@ -22,14 +30,20 @@ export function SearchFilters({
       title="Настроить поиск"
       className="search-filters-modal"
     >
-      <p className="search-dialog-intro">
-        Выберите условия, которые важны в поездке. Отметка «Обязательно»
-        исключит неподходящие варианты.
-      </p>
-      <PreferencePicker
-        preferences={draft.preferences}
-        onChange={(preferences) => setDraft({ ...draft, preferences })}
-      />
+      <div className="search-filters-body">
+        <AdmissionModePicker value={draft.admissionMode}
+          onChange={(admissionMode) => setDraft({ ...draft, admissionMode })} />
+        <p className="search-dialog-intro">
+          «Желательно» влияет на порядок. «Обязательно» исключает известные
+          несоответствия. Недостающие сведения учитываем по выбранному режиму.
+        </p>
+        {groups.map((group) => (
+          <section className="search-filter-group" key={group.title}>
+            <h3>{group.title}</h3>
+            <PreferencePicker preferences={draft.preferences} ids={group.ids}
+              onChange={(preferences) => setDraft({ ...draft, preferences })} />
+          </section>
+        ))}
       <label className="field search-wish-field">
         <span>Что ещё учесть?</span>
         <textarea
@@ -37,7 +51,7 @@ export function SearchFilters({
           maxLength={1500}
           value={draft.text}
           onChange={(event) => setDraft({ ...draft, text: event.target.value })}
-          placeholder="Например: нужен второй этаж и окна на восток"
+          placeholder="Например: не выше 3 этажа, окна на восток"
         />
       </label>
       <p className="search-dialog-intro">
@@ -59,7 +73,9 @@ export function SearchFilters({
             : "Выбрать даты и сценарий"}
         </Link>
       </p>
-      <div className="search-dialog-footer">
+      </div>
+      <div className="search-dialog-footer search-filters-footer">
+        <span className="search-filters-count">Выбрано: {draft.preferences.length}</span>
         <button
           className="button secondary"
           type="button"

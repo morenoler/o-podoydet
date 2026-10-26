@@ -94,6 +94,16 @@ public class SeedImporter {
 
     return tx.execute(
         status -> {
+          // Serialize imports and reject cross-region global-ID collisions before any mutation.
+          jdbc.sql("SELECT pg_advisory_xact_lock(763298412)").query((rs, n) -> 1).single();
+          for (JsonNode hotel : seed.path("hotels"))
+            if (jdbc.sql("SELECT count(*) FROM hotel WHERE id = ? AND region <> ?")
+                .params(text(hotel, "id"), region).query(Long.class).single() > 0)
+              throw new IllegalArgumentException("Идентификатор отеля уже принадлежит другому региону: " + text(hotel, "id"));
+          for (JsonNode fact : seed.path("facts"))
+            if (jdbc.sql("SELECT count(*) FROM evidence e JOIN hotel h ON h.id = e.hotel_id WHERE e.id = ? AND h.region <> ?")
+                .params(text(fact, "id"), region).query(Long.class).single() > 0)
+              throw new IllegalArgumentException("Идентификатор факта уже принадлежит другому региону: " + text(fact, "id"));
           Instant now = clock.instant();
           upsertCharacteristics();
           ObjectNode metadata = seed.deepCopy();
@@ -108,7 +118,10 @@ public class SeedImporter {
               .params(region, write(metadata), policy, java.sql.Timestamp.from(now))
               .update();
 
-          jdbc.sql("UPDATE evidence SET active = FALSE WHERE origin = 'seed'").update();
+          jdbc.sql("INSERT INTO catalog_runtime(singleton, region) VALUES (TRUE, ?) ON CONFLICT(singleton) DO UPDATE SET region = excluded.region")
+              .param(region).update();
+          jdbc.sql("UPDATE evidence SET active = FALSE WHERE origin = 'seed' AND hotel_id IN (SELECT id FROM hotel WHERE region = ?)")
+              .param(region).update();
 
           int rooms = 0;
           Set<String> roomKeys = new HashSet<>();
@@ -169,7 +182,12 @@ public class SeedImporter {
           Set<String> methods =
               Set.copyOf(jdbc.sql("SELECT method FROM source_method").query(String.class).list());
           Set<String> hotels =
-              Set.copyOf(jdbc.sql("SELECT id FROM hotel").query(String.class).list());
+              Set.copyOf(jdbc.sql("SELECT id FROM hotel WHERE region = ? AND active")
+                  .param(region).query(String.class).list());
+          // Partial snapshots retain prior categories, as in main, but never cross regions.
+          roomKeys.addAll(jdbc.sql("SELECT r.hotel_id, r.id FROM room r JOIN hotel h ON h.id = r.hotel_id"
+                  + " WHERE h.region = ? AND h.active AND r.active")
+              .param(region).query((rs, n) -> rs.getString(1) + "\u0000" + rs.getString(2)).list());
           int evidence = 0;
           for (JsonNode fact : seed.path("facts")) {
             String id = text(fact, "id");
@@ -221,7 +239,7 @@ public class SeedImporter {
                     fact.path("source").asText(null),
                     fact.path("sourceUrl").asText(null),
                     fact.path("quote").asText(null),
-                    LEVELS.contains(level) ? level : null,
+                    level != null && LEVELS.contains(level) ? level : null,
                     fact.path("confidenceReason").asText(null),
                     timestamp(fact, "obtainedAt"),
                     timestamp(fact, "sourceDate"),

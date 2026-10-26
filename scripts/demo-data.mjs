@@ -1,3 +1,4 @@
+// Synthetic SQLite import fixture only. Spring runtime uses PostgreSQL and explicit LEGACY_DB_PATH.
 import assert from "node:assert/strict";
 import {
   pbkdf2Sync,

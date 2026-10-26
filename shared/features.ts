@@ -80,7 +80,7 @@ export const features: Record<
   },
   clean_air: {
     label: "Чистый воздух",
-    detail: "US AQI до 50: прогноз или оценка по свежим данным",
+    detail: "US AQI до 50 по прогнозу на все даты поездки",
     scope: "hotel",
     evaluator: "max",
     threshold: 50,

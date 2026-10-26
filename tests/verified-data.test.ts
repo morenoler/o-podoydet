@@ -10,7 +10,7 @@ const inputs = [
   "data/verified-rooms-research.json",
   "data/verified-access-research.json",
 ].map((p) => JSON.parse(readFileSync(p, "utf8")));
-const now = new Date("2026-10-24T23:00:00Z");
+const now = new Date("2026-10-25T23:00:00Z");
 const data = prepareVerifiedDataset(base, inputs, now);
 const trip: Trip = {
   region: "Пусан",
@@ -83,7 +83,7 @@ test("historical demonstration answers cannot confirm or reject a real room", ()
   assert.equal(evaluate([real, demo], pref, room, trip, now).status, "match");
   assert.equal(evaluate([demo], pref, room, trip, now).status, "unknown");
 });
-test("missing capacity is estimated and conditional extra occupancy does not pass", () => {
+test("unknown capacity and age-dependent occupancy do not become confirmed capacity", () => {
   const unknown = data.hotels.find(
     (h) => h.rooms[0].evidenceStatus === "unknown",
   )!;
@@ -92,10 +92,13 @@ test("missing capacity is estimated and conditional extra occupancy does not pas
     "excluded",
   );
   const conditional = data.hotels.find((h) =>
-    h.rooms.some((r) => r.capacityMayVary),
+    h.rooms.some((r) => r.capacityMayVary && r.capacity === 3),
   )!;
+  // Another category in this hotel may legitimately hold four guests (Ondol
+  // Suite); isolate the conditional category whose capacity is under test.
+  const conditionalOnly = { ...conditional, rooms: conditional.rooms.filter(r => r.capacityMayVary && r.capacity === 3) };
   const match = rankHotels(
-    [conditional],
+    [conditionalOnly],
     data.facts,
     [],
     { ...trip, adults: 2, children: 2 },
@@ -126,4 +129,33 @@ test("partial route evidence explains missing verification without becoming a bo
     ).status,
     "match",
   );
+});
+
+test("the collected Ondol Suite supports four guests without inventing a physical room or extra-bed permission", () => {
+  const hotel = data.hotels.find(h => h.id === "way-627150752")!;
+  const room = hotel.rooms.find(r => r.id.endsWith("-real-ondol-suite"))!;
+  assert.equal(room.capacity, 4);
+  assert.equal(room.scope, "room_category");
+  assert.ok(room.occupancyRules?.some(r => r.maxGuests === 5 && r.childMaxAge === 12));
+  const result = rankHotels([{ ...hotel, rooms: [room] }], data.facts,
+    [{ feature: "family", required: true }], { ...trip, adults: 2, children: 2 }, now)[0];
+  assert.equal(result.best.status, "fits");
+  assert.equal(result.best.capacityAssumed, false);
+  assert.equal(result.best.criteria[0].decisionBasis, "evidence");
+  const fifth = rankHotels([{ ...hotel, rooms: [room] }], data.facts, [],
+    { ...trip, adults: 2, children: 3 }, now)[0];
+  assert.equal(fifth.best.status, "excluded");
+  assert.equal(fifth.best.capacityEvidenceStatus, "unknown");
+});
+
+test("new sources never turn a mixed view, a theme or a lift into courtyard or complete accessibility", () => {
+  for (const feature of ["courtyard", "step_free_access"] as const) {
+    assert.equal(data.facts.filter(f => f.feature === feature && f.value === true).length, 0);
+  }
+  const shilla = data.hotels.find(h => h.id === "way-627150752")!;
+  assert.equal(shilla.rooms.length, 9);
+  assert.equal(shilla.rooms.find(r => r.id.endsWith("premier-deluxe-family-twin"))?.occupancyRules?.[0].maxGuests, 4);
+  const grand = data.hotels.find(h => h.id === "way-843161717")!;
+  assert.equal(grand.rooms.length, 4);
+  assert.ok(grand.rooms.every(r => r.capacity === null && r.occupancyRules?.[0].childMaxAge === 12));
 });

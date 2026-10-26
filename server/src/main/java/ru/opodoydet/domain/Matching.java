@@ -189,6 +189,7 @@ public final class Matching {
     List<JsonNode> matches = new ArrayList<>();
     Comparator<JsonNode> roomOrder =
         Comparator.comparingInt((JsonNode r) -> ORDER.get(Json.str(r, "status")))
+            .thenComparing(r -> r.path("provisional").asBoolean())
             .thenComparing(
                 Comparator.comparingInt((JsonNode r) -> r.path("score").asInt()).reversed());
     for (JsonNode hotel : hotels) {
@@ -215,16 +216,7 @@ public final class Matching {
                                     policy),
                                 hotel))
                 .toList();
-        ObjectNode capacity = BinaryDecisionPolicy.capacity(hotel, room, trip);
-        String state =
-            Json.str(capacity, "capacityStatus").equals("mismatch")
-                    || criteria.stream()
-                        .anyMatch(
-                            c ->
-                                c.path("required").asBoolean()
-                                    && Json.str(c, "status").equals("mismatch"))
-                ? "excluded"
-                : "fits";
+        ObjectNode capacity = BinaryDecisionPolicy.capacity(hotel, room, trip, now);
         int score =
             criteria.stream()
                 .mapToInt(
@@ -237,7 +229,8 @@ public final class Matching {
                                 : -2)
                 .sum();
         ObjectNode roomMatch =
-            Json.obj("room", room, "criteria", criteria, "status", state, "score", score);
+            Json.obj("room", room, "criteria", criteria, "score", score);
+        roomMatch.setAll(AdmissionPolicy.decide(capacity, criteria, trip));
         roomMatch.setAll(capacity);
         rooms.add(roomMatch);
       }

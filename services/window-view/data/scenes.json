@@ -1,0 +1,20 @@
+{
+  "synthetic": {
+    "path": "data/demo/synthetic.scene.json",
+    "sha256": "e47b3ee6937ee2c1685eecad5811ece6a1ea493c1f9fc01d82a95826202c30ef",
+    "is_demo": true,
+    "description": "Synthetic room/floor/obstacle regression scene"
+  },
+  "batumi-radisson": {
+    "path": "data/open/batumi-radisson.scene.json.gz",
+    "sha256": "dcd7725949fbabee56c7ece49cb37b00960c27d408517c05d87d17f780a2bb72",
+    "is_demo": false,
+    "description": "Public OSM + Open-Meteo snapshot: Radisson Blu Batumi (retained regression snapshot); no physical room geometry verified"
+  },
+  "busan-haeundae": {
+    "path": "data/open/busan-haeundae.scene.json.gz",
+    "sha256": "9a403807fcfc9db3c305b390d1bd074f3a41f12dfcf0013c91a78e8f3045a64b",
+    "is_demo": false,
+    "description": "Public OSM + Open-Meteo snapshot: Busan / Haeundae, centred on Shilla Stay; no physical room geometry verified"
+  }
+}

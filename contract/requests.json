@@ -15,8 +15,12 @@
       "name": "health",
       "method": "GET",
       "path": "/api/health",
-      "allowChanges": [
-        "$.database"
+      "allowValueChanges": [
+        {
+          "path": "$.database",
+          "from": "SQLite 3",
+          "to": "PostgreSQL 16"
+        }
       ]
     },
     {
@@ -78,7 +82,14 @@
       "name": "search-plain",
       "method": "POST",
       "path": "/api/search",
-      "trip": {}
+      "trip": {},
+      "allowValueChanges": [
+        {
+          "path": "$.trace[2].tool",
+          "from": "SQLite 3",
+          "to": "PostgreSQL"
+        }
+      ]
     },
     {
       "name": "search-sea",
@@ -98,7 +109,14 @@
             "required": false
           }
         ]
-      }
+      },
+      "allowValueChanges": [
+        {
+          "path": "$.trace[2].tool",
+          "from": "SQLite 3",
+          "to": "PostgreSQL"
+        }
+      ]
     },
     {
       "name": "search-family-required",
@@ -122,7 +140,14 @@
             "required": false
           }
         ]
-      }
+      },
+      "allowValueChanges": [
+        {
+          "path": "$.trace[2].tool",
+          "from": "SQLite 3",
+          "to": "PostgreSQL"
+        }
+      ]
     },
     {
       "name": "search-quiet",
@@ -142,7 +167,14 @@
             "required": false
           }
         ]
-      }
+      },
+      "allowValueChanges": [
+        {
+          "path": "$.trace[2].tool",
+          "from": "SQLite 3",
+          "to": "PostgreSQL"
+        }
+      ]
     },
     {
       "name": "search-all-scenarios",
@@ -172,7 +204,14 @@
             "required": false
           }
         ]
-      }
+      },
+      "allowValueChanges": [
+        {
+          "path": "$.trace[2].tool",
+          "from": "SQLite 3",
+          "to": "PostgreSQL"
+        }
+      ]
     },
     {
       "name": "search-text",
@@ -183,7 +222,14 @@
           "family"
         ],
         "text": "Ребёнок спит днём. Нужен номер во двор и дорога к пляжу без лестниц."
-      }
+      },
+      "allowValueChanges": [
+        {
+          "path": "$.trace[2].tool",
+          "from": "SQLite 3",
+          "to": "PostgreSQL"
+        }
+      ]
     },
     {
       "name": "search-text-conflict",
@@ -197,7 +243,14 @@
             "required": true
           }
         ]
-      }
+      },
+      "allowValueChanges": [
+        {
+          "path": "$.trace[2].tool",
+          "from": "SQLite 3",
+          "to": "PostgreSQL"
+        }
+      ]
     },
     {
       "name": "search-big-party",
@@ -212,7 +265,14 @@
             "required": true
           }
         ]
-      }
+      },
+      "allowValueChanges": [
+        {
+          "path": "$.trace[2].tool",
+          "from": "SQLite 3",
+          "to": "PostgreSQL"
+        }
+      ]
     },
     {
       "name": "search-bad-dates",
@@ -545,7 +605,14 @@
             "required": false
           }
         ]
-      }
+      },
+      "allowValueChanges": [
+        {
+          "path": "$.trace[2].tool",
+          "from": "SQLite 3",
+          "to": "PostgreSQL"
+        }
+      ]
     },
     {
       "name": "guest-register",

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "sourceId": "josun-familySuite",
+  "hotelId": "way-843161717",
+  "url": "https://gjb.josunhotel.com/rooms/familySuite.do",
+  "obtainedAt": "2026-10-25T09:05:19.873Z",
+  "sourceUpdatedAt": null,
+  "responseSha256": "f4dee0e3fca8aeb7bfa242b6a8de6563c6ebad6dd10bb1f7e0e54b726c2da196",
+  "responseBytes": 90786,
+  "parserVersion": "official-html-v1",
+  "projection": {
+    "name": "Family Corner Suite",
+    "capacity": null,
+    "family": true,
+    "publishedView": "오션뷰(리빙룸)",
+    "excerpts": [
+      "Family Corner Suite",
+      "오션뷰(리빙룸)"
+    ],
+    "evidenceSelectors": {
+      "name": "#container .topViewCont strong.tit",
+      "publishedView": ".propertyInfo dt=VIEW + dd",
+      "capacity": "No category-specific general maximum is published in this fieldset"
+    },
+    "limitations": [
+      "Детская/семейная категория подтверждена названием и описанием; общий максимум категории не установлен.",
+      "Море в оформлении Kids не является видом из окна; импортируется только поле VIEW.",
+      "Вместимость lounge и число кроватей не используются как вместимость номера.",
+      "Непрерывный путь от улицы до номера без ступеней не подтверждён."
+    ]
+  },
+  "projectionSha256": "adabe8eed03e237cbd4d98ce09b03062673dc2545f2d69914d53d3fc67b5af6a",
+  "method": "official",
+  "demo": false,
+  "cacheLimitations": "Bounded extracted fields and <=25 words of excerpts are retained. Full HTML is not distributed. The response hash cannot be recomputed offline; projection integrity can. A fresh collection is required to rerun HTML extraction."
+}

@@ -73,6 +73,31 @@ class AdvisorTests(unittest.TestCase):
         self.assertEqual(result["report"]["outcome"], "clarification_needed")
         self.assertEqual(result["report"]["candidateIds"], [])
 
+    def test_explore_admits_only_explicit_provisional_unknowns_and_preserves_cautions(self):
+        for raw in ("unknown", "stale"):
+            item = candidate(provisional=True, criteria=[evidence(status="mismatch", evidenceStatus=raw, assumed=True)])
+            original = context(trip={"admissionMode":"explore"}, candidates=[item])
+            before = copy.deepcopy(original)
+            report = self.engine().execute(original)["report"]
+            self.assertEqual(report["outcome"], "shortlist")
+            self.assertEqual(report["candidateIds"], ["c1"])
+            self.assertIn("предварительные", report["summary"])
+            self.assertEqual(report["cautions"], [{"candidateId":"c1", "evidenceIds":["e1"]}])
+            self.assertEqual(original, before)
+            for mode in ({}, {"admissionMode":"verified"}):
+                self.assertEqual(self.engine().execute(context(trip=mode, candidates=[item]))["report"]["outcome"], "clarification_needed")
+            item["provisional"] = False
+            self.assertEqual(self.engine().execute(context(trip={"admissionMode":"explore"}, candidates=[item]))["report"]["outcome"], "clarification_needed")
+        for raw in ("mismatch", "conflict"):
+            item = candidate(provisional=True, criteria=[evidence(status="mismatch", evidenceStatus=raw)])
+            report = self.engine().execute(context(trip={"admissionMode":"explore"}, candidates=[item]))["report"]
+            self.assertEqual(report["candidateIds"], [])
+        confirmed = candidate("confirmed", score=-5)
+        preliminary = candidate("preliminary", score=100, provisional=True,
+            criteria=[evidence(status="mismatch", evidenceStatus="unknown", assumed=True)])
+        report = self.engine().execute(context(trip={"admissionMode":"explore"}, fitCount=2, candidates=[preliminary,confirmed]))["report"]
+        self.assertEqual(report["candidateIds"], ["confirmed","preliminary"])
+
     def test_preference_conflict_suppresses_recommendations_and_model_calls(self):
         model = FakeModel()
         result = self.engine("local", model).execute(context(conflicts=["Противоречие пожеланий"]))
@@ -127,7 +152,7 @@ class AdvisorTests(unittest.TestCase):
 
     def test_model_critic_cannot_suppress_any_required_cautions(self):
         criteria = [evidence("assumed", assumed=True), evidence("unknown", evidenceStatus="unknown"),
-                    evidence("stale", evidenceStatus="stale"), evidence("conflict", evidenceStatus="conflict"),
+                    evidence("stale", evidenceStatus="stale"), evidence("conflict", required=False, evidenceStatus="conflict"),
                     evidence("capacity", feature="capacity", evidenceStatus="unknown", assumed=True),
                     evidence("optional", required=False, status="mismatch", evidenceStatus="mismatch")]
         result = self.engine("local", FakeModel(cautions=[])).execute(context(candidates=[candidate(criteria=criteria)]))

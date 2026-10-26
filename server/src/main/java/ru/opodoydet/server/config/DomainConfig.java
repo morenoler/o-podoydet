@@ -11,10 +11,13 @@ import javax.sql.DataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.opodoydet.accounts.auth.AuthService;
 import ru.opodoydet.accounts.bookings.BookingService;
+import ru.opodoydet.accounts.clarifications.ClarificationService;
 import ru.opodoydet.accounts.listings.ListingService;
 import ru.opodoydet.accounts.persistence.AccountDatabase;
 import ru.opodoydet.accounts.photos.PhotoService;
@@ -24,8 +27,10 @@ import ru.opodoydet.advisor.AdvisorService;
 import ru.opodoydet.application.Agents;
 import ru.opodoydet.application.Environment;
 import ru.opodoydet.application.SearchService;
+import ru.opodoydet.application.WindowViewClient;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.server.catalog.CatalogService;
+import ru.opodoydet.server.search.SearchOverlay;
 
 /**
  * Сборка доменных модулей, перенесённых из старого бэкенда: кабинеты, подбор, оценка района,
@@ -36,11 +41,11 @@ import ru.opodoydet.server.catalog.CatalogService;
 public class DomainConfig {
 
   /**
-   * Настройки как в старом Main: файл .env из текущей папки, поверх — переменные окружения.
+   * Файл .env из текущей папки, поверх — переменные окружения и настройки Spring.
    * Нужны модулям, которые читают их сами (помощник, разбор текста, кабинеты).
    */
   @Bean
-  RuntimeEnv runtimeEnv() throws IOException {
+  RuntimeEnv runtimeEnv(ConfigurableEnvironment spring) throws IOException {
     Map<String, String> result = new HashMap<>();
     Path file = Path.of(".env");
     if (Files.isRegularFile(file))
@@ -57,6 +62,15 @@ public class DomainConfig {
         result.put(entry.substring(0, equals).trim(), value);
       }
     result.putAll(System.getenv());
+    // Spring command-line and test properties take precedence over .env and process variables.
+    for (var source : spring.getPropertySources()) {
+      if (source instanceof EnumerablePropertySource<?> enumerable)
+        for (String key : enumerable.getPropertyNames()) {
+          if (!key.matches("[A-Z][A-Z0-9_]*")) continue;
+          String value = spring.getProperty(key);
+          if (value != null) result.put(key, value);
+        }
+    }
     return new RuntimeEnv(Map.copyOf(result));
   }
 
@@ -102,6 +116,11 @@ public class DomainConfig {
   }
 
   @Bean
+  ClarificationService clarificationService(AccountDatabase db, ListingService listings) {
+    return new ClarificationService(db, listings);
+  }
+
+  @Bean
   PhotoService photoService(AccountDatabase db, RuntimeEnv env) {
     return new PhotoService(db, Path.of(env.get("UPLOADS_PATH", ".local/uploads")));
   }
@@ -109,8 +128,8 @@ public class DomainConfig {
   // ---- Подбор, район, разбор текста ----
 
   @Bean
-  Store store(JdbcClient jdbc, CatalogService catalog, TransactionTemplate tx) {
-    return new Store(jdbc, catalog, tx);
+  Store store(JdbcClient jdbc, CatalogService catalog, TransactionTemplate tx, Clock clock) {
+    return new Store(jdbc, catalog, tx, clock);
   }
 
   @Bean
@@ -128,13 +147,20 @@ public class DomainConfig {
 
   @Bean
   SearchService searchService(
-      Store store, Agents agents, Environment environment, AccountDatabase db, RuntimeEnv env) {
+      Store store, Agents agents, Environment environment, AccountDatabase db, RuntimeEnv env,
+      Clock clock, SearchOverlay overlay) {
     return new SearchService(
         store,
         agents,
         environment,
-        Clock.systemUTC(),
-        env.accountsEnabled() ? new OwnerListingSearchProvider(db) : null);
+        clock,
+        env.accountsEnabled() ? new OwnerListingSearchProvider(db) : null,
+        overlay);
+  }
+
+  @Bean(destroyMethod = "close")
+  WindowViewClient windowViewClient(RuntimeEnv env) {
+    return WindowViewClient.from(env.values());
   }
 
   // ---- Помощник подбора ----

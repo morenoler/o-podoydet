@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -30,11 +31,17 @@ public final class Store {
   private final JdbcClient jdbc;
   private final CatalogService catalog;
   private final TransactionTemplate tx;
+  private final Clock clock;
 
   public Store(JdbcClient jdbc, CatalogService catalog, TransactionTemplate tx) {
+    this(jdbc, catalog, tx, Clock.systemUTC());
+  }
+
+  public Store(JdbcClient jdbc, CatalogService catalog, TransactionTemplate tx, Clock clock) {
     this.jdbc = jdbc;
     this.catalog = catalog;
     this.tx = tx;
+    this.clock = clock;
   }
 
   public String region() {
@@ -70,7 +77,8 @@ public final class Store {
 
   /** Все действующие записи фактов в исходном виде, в порядке появления. */
   public List<JsonNode> facts() {
-    return jdbc.sql("SELECT raw FROM evidence WHERE active ORDER BY ord")
+    return jdbc.sql("SELECT e.raw FROM evidence e JOIN hotel h ON h.id = e.hotel_id WHERE e.active AND h.region = ? ORDER BY e.ord")
+        .param(region())
         .query(String.class)
         .list()
         .stream()
@@ -81,15 +89,17 @@ public final class Store {
   /** Факты, допустимые для подбора по старой политике (официальные и геоданные). */
   public List<JsonNode> matchingFacts() {
     List<JsonNode> facts = facts();
+    Instant now = clock.instant();
     return Evidence.demoPolicy(evidencePolicy())
         ? facts
-        : facts.stream().filter(f -> Evidence.fact(f, Instant.now())).toList();
+        : facts.stream().filter(f -> Evidence.fact(f, now)).toList();
   }
 
   // ---- Демонстрационные вопросы по каталогу (только при ACCOUNT_MODE=false) ----
 
   public List<JsonNode> questions() {
-    return jdbc.sql("SELECT body FROM catalog_question ORDER BY ord DESC")
+    return jdbc.sql("SELECT body FROM catalog_question WHERE region = ? ORDER BY ord DESC")
+        .param(region())
         .query(String.class)
         .list()
         .stream()
@@ -98,8 +108,8 @@ public final class Store {
   }
 
   public JsonNode question(String id) {
-    return jdbc.sql("SELECT body FROM catalog_question WHERE id = ?")
-        .param(id)
+    return jdbc.sql("SELECT body FROM catalog_question WHERE id = ? AND region = ?")
+        .params(id, region())
         .query(String.class)
         .optional()
         .map(Json::read)
@@ -107,8 +117,8 @@ public final class Store {
   }
 
   public JsonNode draft(String id) {
-    return jdbc.sql("SELECT body FROM catalog_draft WHERE id = ?")
-        .param(id)
+    return jdbc.sql("SELECT body FROM catalog_draft WHERE id = ? AND region = ?")
+        .params(id, region())
         .query(String.class)
         .optional()
         .map(Json::read)
@@ -130,8 +140,8 @@ public final class Store {
           JsonNode existing =
               jdbc.sql(
                       "SELECT body FROM catalog_question WHERE hotel_id = ? AND room_id = ? AND"
-                          + " feature = ?")
-                  .params(hotelId, roomId, feature)
+                          + " feature = ? AND region = ?")
+                  .params(hotelId, roomId, feature, region())
                   .query(String.class)
                   .optional()
                   .map(Json::read)
@@ -139,13 +149,13 @@ public final class Store {
           if (existing != null && Json.str(existing, "status").equals("open")) return existing;
           ObjectNode question = requested.deepCopy();
           String id = existing == null ? UUID.randomUUID().toString() : Json.str(existing, "id");
-          question.put("id", id).put("createdAt", Instant.now().toString()).put("status", "open");
+          question.put("id", id).put("createdAt", clock.instant().toString()).put("status", "open");
           question.remove("answer");
           jdbc.sql("DELETE FROM catalog_draft WHERE question_id = ?").param(id).update();
           jdbc.sql(
-                  "INSERT INTO catalog_question (id, hotel_id, room_id, feature, body)"
-                      + " VALUES (?, ?, ?, ?, ?) ON CONFLICT (id) DO UPDATE SET body = excluded.body")
-              .params(id, hotelId, roomId, feature, Json.write(question))
+                  "INSERT INTO catalog_question (id, hotel_id, room_id, feature, body, region)"
+                      + " VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (id) DO UPDATE SET body = excluded.body")
+              .params(id, hotelId, roomId, feature, Json.write(question), region())
               .update();
           return question;
         });
@@ -160,8 +170,8 @@ public final class Store {
           "Вопрос был обновлён во время разбора. Откройте его заново.");
     Validation.extraction(
         draft, Json.str(question, "feature"), Validation.text(draft, "text", 3, 1500));
-    jdbc.sql("INSERT INTO catalog_draft (id, question_id, body) VALUES (?, ?, ?)")
-        .params(Validation.text(draft, "id", 1, 150), Json.str(draft, "questionId"), Json.write(draft))
+    jdbc.sql("INSERT INTO catalog_draft (id, question_id, body, region) VALUES (?, ?, ?, ?)")
+        .params(Validation.text(draft, "id", 1, 150), Json.str(draft, "questionId"), Json.write(draft), region())
         .update();
   }
 
@@ -180,7 +190,7 @@ public final class Store {
           if (draft.path("extractions").isEmpty())
             throw new IllegalArgumentException(
                 "Сначала уточните ответ, чтобы получить однозначный факт.");
-          Instant now = Instant.now();
+          Instant now = clock.instant();
           List<JsonNode> output = new ArrayList<>();
           for (JsonNode extraction : draft.path("extractions")) {
             ObjectNode fact =
@@ -256,16 +266,41 @@ public final class Store {
 
   /** Записи помощника никогда не попадают в факты или категории, по которым идёт подбор. */
   public void saveAdvisorRun(ObjectNode run) throws SQLException {
-    jdbc.sql(
-            "INSERT INTO advisor_run (id, created_at, body) VALUES (?, ?, ?)"
-                + " ON CONFLICT (id) DO UPDATE SET body = excluded.body")
-        .params(Json.str(run, "id"), Json.str(run, "createdAt"), Json.write(run))
-        .update();
+    int changed = jdbc.sql(
+            "INSERT INTO advisor_run (id, created_at, body, region) VALUES (?, ?, ?, ?)"
+                + " ON CONFLICT (id) DO UPDATE SET body = excluded.body WHERE advisor_run.region = excluded.region")
+        .params(Json.str(run, "id"), Json.str(run, "createdAt"), Json.write(run), region()).update();
+    if (changed != 1)
+      throw new IllegalArgumentException("Идентификатор запуска уже принадлежит другому региону.");
+  }
+
+  /** Ownership never enters the model-visible JSON and is immutable after insertion. */
+  public void createAdvisorRun(ObjectNode run, String owner) throws SQLException {
+    requireAdvisorOwner(owner);
+    jdbc.sql("INSERT INTO advisor_run (id, created_at, body, owner_key, region) VALUES (?, ?, ?, ?, ?)")
+        .params(Json.str(run, "id"), Json.str(run, "createdAt"), Json.write(run), owner, region()).update();
+  }
+
+  public JsonNode advisorRun(String id, String owner) throws SQLException {
+    requireAdvisorOwner(owner);
+    return jdbc.sql("SELECT body FROM advisor_run WHERE id = ? AND owner_key = ? AND region = ?")
+        .params(id, owner, region()).query(String.class).optional().map(Json::read).orElse(null);
+  }
+
+  public List<JsonNode> advisorRuns(String owner) throws SQLException {
+    requireAdvisorOwner(owner);
+    return jdbc.sql("SELECT body FROM advisor_run WHERE owner_key = ? AND region = ? ORDER BY created_at DESC LIMIT 50")
+        .params(owner, region()).query(String.class).list().stream().map(Json::read).toList();
+  }
+
+  private static void requireAdvisorOwner(String owner) {
+    if (owner == null || owner.isBlank() || owner.length() > 160)
+      throw new IllegalArgumentException("Не задан владелец истории помощника.");
   }
 
   public JsonNode advisorRun(String id) throws SQLException {
-    return jdbc.sql("SELECT body FROM advisor_run WHERE id = ?")
-        .param(id)
+    return jdbc.sql("SELECT body FROM advisor_run WHERE id = ? AND region = ?")
+        .params(id, region())
         .query(String.class)
         .optional()
         .map(Json::read)
@@ -273,7 +308,8 @@ public final class Store {
   }
 
   public List<JsonNode> advisorRuns() throws SQLException {
-    return jdbc.sql("SELECT body FROM advisor_run ORDER BY created_at DESC LIMIT 50")
+    return jdbc.sql("SELECT body FROM advisor_run WHERE region = ? ORDER BY created_at DESC LIMIT 50")
+        .param(region())
         .query(String.class)
         .list()
         .stream()
@@ -291,7 +327,7 @@ public final class Store {
             if (!state.equals("queued") && !state.equals("running")) continue;
             run.put("status", "failed")
                 .put("error", "Сервер был перезапущен. Запустите подбор с помощником заново.")
-                .put("updatedAt", Instant.now().toString());
+                .put("updatedAt", clock.instant().toString());
             jdbc.sql("UPDATE advisor_run SET body = ? WHERE id = ?")
                 .params(Json.write(run), Json.str(run, "id"))
                 .update();

@@ -43167,6 +43167,7 @@
             "id": "node-368952148-real-superior-family-twin-ccty",
             "name": "Superior Family Twin",
             "capacity": 3,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43178,6 +43179,7 @@
             "id": "node-368952148-real-deluxe-park-king-dlux",
             "name": "Deluxe Park King",
             "capacity": 2,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43189,6 +43191,7 @@
             "id": "node-368952148-real-deluxe-park-family-dcty",
             "name": "Deluxe Park Family",
             "capacity": 3,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43200,6 +43203,7 @@
             "id": "node-368952148-real-deluxe-park-ondol-parl",
             "name": "Deluxe Park Ondol",
             "capacity": 3,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43211,6 +43215,7 @@
             "id": "node-368952148-real-low-floor-beach-king-ssek",
             "name": "Low Floor Beach King",
             "capacity": 2,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43222,6 +43227,7 @@
             "id": "node-368952148-real-low-floor-beach-family-sset",
             "name": "Low Floor Beach Family",
             "capacity": 2,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43233,6 +43239,7 @@
             "id": "node-368952148-real-deluxe-beach-king-dque",
             "name": "Deluxe Beach King",
             "capacity": 2,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43244,6 +43251,7 @@
             "id": "node-368952148-real-deluxe-beach-family-doub",
             "name": "Deluxe Beach Family",
             "capacity": 3,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43255,6 +43263,7 @@
             "id": "node-368952148-real-deluxe-beach-triple-dlan",
             "name": "Deluxe Beach Triple",
             "capacity": 3,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43266,6 +43275,7 @@
             "id": "node-368952148-real-deluxe-beach-ondol-bchf",
             "name": "Deluxe Beach Ondol",
             "capacity": 3,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43277,6 +43287,7 @@
             "id": "node-368952148-real-executive-park-king-clbl",
             "name": "Executive Park King",
             "capacity": 2,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43288,6 +43299,7 @@
             "id": "node-368952148-real-executive-park-twin-cddb",
             "name": "Executive Park Twin",
             "capacity": 2,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43299,6 +43311,7 @@
             "id": "node-368952148-real-executive-park-family-ccbt",
             "name": "Executive Park Family",
             "capacity": 3,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43310,6 +43323,7 @@
             "id": "node-368952148-real-executive-beach-king-view",
             "name": "Executive Beach King",
             "capacity": 2,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43321,6 +43335,7 @@
             "id": "node-368952148-real-executive-beach-twin-cbxu",
             "name": "Executive Beach Twin",
             "capacity": 2,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43332,6 +43347,7 @@
             "id": "node-368952148-real-executive-beach-family-fmla",
             "name": "Executive Beach Family",
             "capacity": 3,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43343,6 +43359,7 @@
             "id": "node-368952148-real-deluxe-family-ondol-suite-hosp",
             "name": "Deluxe Family Ondol Suite",
             "capacity": 3,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43354,6 +43371,7 @@
             "id": "node-368952148-real-executive-grand-roys",
             "name": "Executive Grand",
             "capacity": 3,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43365,6 +43383,7 @@
             "id": "node-368952148-real-executive-park-suite-exfs",
             "name": "Executive Park Suite",
             "capacity": 3,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43376,6 +43395,7 @@
             "id": "node-368952148-real-executive-beach-suite-este",
             "name": "Executive Beach Suite",
             "capacity": 3,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -43387,6 +43407,7 @@
             "id": "node-368952148-real-presidential-suite-pres",
             "name": "Presidential Suite",
             "capacity": 4,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSWI&locale=en-US&acrsEnabled=false",
@@ -47252,18 +47273,29 @@
           }
         ],
         "dataNotes": [
-          "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
-          "Семейная категория подтверждена для конкретных реальных номеров. Доступность дополнительной кровати и возрастные условия требуют проверки; наличие на даты и цены не проверялись."
+          "Сведения о категориях опубликованы отелем; свободные номера и фактические условия на месте не проверены.",
+          "Данные входа, полного пути без ступеней и окон во двор остаются неизвестными."
         ],
         "rooms": [
           {
             "id": "way-627150752-real-standard-family-twin",
             "name": "Standard Family Twin",
             "capacity": 3,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/standardTwin.do",
-            "obtainedAt": "2026-10-24T14:04:55.303Z",
+            "obtainedAt": "2026-10-25T09:18:40.214Z",
+            "occupancyRules": [
+              {
+                "maxGuests": 4,
+                "minChildren": 1,
+                "childMaxAge": 12,
+                "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/standardTwin.do",
+                "obtainedAt": "2026-10-25T09:18:40.214Z",
+                "quote": "На странице этой категории разрешено до 4 гостей при размещении с ребёнком. В форме отеля дети определены как возраст от 37 месяцев до 12 лет; младенцы выделены отдельно. Без возраста применимость исключения не подтверждена."
+              }
+            ],
             "quote": "Официальная категория: Standard Family Twin. Опубликованная вместимость: 3. Опубликованный вид: City, Ocean. Это не подтверждает окна во двор. Дополнительное размещение детей зависит от возраста и отдельного подтверждения отеля.",
             "capacityMayVary": true
           },
@@ -47271,10 +47303,21 @@
             "id": "way-627150752-real-deluxe-family-twin",
             "name": "Deluxe Family Twin",
             "capacity": 3,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/deluxeFamilyTwin.do",
-            "obtainedAt": "2026-10-24T14:04:55.303Z",
+            "obtainedAt": "2026-10-25T09:18:42.964Z",
+            "occupancyRules": [
+              {
+                "maxGuests": 4,
+                "minChildren": 1,
+                "childMaxAge": 12,
+                "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/deluxeFamilyTwin.do",
+                "obtainedAt": "2026-10-25T09:18:42.964Z",
+                "quote": "На странице этой категории разрешено до 4 гостей при размещении с ребёнком. В форме отеля дети определены как возраст от 37 месяцев до 12 лет; младенцы выделены отдельно. Без возраста применимость исключения не подтверждена."
+              }
+            ],
             "quote": "Официальная категория: Deluxe Family Twin. Опубликованная вместимость: 3. Опубликованный вид: City, Ocean. Это не подтверждает окна во двор. Дополнительное размещение детей зависит от возраста и отдельного подтверждения отеля.",
             "capacityMayVary": true
           },
@@ -47282,11 +47325,154 @@
             "id": "way-627150752-real-premier-deluxe-family-twin",
             "name": "Premier Deluxe Family Twin",
             "capacity": 3,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/premierDeluxeFamilyTwin.do",
-            "obtainedAt": "2026-10-24T14:04:55.303Z",
+            "obtainedAt": "2026-10-25T09:18:45.662Z",
+            "occupancyRules": [
+              {
+                "maxGuests": 4,
+                "minChildren": 1,
+                "childMaxAge": 12,
+                "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/premierDeluxeFamilyTwin.do",
+                "obtainedAt": "2026-10-25T09:18:45.662Z",
+                "quote": "На странице этой категории разрешено до 4 гостей при размещении с ребёнком. В форме отеля дети определены как возраст от 37 месяцев до 12 лет; младенцы выделены отдельно. Без возраста применимость исключения не подтверждена."
+              }
+            ],
             "quote": "Официальная категория: Premier Deluxe Family Twin. Опубликованная вместимость: 3. Опубликованный вид: City, Ocean. Это не подтверждает окна во двор. Дополнительное размещение детей зависит от возраста и отдельного подтверждения отеля.",
+            "capacityMayVary": true
+          },
+          {
+            "id": "way-627150752-real-standard",
+            "name": "Standard",
+            "capacity": 2,
+            "scope": "room_category",
+            "demo": false,
+            "evidenceStatus": "verified",
+            "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/standard.do",
+            "obtainedAt": "2026-10-25T09:18:38.546Z",
+            "occupancyRules": [
+              {
+                "maxGuests": 3,
+                "minChildren": 1,
+                "childMaxAge": 12,
+                "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/standard.do",
+                "obtainedAt": "2026-10-25T09:18:38.546Z",
+                "quote": "На странице этой категории разрешено до 3 гостей при размещении с ребёнком. В форме отеля дети определены как возраст от 37 месяцев до 12 лет; младенцы выделены отдельно. Без возраста применимость исключения не подтверждена."
+              }
+            ],
+            "quote": "Официальная категория: Standard. Опубликованная вместимость: 2. Опубликованный вид: City, Ocean. Это не подтверждает окна во двор.",
+            "capacityMayVary": true
+          },
+          {
+            "id": "way-627150752-real-deluxe",
+            "name": "Deluxe",
+            "capacity": 2,
+            "scope": "room_category",
+            "demo": false,
+            "evidenceStatus": "verified",
+            "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/deluxe.do",
+            "obtainedAt": "2026-10-25T09:18:41.580Z",
+            "occupancyRules": [
+              {
+                "maxGuests": 3,
+                "minChildren": 1,
+                "childMaxAge": 12,
+                "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/deluxe.do",
+                "obtainedAt": "2026-10-25T09:18:41.580Z",
+                "quote": "На странице этой категории разрешено до 3 гостей при размещении с ребёнком. В форме отеля дети определены как возраст от 37 месяцев до 12 лет; младенцы выделены отдельно. Без возраста применимость исключения не подтверждена."
+              }
+            ],
+            "quote": "Официальная категория: Deluxe. Опубликованная вместимость: 2. Опубликованный вид: City, Ocean. Это не подтверждает окна во двор.",
+            "capacityMayVary": true
+          },
+          {
+            "id": "way-627150752-real-premier-deluxe",
+            "name": "Premier Deluxe",
+            "capacity": 2,
+            "scope": "room_category",
+            "demo": false,
+            "evidenceStatus": "verified",
+            "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/premierDeluxe.do",
+            "obtainedAt": "2026-10-25T09:18:44.273Z",
+            "occupancyRules": [
+              {
+                "maxGuests": 3,
+                "minChildren": 1,
+                "childMaxAge": 12,
+                "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/premierDeluxe.do",
+                "obtainedAt": "2026-10-25T09:18:44.273Z",
+                "quote": "На странице этой категории разрешено до 3 гостей при размещении с ребёнком. В форме отеля дети определены как возраст от 37 месяцев до 12 лет; младенцы выделены отдельно. Без возраста применимость исключения не подтверждена."
+              }
+            ],
+            "quote": "Официальная категория: Premier Deluxe. Опубликованная вместимость: 2. Опубликованный вид: City, Ocean. Это не подтверждает окна во двор.",
+            "capacityMayVary": true
+          },
+          {
+            "id": "way-627150752-real-ondol-suite",
+            "name": "Ondol Suite",
+            "capacity": 4,
+            "scope": "room_category",
+            "demo": false,
+            "evidenceStatus": "verified",
+            "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/ondolSuite.do",
+            "obtainedAt": "2026-10-25T09:18:47.118Z",
+            "occupancyRules": [
+              {
+                "maxGuests": 5,
+                "minChildren": 1,
+                "childMaxAge": 12,
+                "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/ondolSuite.do",
+                "obtainedAt": "2026-10-25T09:18:47.118Z",
+                "quote": "На странице этой категории разрешено до 5 гостей при размещении с ребёнком. В форме отеля дети определены как возраст от 37 месяцев до 12 лет; младенцы выделены отдельно. Без возраста применимость исключения не подтверждена."
+              }
+            ],
+            "quote": "Официальная категория: Ondol Suite. Опубликованная вместимость: 4. Опубликованный вид: City. Это не подтверждает окна во двор.",
+            "capacityMayVary": true
+          },
+          {
+            "id": "way-627150752-real-junior-suite",
+            "name": "Junior Suite",
+            "capacity": 2,
+            "scope": "room_category",
+            "demo": false,
+            "evidenceStatus": "verified",
+            "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/juniorSuite.do",
+            "obtainedAt": "2026-10-25T09:18:49.095Z",
+            "occupancyRules": [
+              {
+                "maxGuests": 3,
+                "minChildren": 1,
+                "childMaxAge": 12,
+                "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/juniorSuite.do",
+                "obtainedAt": "2026-10-25T09:18:49.095Z",
+                "quote": "На странице этой категории разрешено до 3 гостей при размещении с ребёнком. В форме отеля дети определены как возраст от 37 месяцев до 12 лет; младенцы выделены отдельно. Без возраста применимость исключения не подтверждена."
+              }
+            ],
+            "quote": "Официальная категория: Junior Suite. Опубликованная вместимость: 2. Опубликованный вид: Ocean. Это не подтверждает окна во двор.",
+            "capacityMayVary": true
+          },
+          {
+            "id": "way-627150752-real-grand-suite",
+            "name": "Grand Suite",
+            "capacity": 2,
+            "scope": "room_category",
+            "demo": false,
+            "evidenceStatus": "verified",
+            "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/grandSuite.do",
+            "obtainedAt": "2026-10-25T09:18:50.763Z",
+            "occupancyRules": [
+              {
+                "maxGuests": 3,
+                "minChildren": 1,
+                "childMaxAge": 12,
+                "sourceUrl": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/grandSuite.do",
+                "obtainedAt": "2026-10-25T09:18:50.763Z",
+                "quote": "На странице этой категории разрешено до 3 гостей при размещении с ребёнком. В форме отеля дети определены как возраст от 37 месяцев до 12 лет; младенцы выделены отдельно. Без возраста применимость исключения не подтверждена."
+              }
+            ],
+            "quote": "Официальная категория: Grand Suite. Опубликованная вместимость: 2. Опубликованный вид: Ocean. Это не подтверждает окна во двор.",
             "capacityMayVary": true
           }
         ]
@@ -50974,6 +51160,7 @@
             "id": "node-4199814292-real-main-deluxe-city",
             "name": "Deluxe City — Main Building",
             "capacity": null,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.busanparadisehotel.co.kr/front/hotel/room/view?RR_LOCATION_TYPE=MAIN_BUILDING&RR_ROOM_CATEGORY=DELUXE&RR_ROOM_TYPE=DELUXE_CITY",
@@ -51094,6 +51281,7 @@
             "id": "node-7858128118-real-premier-family-twin",
             "name": "Premier Family Twin",
             "capacity": 3,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://app.lottehotel.com/busan-signiel/en/rooms/premier-family-twin-room",
@@ -51105,6 +51293,7 @@
             "id": "node-7858128118-real-signiel-premier-family-twin",
             "name": "SIGNIEL Premier Family Twin",
             "capacity": 3,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://app.lottehotel.com/busan-signiel/en/rooms/signiel-premier-family-twin-room",
@@ -51116,6 +51305,7 @@
             "id": "node-7858128118-real-signiel-premier-family-twin-ocean-view",
             "name": "SIGNIEL Premier Family Twin Ocean View",
             "capacity": 3,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://app.lottehotel.com/busan-signiel/en/rooms/signiel-premier-family-twin-room-ocean-view",
@@ -51348,6 +51538,7 @@
             "id": "node-13447858318-real-standard-king-king",
             "name": "Standard King",
             "capacity": 2,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSFI&locale=en-US&acrsEnabled=false",
@@ -51359,6 +51550,7 @@
             "id": "node-13447858318-real-standard-twin-twtw",
             "name": "Standard Twin",
             "capacity": 2,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSFI&locale=en-US&acrsEnabled=false",
@@ -51370,6 +51562,7 @@
             "id": "node-13447858318-real-premier-king-high-floor-quen",
             "name": "Premier King High Floor",
             "capacity": 2,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSFI&locale=en-US&acrsEnabled=false",
@@ -51381,6 +51574,7 @@
             "id": "node-13447858318-real-premier-twin-high-floor-dbdb",
             "name": "Premier Twin High Floor",
             "capacity": 2,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSFI&locale=en-US&acrsEnabled=false",
@@ -51392,6 +51586,7 @@
             "id": "node-13447858318-real-deluxe-king-srpm",
             "name": "Deluxe King",
             "capacity": 2,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSFI&locale=en-US&acrsEnabled=false",
@@ -51403,6 +51598,7 @@
             "id": "node-13447858318-real-oversized-king-bed-dlux",
             "name": "Oversized King Bed",
             "capacity": 2,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSFI&locale=en-US&acrsEnabled=false",
@@ -51414,6 +51610,7 @@
             "id": "node-13447858318-real-corner-family-room-exks",
             "name": "Corner Family Room",
             "capacity": 2,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSFI&locale=en-US&acrsEnabled=false",
@@ -51425,6 +51622,7 @@
             "id": "node-13447858318-real-deluxe-family-room-kste",
             "name": "Deluxe Family Room",
             "capacity": 2,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://www.marriott.com/services/marriott-hws/roomCards?marsha=PUSFI&locale=en-US&acrsEnabled=false",
@@ -51649,31 +51847,101 @@
           }
         ],
         "dataNotes": [
-          "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
-          "Семейное назначение двух категорий подтверждено, но допустимое число гостей не установлено. Возраст ребёнка, размещение второго ребёнка и наличие нужной категории требуют уточнения."
+          "Сведения о категориях опубликованы отелем; свободные номера и фактические условия на месте не проверены.",
+          "Данные входа, полного пути без ступеней и окон во двор остаются неизвестными."
         ],
         "rooms": [
           {
             "id": "way-843161717-real-kids-deluxe",
             "name": "Kids Deluxe",
             "capacity": null,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsDeluxe.do",
-            "obtainedAt": "2026-10-24T14:04:55.303Z",
-            "quote": "Официальная категория: Kids Deluxe. Максимальная вместимость не подтверждена. Опубликованный вид: City View / Partial Ocean View / Ocean View. Это не подтверждает окна во двор.",
-            "capacityMayVary": false
+            "obtainedAt": "2026-10-25T09:18:57.362Z",
+            "occupancyRules": [
+              {
+                "maxGuests": 4,
+                "maxAdults": 2,
+                "maxChildren": 2,
+                "childMaxAge": 12,
+                "sourceUrl": "https://gjb.josunhotel.com/about/faq.do?_method=list",
+                "obtainedAt": "2026-10-25T09:19:04.896Z",
+                "quote": "Официальный FAQ устанавливает стандартное размещение семьи: 2 взрослых и 2 ребёнка, возраст ребёнка 0–12 лет. Это общее правило отеля, не разрешение на четырёх взрослых; возраст детей и наличие категории нужно проверить."
+              }
+            ],
+            "quote": "Официальная категория: Kids Deluxe. Максимальная вместимость не подтверждена. Опубликованный вид: 시티뷰, 파셜 오션뷰, 오션뷰. Это не подтверждает окна во двор.",
+            "capacityMayVary": true
           },
           {
             "id": "way-843161717-real-kids-suite",
             "name": "Kids Suite",
             "capacity": null,
+            "scope": "room_category",
             "demo": false,
             "evidenceStatus": "verified",
             "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsSuite.do",
-            "obtainedAt": "2026-10-24T14:04:55.303Z",
-            "quote": "Официальная категория: Kids Suite. Максимальная вместимость не подтверждена. Опубликованный вид: City View / Ocean View / Ocean View (Living Room). Это не подтверждает окна во двор.",
-            "capacityMayVary": false
+            "obtainedAt": "2026-10-25T09:18:59.959Z",
+            "occupancyRules": [
+              {
+                "maxGuests": 4,
+                "maxAdults": 2,
+                "maxChildren": 2,
+                "childMaxAge": 12,
+                "sourceUrl": "https://gjb.josunhotel.com/about/faq.do?_method=list",
+                "obtainedAt": "2026-10-25T09:19:04.896Z",
+                "quote": "Официальный FAQ устанавливает стандартное размещение семьи: 2 взрослых и 2 ребёнка, возраст ребёнка 0–12 лет. Это общее правило отеля, не разрешение на четырёх взрослых; возраст детей и наличие категории нужно проверить."
+              }
+            ],
+            "quote": "Официальная категория: Kids Suite. Максимальная вместимость не подтверждена. Опубликованный вид: 시티뷰, 오션뷰, 오션뷰(리빙룸). Это не подтверждает окна во двор.",
+            "capacityMayVary": true
+          },
+          {
+            "id": "way-843161717-real-kids-superior",
+            "name": "Kids Superior",
+            "capacity": null,
+            "scope": "room_category",
+            "demo": false,
+            "evidenceStatus": "verified",
+            "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsSuperior.do",
+            "obtainedAt": "2026-10-25T09:18:54.227Z",
+            "occupancyRules": [
+              {
+                "maxGuests": 4,
+                "maxAdults": 2,
+                "maxChildren": 2,
+                "childMaxAge": 12,
+                "sourceUrl": "https://gjb.josunhotel.com/about/faq.do?_method=list",
+                "obtainedAt": "2026-10-25T09:19:04.896Z",
+                "quote": "Официальный FAQ устанавливает стандартное размещение семьи: 2 взрослых и 2 ребёнка, возраст ребёнка 0–12 лет. Это общее правило отеля, не разрешение на четырёх взрослых; возраст детей и наличие категории нужно проверить."
+              }
+            ],
+            "quote": "Официальная категория: Kids Superior. Максимальная вместимость не подтверждена. Опубликованный вид: 시티뷰. Это не подтверждает окна во двор.",
+            "capacityMayVary": true
+          },
+          {
+            "id": "way-843161717-real-family-corner-suite",
+            "name": "Family Corner Suite",
+            "capacity": null,
+            "scope": "room_category",
+            "demo": false,
+            "evidenceStatus": "verified",
+            "sourceUrl": "https://gjb.josunhotel.com/rooms/familySuite.do",
+            "obtainedAt": "2026-10-25T09:19:02.633Z",
+            "occupancyRules": [
+              {
+                "maxGuests": 4,
+                "maxAdults": 2,
+                "maxChildren": 2,
+                "childMaxAge": 12,
+                "sourceUrl": "https://gjb.josunhotel.com/about/faq.do?_method=list",
+                "obtainedAt": "2026-10-25T09:19:04.896Z",
+                "quote": "Официальный FAQ устанавливает стандартное размещение семьи: 2 взрослых и 2 ребёнка, возраст ребёнка 0–12 лет. Это общее правило отеля, не разрешение на четырёх взрослых; возраст детей и наличие категории нужно проверить."
+              }
+            ],
+            "quote": "Официальная категория: Family Corner Suite. Максимальная вместимость не подтверждена. Опубликованный вид: 오션뷰(리빙룸). Это не подтверждает окна во двор.",
+            "capacityMayVary": true
           }
         ]
       },

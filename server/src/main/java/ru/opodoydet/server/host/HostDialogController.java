@@ -21,7 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
  *       вопросы своего отеля (демо).
  * </ul>
  *
- * Авторизация отельера появится при переносе кабинетов из старого API.
+ * Экспериментальный поток доступен только для вымышленных объектов в LAB_MODE.
+ * Реальные кабинеты используют отдельные авторизованные /api/host и /api/account методы.
  */
 @RestController
 @RequestMapping("/api/v2")

@@ -144,6 +144,7 @@ if (option("--validate")) {
     roads,
     trafficObservations,
     events,
+    ambientMeasurements: await readJson("data/noise-measurements-busan-2025.json"),
     coverage: {
       traffic: option("--traffic-coverage")
         ? await readJson(option("--traffic-coverage")!)

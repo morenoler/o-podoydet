@@ -70,7 +70,7 @@ public class FactResolver {
   @Transactional
   public Summary resolveAll() {
     Instant now = clock.instant();
-    boolean demoPolicy = demoPolicy();
+    Map<String, Boolean> demoPolicies = demoPolicies();
     Map<String, Double> priors = priors();
     Map<String, Characteristic> byCode =
         characteristics.findAll().stream()
@@ -97,7 +97,7 @@ public class FactResolver {
               characteristic.getValueType(),
               priors,
               now,
-              demoPolicy);
+              demoPolicies.getOrDefault(subject.hotelId(), false));
 
       Fact fact = existing.remove(subject);
       if (fact == null) fact = new Fact(subject);
@@ -134,11 +134,11 @@ public class FactResolver {
     return new Summary(counts, opened, closed);
   }
 
-  private boolean demoPolicy() {
-    return jdbc.sql("SELECT count(*) FROM dataset WHERE evidence_policy = 'demo'")
-            .query(Long.class)
-            .single()
-        > 0;
+  /** A demo dataset must never relax evidence rules for another region's real hotels. */
+  private Map<String, Boolean> demoPolicies() {
+    return jdbc.sql("SELECT h.id, d.evidence_policy = 'demo' FROM hotel h JOIN dataset d ON d.region = h.region")
+        .query((rs, i) -> Map.entry(rs.getString(1), rs.getBoolean(2))).list().stream()
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
   private Map<String, Double> priors() {

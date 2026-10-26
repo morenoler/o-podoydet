@@ -42,6 +42,7 @@ public final class BookingService {
     String note = Inputs.optional(input, "note", "Комментарий", 1500);
     return db.transaction(
         () -> {
+          db.lockListing(listingId);
           ObjectNode listing = listings.published(listingId);
           if (guests > listing.path("capacity").asInt())
             throw new AccountProblem(
@@ -95,6 +96,8 @@ public final class BookingService {
           ObjectNode booking = repository.find(id);
           if (booking == null || !Json.str(booking, "userId").equals(user))
             throw new AccountProblem(404, "Ваша заявка не найдена.");
+          db.lockListing(Json.str(booking, "listingId"));
+          booking = repository.find(id);
           String status = Json.str(booking, "status");
           if (!status.equals("pending") && !status.equals("confirmed"))
             throw new AccountProblem(409, "Эту заявку уже нельзя отменить.");
@@ -114,6 +117,8 @@ public final class BookingService {
           ObjectNode booking = repository.find(id);
           if (booking == null || !Json.str(booking, "hostId").equals(host))
             throw new AccountProblem(404, "Заявка на ваше объявление не найдена.");
+          db.lockListing(Json.str(booking, "listingId"));
+          booking = repository.find(id);
           String current = Json.str(booking, "status");
           boolean allowed =
               (current.equals("pending")

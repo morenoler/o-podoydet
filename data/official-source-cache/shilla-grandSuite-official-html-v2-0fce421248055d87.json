@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "sourceId": "shilla-grandSuite",
+  "hotelId": "way-627150752",
+  "url": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/grandSuite.do",
+  "obtainedAt": "2026-10-25T09:07:45.805Z",
+  "sourceUpdatedAt": null,
+  "responseSha256": "0fce421248055d87618594d925e6c065c960e7f1b3d929fdf334e481a0303c8d",
+  "responseBytes": 210804,
+  "parserVersion": "official-html-v2",
+  "projection": {
+    "name": "Grand Suite",
+    "capacity": 2,
+    "publishedView": "Ocean",
+    "family": true,
+    "wifi": true,
+    "extraChildCapacity": 3,
+    "childMaxAge": 12,
+    "excerpts": [
+      "Grand Suite",
+      "1–2 guests",
+      "Ocean",
+      "up to 3 guests",
+      "37 months to 12 years",
+      "Wi-Fi"
+    ],
+    "evidenceSelectors": {
+      "name": "title before |",
+      "capacity": ".room-info-box dt=Guests + dd",
+      "publishedView": ".room-info-box dt=View + dd",
+      "childRule": "room-detail sentence after room-info-box",
+      "childAge": "official booking-form Children age definition"
+    },
+    "limitations": [
+      "Категория номера, а не физический номер; наличие на даты не проверялось.",
+      "City/Ocean — варианты вида в категории, а не обещание каждого вида в одном номере.",
+      "Ступени, вход, лифт и полный доступ до номера не подтверждены.",
+      "Увеличение вместимости условно: нужен ребёнок; возрастная категория издателя требует проверки возраста. Младенцы до 36 месяцев учитываются отдельно, это правило их размещение не устанавливает."
+    ]
+  },
+  "projectionSha256": "991a1887daa0a03ee62b1c51c0034e023ba708bc78b9850c4e69f5224f797052",
+  "method": "official",
+  "demo": false,
+  "cacheLimitations": "Bounded extracted fields and <=25 words of excerpts are retained. Full HTML is not distributed. The response hash cannot be recomputed offline; projection integrity can. A fresh collection is required to rerun HTML extraction."
+}

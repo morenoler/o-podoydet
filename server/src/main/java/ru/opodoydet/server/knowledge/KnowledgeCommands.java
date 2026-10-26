@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.opodoydet.server.host.DemoHostGuard;
 
 /** Запись новых доказательств. Доказательства только добавляются — история не переписывается. */
 @Service
@@ -33,18 +34,24 @@ public class KnowledgeCommands {
   private final CharacteristicRepository characteristics;
   private final ObjectMapper json;
   private final Clock clock;
+  private final DemoHostGuard guard;
 
   KnowledgeCommands(
-      JdbcClient jdbc, CharacteristicRepository characteristics, ObjectMapper json, Clock clock) {
+      JdbcClient jdbc, CharacteristicRepository characteristics, ObjectMapper json, Clock clock, DemoHostGuard guard) {
     this.jdbc = jdbc;
     this.characteristics = characteristics;
     this.json = json;
     this.clock = clock;
+    this.guard = guard;
   }
 
   /** Сохраняет ответ отельера как доказательство с методом host. Возвращает id доказательства. */
   @Transactional
   public String recordHostStatement(HostStatement s) {
+    if (s.simulated()) guard.requireHotel(s.hotelId());
+    boolean demo = s.simulated() || guard.syntheticHotel(s.hotelId());
+    if (s.questionId() != null)
+      jdbc.sql("SELECT id FROM host_question WHERE id=? FOR UPDATE").param(s.questionId()).query(UUID.class).optional();
     Characteristic c =
         characteristics
             .findById(s.characteristic())
@@ -66,7 +73,7 @@ public class KnowledgeCommands {
     raw.put("confidenceReason", s.confidenceReason());
     raw.put("obtainedAt", now.toString());
     raw.put("expiresAt", expires.toString());
-    raw.put("demo", false);
+    raw.put("demo", demo);
     raw.put("simulated", s.simulated());
 
     jdbc.sql(
@@ -74,7 +81,7 @@ public class KnowledgeCommands {
             INSERT INTO evidence (id, hotel_id, room_id, characteristic, value, method, source_name,
               quote, confidence_level, confidence_reason, obtained_at, expires_at, demo, origin,
               active, simulated, question_id, raw)
-            VALUES (?, ?, ?, ?, CAST(? AS jsonb), 'host', ?, ?, ?, ?, ?, ?, FALSE, 'host', TRUE, ?, ?, ?)
+            VALUES (?, ?, ?, ?, CAST(? AS jsonb), 'host', ?, ?, ?, ?, ?, ?, ?, 'host', TRUE, ?, ?, ?)
             """)
         .params(
             id,
@@ -88,19 +95,21 @@ public class KnowledgeCommands {
             s.confidenceReason(),
             Timestamp.from(now),
             Timestamp.from(expires),
+            demo,
             s.simulated(),
             s.questionId(),
             raw.toString())
         .update();
-    // Отельер уточнил сам себя: прежний его ответ по этому же предмету больше не действует,
-    // но остаётся в истории со ссылкой на замену.
-    jdbc.sql(
+    // Only an explicit correction of the same dialogue can replace its own evidence.
+    // Independent answers and simulated/real provenance must remain available for conflict resolution.
+    if (s.questionId() != null) jdbc.sql(
             """
             UPDATE evidence SET superseded_by = ?
             WHERE id <> ? AND active AND superseded_by IS NULL AND method = 'host'
               AND hotel_id = ? AND room_id IS NOT DISTINCT FROM ? AND characteristic = ?
+              AND question_id = ? AND simulated = ?
             """)
-        .params(id, id, s.hotelId(), s.roomId(), s.characteristic())
+        .params(id, id, s.hotelId(), s.roomId(), s.characteristic(), s.questionId(), s.simulated())
         .update();
     return id;
   }

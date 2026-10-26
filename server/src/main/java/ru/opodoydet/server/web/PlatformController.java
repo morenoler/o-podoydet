@@ -1,6 +1,8 @@
 package ru.opodoydet.server.web;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import ru.opodoydet.application.WindowViewClient;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -51,6 +54,9 @@ public class PlatformController {
   private final Path areaData;
   private final boolean accounts;
   private final boolean labMode;
+  private final AdvisorIdentity identity;
+  private final WindowViewClient windowViews;
+  private final Clock clock;
 
   PlatformController(
       Store store,
@@ -60,7 +66,13 @@ public class PlatformController {
       AdvisorService advisor,
       AuthService auth,
       PhotoService photos,
-      RuntimeEnv env) {
+      AdvisorIdentity identity,
+      WindowViewClient windowViews,
+      RuntimeEnv env,
+      Clock clock) {
+    this.identity = identity;
+    this.windowViews = windowViews;
+    this.clock = clock;
     this.store = store;
     this.agents = agents;
     this.environment = environment;
@@ -94,37 +106,59 @@ public class PlatformController {
     if (!request.getMethod().equals("GET")) return JsonResponses.notFound("Метод не найден");
     JsonNode hotel = store.hotel(request.getRequestURI().substring("/api/areas/".length()));
     if (hotel == null) return JsonResponses.notFound("Отель не найден");
-    return JsonResponses.send(200, Json.obj("assessment", assessment(hotel, Instant.now())));
+    return JsonResponses.send(200, Json.obj("assessment", assessment(hotel, clock.instant())));
+  }
+
+  // ---- Геометрическая оценка вида из окна ----
+
+  @RequestMapping("/api/views/estimate")
+  public ResponseEntity<String> windowView(HttpServletRequest request) throws IOException {
+    if (!request.getMethod().equals("POST"))
+      return JsonResponses.send(405, Json.obj("error", "Метод не поддерживается"));
+    String type = request.getContentType();
+    if (type == null || !type.split(";", 2)[0].trim().equalsIgnoreCase("application/json"))
+      return JsonResponses.send(415, Json.obj("error", "application_json_required"));
+    byte[] input = request.getInputStream().readNBytes(WindowViewClient.MAX_REQUEST_BYTES + 1);
+    if (input.length > WindowViewClient.MAX_REQUEST_BYTES)
+      return JsonResponses.send(413, Json.obj("error", "request_too_large",
+          "max_bytes", WindowViewClient.MAX_REQUEST_BYTES));
+    JsonNode payload;
+    try {
+      payload = Json.MAPPER.reader().with(DeserializationFeature.FAIL_ON_TRAILING_TOKENS).readTree(input);
+    } catch (IOException invalid) { throw new IllegalArgumentException("Некорректный JSON"); }
+    WindowViewClient.Result result = windowViews.estimate(payload);
+    return JsonResponses.send(result.status(), result.body());
   }
 
   // ---- Лаборатория ----
 
   @RequestMapping("/api/lab/search")
-  public ResponseEntity<String> lab(HttpServletRequest request) throws IOException, SQLException {
+  public ResponseEntity<String> lab(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
     if (!labMode || !request.getMethod().equals("POST"))
       return JsonResponses.notFound("Метод не найден");
-    return JsonResponses.send(200, search.searchLab(body(request)));
+    return JsonResponses.send(200, search.searchLab(body(request), identity.resolve(request, response)));
   }
 
   // ---- Помощник подбора ----
 
   @RequestMapping("/api/advisor/**")
-  public ResponseEntity<String> advisor(HttpServletRequest request) throws IOException, SQLException {
+  public ResponseEntity<String> advisor(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
     String path = request.getRequestURI(), method = request.getMethod();
     try {
       if (method.equals("GET") && path.equals("/api/advisor/config"))
         return JsonResponses.send(200, advisor.config());
+      String actor = identity.resolve(request, response);
       if (path.equals("/api/advisor/runs")) {
-        if (method.equals("GET")) return JsonResponses.send(200, advisor.list());
-        if (method.equals("POST")) return JsonResponses.send(202, advisor.start(body(request)));
+        if (method.equals("GET")) return JsonResponses.send(200, advisor.list(actor));
+        if (method.equals("POST")) return JsonResponses.send(202, advisor.start(body(request), actor));
       }
       String[] parts = path.split("/");
       JsonNode result = null;
       if (parts.length == 5 && parts[3].equals("runs") && method.equals("GET"))
-        result = advisor.get(parts[4]);
+        result = advisor.get(parts[4], actor);
       else if (parts.length == 6 && parts[3].equals("runs") && method.equals("POST")) {
         body(request);
-        if (parts[5].equals("cancel")) result = advisor.cancel(parts[4]);
+        if (parts[5].equals("cancel")) result = advisor.cancel(parts[4], actor);
       }
       return result == null
           ? JsonResponses.notFound("Задание помощника или действие не найдено")
@@ -184,7 +218,7 @@ public class PlatformController {
     Features.Definition definition = Features.get(feature);
     if (definition.tool().equals("area")) {
       JsonNode result =
-          environment.evaluate(List.of(hotel), trip, Instant.now()).get(hotelId).get(feature);
+          environment.evaluate(List.of(hotel), trip, clock.instant()).get(hotelId).get(feature);
       return JsonResponses.send(
           200,
           Json.obj(
@@ -201,7 +235,7 @@ public class PlatformController {
             Json.obj("feature", feature, "required", false),
             room,
             trip,
-            Instant.now(),
+            clock.instant(),
             store.evidencePolicy());
     if (definition.tool().equals("route"))
       return JsonResponses.send(
@@ -254,7 +288,7 @@ public class PlatformController {
   }
 
   /** Оценка района из data/area-assessments.json — перенос Api.assessment. */
-  JsonNode assessment(JsonNode hotel, Instant now) throws IOException {
+  public JsonNode assessment(JsonNode hotel, Instant now) throws IOException {
     if (!Files.isRegularFile(areaData)) return null;
     JsonNode file = Json.MAPPER.readTree(areaData.toFile());
     if (file.hasNonNull("region") && !Json.str(file, "region").equals(store.region())) return null;

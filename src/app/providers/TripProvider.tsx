@@ -7,6 +7,7 @@ import {
 } from "react";
 import type { Dataset, Preference, Trip } from "../../../shared/types";
 import { api } from "../../shared/api/client";
+import { normalizeSearchTrip, restoreSearchTrip } from "../../features/search/searchPolicy";
 type Catalog = Dataset & { mode: "rules" | "llm" };
 const initialTrip: Trip = {
   region: "Пусан",
@@ -17,16 +18,12 @@ const initialTrip: Trip = {
   scenarios: [],
   preferences: [],
   text: "",
+  admissionMode: "explore",
 };
 function readTrip() {
   try {
     const saved = JSON.parse(localStorage.getItem("o-trip-busan") || "null");
-    return saved &&
-      typeof saved === "object" &&
-      Array.isArray(saved.preferences) &&
-      Array.isArray(saved.scenarios)
-      ? { ...initialTrip, ...saved }
-      : initialTrip;
+    return restoreSearchTrip(saved, initialTrip);
   } catch {
     return initialTrip;
   }
@@ -76,9 +73,10 @@ export function TripProvider({ children }: { children: ReactNode }) {
     }
   };
   const setTrip = (value: Trip) => {
-    setTripState(value);
+    const normalized = normalizeSearchTrip(value);
+    setTripState(normalized);
     try {
-      localStorage.setItem("o-trip-busan", JSON.stringify(value));
+      localStorage.setItem("o-trip-busan", JSON.stringify(normalized));
     } catch {
       /* storage can be unavailable in private mode */
     }

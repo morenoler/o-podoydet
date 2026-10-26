@@ -28,7 +28,7 @@ export function SearchMapPanel({
             onSelect={onSelect}
           />
           {selected && (
-            <div className="search-map-selection">
+            <div className="search-map-selection map-selection-summary">
               <span className="search-map-selection-icon">
                 <MapPin size={24} aria-hidden="true" />
               </span>
@@ -55,8 +55,9 @@ export function SearchMapPanel({
         </div>
       )}
       <p className="search-map-note">
-        Сохранённая карта OpenStreetMap. Вход и маршрут приближённые. На карте —
-        варианты из текущего списка с известными координатами.
+        OpenStreetMap · На карте {plotted.length} вариантов с известными координатами.
+        Вход в отель и подход к маршруту не проверены на месте. Маршрут к пляжу
+        не подтверждает проход с коляской до воды.
       </p>
     </aside>
   );

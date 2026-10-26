@@ -16,20 +16,22 @@ function sourceUrl(value: string) {
 }
 
 function Evidence({ evidence }: { evidence: AdvisorEvidence }) {
+  const confirmed = evidence.status === "match" && evidence.evidenceStatus === "match" && !evidence.assumed;
+  const knownMismatch = evidence.evidenceStatus === "mismatch";
   return (
     <li className="advisor-evidence">
       <div>
         <strong>{evidence.label}</strong>
         <span
           className={
-            evidence.status === "match"
+            confirmed
               ? "advisor-label"
               : "advisor-label advisor-label-warning"
           }
         >
-          {evidence.status === "match"
+          {confirmed
             ? "Условие выполнено"
-            : "Условие не подтверждено или не выполнено"}
+            : knownMismatch ? "Условие не выполнено" : "Требует уточнения"}
           {evidence.required ? " · обязательно" : ""}
         </span>
       </div>
@@ -134,14 +136,14 @@ export function AdvisorReportView({ run }: { run: AdvisorRun }) {
                   </div>
                   <span
                     className={
-                      candidate.status === "fits"
+                      candidate.provisional ? "advisor-provisional" : candidate.status === "fits"
                         ? "advisor-fit"
                         : "advisor-excluded"
                     }
                   >
-                    {candidate.status === "fits"
+                    {candidate.provisional ? "Вариант для уточнения" : candidate.status === "fits"
                       ? "Прошёл текущие условия"
-                      : "Не подходит сейчас"}
+                      : "Не прошёл текущий отбор"}
                   </span>
                 </div>
                 {cautions.length > 0 && (

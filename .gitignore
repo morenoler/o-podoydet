@@ -10,6 +10,7 @@ dist-lab/
 *.sqlite3
 *.sqlite3-*
 server/target/
+backend/target/
 *.db
 *.db-*
 .codex/
@@ -18,8 +19,15 @@ server/target/
 *.log
 test-results/
 __pycache__/
+*.pyc
+services/window-view/.cache/
+services/window-view/data/open/*.scene.json
+services/window-view/examples/real-hotel.result.json
 *.py[cod]
 .venv/
 
 # Deliberately synthetic, session-free demo database.
 !data/demo/preview.sqlite3
+
+# Local design reviews and skill artifacts are not project deliverables.
+.impeccable/

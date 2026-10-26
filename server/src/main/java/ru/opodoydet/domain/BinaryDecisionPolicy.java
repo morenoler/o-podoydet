@@ -2,10 +2,13 @@ package ru.opodoydet.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.net.URI;
+import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 import ru.opodoydet.shared.Json;
 
-/** Binary product decisions are separate from unchanged source evidence and raw evaluations. */
+/** Admission stays binary; missing evidence never becomes a positive hotel fact. */
 public final class BinaryDecisionPolicy {
   private BinaryDecisionPolicy() {}
 
@@ -15,122 +18,94 @@ public final class BinaryDecisionPolicy {
     result.put("evidenceStatus", status).put("sourceExplanation", original);
     if (Set.of("match", "mismatch").contains(status))
       return result.put("assumed", false).put("decisionBasis", "evidence");
-    boolean match = false;
-    String reason;
-    JsonNode route = hotel.path("route");
-    switch (Json.str(raw, "feature")) {
-      case "beach_walk" -> {
-        match = nonnegative(route.path("meters")) && route.path("meters").asDouble() <= 1000;
-        reason =
-            route.isObject()
-                ? "Используем сохранённое расстояние до пляжа и порог 1 км."
-                : "Без рассчитанного маршрута считаем фильтр близости пляжа невыполненным.";
-      }
-      case "step_free_route" -> {
-        match =
-            route.isObject()
-                && ((route.path("steps").isIntegralNumber() && route.path("steps").asInt() == 0)
-                    || nonnegative(route.path("noStepsAlternative").path("meters")));
-        reason = "Оцениваем путь по отметкам лестниц и обходу на карте; весь путь не обследован.";
-      }
-      case "courtyard" ->
-          reason = "Без подтверждения окон во двор считаем этот фильтр невыполненным.";
-      case "step_free_access" ->
-          reason =
-              "Без подтверждения всего пути до номера считаем фильтр доступа без ступеней"
-                  + " невыполненным.";
-      case "family" -> {
-        match =
-            Set.of("hotel", "guest_house", "apartment").contains(Json.str(hotel, "lodgingType"));
-        reason =
-            "Грубая оценка по типу размещения: отели, гостевые дома и апартаменты считаем"
-                + " подходящими для семьи; условия конкретного номера не подтверждены.";
-      }
-      case "area_safety" ->
-          reason =
-              "Нет сопоставимого показателя для этого фильтра: считаем условие невыполненным. Это"
-                  + " не вывод об опасности района.";
-      case "clean_air" -> {
-        match =
-            nonnegative(raw.path("currentAirUsAqi"))
-                && raw.path("currentAirUsAqi").asDouble() <= 50;
-        reason =
-            nonnegative(raw.path("currentAirUsAqi"))
-                ? "Грубая оценка по текущему US AQI "
-                    + raw.path("currentAirUsAqi").asText()
-                    + " от "
-                    + Json.str(raw, "currentAirTime")
-                    + ": принимаем значение не выше 50. Это не прогноз на поездку."
-                : "Нет полного прогноза и свежего текущего снимка; считаем фильтр чистого воздуха"
-                    + " невыполненным.";
-      }
-      case "low_noise" -> {
-        if (Json.str(raw, "assessmentBasis").equals("historical")
-            && Set.of("low", "moderate", "high").contains(Json.str(raw, "riskLevel"))) {
-          match = Json.str(raw, "riskLevel").equals("low");
-          reason =
-              "Грубая оценка по исторической транспортной нагрузке: принимаем только низкий"
-                  + " расчётный риск. Это не прогноз и не измерение шума на даты поездки.";
-        } else {
-          double nearest =
-              nonnegative(raw.path("nearestRoadMeters"))
-                  ? raw.path("nearestRoadMeters").asDouble()
-                  : Double.POSITIVE_INFINITY;
-          if (!Double.isFinite(nearest))
-            for (JsonNode source : hotel.path("noise"))
-              if (Json.str(source, "kind").equals("road") && nonnegative(source.path("meters")))
-                nearest = Math.min(nearest, source.path("meters").asDouble());
-          match = Double.isFinite(nearest) && nearest > 150;
-          reason =
-              Double.isFinite(nearest)
-                  ? "Грубая оценка по ближайшей отмеченной дороге: "
-                      + Math.round(nearest)
-                      + " м; фильтр проходит при расстоянии больше 150 м. Это не замер шума."
-                  : "Нет данных даже о ближайшей дороге; считаем фильтр внешнего шума"
-                      + " невыполненным.";
-        }
-      }
-      default ->
-          reason = "Недостаточно источников: по правилу подбора считаем условие невыполненным.";
-    }
-    return result
-        .put("status", match ? "match" : "mismatch")
-        .put("assumed", true)
-        .put("decisionBasis", "estimate")
-        .put("assumption", reason)
-        .put("explanation", "Оценка: " + reason);
+    String reason =
+        switch (Json.str(raw, "feature")) {
+          case "beach_walk" ->
+              "Нет пригодного подтверждения расстояния до пляжа. Сохранённый маршрут не заменяет недостающие, устаревшие или противоречивые сведения.";
+          case "step_free_route" ->
+              "Отсутствие лестниц на карте и рассчитанный обход не подтверждают доступность всего пути без ступеней.";
+          case "courtyard" -> "Направление окон выбранного номера не подтверждено.";
+          case "step_free_access" ->
+              "Доступ без ступеней на всём пути до выбранного номера не подтверждён.";
+          case "family" ->
+              "Тип размещения не подтверждает условия для семьи в выбранной категории номера.";
+          case "area_safety" ->
+              "Недостаточно сопоставимых сведений для подтверждения условия. Это не вывод об опасности района.";
+          case "clean_air" ->
+              "Нет достаточных данных о качестве воздуха на даты поездки. Текущий AQI не является прогнозом на поездку.";
+          case "low_noise" ->
+              "Расстояние до дороги и историческая транспортная нагрузка не подтверждают тишину в выбранном номере на даты поездки.";
+          default -> "Нет достаточных подтверждений этого условия.";
+        };
+    String context =
+        status.equals("stale")
+            ? "Сведения устарели."
+            : status.equals("conflict") ? "Источники противоречат друг другу." : "Недостаточно данных.";
+    return result.put("status", "mismatch").put("assumed", true).put("decisionBasis", "estimate")
+        .put("assumption", reason).put("explanation", context + " Требуется уточнение: " + reason);
+  }
+
+  private static boolean freshSource(JsonNode value, Instant now) {
+    try {
+      URI uri = URI.create(Json.str(value, "sourceUrl"));
+      Instant obtained = Instant.parse(Json.str(value, "obtainedAt"));
+      return Set.of("http", "https").contains(uri.getScheme())
+          && uri.getHost() != null && uri.getUserInfo() == null
+          && !Json.str(value, "quote").isBlank()
+          && !obtained.isAfter(now) && !obtained.isBefore(now.minusSeconds(30L * 86400));
+    } catch (RuntimeException invalid) { return false; }
+  }
+
+  private static boolean integer(JsonNode value, int low, int high) {
+    return value.isIntegralNumber() && value.canConvertToInt()
+        && value.asInt() >= low && value.asInt() <= high;
+  }
+
+  private static boolean validRule(JsonNode rule, Instant now) {
+    if (!rule.isObject() || !freshSource(rule, now) || !integer(rule.path("maxGuests"), 1, 20))
+      return false;
+    for (String key : List.of("maxAdults", "maxChildren", "minChildren", "childMaxAge"))
+      if (rule.has(key) && !integer(rule.path(key), 0, 20)) return false;
+    int maximum = rule.path("maxGuests").asInt();
+    return rule.path("maxAdults").asInt(0) <= maximum
+        && rule.path("maxChildren").asInt(0) <= maximum
+        && rule.path("minChildren").asInt(0) <= rule.path("maxChildren").asInt(maximum);
   }
 
   public static ObjectNode capacity(JsonNode hotel, JsonNode room, JsonNode trip) {
-    boolean known = room.path("capacity").isIntegralNumber() && room.path("capacity").asInt() > 0;
-    int count =
-        known
-            ? room.path("capacity").asInt()
-            : Json.str(hotel, "lodgingType").equals("apartment") ? 4 : 2;
-    boolean match = count >= trip.path("adults").asInt() + trip.path("children").asInt();
-    boolean conditional = known && !match && room.path("capacityMayVary").asBoolean(false);
-    ObjectNode result =
-        Json.obj(
-            "capacityStatus",
-            match ? "match" : "mismatch",
-            "capacityEvidenceStatus",
-            !known || conditional ? "unknown" : match ? "match" : "mismatch",
-            "capacityAssumed",
-            !known || conditional,
-            "capacityExplanation",
-            !known
-                ? "Оценка: предполагаем вместимость " + count + " гостей по типу размещения."
-                : conditional
-                    ? "Оценка: не учитываем условное увеличение вместимости без подтверждения"
-                        + " условий."
-                    : match
-                        ? "Указанной вместимости достаточно для всех гостей."
-                        : "Указанная вместимость меньше числа гостей.");
-    if (!known) result.put("estimatedCapacity", count);
-    return result;
+    return capacity(hotel, room, trip, Instant.now());
   }
 
-  private static boolean nonnegative(JsonNode value) {
-    return value.isNumber() && Double.isFinite(value.asDouble()) && value.asDouble() >= 0;
+  public static ObjectNode capacity(JsonNode hotel, JsonNode room, JsonNode trip, Instant now) {
+    boolean known = room.path("capacity").isIntegralNumber()
+        && room.path("capacity").canConvertToInt() && room.path("capacity").asInt() > 0;
+    int adults = trip.path("adults").asInt(), children = trip.path("children").asInt();
+    if (known && room.path("capacity").asInt() >= adults + children)
+      return Json.obj("capacityStatus", "match", "capacityEvidenceStatus", "match",
+          "capacityAssumed", false, "capacityExplanation", "Указанной вместимости достаточно для всех гостей.");
+    List<JsonNode> rules = Json.list(room.path("occupancyRules"));
+    if (room.path("demo").isBoolean() && !room.path("demo").asBoolean()
+        && Json.str(room, "evidenceStatus").equals("verified") && freshSource(room, now)) {
+      for (JsonNode rule : rules) {
+        if (!validRule(rule, now)) continue;
+        int maximum = rule.path("maxGuests").asInt();
+        if (adults + children > maximum || adults > rule.path("maxAdults").asInt(maximum)
+            || children > rule.path("maxChildren").asInt(maximum)
+            || children < rule.path("minChildren").asInt(0)) continue;
+        // Trip does not collect ages; never assume that children meet an age limit.
+        if (children > 0 && rule.has("childMaxAge")) continue;
+        return Json.obj("capacityStatus", "match", "capacityEvidenceStatus", "match",
+            "capacityAssumed", false, "capacityRule", rule,
+            "capacityExplanation", "Опубликованное правило размещения допускает этот состав гостей. Наличие номера на даты не проверено.");
+      }
+    }
+    boolean unresolved = !known || room.path("capacityMayVary").asBoolean(false) || !rules.isEmpty();
+    String explanation = unresolved
+        ? children > 0 && rules.stream().anyMatch(rule -> rule.has("childMaxAge"))
+            ? "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан."
+            : "Вместимость требует уточнения: нет достаточных подтверждений для этого состава гостей. Это не установленный недостаток мест."
+        : "Указанная вместимость меньше числа гостей.";
+    return Json.obj("capacityStatus", "mismatch", "capacityEvidenceStatus", unresolved ? "unknown" : "mismatch",
+        "capacityAssumed", unresolved, "capacityExplanation", explanation);
   }
 }

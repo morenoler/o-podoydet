@@ -73,6 +73,7 @@
           "id": "node-4199814292-real-main-deluxe-city",
           "name": "Deluxe City — Main Building",
           "capacity": null,
+          "scope": "room_category",
           "demo": false,
           "evidenceStatus": "verified",
           "sourceUrl": "https://www.busanparadisehotel.co.kr/front/hotel/room/view?RR_LOCATION_TYPE=MAIN_BUILDING&RR_ROOM_CATEGORY=DELUXE&RR_ROOM_TYPE=DELUXE_CITY",

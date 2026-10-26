@@ -36,9 +36,10 @@ public final class PhotoService {
     if (!Set.of("image/jpeg", "image/png").contains(mime))
       throw new AccountProblem(415, "Загрузите фотографию в формате JPEG или PNG.");
     String length = ex.getHeader("Content-Length");
+    boolean declaredTooLarge = false;
     if (length != null) {
       try {
-        if (Long.parseLong(length) > MAX_BYTES) throw tooLarge();
+        declaredTooLarge = Long.parseLong(length) > MAX_BYTES;
       } catch (NumberFormatException e) {
         throw new AccountProblem(400, "Некорректный размер файла.");
       }
@@ -47,8 +48,9 @@ public final class PhotoService {
       throw new AccountProblem(
           429, "Фотографии обрабатываются. Повторите загрузку через несколько секунд.");
     try {
+      // Consume a bounded prefix before replying so fixed-length clients receive the 413.
       byte[] source = ex.getInputStream().readNBytes(MAX_BYTES + 1);
-      if (source.length > MAX_BYTES) throw tooLarge();
+      if (declaredTooLarge || source.length > MAX_BYTES) throw tooLarge();
       var image = ImageSanitizer.sanitize(source, mime);
       String filename = UUID.randomUUID() + "." + image.extension();
       String url = "/uploads/listings/" + filename;

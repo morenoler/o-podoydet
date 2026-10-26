@@ -78,6 +78,9 @@
 .owner-criterion-mismatch {
   color: #973a34;
 }
+.owner-criterion-unknown {
+  color: #617087;
+}
 .owner-criteria-summary .owner-criteria-source {
   color: #617087;
   font-size: 11px;

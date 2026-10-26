@@ -166,6 +166,20 @@ const coverageSchema = z
     ),
   })
   .strict();
+export const ambientMeasurementsSchema = z.object({
+  schemaVersion: z.literal(1), region: z.literal("Пусан"),
+  kind: z.literal("annual_station_measurements"), year: z.number().int().min(2000).max(2100),
+  period: z.object({ from: z.iso.date(), to: z.iso.date() }).strict(),
+  unit: z.literal("dB(A)"), scope: z.literal("named_monitoring_stations"),
+  usableForHotelMatching: z.literal(false),
+  source: sourceSchema.extend({ sha256: z.string().regex(/^[a-f0-9]{64}$/),
+    pageUrl: z.url(), publishedAt: z.iso.date(), pdfPage: z.number().int().positive(),
+    printedPage: z.number().int().positive(), tables: z.array(z.string()).min(1), method: z.string().min(1) }),
+  observations: z.array(z.object({ stationName: z.string().min(1), coordinates: z.null(),
+    dayDbA: z.number().min(20).max(140), nightDbA: z.number().min(20).max(140),
+    hotelIds: z.array(z.string()).length(0) }).strict()).min(1),
+  limitations: z.array(z.string()).min(1),
+}).strict();
 export const noiseContextSchema = z
   .object({
     schemaVersion: z.literal(1),
@@ -178,6 +192,7 @@ export const noiseContextSchema = z
     trafficObservations: z.array(trafficObservationSchema),
     events: z.array(noiseEventSchema),
     assumptions: z.array(z.string()),
+    ambientMeasurements: ambientMeasurementsSchema.optional(),
   })
   .strict()
   .superRefine((value, ctx) => {
@@ -464,6 +479,9 @@ export function evaluateNoise(
   const nearest = roads[0]?.meters;
   return {
     risk,
+    ambientMeasurements: context.ambientMeasurements &&
+      Date.parse(context.ambientMeasurements.source.retrievedAt) <= nowMs
+      ? context.ambientMeasurements : undefined,
     assessmentBasis,
     historicalTraffic: historical,
     matchingStatus:

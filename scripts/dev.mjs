@@ -24,7 +24,8 @@ try {
   });
   const endpoint = `http://127.0.0.1:${process.env.PORT || "8080"}/api/health`;
   let ready = false;
-  for (let attempt = 0; attempt < 60 && !closing; attempt++) {
+  const startupDeadline = Date.now() + 90000;
+  while (Date.now() < startupDeadline && !closing) {
     try {
       ready = (await fetch(endpoint, { signal: AbortSignal.timeout(1000) })).ok;
     } catch {
@@ -33,7 +34,7 @@ try {
     if (ready) break;
     await new Promise((r) => setTimeout(r, 500));
   }
-  if (!ready) throw new Error("Java API не запустился за 30 секунд");
+  if (!ready) throw new Error("Spring Boot API не запустился за 90 секунд");
   frontend = await createServer();
   await frontend.listen();
   frontend.printUrls();
