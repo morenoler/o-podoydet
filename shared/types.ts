@@ -99,6 +99,10 @@ export interface Preference {
   feature: FeatureId;
   required: boolean;
 }
+/** Explicit edits take precedence over wishes still present in the original free text. */
+export interface PreferenceOverride extends Preference {
+  enabled: boolean;
+}
 export interface Trip {
   region: string;
   checkIn: string;
@@ -107,6 +111,7 @@ export interface Trip {
   children: number;
   scenarios: string[];
   preferences: Preference[];
+  preferenceOverrides?: PreferenceOverride[];
   text: string;
 }
 export type MatchStatus =

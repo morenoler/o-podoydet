@@ -147,6 +147,30 @@ public final class Agents {
   }
 
   public ObjectNode interpret(JsonNode trip) {
+    return applyOverrides(interpretText(trip), trip);
+  }
+
+  static ObjectNode applyOverrides(ObjectNode result, JsonNode trip) {
+    Map<String, JsonNode> preferences = new LinkedHashMap<>();
+    result.path("preferences").forEach(p -> preferences.put(Json.str(p, "feature"), p));
+    List<String> conflicts = new ArrayList<>();
+    result.path("conflicts").forEach(c -> conflicts.add(c.asText()));
+    for (JsonNode override : trip.path("preferenceOverrides")) {
+      String feature = Json.str(override, "feature");
+      if (override.path("enabled").asBoolean()) {
+        preferences.put(
+            feature,
+            Json.obj("feature", feature, "required", override.path("required").asBoolean()));
+      } else preferences.remove(feature);
+      // A later explicit edit resolves a contradiction with the old free text.
+      conflicts.removeIf(c -> c.contains("«" + Features.get(feature).label() + "»"));
+    }
+    result.set("preferences", Json.array(preferences.values()));
+    result.set("conflicts", Json.array(conflicts));
+    return result;
+  }
+
+  private ObjectNode interpretText(JsonNode trip) {
     String text = Json.str(trip, "text");
     List<JsonNode> selected = Json.list(trip.path("preferences"));
     if (text.isBlank() || !enabled()) return parseRules(text, selected);
@@ -355,7 +379,7 @@ public final class Agents {
     return Json.obj("type", "array", "items", Json.obj("type", "string"));
   }
 
-  private JsonNode structured(String name, JsonNode schema, String instructions, JsonNode input)
+  JsonNode structured(String name, JsonNode schema, String instructions, JsonNode input)
       throws IOException, InterruptedException {
     String base = config.baseUrl().replaceAll("/$", "");
     ObjectNode body =

@@ -14,9 +14,10 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { PreferencePicker } from "../features/preferences/PreferencePicker";
+import { editPreferences } from "../features/search/preferences";
 
 export function WishesPage() {
-  const { trip, setTrip } = useApp();
+  const { trip, setTrip, effectivePreferences } = useApp();
   const navigate = useNavigate();
   const suggested = [
     ...new Set([
@@ -74,9 +75,9 @@ export function WishesPage() {
             <h2>Что особенно важно?</h2>
             <p>Сценарий предлагает пожелания. Вы решаете, какие учитывать.</p>
             <PreferencePicker
-              preferences={trip.preferences}
+              preferences={effectivePreferences}
               ids={[...new Set([...suggested, ...featureIds])]}
-              onChange={(preferences) => setTrip({ ...trip, preferences })}
+              onChange={(preferences) => setTrip(editPreferences(trip, preferences, effectivePreferences))}
             />
           </div>
           <label className="field text-field">

@@ -61,6 +61,13 @@ public final class SearchService {
     return search(input, false);
   }
 
+  public ObjectNode refine(JsonNode input) {
+    JsonNode trip = Validation.tripDraft(input.path("trip"), store.region);
+    String message = Validation.text(input, "message", 1, 1500).trim();
+    if (message.isBlank()) throw new IllegalArgumentException("Напишите пожелание к отелю.");
+    return new SearchConversation(agents).refine(trip, message, input.path("focusFeatures"));
+  }
+
   /** Lab-only experiment entry point. The HTTP layer independently gates its availability. */
   public ObjectNode searchLab(JsonNode input) throws SQLException {
     return search(input, true);

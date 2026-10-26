@@ -278,6 +278,10 @@ public final class Api implements AutoCloseable {
         send(exchange, 200, searchService.search(input));
         return;
       }
+      if (path.equals("/api/search/conversation")) {
+        send(exchange, 200, searchService.refine(input));
+        return;
+      }
       String[] detailParts = path.split("/");
       if (detailParts.length == 5
           && detailParts[2].equals("hotels")

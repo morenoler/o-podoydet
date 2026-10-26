@@ -136,11 +136,31 @@
 }
 .search-workspace {
   display: grid;
-  grid-template-columns: minmax(0, 768fr) minmax(0, 552fr);
+  grid-template-columns: minmax(0, 1fr) minmax(330px, 380px);
   gap: 24px;
   margin-top: 32px;
   align-items: start;
 }
+.search-view-toggle { margin-left: auto; }
+.search-active-preferences { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 16px; }
+.search-active-preferences button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  max-width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #cad8ed;
+  border-radius: 10px;
+  background: #eaf0fc;
+  color: #163e8e;
+  text-align: left;
+  font-size: 13px;
+  cursor: pointer;
+}
+.search-active-preferences button > span { overflow-wrap: anywhere; }
+.search-active-preferences button > svg { flex-shrink: 0; }
+.search-active-preferences strong { display: block; font-size: 11px; margin-top: 2px; }
 .search-list-section {
   min-width: 0;
 }
@@ -363,6 +383,12 @@
   margin-top: auto;
   padding-top: 12px;
 }
+.search-hotel-criteria { display: grid; gap: 4px; list-style: none; padding: 0; margin: 8px 0 0; font-size: 13px; line-height: 1.45; }
+.search-hotel-criteria li { display: flex; gap: 6px; align-items: flex-start; }
+.search-hotel-criteria svg { flex-shrink: 0; margin-top: 2px; }
+.search-hotel-criteria .is-match { color: #246651; }
+.search-hotel-criteria .is-mismatch { color: #a14132; }
+.search-hotel-criteria .is-uncertain { color: #89601a; }
 .search-hotel-bottom > div {
   min-width: 0;
 }
@@ -419,6 +445,7 @@
   border-radius: 4px;
 }
 .search-map-section {
+  display: none;
   position: sticky;
   top: 20px;
   min-width: 0;
@@ -813,9 +840,12 @@
     display: inline;
   }
   .search-workspace {
-    display: block;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
     margin-top: 0;
   }
+  .search-active-preferences { padding: 0 0 20px; }
   .search-map-section {
     display: none;
     position: static;
@@ -904,12 +934,6 @@
     border-radius: 12px;
     box-shadow: 0 3px 12px #172c4c1a;
     white-space: nowrap;
-  }
-  .search-page.is-map-view .search-list-section {
-    display: none;
-  }
-  .search-page.is-map-view .search-map-section {
-    display: block;
   }
   .search-page.is-map-view .search-map-note {
     font-size: 11px;
@@ -1009,4 +1033,44 @@
   .search-page .search-compare-tray {
     bottom: 82px;
   }
+}
+
+/* Search and results share the left column; the assistant stays alongside both. */
+.search-page-conversation { max-width: 1800px; }
+.search-layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(340px, 1fr); grid-template-rows: auto 1fr; align-items: start; gap: 28px 24px; }
+.search-primary { min-width: 0; grid-column: 1; grid-row: 1; }
+.search-layout > .search-list-section { grid-column: 1; grid-row: 2; }
+.search-layout > .search-conversation { grid-column: 2; grid-row: 1 / span 2; }
+.search-primary .search-bar { grid-template-columns: minmax(130px, .95fr) minmax(165px, 1.2fr) minmax(120px, .9fr) 106px; min-height: 80px; border-color: transparent; border-radius: 24px; }
+.search-primary .search-bar-field, .search-primary .search-bar-destination { gap: 8px; padding: 0 12px; }
+.search-primary .search-bar strong { font-size: 15px; }
+.search-primary .search-bar-field > svg:first-child { display: none; }
+.search-primary .search-bar-submit { min-width: 0; height: 52px; padding: 12px; border: 0; border-radius: 18px; background: #6cdb9b; color: #20251f; }
+.search-primary .search-bar-submit:hover { background: #5bce8b; }
+.search-primary .search-toolbar { flex-wrap: wrap; gap: 10px; border: 0; padding: 16px 0 0; }
+.search-primary .search-chip { min-height: 48px; padding: 10px 17px; border-color: transparent; border-radius: 20px; }
+.search-primary .search-chip.is-active { border-color: #9ecfb1; background: #e3f5e9; color: #245e3b; }
+.search-primary .search-filter-count { background: #d9efdf; color: #245e3b; }
+.search-primary .search-active-preferences button { border-color: #b5d6c1; background: #e5f3ea; color: #245e3b; border-radius: 14px; }
+.search-page-conversation .search-hotel-card { border-color: transparent; border-radius: 22px; }
+.search-page-conversation .search-hotel-card.is-selected, .search-page-conversation .search-hotel-card:focus-within { border-color: #b5d6c1; }
+@media (min-width: 901px) and (max-width: 1199px) {
+  .search-layout { grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; }
+  .search-primary .search-bar { display: block; padding: 0; min-height: 72px; }
+  .search-primary .search-bar > :not(.search-bar-mobile) { display: none; }
+  .search-primary .search-bar-mobile { display: flex; align-items: center; gap: 12px; width: 100%; padding: 16px; border: 0; background: transparent; color: #172c4c; text-align: left; cursor: pointer; }
+  .search-primary .search-bar-mobile > svg { flex-shrink: 0; }
+  .search-primary .search-bar-mobile > svg:last-child { margin-left: auto; }
+  .search-primary .search-bar-mobile > span { display: grid; gap: 4px; min-width: 0; }
+  .search-primary .search-bar-mobile small { font-size: 12px; line-height: 1.5; }
+  .search-primary .search-chip { padding: 9px 13px; font-size: 14px; }
+}
+@media (max-width: 900px) {
+  .search-page-conversation { padding-bottom: 40px; }
+  .search-layout { display: flex; flex-direction: column; gap: 20px; }
+  .search-primary, .search-layout > .search-conversation, .search-layout > .search-list-section { width: 100%; }
+  .search-primary .search-bar { display: block; padding: 0; min-height: 72px; border-radius: 20px; }
+  .search-primary .search-toolbar { padding: 14px 0 0; gap: 8px; }
+  .search-primary .search-chip { min-height: 44px; padding: 9px 14px; }
+  .search-primary .search-active-preferences { padding: 14px 0 0; }
 }

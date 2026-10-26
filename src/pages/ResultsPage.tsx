@@ -2,11 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Check,
   GitCompareArrows,
-  List,
-  Map,
   Search,
   SlidersHorizontal,
-  Sparkles,
   X,
 } from "lucide-react";
 import type { FeatureId, Hotel, SearchResult, Trip } from "../../shared/types";
@@ -17,6 +14,10 @@ import { accommodationPhotos } from "../shared/lib/hotelPhotos";
 import { HotelCard } from "../features/hotels/components/HotelCard";
 import { CompareDialog } from "../features/hotels/components/CompareDialog";
 import { AdvisorDrawer } from "../features/advisor/AdvisorDrawer";
+import { SearchConversation } from "../features/advisor/SearchConversation";
+import { useAuth } from "../features/auth/AuthProvider";
+import { editPreferences } from "../features/search/preferences";
+import { features } from "../../shared/features";
 import { SearchBar } from "../features/search/SearchBar";
 import { SearchDiagnostics } from "../features/search/SearchDiagnostics";
 import { SearchMapPanel } from "../features/search/SearchMapPanel";
@@ -33,7 +34,9 @@ export function ResultsPage() {
     revision,
     rememberSearch,
     refresh,
+    effectivePreferences,
   } = useApp();
+  const { user } = useAuth();
   const [data, setData] = useState<SearchResult | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -115,12 +118,12 @@ export function ResultsPage() {
     );
   }
   function quickFilter(feature: FeatureId) {
-    const preferences = trip.preferences.some(
+    const preferences = effectivePreferences.some(
       (value) => value.feature === feature,
     )
-      ? trip.preferences.filter((value) => value.feature !== feature)
-      : [...trip.preferences, { feature, required: false }];
-    setTrip({ ...trip, preferences });
+      ? effectivePreferences.filter((value) => value.feature !== feature)
+      : [...effectivePreferences, { feature, required: false }];
+    setTrip(editPreferences(trip, preferences, effectivePreferences));
   }
   function selectHotel(hotel: Hotel) {
     setSelectedId(hotel.id);
@@ -129,7 +132,9 @@ export function ResultsPage() {
     (value) => value.feature === "beach_walk",
   );
   return (
-    <div className={`search-page${mapView ? " is-map-view" : ""}`}>
+    <div className="search-page search-page-conversation">
+      <div className="search-layout">
+        <div className="search-primary">
       <SearchBar trip={trip} onSearch={submit} busy={loading} />
       <div className="search-toolbar">
         <button
@@ -139,9 +144,9 @@ export function ResultsPage() {
         >
           <SlidersHorizontal size={21} aria-hidden="true" />
           Фильтры
-          {!!trip.preferences.length && (
+          {!!effectivePreferences.length && (
             <span className="search-filter-count">
-              {trip.preferences.length}
+              {effectivePreferences.length}
             </span>
           )}
         </button>
@@ -154,29 +159,31 @@ export function ResultsPage() {
         ).map((item, index) => (
           <button
             type="button"
-            className={`search-chip ${index > 0 ? "search-chip-extra " : ""}${trip.preferences.some((value) => value.feature === item.id) ? "is-active" : ""}`}
+            className={`search-chip ${index > 0 ? "search-chip-extra " : ""}${effectivePreferences.some((value) => value.feature === item.id) ? "is-active" : ""}`}
             key={item.id}
-            aria-pressed={trip.preferences.some(
+            aria-pressed={effectivePreferences.some(
               (value) => value.feature === item.id,
             )}
             onClick={() => quickFilter(item.id)}
           >
-            {trip.preferences.some((value) => value.feature === item.id) && (
+            {effectivePreferences.some((value) => value.feature === item.id) && (
               <Check size={19} aria-hidden="true" />
             )}
             {item.label}
           </button>
         ))}
-        <button
-          type="button"
-          className="search-ai-trigger"
-          onClick={() => setAdvisor(true)}
-        >
-          <Sparkles size={23} aria-hidden="true" />
-          <span className="search-ai-full">AI-помощник</span>
-          <span className="search-ai-short">AI</span>
-        </button>
       </div>
+      {!!effectivePreferences.length && (
+        <div className="search-active-preferences" aria-label="Активные условия подбора">
+          {effectivePreferences.map((preference) => (
+            <button key={preference.feature} type="button" onClick={() => quickFilter(preference.feature)}
+              aria-label={`Убрать условие: ${features[preference.feature].label}${preference.required ? ", обязательное" : ""}`}>
+              <span>{features[preference.feature].label}{preference.required && <strong>Обязательно</strong>}</span>
+              <X size={15} aria-hidden="true" />
+            </button>
+          ))}
+        </div>
+      )}
       {(error || catalogError) && (
         <div className="search-error">
           <ErrorMessage text={error || catalogError} />
@@ -188,7 +195,20 @@ export function ResultsPage() {
           </button>
         </div>
       )}
-      <div className="search-workspace">
+        </div>
+        <SearchConversation
+          key={user?.id || "guest"}
+          scope={user?.id || "guest"}
+          trip={trip}
+          onApply={setTrip}
+          result={data}
+          searching={loading}
+          searchError={error}
+          onAnalyze={() => setAdvisor(true)}
+          mapView={mapView}
+          onMapViewChange={setMapView}
+          map={<SearchMapPanel catalog={catalog} selected={selected} plotted={plotted} onSelect={selectHotel} />}
+        />
         <section className="search-list-section" aria-label="Список отелей">
           <div className="search-results-heading">
             <div>
@@ -272,10 +292,8 @@ export function ResultsPage() {
                     onSelect={() => selectHotel(hotel)}
                     onShowMap={() => {
                       selectHotel(hotel);
-                      if (window.matchMedia("(max-width: 900px)").matches) {
-                        setMapView(true);
-                        window.scrollTo({ top: 0 });
-                      }
+                      setMapView(true);
+                      document.getElementById("search-side-panel")?.scrollIntoView({ block: "nearest" });
                     }}
                     compared={compare.includes(hotel.id)}
                     onCompare={data ? () => toggleCompare(hotel.id) : undefined}
@@ -303,28 +321,11 @@ export function ResultsPage() {
             </>
           )}
         </section>
-        <SearchMapPanel
-          catalog={catalog}
-          selected={selected}
-          plotted={plotted}
-          onSelect={selectHotel}
-        />
       </div>
-      <button
-        className="button primary search-map-toggle"
-        onClick={() => setMapView((value) => !value)}
-        aria-pressed={mapView}
-      >
-        {mapView ? (
-          <List size={23} aria-hidden="true" />
-        ) : (
-          <Map size={23} aria-hidden="true" />
-        )}
-        {mapView ? "Списком" : "На карте"}
-      </button>
       {filters && (
         <SearchFilters
           trip={trip}
+          preferences={effectivePreferences}
           onApply={submit}
           onClose={() => setFilters(false)}
         />

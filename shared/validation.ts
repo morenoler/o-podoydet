@@ -35,6 +35,11 @@ export const tripSchema = z
         "Пожелания повторяются",
       ),
     text: z.string().max(1500),
+    preferenceOverrides: z.array(z.object({
+      feature: featureSchema,
+      required: z.boolean(),
+      enabled: z.boolean(),
+    })).max(8).refine((values) => new Set(values.map((v) => v.feature)).size === values.length).optional(),
   })
   .refine((t) => t.checkOut > t.checkIn, {
     message: "Дата выезда должна быть позже даты заезда",

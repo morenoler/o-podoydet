@@ -38,16 +38,27 @@ public final class Validation {
   }
 
   public static JsonNode trip(JsonNode input, String region) {
+    return trip(input, region, false);
+  }
+
+  public static JsonNode tripDraft(JsonNode input, String region) {
+    return trip(input, region, true);
+  }
+
+  private static JsonNode trip(JsonNode input, String region, boolean draft) {
     if (!input.isObject() || !text(input, "region", 1, 100).equals(region))
       throw new IllegalArgumentException("Доступен регион: " + region);
-    String from = text(input, "checkIn", 10, 10), to = text(input, "checkOut", 10, 10);
-    try {
-      if (!from.matches("\\d{4}-\\d{2}-\\d{2}")
-          || !to.matches("\\d{4}-\\d{2}-\\d{2}")
-          || !LocalDate.parse(to).isAfter(LocalDate.parse(from)))
-        throw new IllegalArgumentException("Дата выезда должна быть позже даты заезда");
-    } catch (DateTimeParseException e) {
-      throw new IllegalArgumentException("Некорректная дата");
+    String from = text(input, "checkIn", draft ? 0 : 10, 10),
+        to = text(input, "checkOut", draft ? 0 : 10, 10);
+    if (!(draft && from.isEmpty() && to.isEmpty())) {
+      try {
+        if (!from.matches("\\d{4}-\\d{2}-\\d{2}")
+            || !to.matches("\\d{4}-\\d{2}-\\d{2}")
+            || !LocalDate.parse(to).isAfter(LocalDate.parse(from)))
+          throw new IllegalArgumentException("Дата выезда должна быть позже даты заезда");
+      } catch (DateTimeParseException e) {
+        throw new IllegalArgumentException("Некорректная дата");
+      }
     }
     integer(input, "adults", 1, 6);
     integer(input, "children", 0, 4);
@@ -62,6 +73,10 @@ public final class Validation {
           || !unique.add(scenario.asText()))
         throw new IllegalArgumentException("Некорректные или повторяющиеся сценарии");
     preferences(input.path("preferences"), true);
+    if (input.has("preferenceOverrides")) {
+      preferences(input.path("preferenceOverrides"), true);
+      for (JsonNode override : input.path("preferenceOverrides")) bool(override, "enabled");
+    }
     return input;
   }
 

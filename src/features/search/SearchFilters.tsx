@@ -1,20 +1,26 @@
 import { useState } from "react";
-import type { Trip } from "../../../shared/types";
+import type { Preference, Trip } from "../../../shared/types";
 import { Modal } from "../../shared/ui/Modal";
 import { PreferencePicker } from "../preferences/PreferencePicker";
 import { Link } from "react-router-dom";
 import { canSearch } from "./searchTrip";
+import { applyFilterDraft, editPreferences } from "./preferences";
 
 export function SearchFilters({
   trip,
+  preferences = trip.preferences,
   onApply,
   onClose,
 }: {
   trip: Trip;
+  preferences?: Preference[];
   onApply: (trip: Trip) => void;
   onClose: () => void;
 }) {
-  const [draft, setDraft] = useState(trip);
+  const [initial] = useState({ ...trip, preferences });
+  const [draft, setDraft] = useState(initial);
+  const [reset, setReset] = useState(false);
+  const apply = () => onApply(applyFilterDraft(trip, preferences, initial, draft, reset));
   return (
     <Modal
       open
@@ -28,7 +34,7 @@ export function SearchFilters({
       </p>
       <PreferencePicker
         preferences={draft.preferences}
-        onChange={(preferences) => setDraft({ ...draft, preferences })}
+        onChange={(preferences) => setDraft(editPreferences(draft, preferences))}
       />
       <label className="field search-wish-field">
         <span>Что ещё учесть?</span>
@@ -50,7 +56,7 @@ export function SearchFilters({
         <Link
           to={canSearch(draft) ? "/wishes" : "/trip"}
           onClick={() => {
-            onApply(draft);
+            apply();
             onClose();
           }}
         >
@@ -63,9 +69,10 @@ export function SearchFilters({
         <button
           className="button secondary"
           type="button"
-          onClick={() =>
-            setDraft({ ...draft, preferences: [], scenarios: [], text: "" })
-          }
+          onClick={() => {
+            setReset(true);
+            setDraft({ ...draft, preferences: [], scenarios: [], text: "", preferenceOverrides: undefined });
+          }}
         >
           Сбросить
         </button>
@@ -73,7 +80,7 @@ export function SearchFilters({
           className="button primary"
           type="button"
           onClick={() => {
-            onApply(draft);
+            apply();
             onClose();
           }}
         >

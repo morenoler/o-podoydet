@@ -6,6 +6,7 @@ import {
   GitCompareArrows,
   MapPin,
   Waves,
+  X,
 } from "lucide-react";
 import {
   accommodationPath,
@@ -152,6 +153,22 @@ export function HotelCard({
                 : sourceHint}
           </span>
         </p>
+        {!!match?.best.criteria.length && (
+          <ul className="search-hotel-criteria" aria-label="Совпадение с вашими пожеланиями">
+            {match.best.criteria.slice(0, 3).map((criterion) => {
+              const uncertain = criterion.assumed || !["match", "mismatch"].includes(criterion.evidenceStatus);
+              const fits = criterion.status === "match";
+              const Icon = uncertain ? CircleHelp : fits ? Check : X;
+              return (
+                <li key={criterion.feature} className={uncertain ? "is-uncertain" : fits ? "is-match" : "is-mismatch"}>
+                  <Icon size={15} aria-hidden="true" />
+                  <span>{features[criterion.feature].label}: {uncertain ? "нужно уточнить" : fits ? "совпадает" : "не совпадает"}</span>
+                </li>
+              );
+            })}
+            {match.best.criteria.length > 3 && <li><Link to={detailsPath}>Ещё {match.best.criteria.length - 3} условия в подробностях</Link></li>}
+          </ul>
+        )}
         <div className="search-hotel-bottom">
           <div>
             {hasPrice ? (

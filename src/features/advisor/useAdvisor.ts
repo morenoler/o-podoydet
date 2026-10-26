@@ -21,6 +21,7 @@ export function advisorTripKey(trip: Trip) {
     trip.scenarios,
     trip.preferences.map(({ feature, required }) => [feature, required]),
     trip.text,
+    trip.preferenceOverrides?.map(({ feature, required, enabled }) => [feature, required, enabled]),
   ]);
 }
 
