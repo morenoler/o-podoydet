@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ReactNode } from "react";
-import { Send, Check } from "lucide-react";
+import { Send, Check, RotateCcw } from "lucide-react";
 import type { SearchResult, Trip } from "../../../shared/types";
 import { canSearch } from "../search/searchTrip";
 import { useSearchConversation } from "./useSearchConversation";
@@ -23,12 +23,12 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
   const recommendation = !searching && !searchError ? result?.roomRecommendations[0] : undefined;
   const log = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (log.current) log.current.scrollTop = log.current.scrollHeight;
+    if (log.current) log.current.scrollTop = chat.messages.length || chat.busy ? log.current.scrollHeight : 0;
   }, [chat.messages, chat.busy, mapView, recommendation?.id]);
   useEffect(() => {
     const node = log.current;
     if (!node) return;
-    let followLatest = true;
+    let followLatest = chat.messages.length > 0;
     const trackScroll = () => {
       followLatest = node.scrollHeight - node.scrollTop - node.clientHeight < 40;
     };
@@ -38,7 +38,7 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
     resize.observe(node);
     node.addEventListener("scroll", trackScroll);
     return () => { resize.disconnect(); node.removeEventListener("scroll", trackScroll); };
-  }, []);
+  }, [chat.messages.length]);
   const lastAssistant = [...chat.messages].reverse().find((m) => m.role === "assistant");
   const suggestions = chat.messages.length
     ? ["Ещё окна во двор", "Тишина обязательна", "Пляж не обязателен"]
@@ -51,6 +51,12 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
       </div>
       <div id="conversation-map" className="conversation-map" hidden={!mapView}>{map}</div>
       <div id="conversation-chat" className="conversation-chat" hidden={mapView}>
+      <div className="conversation-actions">
+        <button type="button" onClick={chat.reset} disabled={!chat.canReset}
+          title="Очистить диалог и отменить его изменения фильтров. Даты, гости и ручные условия сохранятся.">
+          <RotateCcw size={15} aria-hidden="true" />Сбросить чат и фильтры
+        </button>
+      </div>
       <div className="conversation-log" ref={log} role="log" aria-label="Диалог о подборе номеров" aria-live="polite" aria-relevant="additions text">
         {!chat.messages.length && (
         <div className="conversation-welcome">
