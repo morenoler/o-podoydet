@@ -1,6 +1,6 @@
 {
   "region": "Busan / Haeundae",
-  "checked_at": "2026-10-25T12:18:45.705106+00:00",
+  "checked_at": "2026-10-26T14:55:33.046747+00:00",
   "workers": 4,
   "hotel_count": 96,
   "request_count": 288,
@@ -21,7 +21,7 @@
   "assertions_passed": true,
   "offline": true,
   "field_verified_rooms": 0,
-  "elapsed_seconds": 417.45,
+  "elapsed_seconds": 455.11,
   "target_statuses": {
     "outside_fov": 73353,
     "unknown": 14199

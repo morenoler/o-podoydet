@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from http.cookiejar import CookieJar
 import hashlib
 import json
@@ -215,10 +215,39 @@ def dated_environment(base, report):
     def shilla(feature, dates):
         result = request(base, "/api/search", trip(dates=dates, feature=feature))
         return next(h for h in rows(result) if h["hotel"]["id"] == "way-627150752")["best"]["criteria"][0]
+    # The recorded exceedance stays in the source, but is no longer applicable
+    # after six hours. Do not refresh its timestamp or expect stale evidence to
+    # keep rejecting a hotel. Fixed-clock Java tests cover the fresh decision.
+    area = next(a for a in read(ROOT / "data/area-assessments.json")["assessments"]
+                if a["hotelId"] == "way-627150752")
+    forecast = area["airQuality"]["forecast"]
+    fetched = datetime.fromisoformat(forecast["fetchedAt"].replace("Z", "+00:00"))
+    expires = fetched + timedelta(hours=6)
+    arrival = datetime.fromisoformat(DATES[0][0] + "T00:00:00+09:00")
+    departure = datetime.fromisoformat(DATES[0][1] + "T00:00:00+09:00")
+    recorded = [(datetime.fromisoformat(h["time"].replace("Z", "+00:00")), h["usAqi"])
+                for h in forecast["hourly"]]
+    selected = [(stamp, value) for stamp, value in recorded if arrival <= stamp < departure]
+    require(len(selected) == 24 and {stamp for stamp, _ in selected} ==
+            {arrival + timedelta(hours=i) for i in range(24)}, "Recorded one-night air coverage changed")
+    maximum = max(value for _, value in selected)
+    require(maximum > 50, "Recorded forecast no longer contains the expected exceedance")
+    before = datetime.now(timezone.utc)
     air = shilla("clean_air", DATES[0])
-    require(air["evidenceStatus"] == "mismatch" and not air["assumed"] and air["value"] > 50,
-            "Covered forecast exceeding the threshold lost its recorded mismatch")
-    require(any("24 из 24 часов" in detail for detail in air["details"]), "One-night air coverage is incomplete")
+    after = datetime.now(timezone.utc)
+    fresh = fetched <= before <= expires
+    require(fresh == (fetched <= after <= expires), "Forecast freshness changed during request; rerun the audit")
+    require(any(e.get("sourceUrl") == forecast["sourceUrl"] and
+                datetime.fromisoformat(e["observedAt"].replace("Z", "+00:00")) == fetched
+                for e in air["environmentalEvidence"]), "Recorded air provenance disappeared")
+    if fresh:
+        require(air["evidenceStatus"] == "mismatch" and not air["assumed"] and air["value"] == maximum,
+                "Fresh covered forecast lost its recorded mismatch")
+        require(any("24 из 24 часов" in detail for detail in air["details"]), "One-night air coverage is incomplete")
+    else:
+        require(air["evidenceStatus"] == "unknown" and air["assumed"] and air.get("value") is None and
+                air["sourceExplanation"] == "Нет свежего почасового прогноза на даты поездки",
+                "Expired or future forecast became applicable evidence")
     distant_air = shilla("clean_air", DATES[1])
     require(distant_air["evidenceStatus"] == "unknown" and distant_air["assumed"],
             "Distant dates borrowed a current air-quality snapshot")
@@ -229,8 +258,11 @@ def dated_environment(base, report):
             event["name"] in noise["explanation"] and any(
                 e["sourceUrl"] == event["source"]["url"] for e in noise["environmentalEvidence"]),
             "Dated fireworks warning lost the event or its official source")
-    report["datedEnvironment"] = {"hotelId": "way-627150752", "nearAirHours": 24,
-        "nearAirMaximumUsAqi": air["value"], "nearAirStatus": air["evidenceStatus"],
+    report["datedEnvironment"] = {"hotelId": "way-627150752", "nearAirHours": len(selected),
+        "recordedAirMaximumUsAqi": maximum, "forecastFetchedAt": fetched.isoformat(),
+        "forecastExpiresAt": expires.isoformat(), "forecastFreshAtRequest": fresh,
+        "requestStartedAt": before.isoformat(), "requestFinishedAt": after.isoformat(),
+        "nearAirMaximumUsAqi": air.get("value"), "nearAirStatus": air["evidenceStatus"],
         "distantAirStatus": distant_air["evidenceStatus"], "fireworksStatus": noise["evidenceStatus"],
         "fireworksRisk": noise["riskLevel"], "fireworksSource": event["source"]["url"],
         "fireworksStartsAt": event["startsAt"]}
