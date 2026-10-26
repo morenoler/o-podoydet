@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-10-25T09:19:05.254Z",
+  "parserVersion": "official-html-v3",
+  "mode": "explicit_collection",
+  "expectedSources": 14,
+  "successfulSources": 14,
+  "failures": [],
+  "caveats": [
+    "Source agreement is not independent property verification.",
+    "Courtyard and complete step-free access are not inferred from views, theme names, elevators or accessible bathrooms.",
+    "Marriott JSON currently returned403 and Lotte returns a JavaScript shell to a direct GET; earlier reviewed records are preserved with their original dates, not silently refreshed."
+  ]
+}

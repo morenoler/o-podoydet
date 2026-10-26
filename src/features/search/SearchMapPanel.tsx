@@ -30,7 +30,7 @@ export function SearchMapPanel({
             onSelect={onSelect}
           />
           {selected && (
-            <div className="search-map-selection">
+            <div className="search-map-selection map-selection-summary">
               <span className="search-map-selection-icon">
                 <MapPin size={24} aria-hidden="true" />
               </span>
@@ -58,8 +58,9 @@ export function SearchMapPanel({
         </div>
       )}
       <p className="search-map-note">
-        Сохранённая карта OpenStreetMap. Вход и маршрут приближённые. На карте —
-        отели выбранных категорий номеров с известными координатами.
+        Карта OpenStreetMap. Вход и маршрут приближённые. На карте — отели
+        выбранных категорий номеров с известными координатами. При недоступности
+        картографического сервиса покажем сохранённую схему.
       </p>
     </aside>
   );

@@ -1,3 +1,4 @@
+// Synthetic SQLite import fixture only. Spring runtime uses PostgreSQL and explicit LEGACY_DB_PATH.
 import assert from "node:assert/strict";
 import {
   pbkdf2Sync,
@@ -275,7 +276,7 @@ export function seedDemoDatabase({
     const fixtures = JSON.parse(source);
     db.exec(
       readFileSync(
-        resolve(root, "backend/src/main/resources/schema.sql"),
+        resolve(root, "data/demo/sqlite-schema/schema.sql"),
         "utf8",
       ).replace(
         /PRAGMA journal_mode\s*=\s*WAL\s*;/i,
@@ -284,7 +285,7 @@ export function seedDemoDatabase({
     );
     db.exec(
       readFileSync(
-        resolve(root, "backend/src/main/resources/accounts-schema.sql"),
+        resolve(root, "data/demo/sqlite-schema/accounts-schema.sql"),
         "utf8",
       ),
     );

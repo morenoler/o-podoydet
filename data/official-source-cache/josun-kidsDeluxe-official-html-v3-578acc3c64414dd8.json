@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "sourceId": "josun-kidsDeluxe",
+  "hotelId": "way-843161717",
+  "url": "https://gjb.josunhotel.com/rooms/kidsDeluxe.do",
+  "obtainedAt": "2026-10-25T09:18:57.362Z",
+  "sourceUpdatedAt": null,
+  "responseSha256": "578acc3c64414dd88b1ecdfd1011c7f38a2c98a7e80945fff5636ab674e43115",
+  "responseBytes": 92119,
+  "parserVersion": "official-html-v3",
+  "projection": {
+    "name": "Kids Deluxe",
+    "capacity": null,
+    "family": true,
+    "publishedView": "시티뷰, 파셜 오션뷰, 오션뷰",
+    "excerpts": [
+      "Kids Deluxe",
+      "시티뷰, 파셜 오션뷰, 오션뷰"
+    ],
+    "evidenceSelectors": {
+      "name": "#container .topViewCont strong.tit",
+      "publishedView": ".propertyInfo dt=VIEW + dd",
+      "capacity": "No category-specific general maximum is published in this fieldset"
+    },
+    "limitations": [
+      "Детская/семейная категория подтверждена названием и описанием; общий максимум категории не установлен.",
+      "Море в оформлении Kids не является видом из окна; импортируется только поле VIEW.",
+      "Вместимость lounge и число кроватей не используются как вместимость номера.",
+      "Непрерывный путь от улицы до номера без ступеней не подтверждён."
+    ]
+  },
+  "projectionSha256": "29c1ea43f6df2ac751bd445a267523620ab801d150aa75e1dbb9b38ecb4a753c",
+  "method": "official",
+  "demo": false,
+  "cacheLimitations": "Bounded extracted fields and <=25 words of excerpts are retained. Full HTML is not distributed. The response hash cannot be recomputed offline; projection integrity can. A fresh collection is required to rerun HTML extraction."
+}

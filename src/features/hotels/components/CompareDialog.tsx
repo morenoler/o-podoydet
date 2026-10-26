@@ -13,6 +13,7 @@ import {
   accommodationPath,
 } from "../../../shared/lib/accommodation";
 import { OwnerCriteriaSummary } from "./OwnerCriteriaSummary";
+import { criterionMatches } from "../../../shared/lib/matchPresentation";
 
 export function CompareDialog({
   matches,
@@ -71,8 +72,8 @@ export function CompareDialog({
             {(m.best.criteria.length > 0 || !!m.ownerCriteria?.length) && (
               <p className="muted">
                 Совпало{" "}
-                {m.best.criteria.filter((c) => c.status === "match").length +
-                  (m.ownerCriteria?.filter((c) => c.status === "match")
+                {m.best.criteria.filter(criterionMatches).length +
+                  (m.ownerCriteria?.filter((c) => c.status === "match" && c.evidenceStatus === "match")
                     .length || 0)}{" "}
                 из {m.best.criteria.length + (m.ownerCriteria?.length || 0)}
               </p>
@@ -111,7 +112,7 @@ export function CompareDialog({
         ))}
       </div>
       <Notice>
-        Предположения отмечены отдельно от подтверждённых фактов. Цена и наличие
+        Недостающие сведения отмечены отдельно от подтверждённых фактов. Цена и наличие
         на выбранные даты не проверены.
       </Notice>
     </dialog>

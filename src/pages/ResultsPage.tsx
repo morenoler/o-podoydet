@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import type { FeatureId, Hotel, SearchResult, Trip } from "../../shared/types";
 import { useApp } from "../app/providers/TripProvider";
+import { useAuth } from "../features/auth/AuthProvider";
 import { api } from "../shared/api/client";
 import { ErrorMessage, Loading } from "../shared/ui/Feedback";
 import { accommodationPhotos } from "../shared/lib/hotelPhotos";
@@ -15,7 +16,6 @@ import { HotelCard } from "../features/hotels/components/HotelCard";
 import { CompareDialog } from "../features/hotels/components/CompareDialog";
 import { AdvisorDrawer } from "../features/advisor/AdvisorDrawer";
 import { SearchConversation } from "../features/advisor/SearchConversation";
-import { useAuth } from "../features/auth/AuthProvider";
 import { editPreferences } from "../features/search/preferences";
 import { features } from "../../shared/features";
 import { SearchBar } from "../features/search/SearchBar";
@@ -24,9 +24,12 @@ import { SearchMapPanel } from "../features/search/SearchMapPanel";
 import { SearchFilters } from "../features/search/SearchFilters";
 import { canSearch } from "../features/search/searchTrip";
 import { catalogRooms, recommendationItem, recommendationMatch, roomHotels } from "../features/search/roomResults";
+import { AdmissionModePicker } from "../features/search/AdmissionModePicker";
+import { listLimitForSelection, uiAdmissionMode } from "../features/search/searchPolicy";
 import "../features/search/search.css";
 
 export function ResultsPage() {
+  const { user, loading: authLoading } = useAuth();
   const {
     trip,
     setTrip,
@@ -37,7 +40,6 @@ export function ResultsPage() {
     refresh,
     effectivePreferences,
   } = useApp();
-  const { user } = useAuth();
   const [data, setData] = useState<SearchResult | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -49,6 +51,7 @@ export function ResultsPage() {
   const [selectedId, setSelectedId] = useState("");
   const [limit, setLimit] = useState(8);
   const [alternativeLimit, setAlternativeLimit] = useState(4);
+  const [alternativesOpen, setAlternativesOpen] = useState(false);
   const [sort, setSort] = useState("recommended");
   const validTrip = canSearch(trip);
   useEffect(() => {
@@ -59,7 +62,7 @@ export function ResultsPage() {
     setAlternativeLimit(4);
     setCompare([]);
     setShowCompare(false);
-    if (!validTrip) {
+    if (!validTrip || authLoading) {
       setLoading(false);
       return;
     }
@@ -68,6 +71,7 @@ export function ResultsPage() {
       .then((result) => {
         if (!active) return;
         setData(result);
+        setAlternativesOpen(!result.roomRecommendations.length);
         rememberSearch(trip, result.preferences);
         setLoading(false);
       })
@@ -80,7 +84,7 @@ export function ResultsPage() {
     return () => {
       active = false;
     };
-  }, [trip, revision, validTrip]);
+  }, [trip, revision, validTrip, authLoading, user?.id]);
   const rooms = useMemo(() => {
     const items = data
       ? data.roomRecommendations.map(recommendationItem)
@@ -103,10 +107,10 @@ export function ResultsPage() {
   }, [data, catalog, sort, validTrip]);
   const visible = rooms.slice(0, limit);
   const alternatives = data?.roomAlternatives || [];
-  const selectable = [...visible, ...alternatives.slice(0, alternativeLimit).map(recommendationItem)];
+  const selectable = [...rooms, ...alternatives.map(recommendationItem)];
   const selected =
-    selectable.find((item) => item.id === selectedId) || visible[0];
-  const plotted = roomHotels(selected && !visible.some((item) => item.id === selected.id) ? [...visible, selected] : visible);
+    selectable.find((item) => item.id === selectedId) || selectable[0];
+  const plotted = roomHotels(selectable);
   function submit(nextTrip: Trip) {
     if (JSON.stringify(nextTrip) === JSON.stringify(trip)) refresh();
     else setTrip(nextTrip);
@@ -129,9 +133,17 @@ export function ResultsPage() {
     setTrip(editPreferences(trip, preferences, effectivePreferences));
   }
   function selectHotel(hotel: Hotel) {
-    if (selected?.hotel.id === hotel.id) return;
-    setSelectedId(selectable.find((item) => item.hotel.id === hotel.id)?.id || "");
+    const item = selected?.hotel.id === hotel.id ? selected : selectable.find((item) => item.hotel.id === hotel.id);
+    if (!item) return;
+    setSelectedId(item.id);
+    if (rooms.some((room) => room.id === item.id))
+      setLimit((current) => listLimitForSelection(rooms, current, item.id));
+    else {
+      setAlternativesOpen(true);
+      setAlternativeLimit((current) => listLimitForSelection(alternatives, current, item.id));
+    }
   }
+  const provisionalCount = alternatives.filter((item) => item.room.provisional).length;
   const sea = (data?.preferences || trip.preferences).some(
     (value) => value.feature === "beach_walk",
   );
@@ -177,6 +189,8 @@ export function ResultsPage() {
           </button>
         ))}
       </div>
+      <AdmissionModePicker value={trip.admissionMode}
+        onChange={(admissionMode) => setTrip({ ...trip, admissionMode })} />
       {!!effectivePreferences.length && (
         <div className="search-active-preferences" aria-label="Активные условия подбора">
           {effectivePreferences.map((preference) => (
@@ -226,6 +240,11 @@ export function ResultsPage() {
                     ? `${rooms.length} категорий номеров соответствуют всем критериям`
                     : `${rooms.length} категорий номеров в каталоге Хэундэ`}
               </p>
+              {validTrip && !loading && provisionalCount > 0 && (
+                <p className="search-provisional-count">
+                  В {provisionalCount} вариантах нужно уточнить вместимость или обязательные условия.
+                </p>
+              )}
             </div>
             <label className="search-sort">
               <span>Сначала</span>
@@ -267,11 +286,19 @@ export function ResultsPage() {
                   <Search size={30} aria-hidden="true" />
                   <h2>Номер под все критерии пока не найден</h2>
                   <p>
-                    Для рекомендации все условия должны совпасть в одном номере.
-                    Пожелания сохранены; помощник покажет, каких сведений не хватает.
+                    Для рекомендации все условия должны совпасть в одной категории номера.
+                    {uiAdmissionMode(trip.admissionMode) === "verified"
+                      ? " Можно посмотреть варианты для уточнения, сохранив ваши пожелания."
+                      : " Пожелания сохранены. Варианты с неполными данными и несовпавшими необязательными условиями показаны отдельно."}
                   </p>
-                  <button
+                  {uiAdmissionMode(trip.admissionMode) === "verified" && <button
                     className="button primary"
+                    onClick={() => setTrip({ ...trip, admissionMode: "explore" })}
+                  >
+                    Посмотреть варианты для уточнения
+                  </button>}
+                  <button
+                    className="button secondary"
                     onClick={() => setAdvisor(true)}
                   >
                     Разобраться с помощником
@@ -315,9 +342,9 @@ export function ResultsPage() {
                 </button>
               )}
               {!!alternatives.length && (
-                <details className="search-room-alternatives">
+                <details className="search-room-alternatives" open={alternativesOpen} onToggle={(event) => setAlternativesOpen(event.currentTarget.open)}>
                   <summary>Номера с несовпадениями или неполными данными ({alternatives.length})</summary>
-                  <p>Эти категории не соответствуют всем критериям. Ниже видно, что не совпало или требует уточнения.</p>
+                  <p>По этим категориям совпадение со всеми критериями не подтверждено. Ниже видно, что не совпало или требует уточнения.</p>
                   <div className="search-hotel-list">
                     {alternatives.slice(0, alternativeLimit).map((item) => <HotelCard
                       key={item.id} roomRecommendation={item} alternative
@@ -336,6 +363,8 @@ export function ResultsPage() {
               <p className="search-data-note">
                 Подбираем конкретную категорию номера. Физический номер комнаты и наличие на даты уточняйте у отельера.
                 {!!data?.unverifiedHotelCount && ` У ${data.unverifiedHotelCount} объектов нет подтверждённых категорий для рекомендации.`}
+                Недостающие сведения отмечены отдельно и не считаются подтверждением.
+                Источники указаны в подробностях. Наличие на ваши даты не проверено.
                 {catalog?.evidencePolicy === "demo" &&
                   " Варианты «ДЕМО» вымышлены."}
               </p>

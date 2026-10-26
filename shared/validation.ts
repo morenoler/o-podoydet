@@ -18,6 +18,7 @@ const date = z
   }, "Некорректная дата");
 export const tripSchema = z
   .object({
+    admissionMode: z.enum(["explore", "verified"]).optional(),
     region: z.literal("Пусан"),
     checkIn: date,
     checkOut: date,

@@ -215,7 +215,7 @@
     justify-content: center;
   }
   .site-favorites span,
-  .site-login,
+  .site-header .site-login,
   .site-user-name,
   .site-account-button > svg {
     display: none;

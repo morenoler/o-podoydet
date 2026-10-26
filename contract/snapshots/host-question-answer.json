@@ -1,0 +1,15 @@
+{
+  "status": 200,
+  "body": {
+    "id": "<uuid>",
+    "listingId": "<uuid>",
+    "listingTitle": "Светлый номер у моря, 5 этаж",
+    "userId": "<uuid>",
+    "guestName": "Гость Контракт",
+    "text": "Можно с ребёнком?",
+    "answer": "Да, с ребёнком можно.",
+    "createdAt": "<volatile>",
+    "answeredAt": "<volatile>",
+    "status": "answered"
+  }
+}

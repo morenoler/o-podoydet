@@ -1,0 +1,192 @@
+{
+  "region": "Пусан",
+  "evidencePolicy": "demo",
+  "is_demo": true,
+  "dataNotes": [
+    "Все отели, комнаты, маршруты и ответы в этом наборе вымышлены. Набор не описывает реальные объекты Пусана."
+  ],
+  "hotels": [
+    {
+      "id": "demo-harbor",
+      "name": "Учебная гавань",
+      "demo": true,
+      "lodgingType": "hotel",
+      "address": "Вымышленный учебный адрес",
+      "rooms": [
+        {
+          "id": "demo-harbor-room",
+          "name": "Учебная категория",
+          "capacity": 3,
+          "demo": true
+        }
+      ]
+    },
+    {
+      "id": "demo-dunes",
+      "name": "Учебные дюны",
+      "demo": true,
+      "lodgingType": "hotel",
+      "address": "Вымышленный учебный адрес",
+      "rooms": [
+        {
+          "id": "demo-dunes-room",
+          "name": "Учебная категория",
+          "capacity": 3,
+          "demo": true
+        }
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "demo-harbor-beach_walk",
+      "hotelId": "demo-harbor",
+      "roomId": null,
+      "feature": "beach_walk",
+      "value": 36,
+      "demo": true,
+      "method": "geo",
+      "confidence": "medium",
+      "source": "Вымышленная учебная сцена",
+      "sourceUrl": "https://example.test/fixture",
+      "quote": "Синтетическое условие для демонстрации. На месте не проверялось.",
+      "obtainedAt": "2026-10-26T00:00:00Z",
+      "expiresAt": "2027-10-26T00:00:00Z"
+    },
+    {
+      "id": "demo-harbor-step_free_route",
+      "hotelId": "demo-harbor",
+      "roomId": null,
+      "feature": "step_free_route",
+      "value": null,
+      "demo": true,
+      "method": "geo",
+      "confidence": "medium",
+      "source": "Вымышленная учебная сцена",
+      "sourceUrl": "https://example.test/fixture",
+      "quote": "Синтетическое условие для демонстрации. На месте не проверялось.",
+      "obtainedAt": "2026-10-26T00:00:00Z",
+      "expiresAt": "2027-10-26T00:00:00Z"
+    },
+    {
+      "id": "demo-harbor-family",
+      "hotelId": "demo-harbor",
+      "roomId": "demo-harbor-room",
+      "feature": "family",
+      "value": true,
+      "demo": true,
+      "method": "geo",
+      "confidence": "medium",
+      "source": "Вымышленная учебная сцена",
+      "sourceUrl": "https://example.test/fixture",
+      "quote": "Синтетическое условие для демонстрации. На месте не проверялось.",
+      "obtainedAt": "2026-10-26T00:00:00Z",
+      "expiresAt": "2027-10-26T00:00:00Z"
+    },
+    {
+      "id": "demo-harbor-courtyard",
+      "hotelId": "demo-harbor",
+      "roomId": "demo-harbor-room",
+      "feature": "courtyard",
+      "value": null,
+      "demo": true,
+      "method": "geo",
+      "confidence": "medium",
+      "source": "Вымышленная учебная сцена",
+      "sourceUrl": "https://example.test/fixture",
+      "quote": "Синтетическое условие для демонстрации. На месте не проверялось.",
+      "obtainedAt": "2026-10-26T00:00:00Z",
+      "expiresAt": "2027-10-26T00:00:00Z"
+    },
+    {
+      "id": "demo-harbor-step_free_access",
+      "hotelId": "demo-harbor",
+      "roomId": "demo-harbor-room",
+      "feature": "step_free_access",
+      "value": null,
+      "demo": true,
+      "method": "geo",
+      "confidence": "medium",
+      "source": "Вымышленная учебная сцена",
+      "sourceUrl": "https://example.test/fixture",
+      "quote": "Синтетическое условие для демонстрации. На месте не проверялось.",
+      "obtainedAt": "2026-10-26T00:00:00Z",
+      "expiresAt": "2027-10-26T00:00:00Z"
+    },
+    {
+      "id": "demo-dunes-beach_walk",
+      "hotelId": "demo-dunes",
+      "roomId": null,
+      "feature": "beach_walk",
+      "value": 276,
+      "demo": true,
+      "method": "geo",
+      "confidence": "medium",
+      "source": "Вымышленная учебная сцена",
+      "sourceUrl": "https://example.test/fixture",
+      "quote": "Синтетическое условие для демонстрации. На месте не проверялось.",
+      "obtainedAt": "2026-10-26T00:00:00Z",
+      "expiresAt": "2027-10-26T00:00:00Z"
+    },
+    {
+      "id": "demo-dunes-step_free_route",
+      "hotelId": "demo-dunes",
+      "roomId": null,
+      "feature": "step_free_route",
+      "value": null,
+      "demo": true,
+      "method": "geo",
+      "confidence": "medium",
+      "source": "Вымышленная учебная сцена",
+      "sourceUrl": "https://example.test/fixture",
+      "quote": "Синтетическое условие для демонстрации. На месте не проверялось.",
+      "obtainedAt": "2026-10-26T00:00:00Z",
+      "expiresAt": "2027-10-26T00:00:00Z"
+    },
+    {
+      "id": "demo-dunes-family",
+      "hotelId": "demo-dunes",
+      "roomId": "demo-dunes-room",
+      "feature": "family",
+      "value": true,
+      "demo": true,
+      "method": "geo",
+      "confidence": "medium",
+      "source": "Вымышленная учебная сцена",
+      "sourceUrl": "https://example.test/fixture",
+      "quote": "Синтетическое условие для демонстрации. На месте не проверялось.",
+      "obtainedAt": "2026-10-26T00:00:00Z",
+      "expiresAt": "2027-10-26T00:00:00Z"
+    },
+    {
+      "id": "demo-dunes-courtyard",
+      "hotelId": "demo-dunes",
+      "roomId": "demo-dunes-room",
+      "feature": "courtyard",
+      "value": null,
+      "demo": true,
+      "method": "geo",
+      "confidence": "medium",
+      "source": "Вымышленная учебная сцена",
+      "sourceUrl": "https://example.test/fixture",
+      "quote": "Синтетическое условие для демонстрации. На месте не проверялось.",
+      "obtainedAt": "2026-10-26T00:00:00Z",
+      "expiresAt": "2027-10-26T00:00:00Z"
+    },
+    {
+      "id": "demo-dunes-step_free_access",
+      "hotelId": "demo-dunes",
+      "roomId": "demo-dunes-room",
+      "feature": "step_free_access",
+      "value": null,
+      "demo": true,
+      "method": "geo",
+      "confidence": "medium",
+      "source": "Вымышленная учебная сцена",
+      "sourceUrl": "https://example.test/fixture",
+      "quote": "Синтетическое условие для демонстрации. На месте не проверялось.",
+      "obtainedAt": "2026-10-26T00:00:00Z",
+      "expiresAt": "2027-10-26T00:00:00Z"
+    }
+  ]
+}

@@ -990,6 +990,10 @@ textarea::placeholder {
   color: #9e4938;
   background: #fff0eb;
 }
+.match-badge.unknown {
+  color: #89601a;
+  background: #fff8e8;
+}
 .compare-button,
 .icon-button {
   display: grid;

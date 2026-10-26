@@ -21,6 +21,7 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
 }) {
   const chat = useSearchConversation(trip, onApply, scope);
   const recommendation = !searching && !searchError ? result?.roomRecommendations[0] : undefined;
+  const recommendedCapacity = recommendation?.room.capacityRule?.maxGuests ?? recommendation?.room.room.capacity;
   const log = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (log.current) log.current.scrollTop = chat.messages.length || chat.busy ? log.current.scrollHeight : 0;
@@ -76,7 +77,7 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
           <div className="conversation-room-recommendation">
             <p>Под все выбранные условия</p>
             <Link to={accommodationPath(recommendation.hotel, recommendation.room.room.id)}>{recommendation.room.room.name}</Link>
-            <span>{recommendation.hotel.name} · до {recommendation.room.room.capacity} гостей</span>
+            <span>{recommendation.hotel.name}{recommendedCapacity != null && ` · до ${recommendedCapacity} гостей${recommendation.room.capacityRule ? " по правилу размещения" : ""}`}</span>
             <small>{recommendation.source === "owner" ? "По сведениям отельера" : recommendation.source === "demo" ? "Вымышленный тестовый номер" : "По проверенным данным категории"}. Наличие на даты нужно уточнить.</small>
           </div>
         )}

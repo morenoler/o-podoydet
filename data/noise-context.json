@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "region": "Пусан",
   "timeZone": "Asia/Seoul",
-  "generatedAt": "2026-10-24T13:41:21.533Z",
+  "generatedAt": "2026-10-25T09:11:32.627Z",
   "bbox": [
     129.145,
     35.15,
@@ -29,7 +29,7 @@
         "https://www.busan.go.kr/eng/bsevents/1725994",
         "https://www.busan.go.kr/eng/bsevents/1705138"
       ],
-      "verifiedAt": "2026-10-24T13:41:21.533Z"
+      "verifiedAt": "2026-10-25T09:11:32.627Z"
     }
   },
   "roads": [
@@ -31763,5 +31763,76 @@
     "Радиусы событий и noisePotential — явно неподтверждённые акустически допущения по типу программы. Общенациональный выходной без локального события не создаёт риск.",
     "Исторические наблюдения применяются только к своим датированным интервалам; их не переносят на будущие дни или одинаковые дни недели.",
     "Низкий суммарный риск требует покрытия счётом автомобилей всех близких дорог за весь срок поездки и подтверждённо полного календаря для периода/территории. В текущем публичном наборе таких доказательств нет."
-  ]
+  ],
+  "ambientMeasurements": {
+    "schemaVersion": 1,
+    "region": "Пусан",
+    "kind": "annual_station_measurements",
+    "year": 2025,
+    "period": {
+      "from": "2025-01-01",
+      "to": "2025-12-31"
+    },
+    "unit": "dB(A)",
+    "scope": "named_monitoring_stations",
+    "usableForHotelMatching": false,
+    "source": {
+      "url": "https://www.index.go.kr/unity/potal/FileDown.do?seq=17609&id=1471&div=1",
+      "publisher": "Korea Environment Corporation / Ministry of Climate, Energy and Environment",
+      "retrievedAt": "2026-10-25T09:07:38.137870+00:00",
+      "sha256": "f6d3de069833ade5ba0c6d23336449ffddc1cca9d73b8e8c202f8e4061e98460",
+      "pageUrl": "https://www.index.go.kr/unity/potal/main/EachDtlPageDetail.do?idx_cd=1471",
+      "publishedAt": "2026-09-15",
+      "pdfPage": 33,
+      "printedPage": 30,
+      "tables": [
+        "3-7",
+        "3-8"
+      ],
+      "method": "pypdf extraction; 2025 columns visually checked against PDF page 33"
+    },
+    "observations": [
+      {
+        "stationName": "주남혁소아과 앞",
+        "coordinates": null,
+        "dayDbA": 66,
+        "nightDbA": 61,
+        "hotelIds": []
+      },
+      {
+        "stationName": "구덕운동장 동쪽",
+        "coordinates": null,
+        "dayDbA": 69,
+        "nightDbA": 64,
+        "hotelIds": []
+      },
+      {
+        "stationName": "동래우체국 앞",
+        "coordinates": null,
+        "dayDbA": 67,
+        "nightDbA": 61,
+        "hotelIds": []
+      },
+      {
+        "stationName": "하나한의원 앞",
+        "coordinates": null,
+        "dayDbA": 63,
+        "nightDbA": 57,
+        "hotelIds": []
+      },
+      {
+        "stationName": "대부자동차정비 앞",
+        "coordinates": null,
+        "dayDbA": 72,
+        "nightDbA": 71,
+        "hotelIds": []
+      }
+    ],
+    "limitations": [
+      "Годовые значения на пяти именованных постах Пусана за 2025 год, не прогноз на поездку.",
+      "Координаты постов и пространственная применимость к отелям Хэундэ не установлены.",
+      "Эти измерения не участвуют в фильтре тишины и не являются уровнем шума внутри номера.",
+      "Нельзя усреднять эти значения и приписывать результат всему городу или ближайшему отелю."
+    ]
+  }
 }

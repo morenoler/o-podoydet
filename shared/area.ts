@@ -11,6 +11,15 @@ export const coordinateSchema = z.tuple([
   z.number().finite().min(-90).max(90),
 ]);
 export type Coordinates = z.infer<typeof coordinateSchema>;
+
+// Publication dates on Korean portals are civil dates in Korea, while
+// retrievedAt is an instant. Comparing its UTC date loses the first nine hours.
+export function koreanDate(value: Date | string): string {
+  const date = typeof value === "string" ? new Date(value) : value;
+  return Number.isFinite(+date)
+    ? new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(date)
+    : "";
+}
 export interface AreaTarget {
   hotelId: string;
   name: string;
@@ -31,6 +40,8 @@ const officialUrl = z
     const u = new URL(s);
     return (
       u.protocol === "https:" &&
+      !u.username &&
+      !u.password &&
       (u.hostname === "go.kr" || u.hostname.endsWith(".go.kr"))
     );
   }, "Expected an official Korean government HTTPS source");
@@ -49,6 +60,8 @@ const boundarySource = z
     const u = new URL(s);
     return (
       u.protocol === "https:" &&
+      !u.username &&
+      !u.password &&
       (u.hostname.endsWith(".go.kr") ||
         ((u.hostname === "www.openstreetmap.org" ||
           u.hostname === "openstreetmap.org") &&
@@ -112,7 +125,7 @@ const comparatorSchema = z
   .refine(
     (c) =>
       c.period.to <= c.publishedAt &&
-      c.publishedAt <= c.retrievedAt.slice(0, 10),
+      c.publishedAt <= koreanDate(c.retrievedAt),
     "Comparator provenance dates are inconsistent",
   );
 export const officialEvidenceSchema = z
@@ -150,6 +163,14 @@ export const officialEvidenceSchema = z
   .refine(
     (e) => e.period.to <= e.publishedAt,
     "Publication precedes the covered period",
+  )
+  .refine(
+    (e) => e.publishedAt <= koreanDate(e.retrievedAt),
+    "Publication follows retrieval in the Korean civil calendar",
+  )
+  .refine(
+    (e) => e.metric !== "reported_incidents" || Number.isInteger(e.value),
+    "Reported incident counts must be integers",
   )
   .refine(
     (e) =>
@@ -224,6 +245,12 @@ export interface AirQualityAssessment {
   category: string | null;
   limitations: string[];
   forecast: AirForecast;
+  sourceSnapshot?: {
+    sha256: string;
+    byteLength: number;
+    requestUrl: string;
+    fetchedAt: string;
+  };
   error?: string;
 }
 export interface SafetyAssessment {
@@ -244,6 +271,7 @@ export interface AreaAssessmentFile {
   region?: string;
   assessments: AreaAssessment[];
   skipped: { hotelId: string; reason: string }[];
+  sourceArchive?: { path: string; sha256: string; entryCount: number };
 }
 
 export function aqiCategory(value: number | null): string | null {
@@ -634,7 +662,7 @@ export function assessSafety(
   records: OfficialEvidence[] = [],
   now = new Date(),
 ): SafetyAssessment {
-  const today = now.toISOString().slice(0, 10);
+  const today = koreanDate(now);
   const evidence = records
     .filter(
       (e) =>
@@ -719,13 +747,18 @@ export function refreshAreaFreshness(
   if (air.status === "unknown" || air.status === "stale") return withForecast;
   const time = Date.parse(air.time || ""),
     fetched = Date.parse(air.fetchedAt || "");
-  if (!Number.isFinite(time) || !Number.isFinite(fetched))
+  if (
+    !Number.isFinite(time) ||
+    !Number.isFinite(fetched) ||
+    time > +now + 3600000 ||
+    fetched > +now + 60000
+  )
     return {
       ...withForecast,
       airQuality: {
         ...withForecast.airQuality,
         status: "unknown",
-        error: "В сохранённом снимке отсутствует проверяемое время.",
+        error: "Время сохранённого снимка отсутствует, некорректно или находится в будущем.",
       },
     };
   if (+now - time <= AIR_MAX_AGE_MS && +now - fetched <= AIR_MAX_AGE_MS)

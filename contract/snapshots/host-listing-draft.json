@@ -1,0 +1,29 @@
+{
+  "status": 201,
+  "body": {
+    "id": "<uuid>",
+    "hostId": "<uuid>",
+    "hostName": "Отельер Контракт",
+    "title": "Черновик номера",
+    "description": "Просторный номер с отдельной ванной и видом на город.",
+    "city": "Пусан",
+    "address": "Хэундэ, дом 10",
+    "roomType": "Двухместный номер",
+    "capacity": 3,
+    "pricePerNight": 90000,
+    "amenities": [
+      "Wi-Fi",
+      "Кухня"
+    ],
+    "status": "draft",
+    "floor": null,
+    "windowDirections": [],
+    "photos": [],
+    "createdAt": "<volatile>",
+    "updatedAt": "<volatile>",
+    "currency": "KRW",
+    "searchProfile": {
+      "notes": ""
+    }
+  }
+}

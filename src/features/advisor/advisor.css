@@ -39,6 +39,28 @@
   margin-top: 20px;
   max-width: 800px;
 }
+.advisor-personal-wishes {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 16px 0;
+  border-block: 1px solid var(--line);
+  color: var(--ink);
+}
+.advisor-personal-wishes > svg { flex-shrink: 0; margin-top: 2px; color: var(--blue); }
+.advisor-personal-wishes > div { min-width: 0; }
+.advisor-personal-wishes h3 { font-size: 17px; line-height: 1.4; font-weight: 800; }
+.advisor-personal-wishes p { margin-top: 6px; font-size: 14px; overflow-wrap: anywhere; }
+.advisor-personal-wishes a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 .advisor-controls {
   display: flex;
   flex-wrap: wrap;
@@ -173,6 +195,7 @@
   margin-top: 4px;
 }
 .advisor-fit,
+.advisor-provisional,
 .advisor-excluded {
   padding: 7px 10px;
   border-radius: 8px;
@@ -187,6 +210,10 @@
 .advisor-excluded {
   color: var(--wish-mismatch-ink);
   background: var(--wish-mismatch-bg);
+}
+.advisor-provisional {
+  color: #765313;
+  background: #fff6e2;
 }
 .advisor-cautions {
   margin-top: 18px;

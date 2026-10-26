@@ -3,6 +3,7 @@ import { ChevronDown } from "lucide-react";
 import type { SearchResult } from "../../../shared/types";
 import { features } from "../../../shared/features";
 import { accommodationPath } from "../../shared/lib/accommodation";
+import { capacityNeedsClarification, criterionNeedsClarification } from "../../shared/lib/matchPresentation";
 
 export function SearchDiagnostics({ data }: { data: SearchResult }) {
   return (
@@ -39,7 +40,9 @@ export function SearchDiagnostics({ data }: { data: SearchResult }) {
               </Link>
               <span>
                 {match.best.capacityStatus === "mismatch"
-                  ? "Недостаточная вместимость категорий"
+                  ? capacityNeedsClarification(match.best)
+                    ? "Вместимость требует уточнения"
+                    : "Недостаточная вместимость категорий"
                   : [
                       ...match.best.criteria
                         .filter(
@@ -47,7 +50,7 @@ export function SearchDiagnostics({ data }: { data: SearchResult }) {
                             criterion.required &&
                             criterion.status === "mismatch",
                         )
-                        .map((criterion) => features[criterion.feature].label),
+                        .map((criterion) => `${features[criterion.feature].label}${criterionNeedsClarification(criterion) ? " — требует уточнения" : " — не соответствует"}`),
                       ...(match.ownerCriteria || [])
                         .filter(
                           (criterion) =>

@@ -1,0 +1,31 @@
+{
+  "checkedAt": "2026-10-25T10:35:22.500368+00:00",
+  "status": "passed",
+  "isDemo": true,
+  "scope": "Local HTTP, fictional accounts/listing and generated PNGs; isolated database and uploads",
+  "checks": [
+    "Three fictional accounts; anonymous and wrong-role access denied",
+    "Draft hidden from public listing and search; foreign owner cannot read or edit it",
+    "Two PNG uploads preserve decoded pixels, strip metadata and enforce ownership",
+    "Published listing and photos are public; search uses explicit owner facts without exposing private notes",
+    "Restart preserves sessions, listings, pixels and photo order; removed photo stops being public",
+    "Traveler question and owner answer persist; anonymous/foreign-owner actions rejected",
+    "Local request confirmed and cancelled; price snapshot preserved; premature completion and foreign owner denied",
+    "Logout revokes traveler session"
+  ],
+  "inputSha256": {
+    "jar": "3eeaa07bf06a2a96d890cd9980d3859ed19735883e776d286d880e3dfb31f55d",
+    "catalog": "e1e7121b6caa9f0c6f9f619e7e0276796208f97c620949dd6cba97f9d0d6e092"
+  },
+  "httpRequests": 56,
+  "uploadedImages": 2,
+  "restartedServer": true,
+  "accounts": 3,
+  "listings": 1,
+  "questions": 1,
+  "bookingRequests": 1,
+  "finishedAt": "2026-10-25T10:35:49.510151+00:00",
+  "serverStopped": true,
+  "pixelsPerImage": 6,
+  "decodedPngChecks": 7
+}

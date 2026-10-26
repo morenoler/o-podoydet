@@ -7,6 +7,9 @@ import { roomDetailsLabel } from "../features/account/format";
 import "../features/search/search.css";
 import "../features/hotels/hotel-details.css";
 import { CapacitySummary } from "../features/hotels/components/CapacitySummary";
+import { PersonalWishesSummary } from "../features/hotels/components/PersonalWishesSummary";
+import { MatchBadge } from "../features/hotels/components/MatchBadge";
+import { matchForSelectedPreferences } from "../shared/lib/matchPresentation";
 import { useParams, useSearchParams, Link } from "react-router-dom";
 import { useApp } from "../app/providers/TripProvider";
 import { useState, useEffect } from "react";
@@ -25,6 +28,8 @@ import { dateFull } from "../shared/lib/date";
 import { AreaPanel } from "../features/area/components/AreaPanel";
 import { FactEvidence } from "../features/hotels/components/FactEvidence";
 import { accommodationPath } from "../shared/lib/accommodation";
+import { CatalogClarificationPlan } from "../features/clarifications/CatalogClarificationPlan";
+import "../features/clarifications/clarifications.css";
 
 export function HotelPage() {
   const { id } = useParams();
@@ -175,9 +180,8 @@ export function HotelPage() {
         </Notice>
       ) : (
         <Notice>
-          Подбор использует проверяемые источники и оценки. Расчётные выводы
-          отмечены как «Предположение». Цена и наличие на даты поездки не
-          проверены.
+          Подбор использует проверяемые источники. Недостающие сведения отмечены
+          «Требует уточнения». Цена и наличие на даты поездки не проверены.
         </Notice>
       )}
       <div className="detail-grid">
@@ -285,9 +289,11 @@ export function HotelPage() {
               {ranked.rooms.map((entry) => (
                 <option key={entry.room.id} value={entry.room.id}>
                   {entry.room.name} ·{" "}
-                  {entry.capacityAssumed
-                    ? `до ${entry.estimatedCapacity} гостей (предположение)`
-                    : `до ${entry.room.capacity} гостей`}
+                  {entry.capacityRule
+                    ? `до ${entry.capacityRule.maxGuests} гостей по правилу размещения`
+                    : entry.room.capacity === null
+                      ? "вместимость требует уточнения"
+                      : `до ${entry.room.capacity} гостей`}
                 </option>
               ))}
             </select>
@@ -305,12 +311,28 @@ export function HotelPage() {
               )}
             </p>
           )}
+          <MatchBadge
+            match={matchForSelectedPreferences(
+              ranked,
+              ranked.preferences || trip.preferences,
+              room,
+            )}
+          />
           <CapacitySummary match={room} />
           {(selectedCriteria.length > 0 || !hasOwnerCriteria) && (
             <WishMatches criteria={selectedCriteria} />
           )}
           {hasOwnerCriteria && (
             <OwnerCriteriaSummary criteria={ranked.ownerCriteria} detailed />
+          )}
+          {!labFixture && (
+            <CatalogClarificationPlan
+              match={{
+                ...ranked,
+                preferences: ranked.preferences || trip.preferences,
+              }}
+              room={room}
+            />
           )}
           <div className="room-criteria">
             <h3>Все условия номера</h3>
@@ -322,6 +344,7 @@ export function HotelPage() {
                 </div>
               ))}
           </div>
+          <PersonalWishesSummary match={{ ...ranked, best: room }} />
           {error && <ErrorMessage text={error} />}
           <Notice>
             Это объект из исследовательского каталога. Задать вопрос владельцу и

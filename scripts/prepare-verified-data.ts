@@ -5,6 +5,16 @@ import type { Dataset, Fact, Room } from "../shared/types";
 
 const url = z.url().refine((s) => s.startsWith("https://"));
 const timestamp = z.iso.datetime({ offset: true });
+const occupancyRule = z.object({
+  maxGuests: z.number().int().min(1).max(20),
+  maxAdults: z.number().int().min(0).max(20).optional(),
+  maxChildren: z.number().int().min(0).max(20).optional(),
+  minChildren: z.number().int().min(0).max(20).optional(),
+  childMaxAge: z.number().int().min(0).max(17).optional(),
+  sourceUrl: url,
+  obtainedAt: timestamp,
+  quote: z.string().min(1),
+}).refine(r => r.minChildren === undefined || r.minChildren <= r.maxGuests, "Child condition exceeds total occupancy");
 const roomEvidence = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
@@ -14,6 +24,8 @@ const roomEvidence = z.object({
   obtainedAt: timestamp,
   sourcePublisher: z.string().optional(),
   publishedView: z.string().optional(),
+  occupancyRules: z.array(occupancyRule).default([]),
+  capacityMayVary: z.boolean().optional(),
   limitations: z.array(z.string()).default([]),
   facts: z
     .array(
@@ -63,7 +75,8 @@ export function prepareVerifiedDataset(
       roomIds.add(room.id);
       if (
         Date.parse(room.obtainedAt) > +now ||
-        room.facts.some((f) => Date.parse(f.obtainedAt) > +now)
+        room.facts.some((f) => Date.parse(f.obtainedAt) > +now) ||
+        room.occupancyRules.some((r) => Date.parse(r.obtainedAt) > +now)
       )
         throw new Error("Source timestamp is in the future");
     }
@@ -80,10 +93,12 @@ export function prepareVerifiedDataset(
           id: sourceRoom.id,
           name: sourceRoom.name,
           capacity: sourceRoom.capacity,
+          scope: "room_category",
           demo: false,
           evidenceStatus: "verified",
           sourceUrl: sourceRoom.sourceUrl,
           obtainedAt: sourceRoom.obtainedAt,
+          ...(sourceRoom.occupancyRules.length ? { occupancyRules: sourceRoom.occupancyRules } : {}),
           quote: [
             `Официальная категория: ${sourceRoom.name}.${sourceRoom.capacity === null ? " Максимальная вместимость не подтверждена." : ` Опубликованная вместимость: ${sourceRoom.capacity}.`}`,
             sourceRoom.publishedView
@@ -96,9 +111,9 @@ export function prepareVerifiedDataset(
           ]
             .filter(Boolean)
             .join(" "),
-          capacityMayVary:
+          capacityMayVary: sourceRoom.capacityMayVary === true || sourceRoom.occupancyRules.length > 0 || (
             ["node-7858128118", "way-627150752"].includes(hotel.id) &&
-            sourceRoom.capacity === 3,
+            sourceRoom.capacity === 3),
         };
         for (const item of sourceRoom.facts)
           facts.push({
@@ -157,6 +172,7 @@ export function prepareVerifiedDataset(
         id: `${hotel.id}-unverified`,
         name: "Категория номера не подтверждена",
         capacity: null,
+        scope: "unknown",
         demo: false,
         evidenceStatus: "unknown",
       });

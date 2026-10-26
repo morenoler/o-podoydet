@@ -1,0 +1,537 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "О!Подойдёт Window View API",
+    "version": "0.1.0",
+    "description": "Open-data 2.5D view estimates. Floor is supplied by the caller. Actual room visibility is never asserted."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8011"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Service health"
+          }
+        }
+      }
+    },
+    "/v1/scenes": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Packaged real/synthetic scene identifiers"
+          }
+        }
+      }
+    },
+    "/v1/regions": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Pilot regions, OSM hotel identities and request defaults; floor and date must be supplied"
+          }
+        }
+      }
+    },
+    "/v1/views/estimate": {
+      "post": {
+        "operationId": "estimateWindowView",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EstimateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Conditional geometric estimates with evidence and unknowns",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstimateResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Network disabled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Body exceeds 32 KiB or has invalid length",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "JSON required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Another estimate is running",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Upstream/source error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Offline cache missing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EstimateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "hotel": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "lat": {
+                "type": "number",
+                "minimum": -80,
+                "maximum": 80
+              },
+              "lon": {
+                "type": "number",
+                "minimum": -179.8,
+                "maximum": 179.8
+              }
+            },
+            "required": [
+              "id",
+              "lat",
+              "lon"
+            ]
+          },
+          "floor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Required user floor. Default ground floor is 1; floor 0 requires ground_floor_number=0."
+          },
+          "ground_floor_number": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "default": 1
+          },
+          "floor_height_m": {
+            "type": "number",
+            "minimum": 2,
+            "maximum": 6
+          },
+          "eye_height_m": {
+            "type": "number",
+            "minimum": 0.3,
+            "maximum": 2.5
+          },
+          "room": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "window": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "lat": {
+                    "type": "number",
+                    "minimum": -80,
+                    "maximum": 80
+                  },
+                  "lon": {
+                    "type": "number",
+                    "minimum": -179.8,
+                    "maximum": 179.8
+                  },
+                  "bearing_deg": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 359.999999
+                  },
+                  "horizontal_fov_deg": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 180
+                  },
+                  "vertical_fov_deg": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 160
+                  },
+                  "pitch_deg": {
+                    "type": "number",
+                    "minimum": -80,
+                    "maximum": 80
+                  }
+                },
+                "required": []
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000,
+                    "format": "uri"
+                  },
+                  "quote": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1500
+                  },
+                  "retrieved_at": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60,
+                    "format": "date-time"
+                  }
+                },
+                "required": [
+                  "url",
+                  "quote",
+                  "retrieved_at"
+                ]
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+            "description": "1901-01-01 through 2099-12-31; civil date at supplied UTC offset."
+          },
+          "utc_offset_minutes": {
+            "type": "integer",
+            "minimum": -720,
+            "maximum": 840
+          },
+          "radius_m": {
+            "type": "number",
+            "minimum": 200,
+            "maximum": 2000,
+            "default": 1200
+          },
+          "data_mode": {
+            "type": "string",
+            "enum": [
+              "cached",
+              "live",
+              "fixture"
+            ],
+            "default": "cached"
+          },
+          "scene_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,60}$"
+          }
+        },
+        "required": [
+          "hotel",
+          "floor",
+          "date",
+          "utc_offset_minutes"
+        ]
+      },
+      "EstimateResponse": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "hotel",
+          "room_resolution",
+          "assessments",
+          "sources",
+          "limitations",
+          "actual_visibility_confirmed"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": "1.0"
+          },
+          "actual_visibility_confirmed": {
+            "const": false
+          },
+          "is_demo": {
+            "type": "boolean"
+          },
+          "hotel": {
+            "type": "object"
+          },
+          "room_resolution": {
+            "type": "object",
+            "properties": {
+              "scope": {
+                "enum": [
+                  "room_window",
+                  "hotel_floor_scenarios"
+                ]
+              },
+              "floor": {
+                "type": "object"
+              },
+              "conflicts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "assessments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "observer": {
+                  "type": "object"
+                },
+                "targets": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Visibility"
+                  }
+                },
+                "categories": {
+                  "type": "object"
+                },
+                "sun": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "published_claims": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "coverage": {
+            "type": "object"
+          },
+          "limitations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Visibility": {
+        "type": "object",
+        "required": [
+          "status",
+          "visible_in_model",
+          "uncertainties"
+        ],
+        "properties": {
+          "status": {
+            "enum": [
+              "clear_in_model",
+              "blocked",
+              "outside_fov",
+              "unknown"
+            ]
+          },
+          "visible_in_model": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "uncertainties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "distance_m": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "bearing_deg": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "elevation_angle_deg": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -9,6 +9,17 @@ const trip: Trip = {
   region: "Пусан", checkIn: "2027-06-10", checkOut: "2027-06-17",
   adults: 2, children: 0, scenarios: [], preferences: [], text: "Обязательно рядом с пляжем",
 };
+test("filter mode changes survive rebasing onto a newer chat reply", () => {
+  const initial: Trip = { ...trip, admissionMode: "explore" };
+  const newer = editPreferences(initial, [{ feature: "family", required: true }]);
+  const applied = applyFilterDraft(newer, newer.preferences, initial, { ...initial, admissionMode: "verified" });
+  assert.equal(applied.admissionMode, "verified");
+  assert.deepEqual(applied.preferences, newer.preferences);
+  assert.deepEqual(applied.preferenceOverrides, newer.preferenceOverrides);
+  const changedElsewhere: Trip = { ...newer, admissionMode: "verified" };
+  assert.equal(applyFilterDraft(changedElsewhere, newer.preferences, initial, initial).admissionMode, "verified");
+  assert.equal(applyFilterDraft(newer, newer.preferences, initial, { ...initial, admissionMode: "verified", preferences: [] }, true).admissionMode, "verified");
+});
 test("removing an inferred wish explicitly overrides the original text", () => {
   const next = editPreferences(trip, [], [{ feature: "beach_walk", required: true }]);
   assert.deepEqual(next.preferenceOverrides, [{ feature: "beach_walk", enabled: false, required: false }]);

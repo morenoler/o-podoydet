@@ -1,0 +1,14 @@
+{
+  "status": 201,
+  "body": {
+    "user": {
+      "id": "<uuid>",
+      "email": "host-<run>@example.com",
+      "role": "host",
+      "name": "Отельер Контракт",
+      "phone": "",
+      "about": "",
+      "createdAt": "<volatile>"
+    }
+  }
+}

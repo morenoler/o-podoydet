@@ -28,9 +28,13 @@ export function FactEvidence({
             ? allowDemo
               ? "Демонстрация · влияет только на тестовый подбор"
               : "Демонстрация · не влияет на подбор"
-            : fact.method === "official"
-              ? "Официальный источник"
-              : "Расчёт по OSM"}
+            : fact.method === "host"
+              ? "Со слов отельера"
+              : fact.method === "official"
+                ? "Официальный источник"
+                : fact.method === "geo"
+                  ? "Расчёт по OSM"
+                  : "Источник требует уточнения"}
         </span>
       </div>
       <blockquote>{fact.quote}</blockquote>
@@ -59,6 +63,11 @@ export function FactEvidence({
             : "низкая"}
         . {fact.confidenceReason}
       </p>
+      {fact.method === "host" && !fact.demo && (
+        <p className="muted">
+          Заявление отельера. Независимая проверка на месте не проведена.
+        </p>
+      )}
       {fact.supersededBy && (
         <p className="muted">
           Заменено новым подтверждённым ответом. Сохранено в истории.

@@ -1,0 +1,16 @@
+[
+  {"name":"all confirmed","capacity":"match","criterion":"match","required":true,"explore":"fits","provisional":false,"verified":"fits"},
+  {"name":"missing required evidence","capacity":"match","criterion":"unknown","required":true,"explore":"fits","provisional":true,"verified":"excluded"},
+  {"name":"outdated required evidence","capacity":"match","criterion":"stale","required":true,"explore":"fits","provisional":true,"verified":"excluded"},
+  {"name":"conflicting required evidence","capacity":"match","criterion":"conflict","required":true,"explore":"excluded","provisional":false,"verified":"excluded"},
+  {"name":"known contraindication","capacity":"match","criterion":"mismatch","required":true,"explore":"excluded","provisional":false,"verified":"excluded"},
+  {"name":"unknown places","capacity":"unknown","criterion":"match","required":true,"explore":"fits","provisional":true,"verified":"excluded"},
+  {"name":"known insufficient places","capacity":"mismatch","criterion":"match","required":true,"explore":"excluded","provisional":false,"verified":"excluded"},
+  {"name":"both missing","capacity":"unknown","criterion":"unknown","required":true,"explore":"fits","provisional":true,"verified":"excluded"},
+  {"name":"missing capacity cannot override negative","capacity":"unknown","criterion":"mismatch","required":true,"explore":"excluded","provisional":false,"verified":"excluded"},
+  {"name":"missing capacity cannot override conflict","capacity":"unknown","criterion":"conflict","required":true,"explore":"excluded","provisional":false,"verified":"excluded"},
+  {"name":"optional unknown does not change admission","capacity":"match","criterion":"unknown","required":false,"explore":"fits","provisional":false,"verified":"fits"},
+  {"name":"optional negative remains a tradeoff","capacity":"match","criterion":"mismatch","required":false,"explore":"fits","provisional":false,"verified":"fits"},
+  {"name":"optional conflict remains visible","capacity":"match","criterion":"conflict","required":false,"explore":"fits","provisional":false,"verified":"fits"},
+  {"name":"optional positives cannot fill missing capacity","capacity":"unknown","criterion":"match","required":false,"explore":"fits","provisional":true,"verified":"excluded"}
+]

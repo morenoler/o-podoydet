@@ -1,0 +1,415 @@
+{
+  "status": 200,
+  "body": {
+    "hotel": {
+      "id": "way-843161717",
+      "name": "Grand Josun Busan",
+      "lodgingType": "hotel",
+      "address": "Пусан, Хэундэ",
+      "coordinates": [
+        129.16315205555554,
+        35.160034181481485
+      ],
+      "osmUrl": "https://www.openstreetmap.org/way/843161717",
+      "route": {
+        "end": 12926889973,
+        "meters": 36,
+        "coordinates": [
+          [
+            129.1635559,
+            35.1598741
+          ],
+          [
+            129.1635573,
+            35.1595498
+          ]
+        ],
+        "wayIds": [
+          239283890
+        ],
+        "steps": 0,
+        "beachName": "Haeundae Beach",
+        "beachId": 107531972,
+        "connectionMeters": 41,
+        "approximate": true
+      },
+      "noise": [
+        {
+          "name": "Haeundaehaebyeon-ro",
+          "kind": "road",
+          "meters": 48,
+          "osmUrl": "https://www.openstreetmap.org/way/1495778540",
+          "coordinates": [
+            129.1627799323167,
+            35.1603374287759
+          ]
+        },
+        {
+          "name": "Thursday Party Burger & Pasta",
+          "kind": "nightlife",
+          "meters": 127,
+          "osmUrl": "https://www.openstreetmap.org/node/5114079721",
+          "coordinates": [
+            129.1617893,
+            35.1602935
+          ]
+        },
+        {
+          "name": "Galmegi Brewing",
+          "kind": "nightlife",
+          "meters": 221,
+          "osmUrl": "https://www.openstreetmap.org/node/4239385553",
+          "coordinates": [
+            129.1607574,
+            35.1603942
+          ]
+        },
+        {
+          "name": "Muse On Vinyl Pub",
+          "kind": "nightlife",
+          "meters": 236,
+          "osmUrl": "https://www.openstreetmap.org/node/13455895192",
+          "coordinates": [
+            129.1635061,
+            35.1621373
+          ]
+        },
+        {
+          "name": "Haeun-daero 570beon-gil",
+          "kind": "road",
+          "meters": 242,
+          "osmUrl": "https://www.openstreetmap.org/way/37399392",
+          "coordinates": [
+            129.1605201,
+            35.1597268
+          ]
+        }
+      ],
+      "dataNotes": [
+        "Сведения о категориях опубликованы отелем; свободные номера и фактические условия на месте не проверены.",
+        "Данные входа, полного пути без ступеней и окон во двор остаются неизвестными."
+      ],
+      "rooms": [
+        {
+          "id": "way-843161717-real-kids-deluxe",
+          "name": "Kids Deluxe",
+          "capacity": null,
+          "scope": "room_category",
+          "demo": false,
+          "evidenceStatus": "verified",
+          "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsDeluxe.do",
+          "obtainedAt": "2026-10-25T09:18:57.362Z",
+          "occupancyRules": [
+            {
+              "maxGuests": 4,
+              "maxAdults": 2,
+              "maxChildren": 2,
+              "childMaxAge": 12,
+              "sourceUrl": "https://gjb.josunhotel.com/about/faq.do?_method=list",
+              "obtainedAt": "2026-10-25T09:19:04.896Z",
+              "quote": "Официальный FAQ устанавливает стандартное размещение семьи: 2 взрослых и 2 ребёнка, возраст ребёнка 0–12 лет. Это общее правило отеля, не разрешение на четырёх взрослых; возраст детей и наличие категории нужно проверить."
+            }
+          ],
+          "quote": "Официальная категория: Kids Deluxe. Максимальная вместимость не подтверждена. Опубликованный вид: 시티뷰, 파셜 오션뷰, 오션뷰. Это не подтверждает окна во двор.",
+          "capacityMayVary": true
+        },
+        {
+          "id": "way-843161717-real-kids-suite",
+          "name": "Kids Suite",
+          "capacity": null,
+          "scope": "room_category",
+          "demo": false,
+          "evidenceStatus": "verified",
+          "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsSuite.do",
+          "obtainedAt": "2026-10-25T09:18:59.959Z",
+          "occupancyRules": [
+            {
+              "maxGuests": 4,
+              "maxAdults": 2,
+              "maxChildren": 2,
+              "childMaxAge": 12,
+              "sourceUrl": "https://gjb.josunhotel.com/about/faq.do?_method=list",
+              "obtainedAt": "2026-10-25T09:19:04.896Z",
+              "quote": "Официальный FAQ устанавливает стандартное размещение семьи: 2 взрослых и 2 ребёнка, возраст ребёнка 0–12 лет. Это общее правило отеля, не разрешение на четырёх взрослых; возраст детей и наличие категории нужно проверить."
+            }
+          ],
+          "quote": "Официальная категория: Kids Suite. Максимальная вместимость не подтверждена. Опубликованный вид: 시티뷰, 오션뷰, 오션뷰(리빙룸). Это не подтверждает окна во двор.",
+          "capacityMayVary": true
+        },
+        {
+          "id": "way-843161717-real-kids-superior",
+          "name": "Kids Superior",
+          "capacity": null,
+          "scope": "room_category",
+          "demo": false,
+          "evidenceStatus": "verified",
+          "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsSuperior.do",
+          "obtainedAt": "2026-10-25T09:18:54.227Z",
+          "occupancyRules": [
+            {
+              "maxGuests": 4,
+              "maxAdults": 2,
+              "maxChildren": 2,
+              "childMaxAge": 12,
+              "sourceUrl": "https://gjb.josunhotel.com/about/faq.do?_method=list",
+              "obtainedAt": "2026-10-25T09:19:04.896Z",
+              "quote": "Официальный FAQ устанавливает стандартное размещение семьи: 2 взрослых и 2 ребёнка, возраст ребёнка 0–12 лет. Это общее правило отеля, не разрешение на четырёх взрослых; возраст детей и наличие категории нужно проверить."
+            }
+          ],
+          "quote": "Официальная категория: Kids Superior. Максимальная вместимость не подтверждена. Опубликованный вид: 시티뷰. Это не подтверждает окна во двор.",
+          "capacityMayVary": true
+        },
+        {
+          "id": "way-843161717-real-family-corner-suite",
+          "name": "Family Corner Suite",
+          "capacity": null,
+          "scope": "room_category",
+          "demo": false,
+          "evidenceStatus": "verified",
+          "sourceUrl": "https://gjb.josunhotel.com/rooms/familySuite.do",
+          "obtainedAt": "2026-10-25T09:19:02.633Z",
+          "occupancyRules": [
+            {
+              "maxGuests": 4,
+              "maxAdults": 2,
+              "maxChildren": 2,
+              "childMaxAge": 12,
+              "sourceUrl": "https://gjb.josunhotel.com/about/faq.do?_method=list",
+              "obtainedAt": "2026-10-25T09:19:04.896Z",
+              "quote": "Официальный FAQ устанавливает стандартное размещение семьи: 2 взрослых и 2 ребёнка, возраст ребёнка 0–12 лет. Это общее правило отеля, не разрешение на четырёх взрослых; возраст детей и наличие категории нужно проверить."
+            }
+          ],
+          "quote": "Официальная категория: Family Corner Suite. Максимальная вместимость не подтверждена. Опубликованный вид: 오션뷰(리빙룸). Это не подтверждает окна во двор.",
+          "capacityMayVary": true
+        }
+      ]
+    },
+    "facts": [
+      {
+        "id": "way-843161717-route",
+        "hotelId": "way-843161717",
+        "feature": "beach_walk",
+        "value": 36,
+        "source": "OpenStreetMap, локальный пешеходный граф",
+        "sourceUrl": "https://www.openstreetmap.org/way/843161717",
+        "quote": "36 м по графу. Привязка точки отеля к сети: 41 м. Вход и подход к пляжу не обследованы; соединительные участки не включены в длину.",
+        "method": "geo",
+        "confidence": "medium",
+        "confidenceReason": "Рассчитано по сети OSM; точки входа приближённые.",
+        "obtainedAt": "2026-10-24T10:07:47.270Z",
+        "sourceDate": "2026-10-24T10:07:47.270Z",
+        "expiresAt": "<volatile>",
+        "demo": false
+      },
+      {
+        "id": "way-843161717-real-kids-deluxe-family-official",
+        "hotelId": "way-843161717",
+        "roomId": "way-843161717-real-kids-deluxe",
+        "feature": "family",
+        "value": true,
+        "source": "Grand Josun Busan / JOSUN HOTELS & RESORTS",
+        "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsDeluxe.do",
+        "quote": "Официальная страница категории Kids Deluxe прямо указывает семейное назначение либо разрешение на размещение с ребёнком. Вместимость и возрастные условия проверяются отдельно.",
+        "method": "official",
+        "confidence": "medium",
+        "confidenceReason": "Опубликовано на официальном сайте для конкретной категории; наличие и индивидуальные условия бронирования не проверены.",
+        "obtainedAt": "2026-10-25T09:18:57.362Z",
+        "expiresAt": "<volatile>",
+        "demo": false
+      },
+      {
+        "id": "way-843161717-real-kids-deluxe-courtyard-partial",
+        "hotelId": "way-843161717",
+        "roomId": "way-843161717-real-kids-deluxe",
+        "feature": "courtyard",
+        "value": null,
+        "source": "Grand Josun Busan / JOSUN HOTELS & RESORTS",
+        "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsDeluxe.do",
+        "quote": "Сторона всех окон этой категории не подтверждена как внутренний двор. Опубликованный вид: 시티뷰, 파셜 오션뷰, 오션뷰.",
+        "method": "official",
+        "confidence": "low",
+        "confidenceReason": "Частичные сведения; положительное или отрицательное совпадение не установлено.",
+        "obtainedAt": "2026-10-25T09:18:57.362Z",
+        "expiresAt": "<volatile>",
+        "demo": false
+      },
+      {
+        "id": "way-843161717-real-kids-deluxe-step_free_access-partial",
+        "hotelId": "way-843161717",
+        "roomId": "way-843161717-real-kids-deluxe",
+        "feature": "step_free_access",
+        "value": null,
+        "source": "Grand Josun Busan / JOSUN HOTELS & RESORTS",
+        "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsDeluxe.do",
+        "quote": "В собранных официальных сведениях нет подтверждения всего пути от улицы до этой категории без ступеней. Наличие лифта само по себе не подтверждает доступность всего пути.",
+        "method": "official",
+        "confidence": "low",
+        "confidenceReason": "Частичные сведения; положительное или отрицательное совпадение не установлено.",
+        "obtainedAt": "2026-10-25T09:18:57.362Z",
+        "expiresAt": "<volatile>",
+        "demo": false
+      },
+      {
+        "id": "way-843161717-real-kids-suite-family-official",
+        "hotelId": "way-843161717",
+        "roomId": "way-843161717-real-kids-suite",
+        "feature": "family",
+        "value": true,
+        "source": "Grand Josun Busan / JOSUN HOTELS & RESORTS",
+        "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsSuite.do",
+        "quote": "Официальная страница категории Kids Suite прямо указывает семейное назначение либо разрешение на размещение с ребёнком. Вместимость и возрастные условия проверяются отдельно.",
+        "method": "official",
+        "confidence": "medium",
+        "confidenceReason": "Опубликовано на официальном сайте для конкретной категории; наличие и индивидуальные условия бронирования не проверены.",
+        "obtainedAt": "2026-10-25T09:18:59.959Z",
+        "expiresAt": "<volatile>",
+        "demo": false
+      },
+      {
+        "id": "way-843161717-real-kids-suite-courtyard-partial",
+        "hotelId": "way-843161717",
+        "roomId": "way-843161717-real-kids-suite",
+        "feature": "courtyard",
+        "value": null,
+        "source": "Grand Josun Busan / JOSUN HOTELS & RESORTS",
+        "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsSuite.do",
+        "quote": "Сторона всех окон этой категории не подтверждена как внутренний двор. Опубликованный вид: 시티뷰, 오션뷰, 오션뷰(리빙룸).",
+        "method": "official",
+        "confidence": "low",
+        "confidenceReason": "Частичные сведения; положительное или отрицательное совпадение не установлено.",
+        "obtainedAt": "2026-10-25T09:18:59.959Z",
+        "expiresAt": "<volatile>",
+        "demo": false
+      },
+      {
+        "id": "way-843161717-real-kids-suite-step_free_access-partial",
+        "hotelId": "way-843161717",
+        "roomId": "way-843161717-real-kids-suite",
+        "feature": "step_free_access",
+        "value": null,
+        "source": "Grand Josun Busan / JOSUN HOTELS & RESORTS",
+        "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsSuite.do",
+        "quote": "В собранных официальных сведениях нет подтверждения всего пути от улицы до этой категории без ступеней. Наличие лифта само по себе не подтверждает доступность всего пути.",
+        "method": "official",
+        "confidence": "low",
+        "confidenceReason": "Частичные сведения; положительное или отрицательное совпадение не установлено.",
+        "obtainedAt": "2026-10-25T09:18:59.959Z",
+        "expiresAt": "<volatile>",
+        "demo": false
+      },
+      {
+        "id": "way-843161717-real-kids-superior-family-official",
+        "hotelId": "way-843161717",
+        "roomId": "way-843161717-real-kids-superior",
+        "feature": "family",
+        "value": true,
+        "source": "Grand Josun Busan / JOSUN HOTELS & RESORTS",
+        "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsSuperior.do",
+        "quote": "Официальная страница категории Kids Superior прямо указывает семейное назначение либо разрешение на размещение с ребёнком. Вместимость и возрастные условия проверяются отдельно.",
+        "method": "official",
+        "confidence": "medium",
+        "confidenceReason": "Опубликовано на официальном сайте для конкретной категории; наличие и индивидуальные условия бронирования не проверены.",
+        "obtainedAt": "2026-10-25T09:18:54.227Z",
+        "expiresAt": "<volatile>",
+        "demo": false
+      },
+      {
+        "id": "way-843161717-real-kids-superior-courtyard-partial",
+        "hotelId": "way-843161717",
+        "roomId": "way-843161717-real-kids-superior",
+        "feature": "courtyard",
+        "value": null,
+        "source": "Grand Josun Busan / JOSUN HOTELS & RESORTS",
+        "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsSuperior.do",
+        "quote": "Сторона всех окон этой категории не подтверждена как внутренний двор. Опубликованный вид: 시티뷰.",
+        "method": "official",
+        "confidence": "low",
+        "confidenceReason": "Частичные сведения; положительное или отрицательное совпадение не установлено.",
+        "obtainedAt": "2026-10-25T09:18:54.227Z",
+        "expiresAt": "<volatile>",
+        "demo": false
+      },
+      {
+        "id": "way-843161717-real-kids-superior-step_free_access-partial",
+        "hotelId": "way-843161717",
+        "roomId": "way-843161717-real-kids-superior",
+        "feature": "step_free_access",
+        "value": null,
+        "source": "Grand Josun Busan / JOSUN HOTELS & RESORTS",
+        "sourceUrl": "https://gjb.josunhotel.com/rooms/kidsSuperior.do",
+        "quote": "В собранных официальных сведениях нет подтверждения всего пути от улицы до этой категории без ступеней. Наличие лифта само по себе не подтверждает доступность всего пути.",
+        "method": "official",
+        "confidence": "low",
+        "confidenceReason": "Частичные сведения; положительное или отрицательное совпадение не установлено.",
+        "obtainedAt": "2026-10-25T09:18:54.227Z",
+        "expiresAt": "<volatile>",
+        "demo": false
+      },
+      {
+        "id": "way-843161717-real-family-corner-suite-family-official",
+        "hotelId": "way-843161717",
+        "roomId": "way-843161717-real-family-corner-suite",
+        "feature": "family",
+        "value": true,
+        "source": "Grand Josun Busan / JOSUN HOTELS & RESORTS",
+        "sourceUrl": "https://gjb.josunhotel.com/rooms/familySuite.do",
+        "quote": "Официальная страница категории Family Corner Suite прямо указывает семейное назначение либо разрешение на размещение с ребёнком. Вместимость и возрастные условия проверяются отдельно.",
+        "method": "official",
+        "confidence": "medium",
+        "confidenceReason": "Опубликовано на официальном сайте для конкретной категории; наличие и индивидуальные условия бронирования не проверены.",
+        "obtainedAt": "2026-10-25T09:19:02.633Z",
+        "expiresAt": "<volatile>",
+        "demo": false
+      },
+      {
+        "id": "way-843161717-real-family-corner-suite-courtyard-partial",
+        "hotelId": "way-843161717",
+        "roomId": "way-843161717-real-family-corner-suite",
+        "feature": "courtyard",
+        "value": null,
+        "source": "Grand Josun Busan / JOSUN HOTELS & RESORTS",
+        "sourceUrl": "https://gjb.josunhotel.com/rooms/familySuite.do",
+        "quote": "Сторона всех окон этой категории не подтверждена как внутренний двор. Опубликованный вид: 오션뷰(리빙룸).",
+        "method": "official",
+        "confidence": "low",
+        "confidenceReason": "Частичные сведения; положительное или отрицательное совпадение не установлено.",
+        "obtainedAt": "2026-10-25T09:19:02.633Z",
+        "expiresAt": "<volatile>",
+        "demo": false
+      },
+      {
+        "id": "way-843161717-real-family-corner-suite-step_free_access-partial",
+        "hotelId": "way-843161717",
+        "roomId": "way-843161717-real-family-corner-suite",
+        "feature": "step_free_access",
+        "value": null,
+        "source": "Grand Josun Busan / JOSUN HOTELS & RESORTS",
+        "sourceUrl": "https://gjb.josunhotel.com/rooms/familySuite.do",
+        "quote": "В собранных официальных сведениях нет подтверждения всего пути от улицы до этой категории без ступеней. Наличие лифта само по себе не подтверждает доступность всего пути.",
+        "method": "official",
+        "confidence": "low",
+        "confidenceReason": "Частичные сведения; положительное или отрицательное совпадение не установлено.",
+        "obtainedAt": "2026-10-25T09:19:02.633Z",
+        "expiresAt": "<volatile>",
+        "demo": false
+      },
+      {
+        "id": "way-843161717-step-free-route-partial",
+        "hotelId": "way-843161717",
+        "feature": "step_free_route",
+        "value": null,
+        "source": "OpenStreetMap, локальный пешеходный граф",
+        "sourceUrl": "https://www.openstreetmap.org/way/843161717",
+        "quote": "На рассчитанном пути 0 участков с отмеченными лестницами. Вход, бордюры и непрерывный проход без ступеней не обследованы. Доступность всего пути не подтверждена.",
+        "method": "geo",
+        "confidence": "medium",
+        "confidenceReason": "Наблюдаемые отметки OSM не заменяют обследование всего пути.",
+        "obtainedAt": "2026-10-24T10:07:47.270Z",
+        "sourceDate": "2026-10-24T10:07:47.270Z",
+        "expiresAt": "<volatile>",
+        "demo": false
+      }
+    ],
+    "questions": []
+  }
+}

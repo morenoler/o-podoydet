@@ -1,1 +1,0 @@
-org.springframework.boot.EnvironmentPostProcessor=ru.opodoydet.config.DotenvEnvironmentPostProcessor

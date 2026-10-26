@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "sourceId": "shilla-premierDeluxe",
+  "hotelId": "way-627150752",
+  "url": "https://www.shillahotels.com/en/shillastay/haeundae/accommodation/premierDeluxe.do",
+  "obtainedAt": "2026-10-25T09:07:40.758Z",
+  "sourceUpdatedAt": null,
+  "responseSha256": "3ca618f1355d123c4e9c45eafbba50e39be7bb07367874a0b8d9400a973d1a12",
+  "responseBytes": 211100,
+  "parserVersion": "official-html-v2",
+  "projection": {
+    "name": "Premier Deluxe",
+    "capacity": 2,
+    "publishedView": "City, Ocean",
+    "family": true,
+    "wifi": true,
+    "extraChildCapacity": 3,
+    "childMaxAge": 12,
+    "excerpts": [
+      "Premier Deluxe",
+      "1–2 guests",
+      "City, Ocean",
+      "up to 3 guests",
+      "37 months to 12 years",
+      "Wi-Fi"
+    ],
+    "evidenceSelectors": {
+      "name": "title before |",
+      "capacity": ".room-info-box dt=Guests + dd",
+      "publishedView": ".room-info-box dt=View + dd",
+      "childRule": "room-detail sentence after room-info-box",
+      "childAge": "official booking-form Children age definition"
+    },
+    "limitations": [
+      "Категория номера, а не физический номер; наличие на даты не проверялось.",
+      "City/Ocean — варианты вида в категории, а не обещание каждого вида в одном номере.",
+      "Ступени, вход, лифт и полный доступ до номера не подтверждены.",
+      "Увеличение вместимости условно: нужен ребёнок; возрастная категория издателя требует проверки возраста. Младенцы до 36 месяцев учитываются отдельно, это правило их размещение не устанавливает."
+    ]
+  },
+  "projectionSha256": "12c2c1c908a0b18847f48fafeae1a3a4d75f502e665778130c2dd9fa70fdb887",
+  "method": "official",
+  "demo": false,
+  "cacheLimitations": "Bounded extracted fields and <=25 words of excerpts are retained. Full HTML is not distributed. The response hash cannot be recomputed offline; projection integrity can. A fresh collection is required to rerun HTML extraction."
+}

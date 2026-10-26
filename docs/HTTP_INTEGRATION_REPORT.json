@@ -1,0 +1,3747 @@
+{
+  "checkedAt": "2026-10-25T09:20:19.329731+00:00",
+  "status": "passed",
+  "scope": "Actual HTTP on isolated Java 21/SQLite and offline Python; no field validation",
+  "limitations": [
+    "Published category claims are not room availability or a field inspection.",
+    "Child ages are absent from Trip; age-limited occupancy remains unresolved.",
+    "Model geometry is not a photograph or confirmation of a view.",
+    "Fixed trip dates and recorded evidence: future reruns can legitimately change freshness outcomes.",
+    "Rules advisor only; no local LLM quality assessment."
+  ],
+  "inputSha256": {
+    "data/verified-hotels.json": "e1e7121b6caa9f0c6f9f619e7e0276796208f97c620949dd6cba97f9d0d6e092",
+    "data/area-assessments.json": "e3d77b8022250e743e29b6f5cc6354b662169016952b719daad3554d7ebe1d45",
+    "data/noise-context.json": "7c6742a11250ac95179dbcea3e0b073fbb7a54e0b0fc0a4316e36cb3282fd9e4",
+    "data/traffic-ktdb-2024.json": "cc33dd99a2bb820b3ab6f8be75aa5e39838d9a362efc9d8325f2422e818b8ac2",
+    "services/window-view/data/scenes.json": "6d8c88df6cd501295688a1cb659e298c24eb68d9a9b1bbdc7a6bfd1a9c902d9a",
+    "backend/target/o-podoydet-backend.jar": "4f5cb9302008cae31088240a53216f03d50e4585f2590956322c630d813c8908"
+  },
+  "health": {
+    "app": {
+      "ok": true,
+      "hotels": 96,
+      "mode": "rules",
+      "runtime": "Java 21",
+      "database": "SQLite 3",
+      "region": "Пусан"
+    },
+    "lab": {
+      "ok": true,
+      "hotels": 102,
+      "mode": "rules",
+      "runtime": "Java 21",
+      "database": "SQLite 3",
+      "region": "Пусан"
+    },
+    "windowView": {
+      "ok": true,
+      "service": "window-view",
+      "network_enabled": false
+    }
+  },
+  "searchMatrix": [
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 0,
+      "feature": null,
+      "required": false,
+      "fits": 5,
+      "excluded": 91,
+      "fitHotelIds": [
+        "node-13447858318",
+        "node-368952148",
+        "node-7858128118",
+        "way-627150752",
+        "way-843161717"
+      ]
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 0,
+      "feature": "beach_walk",
+      "required": true,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "match": 94,
+        "mismatch": 2
+      },
+      "evidence": {
+        "match": 94,
+        "mismatch": 1,
+        "unknown": 1
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 0,
+      "feature": "beach_walk",
+      "required": false,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "match": 94,
+        "mismatch": 2
+      },
+      "evidence": {
+        "match": 94,
+        "mismatch": 1,
+        "unknown": 1
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 0,
+      "feature": "step_free_route",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 0,
+      "feature": "step_free_route",
+      "required": false,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 0,
+      "feature": "courtyard",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 0,
+      "feature": "courtyard",
+      "required": false,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 0,
+      "feature": "step_free_access",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 0,
+      "feature": "step_free_access",
+      "required": false,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 0,
+      "feature": "family",
+      "required": true,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "match": 5,
+        "mismatch": 91
+      },
+      "evidence": {
+        "match": 5,
+        "unknown": 91
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 0,
+      "feature": "family",
+      "required": false,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "match": 5,
+        "mismatch": 91
+      },
+      "evidence": {
+        "match": 5,
+        "unknown": 91
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 0,
+      "feature": "area_safety",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 0,
+      "feature": "area_safety",
+      "required": false,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 0,
+      "feature": "clean_air",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "mismatch": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 0,
+      "feature": "clean_air",
+      "required": false,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "mismatch": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 0,
+      "feature": "low_noise",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "low": 30,
+        "moderate": 42,
+        "unknown": 24
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 0,
+      "feature": "low_noise",
+      "required": false,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "low": 30,
+        "moderate": 42,
+        "unknown": 24
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 1,
+      "feature": null,
+      "required": false,
+      "fits": 3,
+      "excluded": 93,
+      "fitHotelIds": [
+        "node-368952148",
+        "node-7858128118",
+        "way-627150752"
+      ]
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 1,
+      "feature": "beach_walk",
+      "required": true,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "match": 94,
+        "mismatch": 2
+      },
+      "evidence": {
+        "match": 94,
+        "mismatch": 1,
+        "unknown": 1
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 1,
+      "feature": "beach_walk",
+      "required": false,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "match": 94,
+        "mismatch": 2
+      },
+      "evidence": {
+        "match": 94,
+        "mismatch": 1,
+        "unknown": 1
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 1,
+      "feature": "step_free_route",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 1,
+      "feature": "step_free_route",
+      "required": false,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 1,
+      "feature": "courtyard",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 1,
+      "feature": "courtyard",
+      "required": false,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 1,
+      "feature": "step_free_access",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 1,
+      "feature": "step_free_access",
+      "required": false,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 1,
+      "feature": "family",
+      "required": true,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "match": 5,
+        "mismatch": 91
+      },
+      "evidence": {
+        "match": 5,
+        "unknown": 91
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 1,
+      "feature": "family",
+      "required": false,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "match": 5,
+        "mismatch": 91
+      },
+      "evidence": {
+        "match": 5,
+        "unknown": 91
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 1,
+      "feature": "area_safety",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 1,
+      "feature": "area_safety",
+      "required": false,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 1,
+      "feature": "clean_air",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "mismatch": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 1,
+      "feature": "clean_air",
+      "required": false,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "mismatch": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 1,
+      "feature": "low_noise",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "low": 30,
+        "moderate": 42,
+        "unknown": 24
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 1,
+      "feature": "low_noise",
+      "required": false,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "low": 30,
+        "moderate": 42,
+        "unknown": 24
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 2,
+      "feature": null,
+      "required": false,
+      "fits": 2,
+      "excluded": 94,
+      "fitHotelIds": [
+        "node-368952148",
+        "way-627150752"
+      ]
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 2,
+      "feature": "beach_walk",
+      "required": true,
+      "fits": 2,
+      "excluded": 94,
+      "binary": {
+        "match": 94,
+        "mismatch": 2
+      },
+      "evidence": {
+        "match": 94,
+        "mismatch": 1,
+        "unknown": 1
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 2,
+      "feature": "beach_walk",
+      "required": false,
+      "fits": 2,
+      "excluded": 94,
+      "binary": {
+        "match": 94,
+        "mismatch": 2
+      },
+      "evidence": {
+        "match": 94,
+        "mismatch": 1,
+        "unknown": 1
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 2,
+      "feature": "step_free_route",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 2,
+      "feature": "step_free_route",
+      "required": false,
+      "fits": 2,
+      "excluded": 94,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 2,
+      "feature": "courtyard",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 2,
+      "feature": "courtyard",
+      "required": false,
+      "fits": 2,
+      "excluded": 94,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 2,
+      "feature": "step_free_access",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 2,
+      "feature": "step_free_access",
+      "required": false,
+      "fits": 2,
+      "excluded": 94,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 2,
+      "feature": "family",
+      "required": true,
+      "fits": 1,
+      "excluded": 95,
+      "binary": {
+        "match": 5,
+        "mismatch": 91
+      },
+      "evidence": {
+        "match": 5,
+        "unknown": 91
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 2,
+      "feature": "family",
+      "required": false,
+      "fits": 2,
+      "excluded": 94,
+      "binary": {
+        "match": 4,
+        "mismatch": 92
+      },
+      "evidence": {
+        "match": 4,
+        "unknown": 92
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 2,
+      "feature": "area_safety",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 2,
+      "feature": "area_safety",
+      "required": false,
+      "fits": 2,
+      "excluded": 94,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 2,
+      "feature": "clean_air",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "mismatch": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 2,
+      "feature": "clean_air",
+      "required": false,
+      "fits": 2,
+      "excluded": 94,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "mismatch": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 2,
+      "feature": "low_noise",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "low": 30,
+        "moderate": 42,
+        "unknown": 24
+      }
+    },
+    {
+      "checkIn": "2026-10-26",
+      "adults": 2,
+      "children": 2,
+      "feature": "low_noise",
+      "required": false,
+      "fits": 2,
+      "excluded": 94,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "low": 30,
+        "moderate": 42,
+        "unknown": 24
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 0,
+      "feature": null,
+      "required": false,
+      "fits": 5,
+      "excluded": 91,
+      "fitHotelIds": [
+        "node-13447858318",
+        "node-368952148",
+        "node-7858128118",
+        "way-627150752",
+        "way-843161717"
+      ]
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 0,
+      "feature": "beach_walk",
+      "required": true,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "match": 94,
+        "mismatch": 2
+      },
+      "evidence": {
+        "match": 94,
+        "mismatch": 1,
+        "unknown": 1
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 0,
+      "feature": "beach_walk",
+      "required": false,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "match": 94,
+        "mismatch": 2
+      },
+      "evidence": {
+        "match": 94,
+        "mismatch": 1,
+        "unknown": 1
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 0,
+      "feature": "step_free_route",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 0,
+      "feature": "step_free_route",
+      "required": false,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 0,
+      "feature": "courtyard",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 0,
+      "feature": "courtyard",
+      "required": false,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 0,
+      "feature": "step_free_access",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 0,
+      "feature": "step_free_access",
+      "required": false,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 0,
+      "feature": "family",
+      "required": true,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "match": 5,
+        "mismatch": 91
+      },
+      "evidence": {
+        "match": 5,
+        "unknown": 91
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 0,
+      "feature": "family",
+      "required": false,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "match": 5,
+        "mismatch": 91
+      },
+      "evidence": {
+        "match": 5,
+        "unknown": 91
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 0,
+      "feature": "area_safety",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 0,
+      "feature": "area_safety",
+      "required": false,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 0,
+      "feature": "clean_air",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 0,
+      "feature": "clean_air",
+      "required": false,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 0,
+      "feature": "low_noise",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "mismatch": 88,
+        "unknown": 8
+      },
+      "risk": {
+        "moderate": 68,
+        "unknown": 8,
+        "high": 20
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 0,
+      "feature": "low_noise",
+      "required": false,
+      "fits": 5,
+      "excluded": 91,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "mismatch": 88,
+        "unknown": 8
+      },
+      "risk": {
+        "moderate": 68,
+        "unknown": 8,
+        "high": 20
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 1,
+      "feature": null,
+      "required": false,
+      "fits": 3,
+      "excluded": 93,
+      "fitHotelIds": [
+        "node-368952148",
+        "node-7858128118",
+        "way-627150752"
+      ]
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 1,
+      "feature": "beach_walk",
+      "required": true,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "match": 94,
+        "mismatch": 2
+      },
+      "evidence": {
+        "match": 94,
+        "mismatch": 1,
+        "unknown": 1
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 1,
+      "feature": "beach_walk",
+      "required": false,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "match": 94,
+        "mismatch": 2
+      },
+      "evidence": {
+        "match": 94,
+        "mismatch": 1,
+        "unknown": 1
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 1,
+      "feature": "step_free_route",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 1,
+      "feature": "step_free_route",
+      "required": false,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 1,
+      "feature": "courtyard",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 1,
+      "feature": "courtyard",
+      "required": false,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 1,
+      "feature": "step_free_access",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 1,
+      "feature": "step_free_access",
+      "required": false,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 1,
+      "feature": "family",
+      "required": true,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "match": 5,
+        "mismatch": 91
+      },
+      "evidence": {
+        "match": 5,
+        "unknown": 91
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 1,
+      "feature": "family",
+      "required": false,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "match": 5,
+        "mismatch": 91
+      },
+      "evidence": {
+        "match": 5,
+        "unknown": 91
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 1,
+      "feature": "area_safety",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 1,
+      "feature": "area_safety",
+      "required": false,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 1,
+      "feature": "clean_air",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 1,
+      "feature": "clean_air",
+      "required": false,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 1,
+      "feature": "low_noise",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "mismatch": 88,
+        "unknown": 8
+      },
+      "risk": {
+        "moderate": 68,
+        "unknown": 8,
+        "high": 20
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 1,
+      "feature": "low_noise",
+      "required": false,
+      "fits": 3,
+      "excluded": 93,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 8,
+        "mismatch": 88
+      },
+      "risk": {
+        "unknown": 8,
+        "moderate": 68,
+        "high": 20
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 2,
+      "feature": null,
+      "required": false,
+      "fits": 2,
+      "excluded": 94,
+      "fitHotelIds": [
+        "node-368952148",
+        "way-627150752"
+      ]
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 2,
+      "feature": "beach_walk",
+      "required": true,
+      "fits": 2,
+      "excluded": 94,
+      "binary": {
+        "match": 94,
+        "mismatch": 2
+      },
+      "evidence": {
+        "match": 94,
+        "mismatch": 1,
+        "unknown": 1
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 2,
+      "feature": "beach_walk",
+      "required": false,
+      "fits": 2,
+      "excluded": 94,
+      "binary": {
+        "match": 94,
+        "mismatch": 2
+      },
+      "evidence": {
+        "match": 94,
+        "mismatch": 1,
+        "unknown": 1
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 2,
+      "feature": "step_free_route",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 2,
+      "feature": "step_free_route",
+      "required": false,
+      "fits": 2,
+      "excluded": 94,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 2,
+      "feature": "courtyard",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 2,
+      "feature": "courtyard",
+      "required": false,
+      "fits": 2,
+      "excluded": 94,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 2,
+      "feature": "step_free_access",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 2,
+      "feature": "step_free_access",
+      "required": false,
+      "fits": 2,
+      "excluded": 94,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 2,
+      "feature": "family",
+      "required": true,
+      "fits": 1,
+      "excluded": 95,
+      "binary": {
+        "match": 5,
+        "mismatch": 91
+      },
+      "evidence": {
+        "match": 5,
+        "unknown": 91
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 2,
+      "feature": "family",
+      "required": false,
+      "fits": 2,
+      "excluded": 94,
+      "binary": {
+        "match": 4,
+        "mismatch": 92
+      },
+      "evidence": {
+        "match": 4,
+        "unknown": 92
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 2,
+      "feature": "area_safety",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 2,
+      "feature": "area_safety",
+      "required": false,
+      "fits": 2,
+      "excluded": 94,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 2,
+      "feature": "clean_air",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 2,
+      "feature": "clean_air",
+      "required": false,
+      "fits": 2,
+      "excluded": 94,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "unknown": 96
+      },
+      "risk": {
+        "unspecified": 96
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 2,
+      "feature": "low_noise",
+      "required": true,
+      "fits": 0,
+      "excluded": 96,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "mismatch": 88,
+        "unknown": 8
+      },
+      "risk": {
+        "moderate": 68,
+        "unknown": 8,
+        "high": 20
+      }
+    },
+    {
+      "checkIn": "2026-11-07",
+      "adults": 2,
+      "children": 2,
+      "feature": "low_noise",
+      "required": false,
+      "fits": 2,
+      "excluded": 94,
+      "binary": {
+        "mismatch": 96
+      },
+      "evidence": {
+        "mismatch": 88,
+        "unknown": 8
+      },
+      "risk": {
+        "moderate": 68,
+        "high": 20,
+        "unknown": 8
+      }
+    }
+  ],
+  "realCategories": [
+    {
+      "hotelId": "way-627150752",
+      "name": "Shilla Stay Haeundae",
+      "adults": 2,
+      "children": 0,
+      "best": "Standard Family Twin",
+      "status": "fits",
+      "categories": [
+        {
+          "name": "Standard Family Twin",
+          "capacity": 3,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Deluxe Family Twin",
+          "capacity": 3,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Premier Deluxe Family Twin",
+          "capacity": 3,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Standard",
+          "capacity": 2,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Deluxe",
+          "capacity": 2,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Premier Deluxe",
+          "capacity": 2,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Ondol Suite",
+          "capacity": 4,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Junior Suite",
+          "capacity": 2,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Grand Suite",
+          "capacity": 2,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        }
+      ]
+    },
+    {
+      "hotelId": "way-627150752",
+      "name": "Shilla Stay Haeundae",
+      "adults": 2,
+      "children": 1,
+      "best": "Standard Family Twin",
+      "status": "fits",
+      "categories": [
+        {
+          "name": "Standard Family Twin",
+          "capacity": 3,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Deluxe Family Twin",
+          "capacity": 3,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Premier Deluxe Family Twin",
+          "capacity": 3,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Ondol Suite",
+          "capacity": 4,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Standard",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Deluxe",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Premier Deluxe",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Junior Suite",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Grand Suite",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        }
+      ]
+    },
+    {
+      "hotelId": "way-627150752",
+      "name": "Shilla Stay Haeundae",
+      "adults": 2,
+      "children": 2,
+      "best": "Ondol Suite",
+      "status": "fits",
+      "categories": [
+        {
+          "name": "Ondol Suite",
+          "capacity": 4,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Standard Family Twin",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Deluxe Family Twin",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Premier Deluxe Family Twin",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Standard",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Deluxe",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Premier Deluxe",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Junior Suite",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Grand Suite",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        }
+      ]
+    },
+    {
+      "hotelId": "node-368952148",
+      "name": "The Westin Chosun Hotel Busan",
+      "adults": 2,
+      "children": 0,
+      "best": "Superior Family Twin",
+      "status": "fits",
+      "categories": [
+        {
+          "name": "Superior Family Twin",
+          "capacity": 3,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Deluxe Park Family",
+          "capacity": 3,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Low Floor Beach Family",
+          "capacity": 2,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Deluxe Beach Family",
+          "capacity": 3,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Executive Park Family",
+          "capacity": 3,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Executive Beach Family",
+          "capacity": 3,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Deluxe Family Ondol Suite",
+          "capacity": 3,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Deluxe Park King",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Deluxe Park Ondol",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Low Floor Beach King",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Deluxe Beach King",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Deluxe Beach Triple",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Deluxe Beach Ondol",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Park King",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Park Twin",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Beach King",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Beach Twin",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Grand",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Park Suite",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Beach Suite",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Presidential Suite",
+          "capacity": 4,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        }
+      ]
+    },
+    {
+      "hotelId": "node-368952148",
+      "name": "The Westin Chosun Hotel Busan",
+      "adults": 2,
+      "children": 1,
+      "best": "Superior Family Twin",
+      "status": "fits",
+      "categories": [
+        {
+          "name": "Superior Family Twin",
+          "capacity": 3,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Deluxe Park Family",
+          "capacity": 3,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Deluxe Beach Family",
+          "capacity": 3,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Executive Park Family",
+          "capacity": 3,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Executive Beach Family",
+          "capacity": 3,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Deluxe Family Ondol Suite",
+          "capacity": 3,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Low Floor Beach Family",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Deluxe Park King",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Deluxe Park Ondol",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Low Floor Beach King",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Deluxe Beach King",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Deluxe Beach Triple",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Deluxe Beach Ondol",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Park King",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Park Twin",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Beach King",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Beach Twin",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Grand",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Park Suite",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Beach Suite",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Presidential Suite",
+          "capacity": 4,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        }
+      ]
+    },
+    {
+      "hotelId": "node-368952148",
+      "name": "The Westin Chosun Hotel Busan",
+      "adults": 2,
+      "children": 2,
+      "best": "Superior Family Twin",
+      "status": "excluded",
+      "categories": [
+        {
+          "name": "Superior Family Twin",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Deluxe Park Family",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Low Floor Beach Family",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Deluxe Beach Family",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Executive Park Family",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Executive Beach Family",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Deluxe Family Ondol Suite",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Deluxe Park King",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Deluxe Park Ondol",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Low Floor Beach King",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Deluxe Beach King",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Deluxe Beach Triple",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Deluxe Beach Ondol",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Park King",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Park Twin",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Beach King",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Beach Twin",
+          "capacity": 2,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Grand",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Park Suite",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Executive Beach Suite",
+          "capacity": 3,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "mismatch",
+          "capacityExplanation": "Указанная вместимость меньше числа гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        },
+        {
+          "name": "Presidential Suite",
+          "capacity": 4,
+          "status": "excluded",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Указанной вместимости достаточно для всех гостей.",
+          "familyStatus": "mismatch",
+          "familyEvidenceStatus": "unknown"
+        }
+      ]
+    },
+    {
+      "hotelId": "way-843161717",
+      "name": "Grand Josun Busan",
+      "adults": 2,
+      "children": 0,
+      "best": "Kids Deluxe",
+      "status": "fits",
+      "categories": [
+        {
+          "name": "Kids Deluxe",
+          "capacity": null,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Опубликованное правило размещения допускает этот состав гостей. Наличие номера на даты не проверено.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Kids Suite",
+          "capacity": null,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Опубликованное правило размещения допускает этот состав гостей. Наличие номера на даты не проверено.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Kids Superior",
+          "capacity": null,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Опубликованное правило размещения допускает этот состав гостей. Наличие номера на даты не проверено.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Family Corner Suite",
+          "capacity": null,
+          "status": "fits",
+          "capacityStatus": "match",
+          "capacityEvidenceStatus": "match",
+          "capacityExplanation": "Опубликованное правило размещения допускает этот состав гостей. Наличие номера на даты не проверено.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        }
+      ]
+    },
+    {
+      "hotelId": "way-843161717",
+      "name": "Grand Josun Busan",
+      "adults": 2,
+      "children": 1,
+      "best": "Kids Deluxe",
+      "status": "excluded",
+      "categories": [
+        {
+          "name": "Kids Deluxe",
+          "capacity": null,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Kids Suite",
+          "capacity": null,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Kids Superior",
+          "capacity": null,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Family Corner Suite",
+          "capacity": null,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        }
+      ]
+    },
+    {
+      "hotelId": "way-843161717",
+      "name": "Grand Josun Busan",
+      "adults": 2,
+      "children": 2,
+      "best": "Kids Deluxe",
+      "status": "excluded",
+      "categories": [
+        {
+          "name": "Kids Deluxe",
+          "capacity": null,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Kids Suite",
+          "capacity": null,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Kids Superior",
+          "capacity": null,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        },
+        {
+          "name": "Family Corner Suite",
+          "capacity": null,
+          "status": "excluded",
+          "capacityStatus": "mismatch",
+          "capacityEvidenceStatus": "unknown",
+          "capacityExplanation": "Вместимость требует уточнения: опубликованное правило ограничивает возраст детей, а их возраст не указан.",
+          "familyStatus": "match",
+          "familyEvidenceStatus": "match"
+        }
+      ]
+    }
+  ],
+  "lab": {
+    "realHotels": 96,
+    "syntheticHotels": 6,
+    "strictFits": [
+      "lab-demo-match"
+    ],
+    "optionalFits": [
+      "lab-demo-conflict",
+      "lab-demo-match",
+      "lab-demo-mismatch",
+      "lab-demo-stale",
+      "lab-demo-unknown"
+    ],
+    "rawCourtyardStates": {
+      "lab-demo-match": "match",
+      "lab-demo-capacity": "match",
+      "lab-demo-mismatch": "mismatch",
+      "lab-demo-unknown": "unknown",
+      "lab-demo-stale": "stale",
+      "lab-demo-conflict": "conflict"
+    },
+    "environmentUnknown": {
+      "clean_air": 6,
+      "low_noise": 6,
+      "area_safety": 6
+    }
+  },
+  "advisor": [
+    {
+      "id": "33aa6ef1-ab82-42e7-ac15-91ac33a1252b",
+      "status": "completed",
+      "execution": "rules",
+      "modelCalls": 0,
+      "outcome": "shortlist",
+      "candidateIds": [
+        "way-627150752::way-627150752-real-ondol-suite"
+      ],
+      "testCases": []
+    },
+    {
+      "id": "de7d283a-a62d-4e9c-be27-7114da10bc5a",
+      "status": "completed",
+      "execution": "rules",
+      "modelCalls": 0,
+      "outcome": "no_matches",
+      "candidateIds": [
+        "node-13447858318::node-13447858318-real-standard-king-king",
+        "node-368952148::node-368952148-real-superior-family-twin-ccty",
+        "node-12200914903::node-12200914903-unverified"
+      ],
+      "testCases": []
+    },
+    {
+      "id": "5c55edf7-db06-4124-8ef4-718fa199c34c",
+      "status": "completed",
+      "execution": "rules",
+      "modelCalls": 0,
+      "outcome": "shortlist",
+      "candidateIds": [
+        "lab-demo-match::lab-demo-match-room"
+      ],
+      "testCases": [
+        {
+          "id": "lab-demo-match::lab-demo-match-room",
+          "hotelId": "lab-demo-match",
+          "hotelName": "ДЕМО · Семейный двор",
+          "roomId": "lab-demo-match-room",
+          "roomName": "ДЕМО · Семейная категория",
+          "status": "fits",
+          "score": 6,
+          "criteria": [
+            {
+              "id": "lab-demo-match::lab-demo-match-room::capacity",
+              "feature": "capacity",
+              "label": "Вместимость",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Указанной вместимости достаточно для всех гостей.",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-match::lab-demo-match-room::family",
+              "feature": "family",
+              "label": "Семейное размещение",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Предусмотрено семейное размещение",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-match::lab-demo-match-room::courtyard",
+              "feature": "courtyard",
+              "label": "Номер во двор",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Окна номера выходят во двор",
+              "sources": []
+            }
+          ]
+        },
+        {
+          "id": "lab-demo-capacity::lab-demo-capacity-room",
+          "hotelId": "lab-demo-capacity",
+          "hotelName": "ДЕМО · Номер на двоих",
+          "roomId": "lab-demo-capacity-room",
+          "roomName": "ДЕМО · Номер для двоих",
+          "status": "excluded",
+          "score": 6,
+          "criteria": [
+            {
+              "id": "lab-demo-capacity::lab-demo-capacity-room::capacity",
+              "feature": "capacity",
+              "label": "Вместимость",
+              "required": true,
+              "status": "mismatch",
+              "evidenceStatus": "mismatch",
+              "assumed": false,
+              "explanation": "Указанная вместимость меньше числа гостей.",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-capacity::lab-demo-capacity-room::family",
+              "feature": "family",
+              "label": "Семейное размещение",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Предусмотрено семейное размещение",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-capacity::lab-demo-capacity-room::courtyard",
+              "feature": "courtyard",
+              "label": "Номер во двор",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Окна номера выходят во двор",
+              "sources": []
+            }
+          ]
+        },
+        {
+          "id": "lab-demo-mismatch::lab-demo-mismatch-room",
+          "hotelId": "lab-demo-mismatch",
+          "hotelName": "ДЕМО · Окна на улицу",
+          "roomId": "lab-demo-mismatch-room",
+          "roomName": "ДЕМО · Семейная категория",
+          "status": "excluded",
+          "score": 1,
+          "criteria": [
+            {
+              "id": "lab-demo-mismatch::lab-demo-mismatch-room::capacity",
+              "feature": "capacity",
+              "label": "Вместимость",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Указанной вместимости достаточно для всех гостей.",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-mismatch::lab-demo-mismatch-room::family",
+              "feature": "family",
+              "label": "Семейное размещение",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Предусмотрено семейное размещение",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-mismatch::lab-demo-mismatch-room::courtyard",
+              "feature": "courtyard",
+              "label": "Номер во двор",
+              "required": true,
+              "status": "mismatch",
+              "evidenceStatus": "mismatch",
+              "assumed": false,
+              "explanation": "Номер выходит на улицу",
+              "sources": []
+            }
+          ]
+        },
+        {
+          "id": "lab-demo-unknown::lab-demo-unknown-room",
+          "hotelId": "lab-demo-unknown",
+          "hotelName": "ДЕМО · Неполное описание",
+          "roomId": "lab-demo-unknown-room",
+          "roomName": "ДЕМО · Семейная категория",
+          "status": "excluded",
+          "score": 1,
+          "criteria": [
+            {
+              "id": "lab-demo-unknown::lab-demo-unknown-room::capacity",
+              "feature": "capacity",
+              "label": "Вместимость",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Указанной вместимости достаточно для всех гостей.",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-unknown::lab-demo-unknown-room::family",
+              "feature": "family",
+              "label": "Семейное размещение",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Предусмотрено семейное размещение",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-unknown::lab-demo-unknown-room::courtyard",
+              "feature": "courtyard",
+              "label": "Номер во двор",
+              "required": true,
+              "status": "mismatch",
+              "evidenceStatus": "unknown",
+              "assumed": true,
+              "explanation": "Недостаточно данных. Требуется уточнение: Направление окон выбранного номера не подтверждено.",
+              "sources": []
+            }
+          ]
+        },
+        {
+          "id": "lab-demo-stale::lab-demo-stale-room",
+          "hotelId": "lab-demo-stale",
+          "hotelName": "ДЕМО · Пора перепроверить",
+          "roomId": "lab-demo-stale-room",
+          "roomName": "ДЕМО · Семейная категория",
+          "status": "excluded",
+          "score": 1,
+          "criteria": [
+            {
+              "id": "lab-demo-stale::lab-demo-stale-room::capacity",
+              "feature": "capacity",
+              "label": "Вместимость",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Указанной вместимости достаточно для всех гостей.",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-stale::lab-demo-stale-room::family",
+              "feature": "family",
+              "label": "Семейное размещение",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Предусмотрено семейное размещение",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-stale::lab-demo-stale-room::courtyard",
+              "feature": "courtyard",
+              "label": "Номер во двор",
+              "required": true,
+              "status": "mismatch",
+              "evidenceStatus": "stale",
+              "assumed": true,
+              "explanation": "Сведения устарели. Требуется уточнение: Направление окон выбранного номера не подтверждено.",
+              "sources": []
+            }
+          ]
+        },
+        {
+          "id": "lab-demo-conflict::lab-demo-conflict-room",
+          "hotelId": "lab-demo-conflict",
+          "hotelName": "ДЕМО · Два разных ответа",
+          "roomId": "lab-demo-conflict-room",
+          "roomName": "ДЕМО · Семейная категория",
+          "status": "excluded",
+          "score": 1,
+          "criteria": [
+            {
+              "id": "lab-demo-conflict::lab-demo-conflict-room::capacity",
+              "feature": "capacity",
+              "label": "Вместимость",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Указанной вместимости достаточно для всех гостей.",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-conflict::lab-demo-conflict-room::family",
+              "feature": "family",
+              "label": "Семейное размещение",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Предусмотрено семейное размещение",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-conflict::lab-demo-conflict-room::courtyard",
+              "feature": "courtyard",
+              "label": "Номер во двор",
+              "required": true,
+              "status": "mismatch",
+              "evidenceStatus": "conflict",
+              "assumed": true,
+              "explanation": "Источники противоречат друг другу. Требуется уточнение: Направление окон выбранного номера не подтверждено.",
+              "sources": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8cc542f7-3620-4557-930b-895ae6655a4e",
+      "status": "completed",
+      "execution": "rules",
+      "modelCalls": 0,
+      "outcome": "shortlist",
+      "candidateIds": [
+        "lab-demo-match::lab-demo-match-room",
+        "lab-demo-mismatch::lab-demo-mismatch-room",
+        "lab-demo-conflict::lab-demo-conflict-room"
+      ],
+      "testCases": [
+        {
+          "id": "lab-demo-match::lab-demo-match-room",
+          "hotelId": "lab-demo-match",
+          "hotelName": "ДЕМО · Семейный двор",
+          "roomId": "lab-demo-match-room",
+          "roomName": "ДЕМО · Семейная категория",
+          "status": "fits",
+          "score": 6,
+          "criteria": [
+            {
+              "id": "lab-demo-match::lab-demo-match-room::capacity",
+              "feature": "capacity",
+              "label": "Вместимость",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Указанной вместимости достаточно для всех гостей.",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-match::lab-demo-match-room::family",
+              "feature": "family",
+              "label": "Семейное размещение",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Предусмотрено семейное размещение",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-match::lab-demo-match-room::courtyard",
+              "feature": "courtyard",
+              "label": "Номер во двор",
+              "required": false,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Окна номера выходят во двор",
+              "sources": []
+            }
+          ]
+        },
+        {
+          "id": "lab-demo-mismatch::lab-demo-mismatch-room",
+          "hotelId": "lab-demo-mismatch",
+          "hotelName": "ДЕМО · Окна на улицу",
+          "roomId": "lab-demo-mismatch-room",
+          "roomName": "ДЕМО · Семейная категория",
+          "status": "fits",
+          "score": 1,
+          "criteria": [
+            {
+              "id": "lab-demo-mismatch::lab-demo-mismatch-room::capacity",
+              "feature": "capacity",
+              "label": "Вместимость",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Указанной вместимости достаточно для всех гостей.",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-mismatch::lab-demo-mismatch-room::family",
+              "feature": "family",
+              "label": "Семейное размещение",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Предусмотрено семейное размещение",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-mismatch::lab-demo-mismatch-room::courtyard",
+              "feature": "courtyard",
+              "label": "Номер во двор",
+              "required": false,
+              "status": "mismatch",
+              "evidenceStatus": "mismatch",
+              "assumed": false,
+              "explanation": "Номер выходит на улицу",
+              "sources": []
+            }
+          ]
+        },
+        {
+          "id": "lab-demo-unknown::lab-demo-unknown-room",
+          "hotelId": "lab-demo-unknown",
+          "hotelName": "ДЕМО · Неполное описание",
+          "roomId": "lab-demo-unknown-room",
+          "roomName": "ДЕМО · Семейная категория",
+          "status": "fits",
+          "score": 1,
+          "criteria": [
+            {
+              "id": "lab-demo-unknown::lab-demo-unknown-room::capacity",
+              "feature": "capacity",
+              "label": "Вместимость",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Указанной вместимости достаточно для всех гостей.",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-unknown::lab-demo-unknown-room::family",
+              "feature": "family",
+              "label": "Семейное размещение",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Предусмотрено семейное размещение",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-unknown::lab-demo-unknown-room::courtyard",
+              "feature": "courtyard",
+              "label": "Номер во двор",
+              "required": false,
+              "status": "mismatch",
+              "evidenceStatus": "unknown",
+              "assumed": true,
+              "explanation": "Недостаточно данных. Требуется уточнение: Направление окон выбранного номера не подтверждено.",
+              "sources": []
+            }
+          ]
+        },
+        {
+          "id": "lab-demo-stale::lab-demo-stale-room",
+          "hotelId": "lab-demo-stale",
+          "hotelName": "ДЕМО · Пора перепроверить",
+          "roomId": "lab-demo-stale-room",
+          "roomName": "ДЕМО · Семейная категория",
+          "status": "fits",
+          "score": 1,
+          "criteria": [
+            {
+              "id": "lab-demo-stale::lab-demo-stale-room::capacity",
+              "feature": "capacity",
+              "label": "Вместимость",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Указанной вместимости достаточно для всех гостей.",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-stale::lab-demo-stale-room::family",
+              "feature": "family",
+              "label": "Семейное размещение",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Предусмотрено семейное размещение",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-stale::lab-demo-stale-room::courtyard",
+              "feature": "courtyard",
+              "label": "Номер во двор",
+              "required": false,
+              "status": "mismatch",
+              "evidenceStatus": "stale",
+              "assumed": true,
+              "explanation": "Сведения устарели. Требуется уточнение: Направление окон выбранного номера не подтверждено.",
+              "sources": []
+            }
+          ]
+        },
+        {
+          "id": "lab-demo-conflict::lab-demo-conflict-room",
+          "hotelId": "lab-demo-conflict",
+          "hotelName": "ДЕМО · Два разных ответа",
+          "roomId": "lab-demo-conflict-room",
+          "roomName": "ДЕМО · Семейная категория",
+          "status": "fits",
+          "score": 1,
+          "criteria": [
+            {
+              "id": "lab-demo-conflict::lab-demo-conflict-room::capacity",
+              "feature": "capacity",
+              "label": "Вместимость",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Указанной вместимости достаточно для всех гостей.",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-conflict::lab-demo-conflict-room::family",
+              "feature": "family",
+              "label": "Семейное размещение",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Предусмотрено семейное размещение",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-conflict::lab-demo-conflict-room::courtyard",
+              "feature": "courtyard",
+              "label": "Номер во двор",
+              "required": false,
+              "status": "mismatch",
+              "evidenceStatus": "conflict",
+              "assumed": true,
+              "explanation": "Источники противоречат друг другу. Требуется уточнение: Направление окон выбранного номера не подтверждено.",
+              "sources": []
+            }
+          ]
+        },
+        {
+          "id": "lab-demo-capacity::lab-demo-capacity-room",
+          "hotelId": "lab-demo-capacity",
+          "hotelName": "ДЕМО · Номер на двоих",
+          "roomId": "lab-demo-capacity-room",
+          "roomName": "ДЕМО · Номер для двоих",
+          "status": "excluded",
+          "score": 6,
+          "criteria": [
+            {
+              "id": "lab-demo-capacity::lab-demo-capacity-room::capacity",
+              "feature": "capacity",
+              "label": "Вместимость",
+              "required": true,
+              "status": "mismatch",
+              "evidenceStatus": "mismatch",
+              "assumed": false,
+              "explanation": "Указанная вместимость меньше числа гостей.",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-capacity::lab-demo-capacity-room::family",
+              "feature": "family",
+              "label": "Семейное размещение",
+              "required": true,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Предусмотрено семейное размещение",
+              "sources": []
+            },
+            {
+              "id": "lab-demo-capacity::lab-demo-capacity-room::courtyard",
+              "feature": "courtyard",
+              "label": "Номер во двор",
+              "required": false,
+              "status": "match",
+              "evidenceStatus": "match",
+              "assumed": false,
+              "explanation": "Окна номера выходят во двор",
+              "sources": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "windowView": [
+    {
+      "example": "real-hotel",
+      "floor": 5,
+      "isDemo": false,
+      "actualVisibilityConfirmed": false,
+      "scope": "hotel_floor_scenarios",
+      "directions": 8,
+      "targets": 320,
+      "statusCounts": {
+        "outside_fov": 280,
+        "unknown": 40
+      },
+      "sourceCount": 2411,
+      "seconds": 8.944
+    },
+    {
+      "example": "room",
+      "floor": 4,
+      "isDemo": true,
+      "actualVisibilityConfirmed": false,
+      "scope": "room_window",
+      "directions": 1,
+      "targets": 7,
+      "statusCounts": {
+        "blocked": 1,
+        "outside_fov": 5,
+        "clear_in_model": 1
+      },
+      "sourceCount": 1,
+      "seconds": 0.026
+    },
+    {
+      "example": "room-high-floor",
+      "floor": 14,
+      "isDemo": true,
+      "actualVisibilityConfirmed": false,
+      "scope": "room_window",
+      "directions": 1,
+      "targets": 7,
+      "statusCounts": {
+        "clear_in_model": 2,
+        "outside_fov": 5
+      },
+      "sourceCount": 1,
+      "seconds": 0.04
+    }
+  ],
+  "missingFloorStatus": 400,
+  "searchRequestCount": 102,
+  "hotelClassifications": 9792,
+  "finishedAt": "2026-10-25T09:21:46.522031+00:00",
+  "ambientNoise": {
+    "hotelsChecked": 96,
+    "sourceUrl": "https://www.index.go.kr/unity/potal/FileDown.do?seq=17609&id=1471&div=1",
+    "year": 2025,
+    "stationCount": 5,
+    "usedAsHotelDecibels": false,
+    "sourceAndSpatialLimitationVisible": true
+  },
+  "loadedCatalogCheck": {
+    "hotelMetadataAndVerifiedCategoriesEqualSource": true,
+    "unknownPlaceholdersRegeneratedByEvidencePolicy": true,
+    "hotelCount": 96,
+    "roomCount": 136,
+    "verifiedRoomCount": 46
+  },
+  "additionalChecksAt": "2026-10-25T09:27:15.835915+00:00",
+  "datedEnvironment": {
+    "hotelId": "way-627150752",
+    "nearAirHours": 24,
+    "nearAirMaximumUsAqi": 51.0,
+    "nearAirStatus": "mismatch",
+    "distantAirStatus": "unknown",
+    "fireworksStatus": "mismatch",
+    "fireworksRisk": "moderate",
+    "fireworksSource": "https://www.busan.go.kr/eng/bsevents/1752782",
+    "fireworksStartsAt": "2026-11-07T19:00:00+09:00"
+  }
+}

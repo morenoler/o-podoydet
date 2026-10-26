@@ -1,0 +1,940 @@
+{
+  "comment": "Эталонные запросы к API. Порядок важен: сценарии с cookie идут цепочкой. {{run}} подменяется уникальной строкой запуска.",
+  "trip": {
+    "region": "Пусан",
+    "checkIn": "2027-07-10",
+    "checkOut": "2027-07-14",
+    "adults": 2,
+    "children": 1,
+    "text": "",
+    "scenarios": [],
+    "preferences": []
+  },
+  "requests": [
+    {
+      "name": "health",
+      "method": "GET",
+      "path": "/api/health",
+      "allowValueChanges": [
+        {
+          "path": "$.database",
+          "from": "SQLite 3",
+          "to": "PostgreSQL 16"
+        }
+      ]
+    },
+    {
+      "name": "catalog",
+      "method": "GET",
+      "path": "/api/catalog"
+    },
+    {
+      "name": "hotel-verified",
+      "method": "GET",
+      "path": "/api/hotels/node-368952148"
+    },
+    {
+      "name": "hotel-kids-rooms",
+      "method": "GET",
+      "path": "/api/hotels/way-843161717"
+    },
+    {
+      "name": "hotel-unverified",
+      "method": "GET",
+      "path": "/api/hotels/node-368662694"
+    },
+    {
+      "name": "hotel-no-route",
+      "method": "GET",
+      "path": "/api/hotels/node-4199814292"
+    },
+    {
+      "name": "hotel-missing",
+      "method": "GET",
+      "path": "/api/hotels/no-such-hotel"
+    },
+    {
+      "name": "area-verified",
+      "method": "GET",
+      "path": "/api/areas/node-368952148"
+    },
+    {
+      "name": "area-missing",
+      "method": "GET",
+      "path": "/api/areas/no-such-hotel"
+    },
+    {
+      "name": "questions",
+      "method": "GET",
+      "path": "/api/questions"
+    },
+    {
+      "name": "listings",
+      "method": "GET",
+      "path": "/api/listings"
+    },
+    {
+      "name": "advisor-config",
+      "method": "GET",
+      "path": "/api/advisor/config"
+    },
+    {
+      "name": "search-plain",
+      "method": "POST",
+      "path": "/api/search",
+      "trip": {},
+      "allowValueChanges": [
+        {
+          "path": "$.trace[2].tool",
+          "from": "SQLite 3",
+          "to": "PostgreSQL"
+        },
+        {
+          "path": "$.trace[1].detail",
+          "from": "Проверены 96 отелей. Обязательные условия и вместимость определяют, подходит ли вариант.",
+          "to": "Проверены 96 отелей. Найдено категорий номеров по всем выбранным условиям: 20. Варианты с неподтверждёнными или невыполненными пожеланиями показаны отдельно."
+        }
+      ]
+    },
+    {
+      "name": "search-sea",
+      "method": "POST",
+      "path": "/api/search",
+      "trip": {
+        "scenarios": [
+          "sea"
+        ],
+        "preferences": [
+          {
+            "feature": "beach_walk",
+            "required": false
+          },
+          {
+            "feature": "step_free_route",
+            "required": false
+          }
+        ]
+      },
+      "allowValueChanges": [
+        {
+          "path": "$.trace[2].tool",
+          "from": "SQLite 3",
+          "to": "PostgreSQL"
+        },
+        {
+          "path": "$.trace[1].detail",
+          "from": "Проверены 96 отелей. Обязательные условия и вместимость определяют, подходит ли вариант.",
+          "to": "Проверены 96 отелей. Найдено категорий номеров по всем выбранным условиям: 0. Варианты с неподтверждёнными или невыполненными пожеланиями показаны отдельно."
+        }
+      ]
+    },
+    {
+      "name": "search-family-required",
+      "method": "POST",
+      "path": "/api/search",
+      "trip": {
+        "scenarios": [
+          "family"
+        ],
+        "preferences": [
+          {
+            "feature": "family",
+            "required": true
+          },
+          {
+            "feature": "step_free_access",
+            "required": true
+          },
+          {
+            "feature": "courtyard",
+            "required": false
+          }
+        ]
+      },
+      "allowValueChanges": [
+        {
+          "path": "$.trace[2].tool",
+          "from": "SQLite 3",
+          "to": "PostgreSQL"
+        },
+        {
+          "path": "$.trace[1].detail",
+          "from": "Проверены 96 отелей. Обязательные условия и вместимость определяют, подходит ли вариант.",
+          "to": "Проверены 96 отелей. Найдено категорий номеров по всем выбранным условиям: 0. Варианты с неподтверждёнными или невыполненными пожеланиями показаны отдельно."
+        }
+      ]
+    },
+    {
+      "name": "search-quiet",
+      "method": "POST",
+      "path": "/api/search",
+      "trip": {
+        "scenarios": [
+          "quiet"
+        ],
+        "preferences": [
+          {
+            "feature": "courtyard",
+            "required": true
+          },
+          {
+            "feature": "low_noise",
+            "required": false
+          }
+        ]
+      },
+      "allowValueChanges": [
+        {
+          "path": "$.trace[2].tool",
+          "from": "SQLite 3",
+          "to": "PostgreSQL"
+        },
+        {
+          "path": "$.trace[1].detail",
+          "from": "Проверены 96 отелей. Обязательные условия и вместимость определяют, подходит ли вариант.",
+          "to": "Проверены 96 отелей. Найдено категорий номеров по всем выбранным условиям: 0. Варианты с неподтверждёнными или невыполненными пожеланиями показаны отдельно."
+        }
+      ]
+    },
+    {
+      "name": "search-all-scenarios",
+      "method": "POST",
+      "path": "/api/search",
+      "trip": {
+        "scenarios": [
+          "sea",
+          "family",
+          "quiet"
+        ],
+        "preferences": [
+          {
+            "feature": "beach_walk",
+            "required": true
+          },
+          {
+            "feature": "family",
+            "required": false
+          },
+          {
+            "feature": "area_safety",
+            "required": false
+          },
+          {
+            "feature": "clean_air",
+            "required": false
+          }
+        ]
+      },
+      "allowValueChanges": [
+        {
+          "path": "$.trace[2].tool",
+          "from": "SQLite 3",
+          "to": "PostgreSQL"
+        },
+        {
+          "path": "$.trace[1].detail",
+          "from": "Проверены 96 отелей. Обязательные условия и вместимость определяют, подходит ли вариант.",
+          "to": "Проверены 96 отелей. Найдено категорий номеров по всем выбранным условиям: 0. Варианты с неподтверждёнными или невыполненными пожеланиями показаны отдельно."
+        }
+      ]
+    },
+    {
+      "name": "search-text",
+      "method": "POST",
+      "path": "/api/search",
+      "trip": {
+        "scenarios": [
+          "family"
+        ],
+        "text": "Ребёнок спит днём. Нужен номер во двор и дорога к пляжу без лестниц."
+      },
+      "allowValueChanges": [
+        {
+          "path": "$.trace[2].tool",
+          "from": "SQLite 3",
+          "to": "PostgreSQL"
+        },
+        {
+          "path": "$.trace[1].detail",
+          "from": "Проверены 96 отелей. Обязательные условия и вместимость определяют, подходит ли вариант.",
+          "to": "Проверены 96 отелей. Найдено категорий номеров по всем выбранным условиям: 0. Варианты с неподтверждёнными или невыполненными пожеланиями показаны отдельно."
+        }
+      ]
+    },
+    {
+      "name": "search-text-conflict",
+      "method": "POST",
+      "path": "/api/search",
+      "trip": {
+        "text": "Хотим жить в самой гуще ночной жизни, но чтобы было очень тихо",
+        "preferences": [
+          {
+            "feature": "low_noise",
+            "required": true
+          }
+        ]
+      },
+      "allowValueChanges": [
+        {
+          "path": "$.trace[2].tool",
+          "from": "SQLite 3",
+          "to": "PostgreSQL"
+        },
+        {
+          "path": "$.trace[1].detail",
+          "from": "Проверены 96 отелей. Обязательные условия и вместимость определяют, подходит ли вариант.",
+          "to": "Проверены 96 отелей. Найдено категорий номеров по всем выбранным условиям: 0. Варианты с неподтверждёнными или невыполненными пожеланиями показаны отдельно."
+        }
+      ]
+    },
+    {
+      "name": "search-big-party",
+      "method": "POST",
+      "path": "/api/search",
+      "trip": {
+        "adults": 6,
+        "children": 4,
+        "preferences": [
+          {
+            "feature": "family",
+            "required": true
+          }
+        ]
+      },
+      "allowValueChanges": [
+        {
+          "path": "$.trace[2].tool",
+          "from": "SQLite 3",
+          "to": "PostgreSQL"
+        },
+        {
+          "path": "$.trace[1].detail",
+          "from": "Проверены 96 отелей. Обязательные условия и вместимость определяют, подходит ли вариант.",
+          "to": "Проверены 96 отелей. Найдено категорий номеров по всем выбранным условиям: 0. Варианты с неподтверждёнными или невыполненными пожеланиями показаны отдельно."
+        }
+      ]
+    },
+    {
+      "name": "search-bad-dates",
+      "method": "POST",
+      "path": "/api/search",
+      "trip": {
+        "checkIn": "2027-07-14",
+        "checkOut": "2027-07-10"
+      }
+    },
+    {
+      "name": "search-same-dates",
+      "method": "POST",
+      "path": "/api/search",
+      "trip": {
+        "checkIn": "2027-07-10",
+        "checkOut": "2027-07-10"
+      }
+    },
+    {
+      "name": "search-wrong-region",
+      "method": "POST",
+      "path": "/api/search",
+      "trip": {
+        "region": "Сочи"
+      }
+    },
+    {
+      "name": "search-bad-scenario",
+      "method": "POST",
+      "path": "/api/search",
+      "trip": {
+        "scenarios": [
+          "mountains"
+        ]
+      }
+    },
+    {
+      "name": "search-duplicate-prefs",
+      "method": "POST",
+      "path": "/api/search",
+      "trip": {
+        "preferences": [
+          {
+            "feature": "courtyard",
+            "required": true
+          },
+          {
+            "feature": "courtyard",
+            "required": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "evaluate-kids",
+      "method": "POST",
+      "path": "/api/hotels/way-843161717/evaluate",
+      "trip": {
+        "preferences": [
+          {
+            "feature": "family",
+            "required": true
+          },
+          {
+            "feature": "beach_walk",
+            "required": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "evaluate-missing",
+      "method": "POST",
+      "path": "/api/hotels/no-such-hotel/evaluate",
+      "trip": {}
+    },
+    {
+      "name": "auth-me-anonymous",
+      "method": "GET",
+      "path": "/api/auth/me"
+    },
+    {
+      "name": "account-bookings-anonymous",
+      "method": "GET",
+      "path": "/api/account/bookings"
+    },
+    {
+      "name": "auth-register",
+      "method": "POST",
+      "path": "/api/auth/register",
+      "session": "traveller",
+      "body": {
+        "name": "Контракт Тест",
+        "email": "contract-{{run}}@example.com",
+        "password": "Contract-Pass-2027!",
+        "role": "user"
+      }
+    },
+    {
+      "name": "auth-me",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "session": "traveller"
+    },
+    {
+      "name": "account-bookings",
+      "method": "GET",
+      "path": "/api/account/bookings",
+      "session": "traveller"
+    },
+    {
+      "name": "account-questions",
+      "method": "GET",
+      "path": "/api/account/questions",
+      "session": "traveller"
+    },
+    {
+      "name": "auth-logout",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "session": "traveller",
+      "body": {}
+    },
+    {
+      "name": "auth-me-after-logout",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "session": "traveller"
+    },
+    {
+      "name": "host-register",
+      "method": "POST",
+      "path": "/api/auth/register",
+      "session": "host",
+      "body": {
+        "name": "Отельер Контракт",
+        "email": "host-{{run}}@example.com",
+        "password": "Contract-Pass-2027!",
+        "role": "host"
+      }
+    },
+    {
+      "name": "host-listings-empty",
+      "method": "GET",
+      "path": "/api/host/listings",
+      "session": "host"
+    },
+    {
+      "name": "host-photo-upload",
+      "method": "POST",
+      "path": "/api/host/photos",
+      "session": "host",
+      "bodyFile": "public/images/hotels/grand-josun-busan.jpg",
+      "contentType": "image/jpeg",
+      "capture": {
+        "photoUrl": "$.url"
+      }
+    },
+    {
+      "name": "host-photo-wrong-type",
+      "method": "POST",
+      "path": "/api/host/photos",
+      "session": "host",
+      "bodyFile": "public/images/hotels/grand-josun-busan.jpg",
+      "contentType": "image/gif"
+    },
+    {
+      "name": "host-listing-create",
+      "method": "POST",
+      "path": "/api/host/listings",
+      "session": "host",
+      "body": {
+        "title": "Светлый номер у моря",
+        "description": "Просторный номер с отдельной ванной и видом на город.",
+        "city": "Пусан",
+        "address": "Хэундэ, дом 10",
+        "roomType": "Двухместный номер",
+        "capacity": 3,
+        "pricePerNight": 90000,
+        "amenities": [
+          "Wi-Fi",
+          "Кухня"
+        ],
+        "status": "published",
+        "photos": [
+          "{{photoUrl}}"
+        ],
+        "floor": 5,
+        "windowDirections": [
+          "south",
+          "west"
+        ],
+        "searchProfile": {
+          "notes": "Окна во двор, ночью тихо"
+        }
+      },
+      "capture": {
+        "listingId": "$.id"
+      }
+    },
+    {
+      "name": "host-listing-draft",
+      "method": "POST",
+      "path": "/api/host/listings",
+      "session": "host",
+      "body": {
+        "title": "Черновик номера",
+        "description": "Просторный номер с отдельной ванной и видом на город.",
+        "city": "Пусан",
+        "address": "Хэундэ, дом 10",
+        "roomType": "Двухместный номер",
+        "capacity": 3,
+        "pricePerNight": 90000,
+        "amenities": [
+          "Wi-Fi",
+          "Кухня"
+        ],
+        "status": "draft"
+      },
+      "capture": {
+        "draftId": "$.id"
+      }
+    },
+    {
+      "name": "host-listing-invalid",
+      "method": "POST",
+      "path": "/api/host/listings",
+      "session": "host",
+      "body": {
+        "title": "Светлый номер у моря",
+        "description": " ",
+        "city": "Пусан",
+        "address": "Хэундэ, дом 10",
+        "roomType": "Двухместный номер",
+        "capacity": 3,
+        "pricePerNight": 90000,
+        "amenities": [
+          "Wi-Fi",
+          "Кухня"
+        ],
+        "status": "published"
+      }
+    },
+    {
+      "name": "host-listings",
+      "method": "GET",
+      "path": "/api/host/listings",
+      "session": "host"
+    },
+    {
+      "name": "host-listing-one",
+      "method": "GET",
+      "path": "/api/host/listings/{{listingId}}",
+      "session": "host"
+    },
+    {
+      "name": "host-listing-update",
+      "method": "POST",
+      "path": "/api/host/listings/{{listingId}}",
+      "session": "host",
+      "body": {
+        "title": "Светлый номер у моря, 5 этаж",
+        "description": "Просторный номер с отдельной ванной и видом на город.",
+        "city": "Пусан",
+        "address": "Хэундэ, дом 10",
+        "roomType": "Двухместный номер",
+        "capacity": 3,
+        "pricePerNight": 95000,
+        "amenities": [
+          "Wi-Fi",
+          "Кухня"
+        ],
+        "status": "published",
+        "photos": [
+          "{{photoUrl}}"
+        ],
+        "floor": 5,
+        "windowDirections": [
+          "south",
+          "west"
+        ],
+        "searchProfile": {
+          "notes": "Окна во двор, ночью тихо"
+        }
+      }
+    },
+    {
+      "name": "host-photo-owner",
+      "method": "GET",
+      "path": "{{photoUrl}}",
+      "session": "host"
+    },
+    {
+      "name": "photo-public",
+      "method": "GET",
+      "path": "{{photoUrl}}"
+    },
+    {
+      "name": "photo-missing",
+      "method": "GET",
+      "path": "/uploads/listings/00000000-0000-0000-0000-000000000000.jpg"
+    },
+    {
+      "name": "listings-public",
+      "method": "GET",
+      "path": "/api/listings"
+    },
+    {
+      "name": "listing-public-one",
+      "method": "GET",
+      "path": "/api/listings/{{listingId}}"
+    },
+    {
+      "name": "listing-draft-hidden",
+      "method": "GET",
+      "path": "/api/listings/{{draftId}}"
+    },
+    {
+      "name": "search-with-listing",
+      "method": "POST",
+      "path": "/api/search",
+      "trip": {
+        "scenarios": [
+          "quiet"
+        ],
+        "preferences": [
+          {
+            "feature": "courtyard",
+            "required": false
+          }
+        ]
+      },
+      "allowValueChanges": [
+        {
+          "path": "$.trace[2].tool",
+          "from": "SQLite 3",
+          "to": "PostgreSQL"
+        },
+        {
+          "path": "$.trace[1].detail",
+          "from": "Проверены 97 отелей. Обязательные условия и вместимость определяют, подходит ли вариант.",
+          "to": "Проверены 97 отелей. Найдено категорий номеров по всем выбранным условиям: 1. Варианты с неподтверждёнными или невыполненными пожеланиями показаны отдельно."
+        }
+      ]
+    },
+    {
+      "name": "guest-register",
+      "method": "POST",
+      "path": "/api/auth/register",
+      "session": "guest",
+      "body": {
+        "name": "Гость Контракт",
+        "email": "guest-{{run}}@example.com",
+        "password": "Contract-Pass-2027!",
+        "role": "user"
+      }
+    },
+    {
+      "name": "guest-not-host",
+      "method": "POST",
+      "path": "/api/host/listings",
+      "session": "guest",
+      "body": {
+        "title": "Светлый номер у моря",
+        "description": "Просторный номер с отдельной ванной и видом на город.",
+        "city": "Пусан",
+        "address": "Хэундэ, дом 10",
+        "roomType": "Двухместный номер",
+        "capacity": 3,
+        "pricePerNight": 90000,
+        "amenities": [
+          "Wi-Fi",
+          "Кухня"
+        ],
+        "status": "published"
+      }
+    },
+    {
+      "name": "guest-wrong-content-type",
+      "method": "POST",
+      "path": "/api/account/profile",
+      "session": "guest",
+      "body": {
+        "name": "Гость"
+      },
+      "headers": {
+        "Content-Type": "text/plain"
+      }
+    },
+    {
+      "name": "guest-question-ask",
+      "method": "POST",
+      "path": "/api/listings/{{listingId}}/questions",
+      "session": "guest",
+      "body": {
+        "text": "Можно с ребёнком?"
+      },
+      "capture": {
+        "questionId": "$.id"
+      }
+    },
+    {
+      "name": "guest-question-empty",
+      "method": "POST",
+      "path": "/api/listings/{{listingId}}/questions",
+      "session": "guest",
+      "body": {
+        "text": " "
+      }
+    },
+    {
+      "name": "guest-questions",
+      "method": "GET",
+      "path": "/api/account/questions",
+      "session": "guest"
+    },
+    {
+      "name": "guest-booking",
+      "method": "POST",
+      "path": "/api/listings/{{listingId}}/bookings",
+      "session": "guest",
+      "body": {
+        "checkIn": "2027-07-10",
+        "checkOut": "2027-07-13",
+        "guests": 2,
+        "note": "Поздний заезд"
+      },
+      "capture": {
+        "bookingId": "$.id"
+      }
+    },
+    {
+      "name": "guest-booking-duplicate",
+      "method": "POST",
+      "path": "/api/listings/{{listingId}}/bookings",
+      "session": "guest",
+      "body": {
+        "checkIn": "2027-07-10",
+        "checkOut": "2027-07-13",
+        "guests": 2,
+        "note": "Поздний заезд"
+      }
+    },
+    {
+      "name": "guest-booking-bad-date",
+      "method": "POST",
+      "path": "/api/listings/{{listingId}}/bookings",
+      "session": "guest",
+      "body": {
+        "checkIn": "2027-02-31",
+        "checkOut": "2027-07-13",
+        "guests": 2,
+        "note": "Поздний заезд"
+      }
+    },
+    {
+      "name": "guest-bookings",
+      "method": "GET",
+      "path": "/api/account/bookings",
+      "session": "guest"
+    },
+    {
+      "name": "host-questions",
+      "method": "GET",
+      "path": "/api/host/questions",
+      "session": "host"
+    },
+    {
+      "name": "host-question-answer",
+      "method": "POST",
+      "path": "/api/host/questions/{{questionId}}/answer",
+      "session": "host",
+      "body": {
+        "answer": "Да, с ребёнком можно."
+      }
+    },
+    {
+      "name": "listing-questions-public",
+      "method": "GET",
+      "path": "/api/listings/{{listingId}}/questions"
+    },
+    {
+      "name": "host-bookings",
+      "method": "GET",
+      "path": "/api/host/bookings",
+      "session": "host"
+    },
+    {
+      "name": "host-booking-confirm",
+      "method": "POST",
+      "path": "/api/host/bookings/{{bookingId}}/status",
+      "session": "host",
+      "body": {
+        "status": "confirmed"
+      }
+    },
+    {
+      "name": "host-booking-complete-early",
+      "method": "POST",
+      "path": "/api/host/bookings/{{bookingId}}/status",
+      "session": "host",
+      "body": {
+        "status": "completed"
+      }
+    },
+    {
+      "name": "guest-booking-cancel",
+      "method": "POST",
+      "path": "/api/account/bookings/{{bookingId}}/cancel",
+      "session": "guest",
+      "body": {}
+    },
+    {
+      "name": "guest-profile",
+      "method": "POST",
+      "path": "/api/account/profile",
+      "session": "guest",
+      "body": {
+        "name": "Гость Контракт",
+        "phone": "+7 900 000-00-00",
+        "about": "Люблю море"
+      }
+    },
+    {
+      "name": "guest-profile-bad-phone",
+      "method": "POST",
+      "path": "/api/account/profile",
+      "session": "guest",
+      "body": {
+        "name": "Гость",
+        "phone": "not a phone"
+      }
+    },
+    {
+      "name": "login-wrong-password",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "body": {
+        "email": "guest-{{run}}@example.com",
+        "password": "wrong password"
+      }
+    },
+    {
+      "name": "login-uppercase-email",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "session": "guest2",
+      "body": {
+        "email": "GUEST-{{run}}@EXAMPLE.COM",
+        "password": "Contract-Pass-2027!"
+      }
+    },
+    {
+      "name": "auth-unknown",
+      "method": "GET",
+      "path": "/api/auth/whatever"
+    },
+    {
+      "name": "advisor-runs",
+      "method": "GET",
+      "path": "/api/advisor/runs"
+    },
+    {
+      "name": "advisor-run-missing",
+      "method": "GET",
+      "path": "/api/advisor/runs/no-such-run"
+    },
+    {
+      "name": "catalog-question-post",
+      "method": "POST",
+      "path": "/api/questions",
+      "body": {}
+    },
+    {
+      "name": "drafts-confirm",
+      "method": "POST",
+      "path": "/api/drafts/anything/confirm",
+      "body": {}
+    },
+    {
+      "name": "lab-search-off",
+      "method": "POST",
+      "path": "/api/lab/search",
+      "trip": {}
+    },
+    {
+      "name": "unknown-api",
+      "method": "GET",
+      "path": "/api/nothing-here"
+    },
+    {
+      "name": "health-post",
+      "method": "POST",
+      "path": "/api/health",
+      "body": {}
+    },
+    {
+      "name": "hotel-nested",
+      "method": "GET",
+      "path": "/api/hotels/way-843161717/evaluate"
+    },
+    {
+      "name": "search-not-object",
+      "method": "POST",
+      "path": "/api/search",
+      "raw": "[1,2,3]"
+    },
+    {
+      "name": "search-bad-json",
+      "method": "POST",
+      "path": "/api/search",
+      "raw": "{nope"
+    },
+    {
+      "name": "foreign-origin",
+      "method": "POST",
+      "path": "/api/search",
+      "trip": {},
+      "headers": {
+        "Origin": "https://evil.example"
+      }
+    }
+  ]
+}

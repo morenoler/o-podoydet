@@ -2,8 +2,23 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { isPhotoUrl, accommodationPhotos } from "../src/shared/lib/hotelPhotos";
 import { accountApi } from "../src/features/account/api";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { HotelPhotoGallery } from "../src/features/hotels/components/HotelPhotoGallery";
+import type { Hotel } from "../shared/types";
 
 const uploaded = "/uploads/listings/9c428f66-f7b5-49b6-8198-b717be9e209a.jpg";
+
+test("catalog photos preserve attribution and never confirm a particular room or view", () => {
+  const hotel: Hotel = { id: "way-627150752", name: "Shilla Stay", address: "Пусан", coordinates: null,
+    osmUrl: "", rooms: [], route: null, noise: [] };
+  const html = renderToStaticMarkup(createElement(HotelPhotoGallery, { hotel }));
+  assert.match(html, /не подтверждают условия выбранной категории или вид из конкретного номера/);
+  assert.match(html, /Источник фотографий/);
+  assert.match(html, /regent-holidays.co.uk/);
+  const ownPhotos = renderToStaticMarkup(createElement(HotelPhotoGallery, { hotel: { ...hotel, photos: [uploaded] } }));
+  assert.doesNotMatch(ownPhotos, /regent-holidays.co.uk/);
+});
 
 test("listing photo URLs accept returned uploads, catalog assets and HTTPS images", () => {
   for (const url of [

@@ -61,9 +61,13 @@ try {
     const port = Number(process.env.DEMO_PORT || "8082");
     if (!Number.isInteger(port) || port < 1 || port > 65535)
       throw new Error("DEMO_PORT должен быть числом от 1 до 65535.");
+    const demoSchema = process.env.DEMO_DB_SCHEMA || "demo";
+    if (demoSchema === (process.env.DB_SCHEMA || "public"))
+      throw new Error("Схема демо должна отличаться от схемы основного сайта.");
     Object.assign(process.env, {
       PORT: String(port),
-      DB_PATH: localDemoPath,
+      LEGACY_DB_PATH: localDemoPath, // явный импорт учебной SQLite при первом старте
+      DB_SCHEMA: demoSchema,
       UPLOADS_PATH: resolve(root, ".local/demo-uploads"),
       DIST_PATH: "dist",
       DATA_PATH: "data/verified-hotels.json",

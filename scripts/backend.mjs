@@ -66,7 +66,10 @@ export function verifyJava() {
     );
   }
 }
-export function buildBackend(goal = "package") {
+/** Бэкенд — Spring Boot (server/). */
+export const SERVER_POM = "server/pom.xml";
+
+export function buildBackend(goal = "package -DskipTests", pom = SERVER_POM) {
   verifyJava();
   return new Promise((accept, reject) => {
     // The command and arguments are fixed here; no user-supplied shell fragments.
@@ -78,7 +81,7 @@ export function buildBackend(goal = "package") {
               "/d",
               "/s",
               "/c",
-              `""${maven}" -B -f backend/pom.xml "-Dmaven.repo.local=${join(root, ".local", "m2")}" ${goal}"`,
+              `""${maven}" -B -f ${pom} "-Dmaven.repo.local=${join(root, ".local", "m2")}" ${goal}"`,
             ],
             {
               cwd: root,
@@ -93,9 +96,9 @@ export function buildBackend(goal = "package") {
             [
               "-B",
               "-f",
-              "backend/pom.xml",
+              pom,
               `-Dmaven.repo.local=${join(root, ".local", "m2")}`,
-              goal,
+              ...goal.split(" "),
             ],
             { cwd: root, env: runtimeEnv, stdio: "inherit" },
           );
@@ -107,9 +110,51 @@ export function buildBackend(goal = "package") {
     );
   });
 }
-export function startBackend() {
+/**
+ * PostgreSQL + PostGIS из docker-compose.yml. Пропускается, если задан свой DATABASE_URL.
+ */
+export function ensureDatabase(environment = runtimeEnv) {
+  if (environment.DATABASE_URL) return;
+  const result = spawnSync("docker", ["compose", "up", "-d", "--wait", "db"], {
+    cwd: root,
+    env: environment,
+    stdio: "inherit",
+    windowsHide: true,
+    timeout: 120000,
+  });
+  if (result.error || result.status !== 0)
+    throw new Error(
+      "Не удалось запустить базу через Docker. Запустите Docker Desktop или укажите свою базу в DATABASE_URL.",
+    );
+}
+
+/** A named schema always applies, even when DATABASE_URL is supplied explicitly. */
+export function databaseEnvironment(environment) {
+  const schema = environment.DB_SCHEMA || "public";
+  if (!/^[a-z][a-z0-9_]{0,62}$/.test(schema))
+    throw new Error("DB_SCHEMA должен быть простым именем PostgreSQL (a-z, 0-9, _).");
+  const jdbc = environment.DATABASE_URL || "jdbc:postgresql://127.0.0.1:5432/opodoydet";
+  if (!jdbc.startsWith("jdbc:postgresql://"))
+    throw new Error("DATABASE_URL должен быть JDBC URL PostgreSQL.");
+  const url = new URL(jdbc.slice(5));
+  url.searchParams.set("currentSchema", schema);
+  return { ...environment, DB_SCHEMA: schema, DATABASE_URL: "jdbc:" + url.toString() };
+}
+
+/**
+ * Запуск Spring Boot из неизменяемой копии JAR. SQLite импортируется только по явно
+ * заданному LEGACY_DB_PATH; DB_PATH не является базой нового приложения.
+ */
+export function startBackend({
+  jarPath = join("server", "target", "o-podoydet-server.jar"),
+  env = {},
+  database = true,
+} = {}) {
   verifyJava();
-  const jar = join(root, "backend", "target", "o-podoydet-backend.jar");
+  const environment = { ...runtimeEnv, ...env };
+  if (database) ensureDatabase(environment);
+  const childEnv = databaseEnvironment(environment);
+  const jar = resolve(root, jarPath);
   if (!existsSync(jar))
     throw new Error("Сначала выполните npm run backend:build");
   // Run an immutable copy so rebuilding target/ cannot invalidate lazy class loading.
@@ -122,7 +167,7 @@ export function startBackend() {
     ["-Dstdout.encoding=UTF-8", "-Dstderr.encoding=UTF-8", "-jar", runtimeJar],
     {
       cwd: root,
-      env: runtimeEnv,
+      env: childEnv,
       stdio: "inherit",
       windowsHide: true,
     },
@@ -144,8 +189,8 @@ if (
 ) {
   try {
     const action = process.argv[2] || "start";
-    if (action === "build" || action === "test")
-      await buildBackend(action === "test" ? "test" : "package");
+    if (action === "build") await buildBackend("package -DskipTests", process.argv[3] || SERVER_POM);
+    else if (action === "test") await buildBackend("verify", process.argv[3] || SERVER_POM);
     else if (action === "start") {
       const child = startBackend();
       child.on("error", (e) => {

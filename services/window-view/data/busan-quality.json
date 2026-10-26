@@ -1,0 +1,3793 @@
+{
+  "region": "Busan / Haeundae",
+  "checked_at": "2026-10-26T14:55:33.046747+00:00",
+  "workers": 4,
+  "hotel_count": 96,
+  "request_count": 288,
+  "floor_date_pairs": [
+    [
+      3,
+      "2026-03-20"
+    ],
+    [
+      8,
+      "2026-06-21"
+    ],
+    [
+      17,
+      "2026-12-21"
+    ]
+  ],
+  "assertions_passed": true,
+  "offline": true,
+  "field_verified_rooms": 0,
+  "elapsed_seconds": 455.11,
+  "target_statuses": {
+    "outside_fov": 73353,
+    "unknown": 14199
+  },
+  "scene_sha256": "9a403807fcfc9db3c305b390d1bd074f3a41f12dfcf0013c91a78e8f3045a64b",
+  "limitations": [
+    "Model consistency/coverage check, not measured view accuracy.",
+    "Test floors are scenarios, not confirmed guest-room floors or availability.",
+    "Three paired floor/date cases per hotel, not a full Cartesian product."
+  ],
+  "cases": [
+    {
+      "catalog_id": "node-368662694",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:305381774",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368662694",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:305381774",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368662694",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:305381774",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368663565",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368663565",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368663565",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368703845",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368703845",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368703845",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368703846",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:268545697",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368703846",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:268545697",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368703846",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:268545697",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368703861",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368703861",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368703861",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368703865",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368703865",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368703865",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368703890",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368703890",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368703890",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368703975",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992377752",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368703975",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992377752",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368703975",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992377752",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368704011",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992377732",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368704011",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992377732",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368704011",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992377732",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368704033",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368704033",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368704033",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368704039",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368704039",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368704039",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368704160",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368704160",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368704160",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368704547",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368704547",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368704547",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368704647",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368704647",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368704647",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368704818",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992377746",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368704818",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992377746",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368704818",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992377746",
+      "evaluated_radius_m": 1200,
+      "conflicts": [
+        "requested_floor_exceeds_mapped_levels"
+      ],
+      "statuses": {
+        "unknown": 312
+      }
+    },
+    {
+      "catalog_id": "node-368704826",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368704826",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368704826",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368704981",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368704981",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368704981",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368705037",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992351405",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368705037",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992351405",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368705037",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992351405",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368705048",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368705048",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368705048",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368706526",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992992432",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368706526",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992992432",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368706526",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992992432",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368706721",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368706721",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368706721",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368706855",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368706855",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368706855",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368707118",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992351416",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368707118",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992351416",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368707118",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992351416",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368707125",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368707125",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368707125",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368707136",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368707136",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368707136",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368707220",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:1466284591",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 266,
+        "unknown": 38
+      }
+    },
+    {
+      "catalog_id": "node-368707220",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:1466284591",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 266,
+        "unknown": 38
+      }
+    },
+    {
+      "catalog_id": "node-368707220",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:1466284591",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 266,
+        "unknown": 38
+      }
+    },
+    {
+      "catalog_id": "node-368707310",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992351408",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368707310",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992351408",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368707310",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992351408",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368707378",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368707378",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368707378",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368707431",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363506",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368707431",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363506",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368707431",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363506",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368707598",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368707598",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368707598",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368707608",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368707608",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368707608",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368952148",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:382463595",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368952148",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:382463595",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368952148",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:382463595",
+      "evaluated_radius_m": 1200,
+      "conflicts": [
+        "requested_floor_exceeds_mapped_levels"
+      ],
+      "statuses": {
+        "unknown": 312
+      }
+    },
+    {
+      "catalog_id": "node-368952155",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992404280",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 266,
+        "unknown": 38
+      }
+    },
+    {
+      "catalog_id": "node-368952155",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992404280",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 266,
+        "unknown": 38
+      }
+    },
+    {
+      "catalog_id": "node-368952155",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992404280",
+      "evaluated_radius_m": 1200,
+      "conflicts": [
+        "requested_floor_exceeds_mapped_levels"
+      ],
+      "statuses": {
+        "unknown": 304
+      }
+    },
+    {
+      "catalog_id": "node-368952200",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:1466284628",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368952200",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:1466284628",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-368952200",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:1466284628",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-2450211344",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-2450211344",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-2450211344",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-3785255114",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-3785255114",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-3785255114",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-3856628577",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385523",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-3856628577",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385523",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-3856628577",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385523",
+      "evaluated_radius_m": 1200,
+      "conflicts": [
+        "requested_floor_exceeds_mapped_levels"
+      ],
+      "statuses": {
+        "unknown": 312
+      }
+    },
+    {
+      "catalog_id": "node-3856628579",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385523",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-3856628579",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385523",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-3856628579",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385523",
+      "evaluated_radius_m": 1200,
+      "conflicts": [
+        "requested_floor_exceeds_mapped_levels"
+      ],
+      "statuses": {
+        "unknown": 312
+      }
+    },
+    {
+      "catalog_id": "node-4208249562",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992595181",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 266,
+        "unknown": 38
+      }
+    },
+    {
+      "catalog_id": "node-4208249562",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992595181",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 266,
+        "unknown": 38
+      }
+    },
+    {
+      "catalog_id": "node-4208249562",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992595181",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 266,
+        "unknown": 38
+      }
+    },
+    {
+      "catalog_id": "node-4213243421",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363524",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-4213243421",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363524",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-4213243421",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363524",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-4270166589",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363549",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-4270166589",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363549",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-4270166589",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363549",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-4426268904",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385521",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-4426268904",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385521",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-4426268904",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385521",
+      "evaluated_radius_m": 1200,
+      "conflicts": [
+        "requested_floor_exceeds_mapped_levels"
+      ],
+      "statuses": {
+        "unknown": 312
+      }
+    },
+    {
+      "catalog_id": "node-4588715291",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385520",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-4588715291",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385520",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-4588715291",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385520",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-4636615590",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992136836",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-4636615590",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992136836",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-4636615590",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992136836",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-6476975185",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363561",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-6476975185",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363561",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-6476975185",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363561",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-6640051687",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-6640051687",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-6640051687",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-10689847527",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:780990653",
+      "evaluated_radius_m": 964.9,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 266,
+        "unknown": 38
+      }
+    },
+    {
+      "catalog_id": "node-10689847527",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:780990653",
+      "evaluated_radius_m": 964.9,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 266,
+        "unknown": 38
+      }
+    },
+    {
+      "catalog_id": "node-10689847527",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:780990653",
+      "evaluated_radius_m": 964.9,
+      "conflicts": [
+        "requested_floor_exceeds_mapped_levels"
+      ],
+      "statuses": {
+        "unknown": 304
+      }
+    },
+    {
+      "catalog_id": "node-11074220074",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385527",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-11074220074",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385527",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-11074220074",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385527",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-11074220075",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385527",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 266,
+        "unknown": 38
+      }
+    },
+    {
+      "catalog_id": "node-11074220075",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385527",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 266,
+        "unknown": 38
+      }
+    },
+    {
+      "catalog_id": "node-11074220075",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385527",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 266,
+        "unknown": 38
+      }
+    },
+    {
+      "catalog_id": "node-11074220076",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385527",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-11074220076",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385527",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-11074220076",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385527",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-11164247205",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363540",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-11164247205",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363540",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-11164247205",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363540",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-12074834269",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992620965",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-12074834269",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992620965",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-12074834269",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992620965",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-12308280501",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992404280",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 266,
+        "unknown": 38
+      }
+    },
+    {
+      "catalog_id": "node-12308280501",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992404280",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 266,
+        "unknown": 38
+      }
+    },
+    {
+      "catalog_id": "node-12308280501",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992404280",
+      "evaluated_radius_m": 1200,
+      "conflicts": [
+        "requested_floor_exceeds_mapped_levels"
+      ],
+      "statuses": {
+        "unknown": 304
+      }
+    },
+    {
+      "catalog_id": "node-12761775501",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992377730",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-12761775501",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992377730",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-12761775501",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992377730",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-13011853719",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:1388254001",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-13011853719",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:1388254001",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-13011853719",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:1388254001",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-627150752",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627150752",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-627150752",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627150752",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-627150752",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627150752",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-627158973",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627158973",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "way-627158973",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627158973",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "way-627158973",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627158973",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "way-627158974",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627158974",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-627158974",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627158974",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-627158974",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627158974",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-627347064",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627347064",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "way-627347064",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627347064",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "way-627347064",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627347064",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "way-627347066",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627347066",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "way-627347066",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627347066",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "way-627347066",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627347066",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "way-627350916",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627350916",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-627350916",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627350916",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-627350916",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627350916",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-627350927",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627350927",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-627350927",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627350927",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-627350927",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:627350927",
+      "evaluated_radius_m": 1200,
+      "conflicts": [
+        "requested_floor_exceeds_mapped_levels"
+      ],
+      "statuses": {
+        "unknown": 312
+      }
+    },
+    {
+      "catalog_id": "way-780727746",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:780727746",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-780727746",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:780727746",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-780727746",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:780727746",
+      "evaluated_radius_m": 1200,
+      "conflicts": [
+        "requested_floor_exceeds_mapped_levels"
+      ],
+      "statuses": {
+        "unknown": 312
+      }
+    },
+    {
+      "catalog_id": "way-992351409",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992351409",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "way-992351409",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992351409",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "way-992351409",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992351409",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "way-992363537",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363537",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-992363537",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363537",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-992363537",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363537",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-992363538",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363538",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-992363538",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363538",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-992363538",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363538",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-992363541",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363541",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-992363541",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363541",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-992363541",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363541",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-992363542",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363542",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-992363542",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363542",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-992363542",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363542",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-992363545",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363545",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "way-992363545",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363545",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "way-992363545",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363545",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "way-992363562",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363562",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "way-992363562",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363562",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "way-992363562",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992363562",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-368663479",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 480.7,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 140,
+        "unknown": 20
+      }
+    },
+    {
+      "catalog_id": "node-368663479",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 480.7,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 140,
+        "unknown": 20
+      }
+    },
+    {
+      "catalog_id": "node-368663479",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 480.7,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 140,
+        "unknown": 20
+      }
+    },
+    {
+      "catalog_id": "node-368663556",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:1185920154",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-368663556",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:1185920154",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-368663556",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:1185920154",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-368705243",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992952388",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-368705243",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992952388",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-368705243",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992952388",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-368705677",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992952389",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-368705677",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992952389",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-368705677",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992952389",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-368706771",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-368706771",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-368706771",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-368707442",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992952390",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-368707442",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992952390",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-368707442",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992952390",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-368707612",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 764.0,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 161,
+        "unknown": 23
+      }
+    },
+    {
+      "catalog_id": "node-368707612",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 764.0,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 161,
+        "unknown": 23
+      }
+    },
+    {
+      "catalog_id": "node-368707612",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 764.0,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 161,
+        "unknown": 23
+      }
+    },
+    {
+      "catalog_id": "node-368707620",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:305453867",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-368707620",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:305453867",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-368707620",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:305453867",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-368856409",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 852.4,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 168,
+        "unknown": 24
+      }
+    },
+    {
+      "catalog_id": "node-368856409",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 852.4,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 168,
+        "unknown": 24
+      }
+    },
+    {
+      "catalog_id": "node-368856409",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 852.4,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 168,
+        "unknown": 24
+      }
+    },
+    {
+      "catalog_id": "node-3100806482",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:305453864",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-3100806482",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:305453864",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-3100806482",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:305453864",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-3785255104",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-3785255104",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-3785255104",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-3785255112",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-3785255112",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-3785255112",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-4199814292",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-4199814292",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-4199814292",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-7858128118",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1007.0,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 238,
+        "unknown": 34
+      }
+    },
+    {
+      "catalog_id": "node-7858128118",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1007.0,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 238,
+        "unknown": 34
+      }
+    },
+    {
+      "catalog_id": "node-7858128118",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1007.0,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 238,
+        "unknown": 34
+      }
+    },
+    {
+      "catalog_id": "node-12200914903",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:305381859",
+      "evaluated_radius_m": 932.5,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 217,
+        "unknown": 31
+      }
+    },
+    {
+      "catalog_id": "node-12200914903",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:305381859",
+      "evaluated_radius_m": 932.5,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 217,
+        "unknown": 31
+      }
+    },
+    {
+      "catalog_id": "node-12200914903",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:305381859",
+      "evaluated_radius_m": 932.5,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 217,
+        "unknown": 31
+      }
+    },
+    {
+      "catalog_id": "node-13447858318",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992388944",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-13447858318",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992388944",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-13447858318",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992388944",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-13456654596",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385537",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-13456654596",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385537",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-13456654596",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385537",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "way-843161717",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:843161717",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "way-843161717",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:843161717",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "way-843161717",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:843161717",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "way-992385533",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385533",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "way-992385533",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385533",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "way-992385533",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992385533",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "node-368707405",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 266,
+        "unknown": 38
+      }
+    },
+    {
+      "catalog_id": "node-368707405",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 266,
+        "unknown": 38
+      }
+    },
+    {
+      "catalog_id": "node-368707405",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 266,
+        "unknown": 38
+      }
+    },
+    {
+      "catalog_id": "node-4318458994",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-4318458994",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-4318458994",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": null,
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 280,
+        "unknown": 40
+      }
+    },
+    {
+      "catalog_id": "node-5583783140",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992136223",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-5583783140",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992136223",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-5583783140",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992136223",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-12335993401",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992595208",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-12335993401",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992595208",
+      "evaluated_radius_m": 1200,
+      "conflicts": [
+        "requested_floor_exceeds_mapped_levels"
+      ],
+      "statuses": {
+        "unknown": 312
+      }
+    },
+    {
+      "catalog_id": "node-12335993401",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992595208",
+      "evaluated_radius_m": 1200,
+      "conflicts": [
+        "requested_floor_exceeds_mapped_levels"
+      ],
+      "statuses": {
+        "unknown": 312
+      }
+    },
+    {
+      "catalog_id": "node-13011853720",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992595204",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-13011853720",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992595204",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "node-13011853720",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:992595204",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 273,
+        "unknown": 39
+      }
+    },
+    {
+      "catalog_id": "way-1494488365",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 0,
+      "subject_building_id": "osm:way:1494488365",
+      "evaluated_radius_m": 918.8,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 140,
+        "unknown": 20
+      }
+    },
+    {
+      "catalog_id": "way-1494488365",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 0,
+      "subject_building_id": "osm:way:1494488365",
+      "evaluated_radius_m": 918.8,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 140,
+        "unknown": 20
+      }
+    },
+    {
+      "catalog_id": "way-1494488365",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 0,
+      "subject_building_id": "osm:way:1494488365",
+      "evaluated_radius_m": 918.8,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 140,
+        "unknown": 20
+      }
+    },
+    {
+      "catalog_id": "way-988011833",
+      "floor": 3,
+      "date": "2026-03-20",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:988011833",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "way-988011833",
+      "floor": 8,
+      "date": "2026-06-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:988011833",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    },
+    {
+      "catalog_id": "way-988011833",
+      "floor": 17,
+      "date": "2026-12-21",
+      "sea_sample_count": 8,
+      "subject_building_id": "osm:way:988011833",
+      "evaluated_radius_m": 1200,
+      "conflicts": [],
+      "statuses": {
+        "outside_fov": 259,
+        "unknown": 37
+      }
+    }
+  ]
+}
