@@ -1,7 +1,5 @@
 package ru.opodoydet.application;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -19,6 +17,8 @@ import java.util.regex.Pattern;
 import ru.opodoydet.domain.Features;
 import ru.opodoydet.domain.Validation;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /** Bounded agent flow: at most one model request per operation, then an explicit local fallback. */
 public final class Agents {

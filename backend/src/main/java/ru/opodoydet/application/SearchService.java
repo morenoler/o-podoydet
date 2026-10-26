@@ -1,7 +1,5 @@
 package ru.opodoydet.application;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.sql.SQLException;
 import java.time.Clock;
 import java.time.Duration;
@@ -19,6 +17,8 @@ import ru.opodoydet.domain.RoomRecommendations;
 import ru.opodoydet.domain.Validation;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /** Application orchestration; HTTP and persistence never decide whether a criterion passes. */
 public final class SearchService {

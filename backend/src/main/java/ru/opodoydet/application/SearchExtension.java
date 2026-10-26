@@ -1,8 +1,8 @@
 package ru.opodoydet.application;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.sql.SQLException;
 import java.util.List;
+import tools.jackson.databind.JsonNode;
 
 /** Optional feature-module projection; a snapshot never exposes its private source material. */
 public interface SearchExtension {

@@ -2,8 +2,6 @@ package ru.opodoydet.accounts.search;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Instant;
@@ -15,6 +13,8 @@ import ru.opodoydet.accounts.persistence.AccountDatabase;
 import ru.opodoydet.application.*;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 class OwnerSearchTest {
   @TempDir Path temp;

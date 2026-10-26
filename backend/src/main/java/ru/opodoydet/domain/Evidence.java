@@ -1,11 +1,11 @@
 package ru.opodoydet.domain;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
 
 public final class Evidence {
   private Evidence() {}

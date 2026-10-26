@@ -1,7 +1,5 @@
 package ru.opodoydet.accounts.listings;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.net.URI;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -10,6 +8,8 @@ import ru.opodoydet.accounts.AccountProblem;
 import ru.opodoydet.accounts.Inputs;
 import ru.opodoydet.accounts.photos.UploadedPhotoRepository;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /** Public details, including compatibility with the former private-profile request shape. */
 final class ListingDetails {

@@ -2,8 +2,6 @@ package ru.opodoydet.advisor;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -18,6 +16,8 @@ import ru.opodoydet.application.Environment;
 import ru.opodoydet.application.SearchService;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 class AdvisorTest {
   private static final Instant NOW = Instant.parse("2026-10-24T12:00:00Z");

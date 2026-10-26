@@ -1,16 +1,16 @@
 package ru.opodoydet.domain;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Set;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /** Binary product decisions are separate from unchanged source evidence and raw evaluations. */
 public final class BinaryDecisionPolicy {
   private BinaryDecisionPolicy() {}
 
   public static ObjectNode decide(JsonNode raw, JsonNode hotel) {
-    ObjectNode result = raw.deepCopy();
+    ObjectNode result = (ObjectNode) raw.deepCopy();
     String status = Json.str(raw, "status"), original = Json.str(raw, "explanation");
     result.put("evidenceStatus", status).put("sourceExplanation", original);
     if (Set.of("match", "mismatch").contains(status))

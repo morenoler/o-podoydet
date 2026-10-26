@@ -1,10 +1,10 @@
 package ru.opodoydet.domain;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.HashSet;
 import java.util.Set;
+import tools.jackson.databind.JsonNode;
 
 public final class Validation {
   private Validation() {}

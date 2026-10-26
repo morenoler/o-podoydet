@@ -1,8 +1,8 @@
 package ru.opodoydet.accounts.auth;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.sql.SQLException;
 import ru.opodoydet.accounts.persistence.AccountDatabase;
+import tools.jackson.databind.node.ObjectNode;
 
 public final class UserRepository {
   private final AccountDatabase db;

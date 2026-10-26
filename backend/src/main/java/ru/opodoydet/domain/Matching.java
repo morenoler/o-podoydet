@@ -1,7 +1,5 @@
 package ru.opodoydet.domain;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -9,6 +7,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public final class Matching {
   private static final Map<String, Integer> ORDER = Map.of("fits", 0, "excluded", 1);
@@ -103,8 +103,7 @@ public final class Matching {
             .map(f -> f.path("value"))
             .distinct()
             .count()
-        > 1)
-      return status(result, "conflict", "Источники содержат несовместимые значения");
+        > 1) return status(result, "conflict", "Источники содержат несовместимые значения");
     if (active.stream().noneMatch(f -> f.hasNonNull("value")))
       return status(
           result,
@@ -162,7 +161,7 @@ public final class Matching {
       String policy) {
     String feature = Json.str(preference, "feature");
     if (Features.get(feature).tool().equals("area") && environment.containsKey(feature)) {
-      ObjectNode criterion = environment.get(feature).deepCopy();
+      ObjectNode criterion = (ObjectNode) environment.get(feature).deepCopy();
       return criterion.put("required", preference.path("required").asBoolean());
     }
     return evaluate(facts, preference, room, trip, now, policy);
@@ -196,7 +195,7 @@ public final class Matching {
           facts.stream().filter(f -> Json.str(f, "hotelId").equals(Json.str(hotel, "id"))).toList();
       List<JsonNode> rooms = new ArrayList<>();
       List<JsonNode> visibleRooms = Evidence.rooms(hotel, now, policy);
-      ObjectNode visibleHotel = hotel.deepCopy();
+      ObjectNode visibleHotel = (ObjectNode) hotel.deepCopy();
       visibleHotel.set("rooms", Json.array(visibleRooms));
       for (JsonNode room : visibleRooms) {
         List<JsonNode> criteria =

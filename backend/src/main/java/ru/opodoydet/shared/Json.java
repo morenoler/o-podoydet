@@ -1,15 +1,15 @@
 package ru.opodoydet.shared;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.ArrayList;
 import java.util.List;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public final class Json {
-  public static final ObjectMapper MAPPER = new ObjectMapper();
+  public static final JsonMapper MAPPER = JsonMapper.builderWithJackson2Defaults().build();
 
   private Json() {}
 
@@ -33,7 +33,7 @@ public final class Json {
   public static JsonNode read(String text) {
     try {
       return MAPPER.readTree(text);
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       throw new IllegalArgumentException("Некорректный JSON", e);
     }
   }
@@ -41,7 +41,7 @@ public final class Json {
   public static String write(Object value) {
     try {
       return MAPPER.writeValueAsString(value);
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       throw new IllegalStateException("Не удалось сформировать JSON", e);
     }
   }

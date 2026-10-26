@@ -1,11 +1,11 @@
 package ru.opodoydet.accounts.search;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.*;
 import java.util.function.IntPredicate;
 import java.util.regex.Pattern;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /** Recognizes a small explicit guest-query grammar; source values remain private. */
 final class OwnerRequirements {

@@ -2,8 +2,6 @@ package ru.opodoydet.advisor;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
@@ -15,6 +13,8 @@ import ru.opodoydet.application.Environment;
 import ru.opodoydet.application.SearchService;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 class AdvisorDiagnosticsTest {
   @TempDir Path directory;
@@ -149,19 +149,19 @@ class AdvisorDiagnosticsTest {
             Json.obj("q1", "question-one"));
     ((ObjectNode) run.path("diagnostics").get(0)).set("references", references);
     assertDoesNotThrow(() -> AdvisorDiagnostics.validate(run, "test-local", true));
-    ObjectNode wrongOwner = run.deepCopy();
+    ObjectNode wrongOwner = (ObjectNode) run.deepCopy();
     ((ObjectNode) wrongOwner.path("diagnostics").get(0).path("references").path("evidence"))
         .set("e1", Json.array(List.of("candidate-one", "evidence-two")));
     assertThrows(
         IllegalArgumentException.class,
         () -> AdvisorDiagnostics.validate(wrongOwner, "test-local", true));
-    ObjectNode outsidePool = run.deepCopy();
+    ObjectNode outsidePool = (ObjectNode) run.deepCopy();
     ((ObjectNode) outsidePool.path("diagnostics").get(0).path("references").path("candidates"))
         .put("c1", "lab-case-outside-model-pool");
     assertThrows(
         IllegalArgumentException.class,
         () -> AdvisorDiagnostics.validate(outsidePool, "test-local", true));
-    ObjectNode badAlias = run.deepCopy();
+    ObjectNode badAlias = (ObjectNode) run.deepCopy();
     ((ObjectNode) badAlias.path("diagnostics").get(0).path("references").path("questions"))
         .put("q7", "question-one");
     assertThrows(

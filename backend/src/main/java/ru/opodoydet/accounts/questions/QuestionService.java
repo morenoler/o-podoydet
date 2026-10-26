@@ -1,7 +1,5 @@
 package ru.opodoydet.accounts.questions;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
@@ -11,6 +9,8 @@ import ru.opodoydet.accounts.Inputs;
 import ru.opodoydet.accounts.listings.ListingService;
 import ru.opodoydet.accounts.persistence.AccountDatabase;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public final class QuestionService {
   private final QuestionRepository repository;

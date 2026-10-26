@@ -1,8 +1,8 @@
 package ru.opodoydet.accounts;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import tools.jackson.databind.JsonNode;
 
 public final class Inputs {
   private Inputs() {}

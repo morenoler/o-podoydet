@@ -2,12 +2,12 @@ package ru.opodoydet.persistence;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.node.ObjectNode;
 
 class AdvisorStoreTest {
   @TempDir Path temp;

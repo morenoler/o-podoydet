@@ -2,8 +2,6 @@ package ru.opodoydet.application;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -17,6 +15,8 @@ import org.junit.jupiter.api.io.TempDir;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.shared.Json;
 import ru.opodoydet.web.Api;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 class LabSearchTest {
   @TempDir Path directory;

@@ -1,6 +1,5 @@
 package ru.opodoydet.advisor;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
@@ -9,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import ru.opodoydet.domain.Validation;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
 
 /** Validates observable model I/O separately from the grounded recommendation contract. */
 final class AdvisorDiagnostics {
@@ -48,8 +48,8 @@ final class AdvisorDiagnostics {
       if (!diagnostic.isObject() || bytes(diagnostic) > 64 * 1024)
         throw new IllegalArgumentException("Diagnostic exceeds its size limit");
       diagnostic
-          .fieldNames()
-          .forEachRemaining(
+          .propertyNames()
+          .forEach(
               field -> {
                 if (!DIAGNOSTIC_FIELDS.contains(field))
                   throw new IllegalArgumentException("Unknown diagnostic field");
@@ -117,8 +117,8 @@ final class AdvisorDiagnostics {
     if (!references.isObject() || references.size() != fields.size())
       throw new IllegalArgumentException("Invalid diagnostic reference map");
     references
-        .fieldNames()
-        .forEachRemaining(
+        .propertyNames()
+        .forEach(
             field -> {
               if (!fields.contains(field))
                 throw new IllegalArgumentException("Unknown reference category");

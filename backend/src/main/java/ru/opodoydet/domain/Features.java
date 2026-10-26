@@ -1,10 +1,10 @@
 package ru.opodoydet.domain;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.node.ObjectNode;
 
 public final class Features {
   public record Definition(

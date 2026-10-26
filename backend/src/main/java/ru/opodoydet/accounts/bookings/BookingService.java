@@ -1,7 +1,5 @@
 package ru.opodoydet.accounts.bookings;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.sql.SQLException;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
@@ -12,6 +10,8 @@ import ru.opodoydet.accounts.Inputs;
 import ru.opodoydet.accounts.listings.ListingService;
 import ru.opodoydet.accounts.persistence.AccountDatabase;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public final class BookingService {
   private final AccountDatabase db;

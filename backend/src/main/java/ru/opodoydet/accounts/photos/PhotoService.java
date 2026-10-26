@@ -1,8 +1,7 @@
 package ru.opodoydet.accounts.photos;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -15,6 +14,7 @@ import java.util.concurrent.Semaphore;
 import ru.opodoydet.accounts.AccountProblem;
 import ru.opodoydet.accounts.persistence.AccountDatabase;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
 
 /** Files live outside frontend builds. Removal from a listing never destroys a pending edit. */
 public final class PhotoService {
@@ -28,13 +28,12 @@ public final class PhotoService {
     this.root = root.toAbsolutePath().normalize();
   }
 
-  public JsonNode upload(HttpExchange ex, String owner) throws IOException, SQLException {
-    String contentType = ex.getRequestHeaders().getFirst("Content-Type");
+  public JsonNode upload(InputStream input, String contentType, String length, String owner)
+      throws IOException, SQLException {
     String mime =
         contentType == null ? "" : contentType.split(";", 2)[0].trim().toLowerCase(Locale.ROOT);
     if (!Set.of("image/jpeg", "image/png").contains(mime))
       throw new AccountProblem(415, "Загрузите фотографию в формате JPEG или PNG.");
-    String length = ex.getRequestHeaders().getFirst("Content-Length");
     if (length != null) {
       try {
         if (Long.parseLong(length) > MAX_BYTES) throw tooLarge();
@@ -46,7 +45,7 @@ public final class PhotoService {
       throw new AccountProblem(
           429, "Фотографии обрабатываются. Повторите загрузку через несколько секунд.");
     try {
-      byte[] source = ex.getRequestBody().readNBytes(MAX_BYTES + 1);
+      byte[] source = input.readNBytes(MAX_BYTES + 1);
       if (source.length > MAX_BYTES) throw tooLarge();
       var image = ImageSanitizer.sanitize(source, mime);
       String filename = UUID.randomUUID() + "." + image.extension();
@@ -72,11 +71,10 @@ public final class PhotoService {
     }
   }
 
-  public void serve(HttpExchange ex, JsonNode user) throws IOException, SQLException {
-    String url = ex.getRequestURI().getPath();
-    if (!Set.of("GET", "HEAD").contains(ex.getRequestMethod())
-        || !url.equals(ex.getRequestURI().getRawPath())
-        || !UploadedPhotoRepository.isUploadUrl(url)) throw notFound();
+  public record Asset(Path file, String mime, long size) {}
+
+  public Asset resolve(String url, JsonNode user) throws IOException, SQLException {
+    if (!UploadedPhotoRepository.isUploadUrl(url)) throw notFound();
     var photo = repository.find(url);
     if (photo == null
         || !((user != null && Json.str(user, "id").equals(Json.str(photo, "ownerId")))
@@ -86,19 +84,7 @@ public final class PhotoService {
         || !Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS)
         || !file.toRealPath().getParent().equals(root.toRealPath().resolve("listings")))
       throw notFound();
-    ex.getResponseHeaders().set("Content-Type", Json.str(photo, "mime"));
-    ex.getResponseHeaders().set("X-Content-Type-Options", "nosniff");
-    ex.getResponseHeaders().set("Cache-Control", "private, no-store");
-    ex.getResponseHeaders().set("Content-Security-Policy", "default-src 'none'; sandbox");
-    ex.getResponseHeaders().set("Cross-Origin-Resource-Policy", "same-origin");
-    ex.getResponseHeaders()
-        .set("Content-Disposition", "inline; filename=\"" + file.getFileName() + "\"");
-    ex.getResponseHeaders().set("Content-Length", Long.toString(Files.size(file)));
-    if (ex.getRequestMethod().equals("HEAD")) ex.sendResponseHeaders(200, -1);
-    else {
-      ex.sendResponseHeaders(200, Files.size(file));
-      Files.copy(file, ex.getResponseBody());
-    }
+    return new Asset(file, Json.str(photo, "mime"), Files.size(file));
   }
 
   private static AccountProblem tooLarge() {

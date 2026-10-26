@@ -1,13 +1,13 @@
 package ru.opodoydet.accounts.search;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.sql.SQLException;
 import java.util.Set;
 import ru.opodoydet.accounts.AccountProblem;
 import ru.opodoydet.accounts.Inputs;
 import ru.opodoydet.accounts.persistence.AccountDatabase;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /** Owner-only source material, deliberately separate from the public listing repository. */
 public final class SearchProfileRepository {
@@ -41,8 +41,8 @@ public final class SearchProfileRepository {
     if (!input.isObject() || !input.has("notes"))
       throw new AccountProblem(400, "Закрытая анкета должна содержать поле заметок.");
     input
-        .fieldNames()
-        .forEachRemaining(
+        .propertyNames()
+        .forEach(
             key -> {
               if (!Set.of("notes", "floor", "windowDirections").contains(key))
                 throw new AccountProblem(400, "Неизвестное поле закрытой анкеты.");

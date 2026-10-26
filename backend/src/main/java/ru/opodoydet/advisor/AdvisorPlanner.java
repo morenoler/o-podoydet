@@ -1,7 +1,5 @@
 package ru.opodoydet.advisor;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -14,6 +12,8 @@ import ru.opodoydet.domain.Features;
 import ru.opodoydet.domain.Matching;
 import ru.opodoydet.domain.RoomRecommendations;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /** All eligibility and counterfactual counts come from the ordinary matching engine. */
 public final class AdvisorPlanner {
@@ -130,7 +130,7 @@ public final class AdvisorPlanner {
                   .filter(p -> !exactRooms || !Json.str(p, "feature").equals(feature))
                   .map(
                       p -> {
-                        ObjectNode copy = p.deepCopy();
+                        ObjectNode copy = (ObjectNode) p.deepCopy();
                         if (!exactRooms && Json.str(p, "feature").equals(feature))
                           copy.put("required", false);
                         return (JsonNode) copy;
@@ -173,7 +173,7 @@ public final class AdvisorPlanner {
         warnings.add(
             exactRooms
                 ? "Удаление одного пожелания не даёт номера, подходящего по всем остальным"
-                      + " условиям."
+                    + " условиям."
                 : "Смягчение одного обязательного пожелания не даёт подходящих вариантов.");
     }
     List<JsonNode> questions = new ArrayList<>();
@@ -273,8 +273,8 @@ public final class AdvisorPlanner {
       for (JsonNode room : match.path("rooms")) {
         if (!RoomRecommendations.concrete(match.path("hotel"), room.path("room"), now, policy))
           continue;
-        ObjectNode item = match.deepCopy();
-        ObjectNode selected = room.deepCopy();
+        ObjectNode item = (ObjectNode) match.deepCopy();
+        ObjectNode selected = (ObjectNode) room.deepCopy();
         item.set("best", selected);
         selected.put("status", exactIds.contains(id(item)) ? "fits" : "excluded");
         rooms.add(item);
@@ -406,7 +406,7 @@ public final class AdvisorPlanner {
               sources.stream().distinct().limit(3).toList()));
     }
     for (JsonNode criterion : match.path("ownerCriteria")) {
-      ObjectNode derived = criterion.deepCopy();
+      ObjectNode derived = (ObjectNode) criterion.deepCopy();
       derived.put("id", id + "::owner-" + Json.str(criterion, "id"));
       derived.set("sources", Json.array(List.of()));
       criteria.add(derived);

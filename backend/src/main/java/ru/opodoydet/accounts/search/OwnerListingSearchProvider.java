@@ -1,7 +1,5 @@
 package ru.opodoydet.accounts.search;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -10,6 +8,8 @@ import ru.opodoydet.accounts.persistence.AccountDatabase;
 import ru.opodoydet.application.SearchExtension;
 import ru.opodoydet.domain.Features;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Public projections of private owner assertions. No private notes or raw facts cross this
@@ -61,7 +61,7 @@ public final class OwnerListingSearchProvider implements SearchExtension {
       public List<JsonNode> apply(List<JsonNode> baseline, List<JsonNode> preferences) {
         List<JsonNode> ranked = new ArrayList<>();
         for (JsonNode match : baseline) {
-          ObjectNode decorated = match.deepCopy();
+          ObjectNode decorated = (ObjectNode) match.deepCopy();
           if (requirements.any())
             decorate(decorated, requirements.decisions(null, Set.of(), false));
           ranked.add(decorated);

@@ -1,7 +1,5 @@
 package ru.opodoydet.persistence;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -20,6 +18,8 @@ import ru.opodoydet.domain.Evidence;
 import ru.opodoydet.domain.Features;
 import ru.opodoydet.domain.Validation;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * One synchronized JDBC connection keeps each read/modify/write operation atomic in this local
@@ -72,7 +72,7 @@ public final class Store implements AutoCloseable {
       throw new IllegalArgumentException("Некорректный набор данных региона");
     transaction(
         () -> {
-          ObjectNode metadata = seed.deepCopy();
+          ObjectNode metadata = (ObjectNode) seed.deepCopy();
           metadata.remove(List.of("hotels", "facts"));
           execute(
               "INSERT INTO metadata(region,key,body) VALUES (?,?,?) ON CONFLICT(region,key) DO"
@@ -93,7 +93,7 @@ public final class Store implements AutoCloseable {
             if (!hotel.path("rooms").isArray() || hotel.path("rooms").isEmpty())
               throw new IllegalArgumentException(
                   "Отель должен иметь хотя бы одну категорию номера");
-            ObjectNode body = hotel.deepCopy();
+            ObjectNode body = (ObjectNode) hotel.deepCopy();
             body.remove("rooms");
             execute(
                 "INSERT INTO hotels(region,id,body,active) VALUES (?,?,?,1) ON CONFLICT(region,id)"
@@ -144,7 +144,7 @@ public final class Store implements AutoCloseable {
 
   public synchronized ObjectNode dataset() throws SQLException {
     JsonNode saved = one("SELECT body FROM metadata WHERE region=? AND key='dataset'", region);
-    ObjectNode result = saved == null ? Json.obj("region", region) : saved.deepCopy();
+    ObjectNode result = saved == null ? Json.obj("region", region) : (ObjectNode) saved.deepCopy();
     result.set("hotels", Json.array(hotels()));
     result.put("evidencePolicy", evidencePolicy);
     return result;
@@ -242,7 +242,7 @@ public final class Store implements AutoCloseable {
                   roomId,
                   feature);
           if (existing != null && Json.str(existing, "status").equals("open")) return existing;
-          ObjectNode question = requested.deepCopy();
+          ObjectNode question = (ObjectNode) requested.deepCopy();
           String id = existing == null ? UUID.randomUUID().toString() : Json.str(existing, "id");
           question.put("id", id).put("createdAt", Instant.now().toString()).put("status", "open");
           question.remove("answer");
@@ -349,7 +349,7 @@ public final class Store implements AutoCloseable {
                 Json.write(fact));
             output.add(fact);
           }
-          ObjectNode answered = question.deepCopy();
+          ObjectNode answered = (ObjectNode) question.deepCopy();
           answered.put("status", "answered").put("answer", text);
           execute(
               "UPDATE questions SET body=? WHERE region=? AND id=?",
@@ -393,7 +393,7 @@ public final class Store implements AutoCloseable {
                   "SELECT body FROM advisor_runs WHERE region=?"
                       + " AND json_extract(body,'$.status') IN ('queued','running')",
                   region)) {
-            ObjectNode run = item.deepCopy();
+            ObjectNode run = (ObjectNode) item.deepCopy();
             run.put("status", "failed")
                 .put("error", "Сервер был перезапущен. Запустите подбор с помощником заново.")
                 .put("updatedAt", Instant.now().toString());

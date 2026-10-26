@@ -2,8 +2,6 @@ package ru.opodoydet.accounts;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,6 +28,8 @@ import ru.opodoydet.application.Agents;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.shared.Json;
 import ru.opodoydet.web.Api;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 class PhotoApiTest {
   @TempDir Path temp;

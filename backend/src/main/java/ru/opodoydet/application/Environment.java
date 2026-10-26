@@ -1,7 +1,5 @@
 package ru.opodoydet.application;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /** Derived criteria are evaluated on the trip, never imported as permanent hotel facts. */
 public final class Environment {

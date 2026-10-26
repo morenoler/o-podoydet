@@ -1,7 +1,5 @@
 package ru.opodoydet.advisor;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -18,6 +16,8 @@ import ru.opodoydet.application.SearchService;
 import ru.opodoydet.domain.Validation;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /** Runs Python advice against immutable server-calculated facts, with no paid provider. */
 public final class AdvisorService implements AutoCloseable {
@@ -199,7 +199,7 @@ public final class AdvisorService implements AutoCloseable {
 
   public static ObjectNode checkedReport(JsonNode context, JsonNode raw) {
     if (!raw.isObject()) throw new IllegalArgumentException("Invalid report");
-    ObjectNode report = raw.deepCopy();
+    ObjectNode report = (ObjectNode) raw.deepCopy();
     String expected =
         !context.path("conflicts").isEmpty()
             ? "clarification_needed"
@@ -271,7 +271,7 @@ public final class AdvisorService implements AutoCloseable {
     JsonNode existing = store.advisorRun(id);
     if (existing == null) return null;
     if (!Set.of("queued", "running").contains(Json.str(existing, "status"))) return existing;
-    ObjectNode run = existing.deepCopy();
+    ObjectNode run = (ObjectNode) existing.deepCopy();
     run.put("status", "cancelled");
     finishInterruptedDiagnostics(run, "Вызов отменён вместе с запуском помощника.");
     save(run);

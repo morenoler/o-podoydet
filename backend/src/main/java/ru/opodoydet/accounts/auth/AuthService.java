@@ -1,8 +1,5 @@
 package ru.opodoydet.accounts.auth;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.sun.net.httpserver.HttpExchange;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -11,32 +8,32 @@ import ru.opodoydet.accounts.AccountProblem;
 import ru.opodoydet.accounts.Inputs;
 import ru.opodoydet.accounts.persistence.AccountDatabase;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public final class AuthService {
-  private static final String COOKIE = "op_account_session";
   private final UserRepository users;
   private final SessionRepository sessions;
-  private final boolean secureCookie;
   private final String dummyHash = Passwords.hash("unused-account-placeholder");
   private final Map<String, Attempt> attempts = new HashMap<>();
 
   private record Attempt(Instant since, int count) {}
 
-  public AuthService(AccountDatabase db, boolean secureCookie) {
+  public AuthService(AccountDatabase db) {
     users = new UserRepository(db);
     sessions = new SessionRepository(db);
-    this.secureCookie = secureCookie;
   }
 
-  public ObjectNode current(HttpExchange exchange) throws SQLException {
-    String token = token(exchange);
+  public record Session(ObjectNode user, String token) {}
+
+  public ObjectNode current(String token) throws SQLException {
     if (token == null) return null;
     String id = sessions.user(token);
     return id == null ? null : users.find(id);
   }
 
-  public ObjectNode require(HttpExchange exchange, String role) throws SQLException {
-    ObjectNode user = current(exchange);
+  public ObjectNode require(String token, String role) throws SQLException {
+    ObjectNode user = current(token);
     if (user == null) throw new AccountProblem(401, "Войдите в личный кабинет, чтобы продолжить.");
     if (role != null && !Json.str(user, "role").equals(role))
       throw new AccountProblem(
@@ -47,8 +44,9 @@ public final class AuthService {
     return user;
   }
 
-  public ObjectNode register(HttpExchange exchange, JsonNode input) throws SQLException {
-    rateLimit(exchange);
+  public Session register(JsonNode input, String oldToken, String remoteAddress)
+      throws SQLException {
+    rateLimit(remoteAddress);
     String name = Inputs.text(input, "name", "Имя", 2, 100),
         email = email(input),
         password = password(input);
@@ -63,12 +61,11 @@ public final class AuthService {
         throw new AccountProblem(409, "Аккаунт с этой почтой уже существует. Войдите в него.");
       throw error;
     }
-    establish(exchange, id);
-    return users.find(id);
+    return new Session(users.find(id), establish(oldToken, id));
   }
 
-  public ObjectNode login(HttpExchange exchange, JsonNode input) throws SQLException {
-    rateLimit(exchange);
+  public Session login(JsonNode input, String oldToken, String remoteAddress) throws SQLException {
+    rateLimit(remoteAddress);
     String email = email(input);
     JsonNode secret = input.path("password");
     if (!secret.isTextual() || secret.asText().isEmpty() || secret.asText().length() > 128)
@@ -81,20 +78,11 @@ public final class AuthService {
     if (credentials == null || !valid)
       throw new AccountProblem(401, "Почта или пароль не совпадают. Проверьте данные.");
     String id = Json.str(credentials, "id");
-    establish(exchange, id);
-    return users.find(id);
+    return new Session(users.find(id), establish(oldToken, id));
   }
 
-  public void logout(HttpExchange exchange) throws SQLException {
-    String token = token(exchange);
+  public void logout(String token) throws SQLException {
     if (token != null) sessions.remove(token);
-    exchange
-        .getResponseHeaders()
-        .add(
-            "Set-Cookie",
-            COOKIE
-                + "=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0"
-                + (secureCookie ? "; Secure" : ""));
   }
 
   public ObjectNode profile(ObjectNode user, JsonNode input) throws SQLException {
@@ -107,35 +95,11 @@ public final class AuthService {
     return users.find(Json.str(user, "id"));
   }
 
-  private void establish(HttpExchange exchange, String id) throws SQLException {
-    String old = token(exchange);
+  private String establish(String old, String id) throws SQLException {
     if (old != null) sessions.remove(old);
     String token = Passwords.token();
     sessions.save(token, id, Instant.now().plus(30, ChronoUnit.DAYS));
-    exchange
-        .getResponseHeaders()
-        .add(
-            "Set-Cookie",
-            COOKIE
-                + "="
-                + token
-                + "; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000"
-                + (secureCookie ? "; Secure" : ""));
-  }
-
-  private static String token(HttpExchange exchange) {
-    List<String> headers = exchange.getRequestHeaders().get("Cookie");
-    if (headers == null) return null;
-    for (String header : headers)
-      for (String cookie : header.split(";")) {
-        String[] pair = cookie.trim().split("=", 2);
-        if (pair.length != 2 || !pair[0].equals(COOKIE)) continue;
-        String value = pair[1];
-        if (value.startsWith("\"") && value.endsWith("\"") && value.length() >= 2)
-          value = value.substring(1, value.length() - 1);
-        if (value.matches("[A-Za-z0-9_-]{43}")) return value;
-      }
-    return null;
+    return token;
   }
 
   private static String email(JsonNode input) {
@@ -153,13 +117,12 @@ public final class AuthService {
     return value.asText();
   }
 
-  private synchronized void rateLimit(HttpExchange exchange) {
+  private synchronized void rateLimit(String remoteAddress) {
     Instant now = Instant.now();
     attempts.entrySet().removeIf(entry -> entry.getValue().since().plusSeconds(300).isBefore(now));
-    String key = exchange.getRemoteAddress().getAddress().getHostAddress();
-    Attempt previous = attempts.getOrDefault(key, new Attempt(now, 0));
+    Attempt previous = attempts.getOrDefault(remoteAddress, new Attempt(now, 0));
     if (previous.count() >= 30)
       throw new AccountProblem(429, "Слишком много попыток. Повторите вход через 5 минут.");
-    attempts.put(key, new Attempt(previous.since(), previous.count() + 1));
+    attempts.put(remoteAddress, new Attempt(previous.since(), previous.count() + 1));
   }
 }

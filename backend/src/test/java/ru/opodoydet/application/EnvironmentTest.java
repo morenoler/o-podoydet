@@ -2,8 +2,6 @@ package ru.opodoydet.application;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -23,6 +21,8 @@ import ru.opodoydet.domain.Validation;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.shared.Json;
 import ru.opodoydet.web.Api;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 class EnvironmentTest {
   @TempDir Path temporary;
@@ -219,7 +219,7 @@ class EnvironmentTest {
     for (JsonNode wrongGrid :
         List.of(
             Json.array(List.of(39.7, 43.5)), Json.array(List.of(129.16)), Json.MAPPER.nullNode())) {
-      ObjectNode changed = area.deepCopy();
+      ObjectNode changed = (ObjectNode) area.deepCopy();
       ((ObjectNode) changed.path("airQuality")).set("modelCoordinates", wrongGrid);
       assertFalse(Environment.airForDecision(changed, trip(), NOW).has("currentAirUsAqi"));
       assertEquals(
@@ -228,13 +228,13 @@ class EnvironmentTest {
               BinaryDecisionPolicy.decide(
                   Environment.airForDecision(changed, trip(), NOW), hotel())));
     }
-    ObjectNode wrongUnit = area.deepCopy();
+    ObjectNode wrongUnit = (ObjectNode) area.deepCopy();
     ((ObjectNode) wrongUnit.path("airQuality")).put("concentrationUnit", "mg/m³");
     assertFalse(Environment.airForDecision(wrongUnit, trip(), NOW).has("currentAirUsAqi"));
     for (String field : List.of("time", "fetchedAt")) {
       for (String bad :
           List.of("invalid", NOW.plusSeconds(1).toString(), NOW.minusSeconds(86401).toString())) {
-        ObjectNode changed = area.deepCopy();
+        ObjectNode changed = (ObjectNode) area.deepCopy();
         ((ObjectNode) changed.path("airQuality")).put(field, bad);
         assertFalse(Environment.airForDecision(changed, trip(), NOW).has("currentAirUsAqi"));
       }
@@ -269,7 +269,7 @@ class EnvironmentTest {
   @Test
   void gapsNullsAndDuplicateHoursCannotBeHiddenByDeclaredCoverageOrABadHour() {
     ObjectNode gap = forecast(100);
-    ((com.fasterxml.jackson.databind.node.ArrayNode) gap.path("hourly")).remove(1);
+    ((tools.jackson.databind.node.ArrayNode) gap.path("hourly")).remove(1);
     assertEquals("unknown", status(Environment.air(area(gap), trip(), NOW)));
     ObjectNode missing = forecast(20);
     ((ObjectNode) missing.path("hourly").get(5)).putNull("usAqi");
@@ -425,7 +425,7 @@ class EnvironmentTest {
     assertEquals(
         "unknown", status(Environment.safety(safetyArea(noBoundarySource), hotel(), trip(), NOW)));
     ObjectNode openPolygon = rate();
-    ((com.fasterxml.jackson.databind.node.ArrayNode)
+    ((tools.jackson.databind.node.ArrayNode)
             openPolygon.path("geography").path("coordinates").get(0))
         .remove(4);
     assertEquals(
@@ -444,7 +444,7 @@ class EnvironmentTest {
     outside.set("coordinates", Json.array(List.of(129.2, 35.2)));
     assertEquals("unknown", status(Environment.safety(safetyArea(rate()), outside, trip(), NOW)));
     ObjectNode hole = rate();
-    ((com.fasterxml.jackson.databind.node.ArrayNode) hole.path("geography").path("coordinates"))
+    ((tools.jackson.databind.node.ArrayNode) hole.path("geography").path("coordinates"))
         .add(
             Json.array(
                 List.of(
@@ -676,7 +676,7 @@ class EnvironmentTest {
           Environment.noise(context(), history(invalid), hotel(), weekdayTrip(), NOW)
               .has("assessmentBasis"));
     ObjectNode empty = historicalProfile(10);
-    ((com.fasterxml.jackson.databind.node.ArrayNode) empty.path("hourlyVehicleCounts"))
+    ((tools.jackson.databind.node.ArrayNode) empty.path("hourlyVehicleCounts"))
         .set(8, Json.MAPPER.nullNode());
     assertFalse(
         Environment.noise(context(), history(empty), hotel(), weekdayTrip(), NOW)
@@ -796,11 +796,11 @@ class EnvironmentTest {
     ((ObjectNode) covered.path("coverage"))
         .set("traffic", covered.path("coverage").path("events").deepCopy());
     assertEquals("match", status(Environment.noise(covered, hotel(), pastTrip, NOW)));
-    ObjectNode futureRoad = covered.deepCopy();
+    ObjectNode futureRoad = (ObjectNode) covered.deepCopy();
     ((ObjectNode) futureRoad.path("roads").get(0).path("source"))
         .put("retrievedAt", NOW.plusSeconds(3600).toString());
     assertEquals("unknown", status(Environment.noise(futureRoad, hotel(), pastTrip, NOW)));
-    ObjectNode smallInventory = covered.deepCopy();
+    ObjectNode smallInventory = (ObjectNode) covered.deepCopy();
     ((ObjectNode) smallInventory.path("coverage").path("traffic").path("geometry"))
         .set(
             "coordinates",
@@ -813,16 +813,16 @@ class EnvironmentTest {
                         List.of(129.159, 35.161),
                         List.of(129.159, 35.159)))));
     assertEquals("unknown", status(Environment.noise(smallInventory, hotel(), pastTrip, NOW)));
-    ObjectNode staleCoverage = covered.deepCopy();
+    ObjectNode staleCoverage = (ObjectNode) covered.deepCopy();
     ((ObjectNode) staleCoverage.path("coverage").path("traffic"))
         .put("verifiedAt", NOW.minusSeconds(7 * 3600).toString());
     assertEquals("unknown", status(Environment.noise(staleCoverage, hotel(), pastTrip, NOW)));
     assertEquals("unknown", status(Environment.noise(covered, hotel(), trip(), NOW)));
-    ObjectNode oneDirection = covered.deepCopy();
+    ObjectNode oneDirection = (ObjectNode) covered.deepCopy();
     ((ObjectNode) oneDirection.path("trafficObservations").get(0))
         .put("direction", "one_direction");
     assertEquals("unknown", status(Environment.noise(oneDirection, hotel(), pastTrip, NOW)));
-    ObjectNode speed = covered.deepCopy();
+    ObjectNode speed = (ObjectNode) covered.deepCopy();
     ((ObjectNode) speed.path("trafficObservations").get(0)).remove("vehicleCount");
     ((ObjectNode) speed.path("trafficObservations").get(0)).put("speedKph", 15);
     assertEquals("unknown", status(Environment.noise(speed, hotel(), pastTrip, NOW)));

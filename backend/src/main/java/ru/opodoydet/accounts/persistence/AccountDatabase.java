@@ -1,12 +1,12 @@
 package ru.opodoydet.accounts.persistence;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.node.ObjectNode;
 
 /** Separate connection and unit of work for account features. */
 public final class AccountDatabase implements AutoCloseable {

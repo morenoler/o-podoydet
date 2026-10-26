@@ -2,8 +2,6 @@ package ru.opodoydet.application;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sun.net.httpserver.HttpServer;
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -23,6 +21,8 @@ import org.junit.jupiter.api.io.TempDir;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.shared.Json;
 import ru.opodoydet.web.Api;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 class SearchConversationApiTest {
   @TempDir Path directory;
@@ -64,9 +64,23 @@ class SearchConversationApiTest {
               List.of(129.16, 35.16),
               "rooms",
               List.of(
-                  Json.obj("id", id + "-room", "name", "Test room", "capacity", 2, "demo", false,
-                      "evidenceStatus", "verified", "sourceUrl", "https://example.org/test-rooms",
-                      "quote", "Synthetic test room category", "obtainedAt", observed)),
+                  Json.obj(
+                      "id",
+                      id + "-room",
+                      "name",
+                      "Test room",
+                      "capacity",
+                      2,
+                      "demo",
+                      false,
+                      "evidenceStatus",
+                      "verified",
+                      "sourceUrl",
+                      "https://example.org/test-rooms",
+                      "quote",
+                      "Synthetic test room category",
+                      "obtainedAt",
+                      observed)),
               "route",
               null,
               "noise",
@@ -153,7 +167,7 @@ class SearchConversationApiTest {
       assertEquals(2, relaxed.path("results").size());
       assertFalse(relaxed.path("preferences").path(0).path("required").asBoolean());
 
-      ObjectNode withOldText = required.deepCopy();
+      ObjectNode withOldText = (ObjectNode) required.deepCopy();
       withOldText.put("text", "Обязательно окна во двор");
       JsonNode removed = say(api, withOldText, "Убери условие про двор").path("trip");
       for (int repeat = 0; repeat < 2; repeat++) {

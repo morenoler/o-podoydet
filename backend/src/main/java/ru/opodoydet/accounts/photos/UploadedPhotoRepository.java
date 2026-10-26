@@ -1,11 +1,11 @@
 package ru.opodoydet.accounts.photos;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.sql.SQLException;
 import java.time.Instant;
 import ru.opodoydet.accounts.AccountProblem;
 import ru.opodoydet.accounts.persistence.AccountDatabase;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /** Ownership and publication references are checked against the same account database. */
 public final class UploadedPhotoRepository {

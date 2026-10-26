@@ -1,7 +1,5 @@
 package ru.opodoydet.accounts.listings;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.*;
@@ -11,6 +9,8 @@ import ru.opodoydet.accounts.persistence.AccountDatabase;
 import ru.opodoydet.accounts.photos.UploadedPhotoRepository;
 import ru.opodoydet.accounts.search.SearchProfileRepository;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public final class ListingService {
   private final ListingRepository repository;

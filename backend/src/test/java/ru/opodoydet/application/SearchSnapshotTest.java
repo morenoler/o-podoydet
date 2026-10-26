@@ -2,8 +2,6 @@ package ru.opodoydet.application;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sun.net.httpserver.HttpServer;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
@@ -20,6 +18,8 @@ import org.junit.jupiter.api.Test;
 import ru.opodoydet.advisor.AdvisorService;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 class SearchSnapshotTest {
   private static ObjectNode seed(int capacity) {
@@ -176,7 +176,7 @@ class SearchSnapshotTest {
       assertThrows(
           IllegalArgumentException.class,
           () -> AdvisorService.checkedReport(context, invalidSelection));
-      ObjectNode changed = seed.deepCopy();
+      ObjectNode changed = (ObjectNode) seed.deepCopy();
       for (JsonNode hotel : changed.path("hotels"))
         ((ObjectNode) hotel.path("rooms").get(0)).put("capacity", 1);
       store.importSeed(changed);

@@ -1,10 +1,10 @@
 package ru.opodoydet.accounts.listings;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.sql.SQLException;
 import java.util.List;
 import ru.opodoydet.accounts.persistence.AccountDatabase;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.node.ObjectNode;
 
 public final class ListingRepository {
   private final AccountDatabase db;

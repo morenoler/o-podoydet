@@ -2,8 +2,6 @@ package ru.opodoydet.persistence;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sun.net.httpserver.HttpServer;
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -25,6 +23,8 @@ import ru.opodoydet.domain.Matching;
 import ru.opodoydet.domain.Validation;
 import ru.opodoydet.shared.Json;
 import ru.opodoydet.web.Api;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 class BackendTest {
   @TempDir Path temp;
@@ -690,7 +690,14 @@ class BackendTest {
                   HttpResponse.BodyHandlers.ofString());
       assertEquals(200, staticPage.statusCode());
       assertTrue(staticPage.body().contains("MVP"));
-      assertEquals(404, request(base, "GET", "/../pom.xml", null, null).code);
+      // Tomcat rejects traversal above the root before dispatching to the MVC application.
+      HttpResponse<String> traversal =
+          HttpClient.newHttpClient()
+              .send(
+                  HttpRequest.newBuilder(URI.create(base + "/../pom.xml")).GET().build(),
+                  HttpResponse.BodyHandlers.ofString());
+      assertEquals(400, traversal.statusCode());
+      assertFalse(traversal.body().contains("<project"));
     }
   }
 
@@ -772,7 +779,7 @@ class BackendTest {
                 "invalid",
                 NOW.plusSeconds(3600).toString(),
                 NOW.minusSeconds(7 * 3600).toString())) {
-          ObjectNode changed = item.deepCopy();
+          ObjectNode changed = (ObjectNode) item.deepCopy();
           ((ObjectNode) changed.path("airQuality")).put(field, value);
           Files.writeString(area, Json.write(Json.obj("assessments", List.of(changed))));
           assertEquals(

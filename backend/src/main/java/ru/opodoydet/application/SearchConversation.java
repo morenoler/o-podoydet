@@ -1,7 +1,5 @@
 package ru.opodoydet.application;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -12,6 +10,8 @@ import java.util.regex.Pattern;
 import ru.opodoydet.domain.Features;
 import ru.opodoydet.domain.Validation;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /** Conversation edits only catalog criteria. Matching still uses the regular search pipeline. */
 public final class SearchConversation {
@@ -209,13 +209,13 @@ public final class SearchConversation {
               + "» — "
               + (!enabled ? "убрано" : required ? "обязательно" : "желательно"));
     }
-    ObjectNode nextTrip = trip.deepCopy();
+    ObjectNode nextTrip = (ObjectNode) trip.deepCopy();
     nextTrip.set("preferences", Json.array(preferences.values()));
     nextTrip.set("preferenceOverrides", Json.array(overrides.values()));
     String reply =
         descriptions.isEmpty()
             ? "Не удалось определить изменение условий. Напишите, например: «рядом с пляжем»,"
-                  + " «обязательно окна во двор» или «убери условие про шум»."
+                + " «обязательно окна во двор» или «убери условие про шум»."
             : "Учтено: " + String.join("; ", descriptions) + ".";
     if (!edits.path("unhandled").isEmpty()) {
       reply +=

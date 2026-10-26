@@ -2,8 +2,6 @@ package ru.opodoydet.application;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Instant;
@@ -16,6 +14,8 @@ import org.junit.jupiter.api.io.TempDir;
 import ru.opodoydet.domain.Evidence;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.shared.Json;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 class RoomSearchTest {
   @TempDir Path directory;
