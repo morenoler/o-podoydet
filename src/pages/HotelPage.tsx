@@ -24,6 +24,7 @@ import { CriterionLine } from "../features/hotels/components/CriterionLine";
 import { dateFull } from "../shared/lib/date";
 import { AreaPanel } from "../features/area/components/AreaPanel";
 import { FactEvidence } from "../features/hotels/components/FactEvidence";
+import { accommodationPath } from "../shared/lib/accommodation";
 
 export function HotelPage() {
   const { id } = useParams();
@@ -97,7 +98,7 @@ export function HotelPage() {
   const { hotel, facts } = data;
   if (!ranked)
     return (
-      <HotelCatalogPreview hotel={hotel} facts={facts} catalog={catalog} />
+      <HotelCatalogPreview hotel={hotel} facts={facts} catalog={catalog} selectedRoomId={requestedRoom} />
     );
   const labFixture =
     import.meta.env.VITE_LAB_MODE === "true" &&
@@ -109,6 +110,10 @@ export function HotelPage() {
     ),
   );
   const hasOwnerCriteria = !!ranked.ownerCriteria?.length;
+  const allConditionsMatch = room.status === "fits" && room.capacityEvidenceStatus === "match"
+    && !room.capacityAssumed && room.room.evidenceStatus === "verified"
+    && [...selectedCriteria, ...(ranked.ownerCriteria || [])].every((criterion) =>
+      criterion.status === "match" && criterion.evidenceStatus === "match" && !criterion.assumed);
   return (
     <div className="page hotel-detail-page">
       <Link to="/results" className="back-link">
@@ -124,7 +129,8 @@ export function HotelPage() {
       />
       <div className="detail-heading">
         <div>
-          <h1>{hotel.name}</h1>
+          <h1>{room.room.name}</h1>
+          <p className="hotel-detail-hotel-name">{hotel.name}</p>
           <p className="address">
             <MapPin size={16} />
             {lodgingLabel(hotel)} · {hotel.address}
@@ -137,9 +143,9 @@ export function HotelPage() {
           <FavoriteButton
             label
             item={{
-              id: hotel.id,
-              name: hotel.name,
-              path: `/hotels/${hotel.id}`,
+              id: `${hotel.id}::${room.room.id}`,
+              name: `${room.room.name} · ${hotel.name}`,
+              path: accommodationPath(hotel, room.room.id),
               hotelId: hotel.id,
               photos: hotel.photos,
               address: hotel.address,
@@ -158,6 +164,9 @@ export function HotelPage() {
         </div>
       </div>
       <HotelPhotoGallery hotel={hotel} />
+      {requestedRoom && !ranked.rooms.some((entry) => entry.room.id === requestedRoom) && (
+        <Notice>Сведения о запрошенной категории больше не доступны. Ниже показана другая категория; проверьте её условия заново.</Notice>
+      )}
       {labFixture ? (
         <Notice>
           <strong>Вымышленное тестовое объявление.</strong>{" "}
@@ -261,9 +270,9 @@ export function HotelPage() {
           )}
         </section>
         <aside className="room-panel">
-          <h2>Проверим один номер</h2>
+          <h2>{allConditionsMatch ? "Этот номер подходит по всем условиям" : "Условия выбранного номера"}</h2>
           <p>
-            Сильные стороны разных категорий не складываются в один вариант.
+            Все пожелания проверяются в одной категории. Наличие конкретного номера на даты нужно уточнить у отеля.
           </p>
           <label className="field">
             <span>Категория номера</span>
@@ -336,9 +345,8 @@ export function HotelPage() {
             </div>
           </div>
           <p>
-            Эти условия одинаковы для всех номеров отеля. «Обязательно» влияет
-            на допуск к подбору; остальные пожелания влияют на порядок
-            вариантов.
+            Эти условия одинаковы для всех номеров отеля. В основной список
+            рекомендаций попадают категории, где совпали все выбранные пожелания.
           </p>
           {ranked.warnings?.map((text, i) => (
             <Notice key={`w${i}`}>{text}</Notice>

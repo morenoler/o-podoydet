@@ -1,24 +1,26 @@
 import { Link } from "react-router-dom";
 import { MapPin, ArrowRight } from "lucide-react";
-import type { Dataset, Hotel } from "../../../shared/types";
+import type { Dataset, Hotel, Room } from "../../../shared/types";
 import { GeoMap } from "../map/components/GeoMap";
 import { accommodationPath } from "../../shared/lib/accommodation";
 
 export function SearchMapPanel({
   catalog,
   selected,
+  selectedRoom,
   plotted,
   onSelect,
 }: {
   catalog: Dataset | null;
   selected?: Hotel;
+  selectedRoom?: Room;
   plotted: Hotel[];
   onSelect: (hotel: Hotel) => void;
 }) {
   const selectedMap =
     selected?.coordinates && !selected.synthetic ? selected : undefined;
   return (
-    <aside className="search-map-section" aria-label="Карта найденных отелей">
+    <aside className="search-map-section" aria-label="Расположение найденных номеров">
       {catalog && (
         <div className="search-map-shell">
           <GeoMap
@@ -33,7 +35,8 @@ export function SearchMapPanel({
                 <MapPin size={24} aria-hidden="true" />
               </span>
               <div>
-                <strong>{selected.name}</strong>
+                <strong>{selectedRoom?.name || selected.name}</strong>
+                {selectedRoom && <p>{selected.name}</p>}
                 <p>
                   {selected.synthetic
                     ? "Вымышленный пример · координаты условные"
@@ -45,8 +48,8 @@ export function SearchMapPanel({
                 </p>
               </div>
               <Link
-                to={accommodationPath(selected)}
-                aria-label={`Подробнее: ${selected.name}`}
+                to={accommodationPath(selected, selectedRoom?.id)}
+                aria-label={`Подробнее: ${selectedRoom ? `${selectedRoom.name}, ` : ""}${selected.name}`}
               >
                 <ArrowRight size={24} aria-hidden="true" />
               </Link>
@@ -56,7 +59,7 @@ export function SearchMapPanel({
       )}
       <p className="search-map-note">
         Сохранённая карта OpenStreetMap. Вход и маршрут приближённые. На карте —
-        варианты из текущего списка с известными координатами.
+        отели выбранных категорий номеров с известными координатами.
       </p>
     </aside>
   );

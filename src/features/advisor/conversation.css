@@ -35,6 +35,11 @@
 .conversation-message.is-assistant { margin-right: auto; border-radius: 20px 20px 20px 5px; background: #fff; }
 .conversation-message.is-assistant .conversation-author { color: var(--chat-muted); }
 .conversation-pending { font-size: 14px; color: var(--chat-muted); margin: 20px 0 0; }
+.conversation-room-recommendation { display: grid; gap: 7px; margin-top: 18px; padding: 16px; border: 1px solid #abd5b9; border-radius: 18px; background: #e5f3ea; }
+.conversation-room-recommendation p { margin: 0; color: #31583f; font-size: 12px; }
+.conversation-room-recommendation a { font-size: 17px; font-weight: 700; color: #245e3b; overflow-wrap: anywhere; }
+.conversation-room-recommendation span { font-size: 13px; }
+.conversation-room-recommendation small { color: var(--chat-muted); font-size: 12px; line-height: 1.5; }
 .conversation-bottom { flex-shrink: 0; padding: 12px 18px 18px; }
 .conversation-search-state { display: flex; align-items: flex-start; gap: 6px; margin: 0 4px 12px; font-size: 12px; line-height: 1.45; color: var(--chat-muted); }
 .conversation-search-state svg { flex-shrink: 0; margin-top: 1px; }

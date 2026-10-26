@@ -173,6 +173,14 @@ export interface HotelMatch {
   mode?: "rules" | "llm";
   ownerCriteria?: OwnerCriterion[];
 }
+/** One named category; every criterion is evaluated against this same room. */
+export interface RoomRecommendation {
+  id: string;
+  hotel: Hotel;
+  room: RoomMatch;
+  ownerCriteria?: OwnerCriterion[];
+  source: "verified" | "owner" | "demo";
+}
 export interface OwnerCriterion {
   id: string;
   feature: "floor" | "window_direction";
@@ -191,6 +199,9 @@ export interface Trace {
 }
 export interface SearchResult {
   searchId: string;
+  roomRecommendations: RoomRecommendation[];
+  roomAlternatives: RoomRecommendation[];
+  unverifiedHotelCount: number;
   results: HotelMatch[];
   excluded: HotelMatch[];
   preferences: Preference[];

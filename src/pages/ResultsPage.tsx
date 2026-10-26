@@ -23,6 +23,7 @@ import { SearchDiagnostics } from "../features/search/SearchDiagnostics";
 import { SearchMapPanel } from "../features/search/SearchMapPanel";
 import { SearchFilters } from "../features/search/SearchFilters";
 import { canSearch } from "../features/search/searchTrip";
+import { catalogRooms, recommendationItem, recommendationMatch, roomHotels } from "../features/search/roomResults";
 import "../features/search/search.css";
 
 export function ResultsPage() {
@@ -47,6 +48,7 @@ export function ResultsPage() {
   const [mapView, setMapView] = useState(false);
   const [selectedId, setSelectedId] = useState("");
   const [limit, setLimit] = useState(8);
+  const [alternativeLimit, setAlternativeLimit] = useState(4);
   const [sort, setSort] = useState("recommended");
   const validTrip = canSearch(trip);
   useEffect(() => {
@@ -54,6 +56,7 @@ export function ResultsPage() {
     setData(null);
     setError("");
     setLimit(8);
+    setAlternativeLimit(4);
     setCompare([]);
     setShowCompare(false);
     if (!validTrip) {
@@ -78,32 +81,32 @@ export function ResultsPage() {
       active = false;
     };
   }, [trip, revision, validTrip]);
-  const hotels = useMemo(() => {
+  const rooms = useMemo(() => {
     const items = data
-      ? data.results.map((result) => result.hotel)
+      ? data.roomRecommendations.map(recommendationItem)
       : validTrip
         ? []
-        : [...(catalog?.hotels || [])];
+        : catalogRooms(catalog);
     if (sort === "distance")
       return [...items].sort(
-        (a, b) => (a.route?.meters ?? Infinity) - (b.route?.meters ?? Infinity),
+        (a, b) => (a.hotel.route?.meters ?? Infinity) - (b.hotel.route?.meters ?? Infinity),
       );
     if (sort === "name")
-      return [...items].sort((a, b) => a.name.localeCompare(b.name, "ru"));
+      return [...items].sort((a, b) => a.room.name.localeCompare(b.room.name, "ru") || a.hotel.name.localeCompare(b.hotel.name, "ru"));
     if (!data)
       return [...items].sort(
         (a, b) =>
-          Number(!!accommodationPhotos(b.id, b.photos).length) -
-          Number(!!accommodationPhotos(a.id, a.photos).length),
+          Number(!!accommodationPhotos(b.hotel.id, b.hotel.photos).length) -
+          Number(!!accommodationPhotos(a.hotel.id, a.hotel.photos).length),
       );
     return items;
   }, [data, catalog, sort, validTrip]);
-  const visible = hotels.slice(0, limit);
+  const visible = rooms.slice(0, limit);
+  const alternatives = data?.roomAlternatives || [];
+  const selectable = [...visible, ...alternatives.slice(0, alternativeLimit).map(recommendationItem)];
   const selected =
-    visible.find((hotel) => hotel.id === selectedId) || visible[0];
-  const plotted = visible.filter(
-    (hotel) => hotel.coordinates && !hotel.synthetic,
-  );
+    selectable.find((item) => item.id === selectedId) || visible[0];
+  const plotted = roomHotels(selected && !visible.some((item) => item.id === selected.id) ? [...visible, selected] : visible);
   function submit(nextTrip: Trip) {
     if (JSON.stringify(nextTrip) === JSON.stringify(trip)) refresh();
     else setTrip(nextTrip);
@@ -126,7 +129,8 @@ export function ResultsPage() {
     setTrip(editPreferences(trip, preferences, effectivePreferences));
   }
   function selectHotel(hotel: Hotel) {
-    setSelectedId(hotel.id);
+    if (selected?.hotel.id === hotel.id) return;
+    setSelectedId(selectable.find((item) => item.hotel.id === hotel.id)?.id || "");
   }
   const sea = (data?.preferences || trip.preferences).some(
     (value) => value.feature === "beach_walk",
@@ -207,20 +211,20 @@ export function ResultsPage() {
           onAnalyze={() => setAdvisor(true)}
           mapView={mapView}
           onMapViewChange={setMapView}
-          map={<SearchMapPanel catalog={catalog} selected={selected} plotted={plotted} onSelect={selectHotel} />}
+          map={<SearchMapPanel catalog={catalog} selected={selected?.hotel} selectedRoom={selected?.room} plotted={plotted} onSelect={selectHotel} />}
         />
-        <section className="search-list-section" aria-label="Список отелей">
+        <section className="search-list-section" aria-label="Список номеров">
           <div className="search-results-heading">
             <div>
               <h1>
-                {sea && validTrip ? "Отели у моря в Пусане" : "Отели в Пусане"}
+                {sea && validTrip ? "Номера у моря в Пусане" : "Номера в Пусане"}
               </h1>
               <p role="status" aria-live="polite">
                 {loading
-                  ? "Подбираем варианты…"
+                  ? "Подбираем номера…"
                   : validTrip
-                    ? `${hotels.length} вариантов по вашим условиям`
-                    : `${hotels.length} вариантов в каталоге Хэундэ`}
+                    ? `${rooms.length} категорий номеров соответствуют всем критериям`
+                    : `${rooms.length} категорий номеров в каталоге Хэундэ`}
               </p>
             </div>
             <label className="search-sort">
@@ -230,16 +234,16 @@ export function ResultsPage() {
                 onChange={(event) => setSort(event.target.value)}
               >
                 <option value="recommended">
-                  {validTrip ? "Подходящие" : "С фотографиями"}
+                  {validTrip ? "По совпадению условий" : "С фотографиями отеля"}
                 </option>
                 <option value="distance">Ближе к пляжу</option>
-                <option value="name">По названию</option>
+                <option value="name">По названию номера</option>
               </select>
             </label>
           </div>
           {!validTrip && (
             <p className="search-preview-prompt">
-              Выберите даты и гостей для подбора по вашим условиям.
+              Выберите даты и гостей, чтобы проверить все критерии в одной категории номера.
             </p>
           )}
           {loading || (!catalog && !catalogError) ? (
@@ -258,13 +262,13 @@ export function ResultsPage() {
                   Исправить пожелания
                 </button>
               )}
-              {!hotels.length && !error && validTrip && (
+              {!rooms.length && !error && validTrip && (
                 <div className="search-empty">
                   <Search size={30} aria-hidden="true" />
-                  <h2>Точного совпадения пока нет</h2>
+                  <h2>Номер под все критерии пока не найден</h2>
                   <p>
-                    Обязательные условия сохранены. Помощник объяснит, что
-                    исключило варианты и какие сведения стоит уточнить.
+                    Для рекомендации все условия должны совпасть в одном номере.
+                    Пожелания сохранены; помощник покажет, каких сведений не хватает.
                   </p>
                   <button
                     className="button primary"
@@ -281,39 +285,57 @@ export function ResultsPage() {
                 </div>
               )}
               <div className="search-hotel-list">
-                {visible.map((hotel) => (
+                {visible.map((item) => (
                   <HotelCard
-                    key={hotel.id}
-                    hotel={hotel}
-                    match={data?.results.find(
-                      (result) => result.hotel.id === hotel.id,
-                    )}
-                    selected={hotel.id === selected?.id}
-                    onSelect={() => selectHotel(hotel)}
+                    key={item.id}
+                    hotel={item.hotel}
+                    previewRoom={item.room}
+                    roomRecommendation={item.recommendation}
+                    selected={item.id === selected?.id}
+                    onSelect={() => setSelectedId(item.id)}
                     onShowMap={() => {
-                      selectHotel(hotel);
+                      setSelectedId(item.id);
                       setMapView(true);
                       document.getElementById("search-side-panel")?.scrollIntoView({ block: "nearest" });
                     }}
-                    compared={compare.includes(hotel.id)}
-                    onCompare={data ? () => toggleCompare(hotel.id) : undefined}
+                    compared={compare.includes(item.id)}
+                    onCompare={data ? () => toggleCompare(item.id) : undefined}
                     compareDisabled={
-                      compare.length >= 3 && !compare.includes(hotel.id)
+                      compare.length >= 3 && !compare.includes(item.id)
                     }
                   />
                 ))}
               </div>
-              {hotels.length > limit && (
+              {rooms.length > limit && (
                 <button
                   className="button secondary search-load-more"
                   onClick={() => setLimit((value) => value + 8)}
                 >
-                  Показать ещё {Math.min(8, hotels.length - limit)} вариантов
+                  Показать ещё {Math.min(8, rooms.length - limit)} категорий номеров
                 </button>
               )}
+              {!!alternatives.length && (
+                <details className="search-room-alternatives">
+                  <summary>Номера с несовпадениями или неполными данными ({alternatives.length})</summary>
+                  <p>Эти категории не соответствуют всем критериям. Ниже видно, что не совпало или требует уточнения.</p>
+                  <div className="search-hotel-list">
+                    {alternatives.slice(0, alternativeLimit).map((item) => <HotelCard
+                      key={item.id} roomRecommendation={item} alternative
+                      selected={item.id === selected?.id}
+                      onSelect={() => setSelectedId(item.id)}
+                      onShowMap={() => {
+                        setSelectedId(item.id);
+                        setMapView(true);
+                        document.getElementById("search-side-panel")?.scrollIntoView({ block: "nearest" });
+                      }}
+                    />)}
+                  </div>
+                  {alternatives.length > alternativeLimit && <button type="button" className="button secondary search-load-more" onClick={() => setAlternativeLimit((value) => value + 4)}>Показать ещё {Math.min(4, alternatives.length - alternativeLimit)} категорий</button>}
+                </details>
+              )}
               <p className="search-data-note">
-                Условия и наличие уточняйте у отельера. Источники и
-                предположения указаны в подробностях.
+                Подбираем конкретную категорию номера. Физический номер комнаты и наличие на даты уточняйте у отельера.
+                {!!data?.unverifiedHotelCount && ` У ${data.unverifiedHotelCount} объектов нет подтверждённых категорий для рекомендации.`}
                 {catalog?.evidencePolicy === "demo" &&
                   " Варианты «ДЕМО» вымышлены."}
               </p>
@@ -340,7 +362,7 @@ export function ResultsPage() {
       {compare.length > 0 && (
         <div className="compare-tray search-compare-tray" role="status">
           <span>
-            <strong>{compare.length} из 3</strong> для сравнения
+            <strong>{compare.length} из 3</strong> номеров для сравнения
           </span>
           <button
             className="button primary"
@@ -361,9 +383,7 @@ export function ResultsPage() {
       {showCompare && data && (
         <CompareDialog
           trip={trip}
-          matches={[...data.results, ...data.excluded].filter((match) =>
-            compare.includes(match.hotel.id),
-          )}
+          matches={data.roomRecommendations.filter((item) => compare.includes(item.id)).map(recommendationMatch)}
           onClose={() => setShowCompare(false)}
         />
       )}

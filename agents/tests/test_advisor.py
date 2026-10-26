@@ -73,6 +73,18 @@ class AdvisorTests(unittest.TestCase):
         self.assertEqual(result["report"]["outcome"], "clarification_needed")
         self.assertEqual(result["report"]["candidateIds"], [])
 
+    def test_room_scope_requires_all_optional_conditions_and_evidence(self):
+        for change in ({"status": "mismatch"}, {"evidenceStatus": "unknown"}, {"assumed": True}):
+            result = self.engine().execute(context(matchingScope="rooms", candidates=[
+                candidate(criteria=[evidence(required=False, **change)])]))
+            self.assertEqual(result["report"]["outcome"], "clarification_needed")
+            self.assertEqual(result["report"]["candidateIds"], [])
+
+    def test_room_scope_summary_counts_room_categories(self):
+        result = self.engine().execute(context(matchingScope="rooms"))
+        self.assertIn("категорий номера", result["report"]["summary"])
+        self.assertIn("все выбранные условия", result["report"]["summary"])
+
     def test_preference_conflict_suppresses_recommendations_and_model_calls(self):
         model = FakeModel()
         result = self.engine("local", model).execute(context(conflicts=["Противоречие пожеланий"]))

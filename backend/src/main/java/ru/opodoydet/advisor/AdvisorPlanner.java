@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import ru.opodoydet.application.SearchExtension;
 import ru.opodoydet.domain.Features;
 import ru.opodoydet.domain.Matching;
+import ru.opodoydet.domain.RoomRecommendations;
 import ru.opodoydet.shared.Json;
 
 /** All eligibility and counterfactual counts come from the ordinary matching engine. */
@@ -38,20 +39,54 @@ public final class AdvisorPlanner {
       Map<String, Map<String, JsonNode>> environments,
       String policy,
       SearchExtension.Snapshot extension) {
+    return plan(trip, interpreted, hotels, facts, now, environments, policy, extension, false);
+  }
+
+  /** Product recommendations require every selected condition in the same concrete room. */
+  public static ObjectNode planRooms(
+      JsonNode trip,
+      ObjectNode interpreted,
+      List<JsonNode> hotels,
+      List<JsonNode> facts,
+      Instant now,
+      Map<String, Map<String, JsonNode>> environments,
+      String policy,
+      SearchExtension.Snapshot extension) {
+    return plan(trip, interpreted, hotels, facts, now, environments, policy, extension, true);
+  }
+
+  private static ObjectNode plan(
+      JsonNode trip,
+      ObjectNode interpreted,
+      List<JsonNode> hotels,
+      List<JsonNode> facts,
+      Instant now,
+      Map<String, Map<String, JsonNode>> environments,
+      String policy,
+      SearchExtension.Snapshot extension,
+      boolean exactRooms) {
     List<JsonNode> preferences = Json.list(interpreted.path("preferences"));
     List<JsonNode> ranked =
         extension.apply(
             Matching.rank(hotels, facts, preferences, trip, now, environments, policy),
             preferences);
     boolean conflict = !interpreted.path("conflicts").isEmpty();
+    List<JsonNode> eligible = exactRooms ? roomMatches(ranked, now, policy) : ranked;
     List<JsonNode> fit =
-        conflict ? List.of() : ranked.stream().filter(AdvisorPlanner::fits).toList();
+        conflict ? List.of() : eligible.stream().filter(AdvisorPlanner::fits).toList();
     List<JsonNode> candidates =
-        ranked.stream()
+        eligible.stream()
             .sorted(
                 (a, b) -> {
-                  if (fits(a) || fits(b)) return Boolean.compare(fits(b), fits(a));
-                  int blockers = Integer.compare(blockers(a), blockers(b));
+                  if (fits(a) || fits(b)) {
+                    int eligibility = Boolean.compare(fits(b), fits(a));
+                    return eligibility != 0 || !exactRooms
+                        ? eligibility
+                        : Integer.compare(
+                            b.path("best").path("score").asInt(),
+                            a.path("best").path("score").asInt());
+                  }
+                  int blockers = Integer.compare(blockers(a, exactRooms), blockers(b, exactRooms));
                   return blockers != 0 ? blockers : Integer.compare(uncertainty(a), uncertainty(b));
                 })
             .limit(6)
@@ -67,7 +102,7 @@ public final class AdvisorPlanner {
       for (JsonNode preference : preferences) {
         String feature = Json.str(preference, "feature"), label = Features.get(feature).label();
         boolean required = preference.path("required").asBoolean();
-        if (!fit.isEmpty() && !required) {
+        if (!exactRooms && !fit.isEmpty() && !required) {
           List<JsonNode> ordered = new ArrayList<>(fit);
           ordered.sort(Comparator.comparingInt(item -> optionalPriority(item, feature)));
           scenarios.add(
@@ -89,24 +124,24 @@ public final class AdvisorPlanner {
                   "explanation",
                   "Меняется только порядок уже подходящих вариантов. Обязательные условия"
                       + " сохранены."));
-        } else if (fit.isEmpty() && required) {
+        } else if (fit.isEmpty() && (exactRooms || required)) {
           List<JsonNode> changed =
               preferences.stream()
+                  .filter(p -> !exactRooms || !Json.str(p, "feature").equals(feature))
                   .map(
                       p -> {
                         ObjectNode copy = p.deepCopy();
-                        if (Json.str(p, "feature").equals(feature)) copy.put("required", false);
+                        if (!exactRooms && Json.str(p, "feature").equals(feature))
+                          copy.put("required", false);
                         return (JsonNode) copy;
                       })
                   .toList();
+          List<JsonNode> changedRanked =
+              extension.apply(
+                  Matching.rank(hotels, facts, changed, trip, now, environments, policy), changed);
           List<JsonNode> possible =
-              extension
-                  .apply(
-                      Matching.rank(hotels, facts, changed, trip, now, environments, policy),
-                      changed)
-                  .stream()
-                  .filter(AdvisorPlanner::fits)
-                  .toList();
+              (exactRooms ? roomMatches(changedRanked, now, policy) : changedRanked)
+                  .stream().filter(AdvisorPlanner::fits).toList();
           scenarios.add(
               Json.obj(
                   "id",
@@ -114,7 +149,7 @@ public final class AdvisorPlanner {
                   "feature",
                   feature,
                   "label",
-                  "Если сделать желательным: " + label,
+                  (exactRooms ? "Если убрать пожелание: " : "Если сделать желательным: ") + label,
                   "kind",
                   "requires_consent",
                   "count",
@@ -124,13 +159,22 @@ public final class AdvisorPlanner {
                   "candidateIds",
                   existingIds(possible, ids),
                   "explanation",
-                  "Только предварительный расчёт. Требуется ваше согласие изменить одно"
-                      + " обязательное условие. Гости, даты, вместимость и остальные требования"
-                      + " сохранены; наличие не проверено."));
+                  exactRooms
+                      ? "Только предварительный расчёт: это пожелание исключено из проверки."
+                          + " Все остальные условия должны совпасть в одном конкретном номере."
+                          + " Пожелания не изменены; решение об изменении остаётся за вами."
+                          + " Гости, даты и вместимость сохранены; наличие не проверено."
+                      : "Только предварительный расчёт. Требуется ваше согласие изменить одно"
+                          + " обязательное условие. Гости, даты, вместимость и остальные требования"
+                          + " сохранены; наличие не проверено."));
         }
       }
       if (fit.isEmpty() && scenarios.stream().noneMatch(s -> s.path("gainedCount").asInt() > 0))
-        warnings.add("Смягчение одного обязательного пожелания не даёт подходящих вариантов.");
+        warnings.add(
+            exactRooms
+                ? "Удаление одного пожелания не даёт номера, подходящего по всем остальным"
+                      + " условиям."
+                : "Смягчение одного обязательного пожелания не даёт подходящих вариантов.");
     }
     List<JsonNode> questions = new ArrayList<>();
     if (conflict) {
@@ -150,7 +194,7 @@ public final class AdvisorPlanner {
       for (JsonNode candidate : candidates) {
         for (JsonNode evidence : candidate.path("criteria")) {
           if (questions.size() >= 3
-              || !evidence.path("required").asBoolean()
+              || (!exactRooms && !evidence.path("required").asBoolean())
               || (!evidence.path("assumed").asBoolean()
                   && !Set.of("unknown", "stale", "conflict")
                       .contains(Json.str(evidence, "evidenceStatus")))) continue;
@@ -162,10 +206,15 @@ public final class AdvisorPlanner {
                   "id",
                   "check-" + Json.str(evidence, "id"),
                   "text",
-                  "Пожелание «"
-                      + Json.str(evidence, "label")
-                      + "» остаётся обязательным, пока нет подтверждения, или вы готовы"
-                      + " пересмотреть его в настройках пожеланий?",
+                  exactRooms
+                      ? "Для номера нужно подтвердить пожелание «"
+                          + Json.str(evidence, "label")
+                          + "». Уточнить сведения у отеля или пересмотреть это условие в"
+                          + " пожеланиях?"
+                      : "Пожелание «"
+                          + Json.str(evidence, "label")
+                          + "» остаётся обязательным, пока нет подтверждения, или вы готовы"
+                          + " пересмотреть его в настройках пожеланий?",
                   "reason",
                   Json.str(candidate, "hotelName")
                       + ", "
@@ -199,6 +248,7 @@ public final class AdvisorPlanner {
             questions,
             "generatedAt",
             now.toString());
+    if (exactRooms) context.put("matchingScope", "rooms");
     // Lab diagnostics reuse this exact rank result, including cases outside the model shortlist.
     List<JsonNode> testCases =
         ranked.stream()
@@ -213,18 +263,42 @@ public final class AdvisorPlanner {
     return Json.str(match.path("best"), "status").equals("fits");
   }
 
-  private static int blockers(JsonNode match) {
+  private static List<JsonNode> roomMatches(List<JsonNode> ranked, Instant now, String policy) {
+    Set<String> exactIds =
+        RoomRecommendations.select(ranked, now, policy).recommendations().stream()
+            .map(item -> Json.str(item, "id"))
+            .collect(Collectors.toSet());
+    List<JsonNode> rooms = new ArrayList<>();
+    for (JsonNode match : ranked) {
+      for (JsonNode room : match.path("rooms")) {
+        if (!RoomRecommendations.concrete(match.path("hotel"), room.path("room"), now, policy))
+          continue;
+        ObjectNode item = match.deepCopy();
+        ObjectNode selected = room.deepCopy();
+        item.set("best", selected);
+        selected.put("status", exactIds.contains(id(item)) ? "fits" : "excluded");
+        rooms.add(item);
+      }
+    }
+    return rooms;
+  }
+
+  private static int blockers(JsonNode match, boolean exactRooms) {
     JsonNode room = match.path("best");
     return (Json.str(room, "capacityStatus").equals("mismatch") ? 1 : 0)
         + (int)
             Json.list(room.path("criteria")).stream()
                 .filter(
-                    c -> c.path("required").asBoolean() && Json.str(c, "status").equals("mismatch"))
+                    c ->
+                        (exactRooms || c.path("required").asBoolean())
+                            && Json.str(c, "status").equals("mismatch"))
                 .count()
         + (int)
             Json.list(match.path("ownerCriteria")).stream()
                 .filter(
-                    c -> c.path("required").asBoolean() && Json.str(c, "status").equals("mismatch"))
+                    c ->
+                        (exactRooms || c.path("required").asBoolean())
+                            && Json.str(c, "status").equals("mismatch"))
                 .count();
   }
 

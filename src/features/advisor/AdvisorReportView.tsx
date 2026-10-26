@@ -59,6 +59,7 @@ function Evidence({ evidence }: { evidence: AdvisorEvidence }) {
 export function AdvisorReportView({ run }: { run: AdvisorRun }) {
   const { report, context } = run;
   if (!report) return null;
+  const exactRooms = context.matchingScope === "rooms";
   const needsClarification = report.outcome === "clarification_needed";
   const noMatches =
     !needsClarification &&
@@ -81,7 +82,9 @@ export function AdvisorReportView({ run }: { run: AdvisorRun }) {
           {needsClarification
             ? "Сначала стоит уточнить пожелание"
             : noMatches
-              ? "При сохранении обязательных условий рекомендовать отель не могу"
+              ? exactRooms
+                ? "Номер, подходящий по всем условиям, пока не найден"
+                : "При сохранении обязательных условий рекомендовать номер не могу"
               : "С чего начать выбор"}
         </h3>
         <p>{report.summary}</p>
@@ -91,7 +94,8 @@ export function AdvisorReportView({ run }: { run: AdvisorRun }) {
         {noMatches && (
           <p className="advisor-muted">
             Отсутствие подтверждающих данных не означает, что отель или район
-            плохие. Обязательные условия остаются в силе.
+            плохие. {exactRooms ? "Все выбранные" : "Обязательные"} условия
+            остаются в силе.
           </p>
         )}
       </div>
@@ -112,20 +116,24 @@ export function AdvisorReportView({ run }: { run: AdvisorRun }) {
               (evidence) =>
                 cautionIds.has(evidence.id) ||
                 evidence.assumed ||
-                (evidence.required && evidence.status === "mismatch"),
+                ((exactRooms || evidence.required) &&
+                  evidence.status === "mismatch"),
             );
             return (
               <article className="advisor-candidate" key={candidate.id}>
                 <div className="advisor-candidate-heading">
                   <div>
                     <Link
-                      to={accommodationPath({ id: candidate.hotelId })}
+                      to={accommodationPath(
+                        { id: candidate.hotelId },
+                        candidate.roomId,
+                      )}
                       className="advisor-hotel-link"
                     >
-                      {candidate.hotelName}
+                      {candidate.roomName}
                       <ArrowRight size={16} aria-hidden="true" />
                     </Link>
-                    <p className="advisor-muted">{candidate.roomName}</p>
+                    <p className="advisor-muted">{candidate.hotelName}</p>
                     {accountListingId({ id: candidate.hotelId }) && (
                       <p className="advisor-muted">
                         Сведения отельера; независимая проверка не проведена.
@@ -140,7 +148,9 @@ export function AdvisorReportView({ run }: { run: AdvisorRun }) {
                     }
                   >
                     {candidate.status === "fits"
-                      ? "Прошёл текущие условия"
+                      ? exactRooms
+                        ? "Совпали все условия"
+                        : "Прошёл текущие условия"
                       : "Не подходит сейчас"}
                   </span>
                 </div>
@@ -174,7 +184,11 @@ export function AdvisorReportView({ run }: { run: AdvisorRun }) {
           className="advisor-scenarios"
           aria-label="Предварительные варианты изменения пожеланий"
         >
-          <h4>Что изменится при другом приоритете</h4>
+          <h4>
+            {exactRooms
+              ? "Что изменится без одного пожелания"
+              : "Что изменится при другом приоритете"}
+          </h4>
           <p className="advisor-muted">
             Это предварительный расчёт. Ваши пожелания ещё не изменены.
           </p>
@@ -182,7 +196,9 @@ export function AdvisorReportView({ run }: { run: AdvisorRun }) {
             <article className="advisor-scenario" key={scenario.id}>
               <span className="advisor-scenario-kind">
                 {scenario.kind === "requires_consent"
-                  ? "Только если вы решите изменить обязательное условие"
+                  ? exactRooms
+                    ? "Только если вы решите убрать это пожелание"
+                    : "Только если вы решите изменить обязательное условие"
                   : "Изменение приоритета желательного условия"}
               </span>
               <h5>{scenario.label}</h5>

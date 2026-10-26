@@ -42,6 +42,7 @@ export interface AdvisorQuestion {
 }
 /** All facts and scenario counts originate from the Java matching engine. */
 export interface AdvisorContext {
+  matchingScope?: "rooms";
   searchId: string;
   trip: Trip;
   preferences: Preference[];

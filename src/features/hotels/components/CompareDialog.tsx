@@ -44,7 +44,7 @@ export function CompareDialog({
         <div>
           <h2 id="compare-title">Сравним детали</h2>
           <p>
-            Одна категория номера в каждом отеле. Для воздуха и шума показываем
+            Сравниваем выбранные категории номеров. Для воздуха и шума показываем
             доступные данные и ограничения оценки.
           </p>
           <p className="muted">
@@ -66,7 +66,7 @@ export function CompareDialog({
         }}
       >
         {matches.map((m) => (
-          <section key={m.hotel.id}>
+          <section key={`${m.hotel.id}::${m.best.room.id}`}>
             <MatchBadge match={m} />
             {(m.best.criteria.length > 0 || !!m.ownerCriteria?.length) && (
               <p className="muted">
@@ -77,9 +77,8 @@ export function CompareDialog({
                 из {m.best.criteria.length + (m.ownerCriteria?.length || 0)}
               </p>
             )}
-            <h3>{m.hotel.name}</h3>
-            <p>{lodgingLabel(m.hotel)}</p>
-            <p>{m.best.room.name}</p>
+            <h3>{m.best.room.name}</h3>
+            <p>{m.hotel.name} · {lodgingLabel(m.hotel)}</p>
             {accountListingId(m.hotel) && (
               <p className="hotel-owner-source">
                 Сведения отельера. Независимая проверка не проведена.

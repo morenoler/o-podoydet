@@ -30,7 +30,7 @@ export function AdvisorDrawer({
           key={`${advisorTripKey(trip)}:${result.searchId}`}
           trip={trip}
           searchId={result.searchId}
-          noMatches={!result.results.length}
+          noMatches={!result.roomRecommendations.length}
           needsClarification={!!result.conflicts.length}
           onRefreshSearch={onRefresh}
         />

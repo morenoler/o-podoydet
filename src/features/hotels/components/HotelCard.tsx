@@ -1,4 +1,4 @@
-import type { Dataset, Hotel, HotelMatch } from "../../../../shared/types";
+import type { Dataset, Hotel, HotelMatch, Room, RoomRecommendation } from "../../../../shared/types";
 import { Link } from "react-router-dom";
 import {
   Check,
@@ -16,9 +16,13 @@ import { AccommodationPhoto } from "../../../shared/ui/AccommodationPhoto";
 import { FavoriteButton } from "../../favorites/FavoriteButton";
 import { features } from "../../../../shared/features";
 import { directionLabels } from "../../account/format";
+import { recommendationMatch } from "../../search/roomResults";
 
 export function HotelCard({
-  match,
+  match: hotelMatch,
+  roomRecommendation,
+  previewRoom,
+  alternative = false,
   hotel: previewHotel,
   compared = false,
   onCompare,
@@ -28,6 +32,9 @@ export function HotelCard({
   onShowMap,
 }: {
   match?: HotelMatch;
+  roomRecommendation?: RoomRecommendation;
+  previewRoom?: Room;
+  alternative?: boolean;
   hotel?: Hotel;
   dataset?: Dataset | null;
   compared?: boolean;
@@ -37,10 +44,14 @@ export function HotelCard({
   onSelect?: () => void;
   onShowMap?: () => void;
 }) {
+  const match = roomRecommendation ? recommendationMatch(roomRecommendation) : hotelMatch;
   const hotel = match?.hotel || previewHotel;
   if (!hotel) return null;
+  const room = roomRecommendation?.room.room || previewRoom;
+  const title = room?.name || hotel.name;
+  const titleWithHotel = room ? `${title}, ${hotel.name}` : title;
   const ownerId = accountListingId(hotel);
-  const detailsPath = accommodationPath(hotel, match?.best.room.id);
+  const detailsPath = accommodationPath(hotel, room?.id || match?.best.room.id);
   const estimated =
     match?.best.capacityAssumed ||
     match?.best.criteria.some((c) => c.assumed) ||
@@ -63,7 +74,7 @@ export function HotelCard({
       className={`search-hotel-card${selected ? " is-selected" : ""}`}
       onClick={onSelect}
       onFocus={onSelect}
-      aria-label={hotel.name}
+      aria-label={titleWithHotel}
     >
       <div className="search-hotel-photo">
         <Link to={detailsPath} tabIndex={-1} aria-hidden="true">
@@ -73,10 +84,11 @@ export function HotelCard({
             photos={hotel.photos}
           />
         </Link>
+        {room && <span className="search-room-photo-note">{ownerId ? "Фото объявления" : "Фото отеля"}</span>}
         <FavoriteButton
           item={{
-            id: ownerId ? `listing:${ownerId}` : hotel.id,
-            name: hotel.name,
+            id: ownerId ? `listing:${ownerId}` : room ? `${hotel.id}::${room.id}` : hotel.id,
+            name: titleWithHotel,
             path: detailsPath,
             hotelId: hotel.id,
             photos: hotel.photos,
@@ -88,7 +100,7 @@ export function HotelCard({
         <div className="search-hotel-heading">
           <Link to={detailsPath}>
             <h2>
-              {hotel.name}
+              {title}
               {hotel.synthetic && (
                 <span className="search-demo-label">ДЕМО</span>
               )}
@@ -99,10 +111,10 @@ export function HotelCard({
               type="button"
               className={`search-compare-toggle${compared ? " is-selected" : ""}`}
               aria-pressed={compared}
-              aria-label={`${compared ? "Убрать из сравнения" : "Сравнить"} ${hotel.name}`}
+              aria-label={`${compared ? "Убрать из сравнения" : "Сравнить"} ${titleWithHotel}`}
               title={
                 compareDisabled
-                  ? "Можно сравнить до трёх отелей"
+                  ? "Можно сравнить до трёх номеров"
                   : "Добавить к сравнению"
               }
               disabled={compareDisabled}
@@ -115,6 +127,8 @@ export function HotelCard({
             </button>
           )}
         </div>
+        {room && <p className="search-room-hotel">{hotel.name}</p>}
+        {room && <p className="search-room-capacity">{room.capacity == null ? "Вместимость нужно уточнить" : `Вместимость: до ${room.capacity} гостей`}</p>}
         <p className="search-hotel-meta">{hotel.address || "Пусан, Хэундэ"}</p>
         <p className="search-hotel-room">
           {hotel.floor == null ? "Этаж: Не указано" : `Этаж: ${hotel.floor}`} ·{" "}
@@ -146,7 +160,13 @@ export function HotelCard({
         <p className="search-hotel-evidence">
           <CircleHelp size={18} aria-hidden="true" />
           <span>
-            {missingOwner
+            {roomRecommendation && !alternative
+              ? roomRecommendation.source === "owner"
+                ? "Все критерии совпали по сведениям отельера"
+                : roomRecommendation.source === "demo"
+                  ? "Совпадение в демонстрационных данных"
+                  : "Условия проверены для этой категории номера"
+              : missingOwner
               ? `${missingOwner.label}: ${missingOwner.evidenceStatus === "unknown" ? "нет данных" : missingOwner.evidenceStatus === "match" ? "по сведениям отельера" : "не совпадает"}`
               : uncertain
                 ? `${features[uncertain.feature].label}: ${uncertain.assumed ? "оценка, нужно уточнить" : "не совпадает"}`
@@ -155,20 +175,26 @@ export function HotelCard({
         </p>
         {!!match?.best.criteria.length && (
           <ul className="search-hotel-criteria" aria-label="Совпадение с вашими пожеланиями">
-            {match.best.criteria.slice(0, 3).map((criterion) => {
-              const uncertain = criterion.assumed || !["match", "mismatch"].includes(criterion.evidenceStatus);
+            {(room ? match.best.criteria : match.best.criteria.slice(0, 3)).map((criterion) => {
+              const ownerDeclared = roomRecommendation?.source === "owner" && criterion.evidenceStatus === "match";
+              const uncertain = (!ownerDeclared && criterion.assumed) || !["match", "mismatch"].includes(criterion.evidenceStatus);
               const fits = criterion.status === "match";
               const Icon = uncertain ? CircleHelp : fits ? Check : X;
               return (
                 <li key={criterion.feature} className={uncertain ? "is-uncertain" : fits ? "is-match" : "is-mismatch"}>
                   <Icon size={15} aria-hidden="true" />
-                  <span>{features[criterion.feature].label}: {uncertain ? "нужно уточнить" : fits ? "совпадает" : "не совпадает"}</span>
+                  <span>{features[criterion.feature].label}: {uncertain ? "нужно уточнить" : fits ? ownerDeclared ? "по сведениям отельера" : "совпадает" : "не совпадает"}</span>
                 </li>
               );
             })}
-            {match.best.criteria.length > 3 && <li><Link to={detailsPath}>Ещё {match.best.criteria.length - 3} условия в подробностях</Link></li>}
+            {!room && match.best.criteria.length > 3 && <li><Link to={detailsPath}>Ещё {match.best.criteria.length - 3} условия в подробностях</Link></li>}
           </ul>
         )}
+        {!!roomRecommendation?.ownerCriteria?.length && <ul className="search-hotel-criteria" aria-label="Дополнительные условия номера">
+          {roomRecommendation.ownerCriteria.map((criterion) => <li key={criterion.id} className={criterion.evidenceStatus === "unknown" ? "is-uncertain" : criterion.status === "match" ? "is-match" : "is-mismatch"}>
+            <span>{criterion.label}: {criterion.evidenceStatus === "unknown" ? "нет данных" : criterion.status === "match" ? "по сведениям отельера" : "не совпадает"}</span>
+          </li>)}
+        </ul>}
         <div className="search-hotel-bottom">
           <div>
             {hasPrice ? (
@@ -186,7 +212,11 @@ export function HotelCard({
                 <strong
                   className={`search-hotel-result${estimated ? " is-estimate" : ""}`}
                 >
-                  {match ? (
+                  {roomRecommendation ? (
+                    <>{alternative ? <CircleHelp size={17} aria-hidden="true" /> : <Check size={17} aria-hidden="true" />}
+                      {alternative ? "Не все условия подтверждены" : "Совпали все критерии"}
+                    </>
+                  ) : match ? (
                     <>
                       <Check size={17} aria-hidden="true" />
                       {estimated
@@ -194,7 +224,7 @@ export function HotelCard({
                         : "Подходит под фильтры"}
                     </>
                   ) : (
-                    "Условия и источники"
+                    room ? "Категория номера из каталога" : "Условия и источники"
                   )}
                 </strong>
                 <span className="search-hotel-price-note">
@@ -207,7 +237,7 @@ export function HotelCard({
             to={detailsPath}
             className={`button ${selected ? "primary" : "secondary"}`}
           >
-            Подробнее
+            {room ? "Посмотреть номер" : "Подробнее"}
           </Link>
         </div>
       </div>

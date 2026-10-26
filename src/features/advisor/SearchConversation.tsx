@@ -3,6 +3,8 @@ import { Send, Check } from "lucide-react";
 import type { SearchResult, Trip } from "../../../shared/types";
 import { canSearch } from "../search/searchTrip";
 import { useSearchConversation } from "./useSearchConversation";
+import { Link } from "react-router-dom";
+import { accommodationPath } from "../../shared/lib/accommodation";
 import "./conversation.css";
 
 export function SearchConversation({ trip, onApply, scope, result, searching, searchError, onAnalyze, mapView, onMapViewChange, map }: {
@@ -18,10 +20,11 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
   map: ReactNode;
 }) {
   const chat = useSearchConversation(trip, onApply, scope);
+  const recommendation = !searching && !searchError ? result?.roomRecommendations[0] : undefined;
   const log = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (log.current) log.current.scrollTop = log.current.scrollHeight;
-  }, [chat.messages, chat.busy, mapView]);
+  }, [chat.messages, chat.busy, mapView, recommendation?.id]);
   useEffect(() => {
     const node = log.current;
     if (!node) return;
@@ -48,11 +51,11 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
       </div>
       <div id="conversation-map" className="conversation-map" hidden={!mapView}>{map}</div>
       <div id="conversation-chat" className="conversation-chat" hidden={mapView}>
-      <div className="conversation-log" ref={log} role="log" aria-label="Диалог о подборе отелей" aria-live="polite" aria-relevant="additions text">
+      <div className="conversation-log" ref={log} role="log" aria-label="Диалог о подборе номеров" aria-live="polite" aria-relevant="additions text">
         {!chat.messages.length && (
         <div className="conversation-welcome">
           <h3>Начнём с того, что важно вам</h3>
-          <p>Расскажите, как хочется отдохнуть. Можно по одному пожеланию: отели в подборке будут меняться по ходу разговора.</p>
+          <p>Расскажите, какой номер вам нужен. Можно по одному пожеланию: подберём категорию, в которой совпадут все ваши условия.</p>
           {!!trip.preferences.length && <p>Уже выбранные условия сохранены. Добавьте что-нибудь ещё или уточните их.</p>}
         </div>
         )}
@@ -63,11 +66,19 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
           </div>
         ))}
         {chat.busy && <p className="conversation-pending">Уточняю условия…</p>}
+        {recommendation && (
+          <div className="conversation-room-recommendation">
+            <p>Под все выбранные условия</p>
+            <Link to={accommodationPath(recommendation.hotel, recommendation.room.room.id)}>{recommendation.room.room.name}</Link>
+            <span>{recommendation.hotel.name} · до {recommendation.room.room.capacity} гостей</span>
+            <small>{recommendation.source === "owner" ? "По сведениям отельера" : recommendation.source === "demo" ? "Вымышленный тестовый номер" : "По проверенным данным категории"}. Наличие на даты нужно уточнить.</small>
+          </div>
+        )}
       </div>
       <div className="conversation-bottom">
         <div className="conversation-search-state" role="status" aria-atomic="true">
           <Check size={15} aria-hidden="true" />
-          <span>{searchError ? "Подборка не обновилась. Повторите поиск." : searching ? "Обновляем подборку отелей…" : !canSearch(trip) ? "Пожелания можно добавить до выбора дат" : result ? `${result.results.length} вариантов по текущим условиям` : "Готовы уточнять ваши пожелания"}</span>
+          <span>{searchError ? "Подборка не обновилась. Повторите поиск." : searching ? "Подбираем конкретные номера…" : !canSearch(trip) ? "Пожелания можно добавить до выбора дат" : result ? result.roomRecommendations.length ? `Номеров под все условия: ${result.roomRecommendations.length}` : "Номер под все условия пока не найден" : "Готовы уточнять ваши пожелания"}</span>
         </div>
         <div className="conversation-suggestions" aria-label="Примеры пожеланий">
           {suggestions.map((text) => <button key={text} type="button" disabled={chat.busy} onClick={() => void chat.send(text)}>{text}</button>)}

@@ -8,26 +8,35 @@ import { FavoriteButton } from "../../favorites/FavoriteButton";
 import { HotelPhotoGallery } from "./HotelPhotoGallery";
 import { FactEvidence } from "./FactEvidence";
 import { roomDetailsLabel } from "../../account/format";
+import { accommodationPath } from "../../../shared/lib/accommodation";
 
 export function HotelCatalogPreview({
   hotel,
   facts,
   catalog,
+  selectedRoomId,
 }: {
   hotel: Hotel;
   facts: Fact[];
   catalog: Dataset;
+  selectedRoomId?: string | null;
 }) {
   const { trip, setTrip } = useApp();
+  const selectedRoom = hotel.rooms.find((room) => room.id === selectedRoomId);
+  const displayedRooms = selectedRoom ? [selectedRoom] : hotel.rooms;
+  const displayedFacts = selectedRoom
+    ? facts.filter((fact) => !fact.roomId || fact.roomId === selectedRoom.id)
+    : facts;
   return (
     <div className="page hotel-detail-page">
       <Link to="/results" className="back-link">
-        <ArrowLeft size={18} aria-hidden="true" />К отелям
+        <ArrowLeft size={18} aria-hidden="true" />К номерам
       </Link>
       <SearchBar trip={trip} onSearch={setTrip} />
       <div className="detail-heading">
         <div>
-          <h1>{hotel.name}</h1>
+          <h1>{selectedRoom?.name || hotel.name}</h1>
+          {selectedRoom && <p className="hotel-detail-hotel-name">{hotel.name}</p>}
           <p className="address">
             <MapPin size={17} aria-hidden="true" />
             {hotel.address}
@@ -39,9 +48,9 @@ export function HotelCatalogPreview({
         <FavoriteButton
           label
           item={{
-            id: hotel.id,
-            name: hotel.name,
-            path: `/hotels/${hotel.id}`,
+            id: selectedRoom ? `${hotel.id}::${selectedRoom.id}` : hotel.id,
+            name: selectedRoom ? `${selectedRoom.name} · ${hotel.name}` : hotel.name,
+            path: accommodationPath(hotel, selectedRoom?.id),
             hotelId: hotel.id,
             photos: hotel.photos,
             address: hotel.address,
@@ -49,11 +58,12 @@ export function HotelCatalogPreview({
         />
       </div>
       <HotelPhotoGallery hotel={hotel} />
+      {selectedRoomId && !selectedRoom && <p className="notice">Запрошенная категория больше не доступна в каталоге. Ниже показаны сведения об отеле; выберите другую категорию.</p>}
       <div className="hotel-preview-prompt">
-        <h2>Подойдёт ли вам этот отель?</h2>
+        <h2>{selectedRoom ? "Подойдёт ли вам этот номер?" : "Какой номер вам подойдёт?"}</h2>
         <p>
           Укажите даты и гостей в строке поиска. Проверим вместимость и ваши
-          пожелания для одной категории номера.
+          пожелания {selectedRoom ? "для выбранной категории номера." : "для каждой категории отдельно."}
         </p>
       </div>
       <div className="detail-grid">
@@ -87,9 +97,9 @@ export function HotelCatalogPreview({
           )}
         </section>
         <aside className="room-panel">
-          <h2>Категории номеров</h2>
+          <h2>{selectedRoom ? "Выбранная категория" : "Категории номеров"}</h2>
           <p>Цена и наличие не проверены.</p>
-          {hotel.rooms.map((room) => (
+          {displayedRooms.map((room) => (
             <div className="hotel-preview-room" key={room.id}>
               <h3>{room.name}</h3>
               <p>
@@ -114,15 +124,21 @@ export function HotelCatalogPreview({
               )}
             </div>
           ))}
+          {selectedRoom && hotel.rooms.length > 1 && <details className="hotel-preview-room">
+            <summary>Другие категории в этом отеле</summary>
+            <ul>
+              {hotel.rooms.filter((room) => room.id !== selectedRoom.id).map((room) => <li key={room.id}><Link to={accommodationPath(hotel, room.id)}>{room.name}</Link></li>)}
+            </ul>
+          </details>}
         </aside>
       </div>
       <section className="subsection evidence-section">
         <h2>Известные сведения и источники</h2>
         <p>
-          Условия относятся к указанным категориям. Соответствие вашим датам ещё
+          {selectedRoom ? "Сведения относятся к выбранной категории и отелю." : "Условия относятся к указанным категориям."} Соответствие вашим датам ещё
           не проверено.
         </p>
-        {facts.map((fact) => (
+        {displayedFacts.map((fact) => (
           <FactEvidence
             key={fact.id}
             fact={fact}

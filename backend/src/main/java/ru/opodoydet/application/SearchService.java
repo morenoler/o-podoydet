@@ -15,6 +15,7 @@ import ru.opodoydet.advisor.AdvisorPlanner;
 import ru.opodoydet.domain.BinaryDecisionPolicy;
 import ru.opodoydet.domain.Features;
 import ru.opodoydet.domain.Matching;
+import ru.opodoydet.domain.RoomRecommendations;
 import ru.opodoydet.domain.Validation;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.shared.Json;
@@ -38,6 +39,7 @@ public final class SearchService {
       Instant now,
       Map<String, Map<String, JsonNode>> environments,
       String policy,
+      boolean syntheticOnly,
       SearchExtension.Snapshot extension) {}
 
   public SearchService(Store store, Agents agents, Environment environment) {
@@ -124,11 +126,16 @@ public final class SearchService {
                                           Map.Entry::getKey,
                                           value -> value.getValue().deepCopy())))),
               policy,
+              syntheticOnly,
               extra));
     }
     interpreted.put("searchId", searchId);
     if (!interpreted.path("conflicts").isEmpty())
       for (JsonNode match : ranked) excludeForConflict((ObjectNode) match);
+    RoomRecommendations.Selection rooms = RoomRecommendations.select(ranked, now, policy);
+    interpreted.set("roomRecommendations", Json.array(rooms.recommendations()));
+    interpreted.set("roomAlternatives", Json.array(rooms.alternatives()));
+    interpreted.put("unverifiedHotelCount", rooms.unverifiedHotelCount());
     interpreted.set(
         "results",
         Json.array(
@@ -165,8 +172,10 @@ public final class SearchService {
                     "detail",
                     "Проверены "
                         + (hotels.size() + extra.additionalHotels())
-                        + " отелей. Обязательные условия и вместимость определяют, подходит ли"
-                        + " вариант.",
+                        + " отелей. Найдено "
+                        + rooms.recommendations().size()
+                        + " конкретных категорий номера, где совпали все выбранные условия и"
+                        + " вместимость. Условия разных номеров не объединяются.",
                     "tool",
                     "BinaryDecisionPolicy"),
                 Json.obj(
@@ -193,6 +202,17 @@ public final class SearchService {
       throw new IllegalArgumentException(
           "Результат поиска устарел или параметры изменились. Обновите поиск перед запуском"
               + " помощника.");
+    if (!snapshot.syntheticOnly())
+      return AdvisorPlanner.planRooms(
+              snapshot.trip(),
+              snapshot.interpreted(),
+              snapshot.hotels(),
+              snapshot.facts(),
+              snapshot.now(),
+              snapshot.environments(),
+              snapshot.policy(),
+              snapshot.extension())
+          .put("searchId", searchId);
     return AdvisorPlanner.plan(
             snapshot.trip(),
             snapshot.interpreted(),
