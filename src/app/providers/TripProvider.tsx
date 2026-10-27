@@ -8,6 +8,7 @@ import {
 import type { Dataset, Preference, Trip } from "../../../shared/types";
 import { api } from "../../shared/api/client";
 import { normalizeSearchTrip, restoreSearchTrip } from "../../features/search/searchPolicy";
+import { isRegionName, type RegionCatalog } from "../../../shared/regions";
 type Catalog = Dataset & { mode: "rules" | "llm" };
 const initialTrip: Trip = {
   region: "Пусан",
@@ -32,6 +33,7 @@ interface TripContextValue {
   trip: Trip;
   setTrip: (trip: Trip) => void;
   catalog: Catalog | null;
+  regions: string[];
   catalogError: string;
   revision: number;
   refresh: () => void;
@@ -49,6 +51,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
     [catalog, setCatalog] = useState<Catalog | null>(null),
     [error, setError] = useState(""),
     [revision, setRevision] = useState(0);
+  const [regionCatalog, setRegionCatalog] = useState<RegionCatalog | null>(null);
   const [resolved, setResolved] = useState<{
     key: string;
     preferences: Preference[];
@@ -83,7 +86,23 @@ export function TripProvider({ children }: { children: ReactNode }) {
   };
   useEffect(() => {
     let active = true;
-    api<Catalog>("/catalog")
+    api<RegionCatalog>("/regions")
+      .then((available) => {
+        if (!active) return;
+        setRegionCatalog(available);
+        setTripState((current) => available.regions.some((item) => item.region === current.region)
+          ? current : { ...current, region: available.defaultRegion, hotelFilters: undefined });
+      })
+      .catch((e) => { if (active) setError(e.message); });
+    return () => { active = false; };
+  }, []);
+  useEffect(() => {
+    if (!regionCatalog || !regionCatalog.regions.some((item) => item.region === trip.region)) return;
+    let active = true;
+    const controller = new AbortController();
+    setError("");
+    setCatalog(null);
+    api<Catalog>(`/catalog?region=${encodeURIComponent(trip.region)}`, undefined, controller.signal)
       .then((c) => {
         if (active) setCatalog(c);
       })
@@ -93,14 +112,16 @@ export function TripProvider({ children }: { children: ReactNode }) {
 
     return () => {
       active = false;
+      controller.abort();
     };
-  }, []);
+  }, [regionCatalog, trip.region]);
   return (
     <TripContext.Provider
       value={{
         trip,
         setTrip,
-        catalog,
+        catalog: catalog?.region === trip.region ? catalog : null,
+        regions: regionCatalog?.regions.map((item) => item.region).filter(isRegionName) || [],
         catalogError: error,
         revision,
         refresh: () => setRevision((r) => r + 1),

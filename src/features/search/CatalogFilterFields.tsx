@@ -1,5 +1,6 @@
 import type { HotelFilters } from "../../../shared/types";
-import { nearbyDefinitions } from "../../../shared/nearby";
+import { nearbyDefinitions, nearbyLabel } from "../../../shared/nearby";
+import { regionDetails } from "../../../shared/regions";
 
 export const lodgingLabels = {
   hotel: "Отель",
@@ -9,8 +10,9 @@ export const lodgingLabels = {
   apartment: "Апартаменты",
 } as const;
 
-export function CatalogFilterFields({ value = {}, onChange }: {
+export function CatalogFilterFields({ value = {}, onChange, region = "Пусан" }: {
   value?: HotelFilters;
+  region?: string;
   onChange: (value: HotelFilters) => void;
 }) {
   const types = value.lodgingTypes || [];
@@ -18,7 +20,7 @@ export function CatalogFilterFields({ value = {}, onChange }: {
     <label className="field">
       <span>Название или слова в источниках</span>
       <input type="search" maxLength={240} value={value.query || ""}
-        placeholder="Например: Signiel, балкон, twin"
+        placeholder="Название отеля или нужное слово"
         onChange={(event) => onChange({ ...value, query: event.target.value || undefined })} />
     </label>
     <fieldset className="catalog-type-options">
@@ -35,7 +37,7 @@ export function CatalogFilterFields({ value = {}, onChange }: {
     </fieldset>
     <div className="catalog-number-fields">
       <label className="field">
-        <span>Цена за ночь, до ₩</span>
+        <span>Цена за ночь, до {regionDetails(region)?.currencySymbol || "—"}</span>
         <input type="number" inputMode="numeric" min={1} max={100000000} step="any"
           value={value.maxPricePerNight ?? ""} placeholder="Любая"
           onChange={(event) => onChange({ ...value, maxPricePerNight: event.target.value === "" ? undefined : Number(event.target.value) })} />
@@ -49,14 +51,16 @@ export function CatalogFilterFields({ value = {}, onChange }: {
     </div>
     <details className="catalog-nearby-filter">
       <summary>Что должно быть рядом{value.nearby?.length ? ` · ${value.nearby.length}` : ""}</summary>
-      <p className="search-dialog-intro">Расстояние по прямой до отмеченного на карте места. «Центр» — район станции Сомён; в Пусане несколько городских центров.</p>
+      <p className="search-dialog-intro">Расстояние по прямой до отмеченного на карте места.{region === "Пусан" ? " «Центр» — район станции Сомён; в Пусане несколько городских центров." : " Если места и расстояния ещё не собраны, условие не считается выполненным."}</p>
       <div className="catalog-nearby-options">{nearbyDefinitions.map((definition) => {
         const condition = value.nearby?.find((item) => item.kind === definition.key);
+        if (region === "Сочи" && ["city_center", "subway"].includes(definition.key) && !condition) return null;
+        const label = nearbyLabel(definition.key, region);
         return <div className="catalog-nearby-option" key={definition.key}>
           <label><input type="checkbox" checked={!!condition} onChange={(event) => onChange({ ...value, nearby: event.target.checked
             ? [...(value.nearby || []), { kind: definition.key, maxMeters: definition.defaultMaxMeters }]
-            : value.nearby?.filter((item) => item.kind !== definition.key) })} /><span>{definition.label}</span></label>
-          {condition && <label><span className="sr-only">{definition.label}: не дальше, м</span><input type="number" min={1} max={10000} step="any" value={condition.maxMeters}
+            : value.nearby?.filter((item) => item.kind !== definition.key) })} /><span>{label}</span></label>
+          {condition && <label><span className="sr-only">{label}: не дальше, м</span><input type="number" min={1} max={10000} step="any" value={condition.maxMeters}
             onChange={(event) => onChange({ ...value, nearby: value.nearby?.map((item) => item.kind === definition.key ? { ...item, maxMeters: Number(event.target.value) } : item) })} /><span aria-hidden="true">м</span></label>}
         </div>;
       })}</div>

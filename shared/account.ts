@@ -1,4 +1,5 @@
-/** Personal accounts API contract. Amounts are whole KRW; dates are ISO calendar dates. */
+import type { RegionCurrency } from "./regions";
+/** Personal accounts API contract. Amounts use their explicit currency; dates are ISO calendar dates. */
 export type AccountRole = "user" | "host";
 export interface AccountUser {
   id: string;
@@ -21,6 +22,8 @@ export interface ListingInput {
   roomType: string;
   capacity: number;
   pricePerNight: number;
+  /** Explicit for new forms. Omission retains the legacy server contract. */
+  currency?: RegionCurrency;
   amenities: string[];
   status: ListingStatus;
   floor?: number | null;
@@ -31,7 +34,7 @@ export interface Listing extends ListingInput {
   id: string;
   hostId: string;
   hostName: string;
-  currency: "KRW";
+  currency: RegionCurrency;
   createdAt: string;
   updatedAt: string;
   floor: number | null;
@@ -62,7 +65,7 @@ export interface Booking {
   nights: number;
   pricePerNight: number;
   totalPrice: number;
-  currency: "KRW";
+  currency: RegionCurrency;
   status: BookingStatus;
   note: string;
   createdAt: string;

@@ -11,12 +11,12 @@ import ru.opodoydet.accounts.listings.ListingService;
 import ru.opodoydet.accounts.persistence.AccountDatabase;
 import ru.opodoydet.accounts.search.OwnerNotesExtractor;
 import ru.opodoydet.domain.Validation;
+import ru.opodoydet.domain.RegionSettings;
 import ru.opodoydet.shared.Json;
 
 /** Private, explicit owner statements. Ordinary public Q&A is never parsed into evidence. */
 public final class ClarificationService {
   public static final Set<String> FEATURES = Set.of("family", "courtyard", "step_free_access");
-  private static final ZoneId ZONE = ZoneId.of("Asia/Seoul");
   private final AccountDatabase db;
   private final ListingService listings;
   private final ClarificationRepository repository;
@@ -46,7 +46,7 @@ public final class ClarificationService {
     String key = key(input), note = Inputs.optional(input, "note", "Уточнение", 1000);
     JsonNode trip = input.path("trip");
     fields(trip, Set.of("region", "checkIn", "checkOut", "adults", "children", "scenarios", "preferences", "text", "admissionMode"));
-    try { Validation.trip(trip, "Пусан"); }
+    try { Validation.trip(trip, Validation.text(trip, "region", 1, 100)); }
     catch (IllegalArgumentException invalid) { throw new AccountProblem(400, invalid.getMessage()); }
     ObjectNode payload = Json.obj("listingId", listingId, "feature", feature, "trip", trip, "note", note);
     String hash = hash(payload);
@@ -79,8 +79,6 @@ public final class ClarificationService {
     JsonNode value = input.path("value");
     if (!value.isBoolean() && !value.isNull()) throw new AccountProblem(400, "Укажите да, нет или неизвестно.");
     LocalDate observed = nullableDate(input, "observedOn"), from = nullableDate(input, "validFrom"), to = nullableDate(input, "validTo");
-    LocalDate today = LocalDate.now(clock.withZone(ZONE));
-    if (observed != null && observed.isAfter(today)) throw new AccountProblem(400, "Дата сведений не может быть в будущем.");
     if ((from == null) != (to == null) || (from != null && to.isBefore(from)))
       throw new AccountProblem(400, "Укажите обе даты периода применимости в правильном порядке.");
     JsonNode requestedSupersedes = input.path("supersedes");
@@ -103,6 +101,9 @@ public final class ClarificationService {
       db.lockListing(listingId);
       question = repository.find(id);
       ObjectNode listing = listings.owned(listingId, host);
+      ZoneId zone = RegionSettings.of(Json.str(listing, "city")).timezone();
+      LocalDate today = LocalDate.now(clock.withZone(zone));
+      if (observed != null && observed.isAfter(today)) throw new AccountProblem(400, "Дата сведений не может быть в будущем.");
       // This bounded grammar catches known explicit contradictions, not arbitrary prose.
       // The owner still explicitly supplies the structured statement; text is not auto-published as fact.
       if (value.isBoolean()) {
@@ -128,10 +129,10 @@ public final class ClarificationService {
           throw new AccountProblem(409, "Исправлять можно только действующую версию своего ответа об этом же размещении и условии.");
       }
       String answerId = UUID.randomUUID().toString(), now = clock.instant().toString();
-      String recheckAt = (observed == null ? today : observed).plusDays(days).atStartOfDay(ZONE).toInstant().toString();
-      db.execute("INSERT INTO account_clarification_answers(id,clarification_id,host_id,version,value,answer_text,observed_on,recorded_at,valid_from,valid_to,recheck_at,scope_fingerprint,supersedes,request_key,payload_hash) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+      String recheckAt = (observed == null ? today : observed).plusDays(days).atStartOfDay(zone).toInstant().toString();
+      db.execute("INSERT INTO account_clarification_answers(id,clarification_id,host_id,version,value,answer_text,observed_on,recorded_at,valid_from,valid_to,recheck_at,scope_fingerprint,supersedes,request_key,payload_hash,time_zone) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
           answerId, id, host, expected + 1, value.isNull() ? null : value.asBoolean() ? 1 : 0, text,
-          string(observed), now, string(from), string(to), recheckAt, fingerprint, Json.write(supersedes), key, hash);
+          string(observed), now, string(from), string(to), recheckAt, fingerprint, Json.write(supersedes), key, hash, zone.getId());
       // Revisions replace only the answer in this dialogue; other dialogues require explicit IDs.
       db.execute("UPDATE account_clarification_answers SET superseded_by=? WHERE clarification_id=? AND version=? AND superseded_by IS NULL", answerId, id, expected);
       for (String previous : supersedes)
@@ -191,6 +192,7 @@ public final class ClarificationService {
     }
     ObjectNode result = Json.obj("id", row.path("id"), "listingId", listingId,
         "listingTitle", row.path("listingTitle"), "roomId", "account-room:" + listingId,
+        "region", row.path("listingCity"), "timeZone", RegionSettings.of(Json.str(row, "listingCity")).timezone().getId(),
         "feature", row.path("feature"), "text", row.path("question_text"), "note", row.path("note"),
         "createdAt", row.path("created_at"), "status", history.isEmpty() ? "open" : "answered",
         "scopeChanged", !fingerprint.equals(Json.str(row, "scope_fingerprint")),
@@ -210,7 +212,8 @@ public final class ClarificationService {
         "value", row.path("value").isNull() ? null : row.path("value").asInt() == 1,
         "observedOn", row.path("observed_on"), "recordedAt", row.path("recorded_at"),
         "validFrom", row.path("valid_from"), "validTo", row.path("valid_to"),
-        "recheckAt", row.path("recheck_at"), "scope", "listing_unit", "scopeId", row.path("listing_id"), "state", state);
+        "recheckAt", row.path("recheck_at"), "timeZone", row.path("time_zone").asText("Asia/Seoul"),
+        "scope", "listing_unit", "scopeId", row.path("listing_id"), "state", state);
   }
 
   private static String question(String feature) {

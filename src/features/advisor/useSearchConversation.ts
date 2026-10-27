@@ -38,8 +38,9 @@ function readConversation(key: string, trip: Trip): Conversation & { draft?: str
 }
 
 export function useSearchConversation(trip: Trip, onApply: (trip: Trip) => void, scope: string) {
-  const storageKey = `o-search-conversation-busan:${scope}`;
-  const filterStorageKey = `o-search-chat-filters-busan:${scope}`;
+  const regionKey = trip.region === "Пусан" ? "busan" : encodeURIComponent(trip.region);
+  const storageKey = `o-search-conversation-${regionKey}:${scope}`;
+  const filterStorageKey = `o-search-chat-filters-${regionKey}:${scope}`;
   const [initial] = useState(() => {
     const saved = { ...readConversation(storageKey, trip) };
     try {

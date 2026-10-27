@@ -2,8 +2,8 @@ import config from "../data/busan/place-categories.json";
 import type { Hotel, HotelFilters, NearbyCondition, NearbyKind, NearbyPlace } from "./types";
 
 export const nearbyDefinitions = config as { key: NearbyKind; label: string; defaultMaxMeters: number; aliases: string[]; osmQueries: string[] }[];
-export const nearbyLabel = (kind: NearbyKind) => nearbyDefinitions.find((item) => item.key === kind)!.label;
-export const nearbyConditionLabel = (condition: NearbyCondition) => `${nearbyLabel(condition.kind)} · до ${condition.maxMeters.toLocaleString("ru-RU")} м по прямой`;
+export const nearbyLabel = (kind: NearbyKind, region = "Пусан") => kind === "city_center" && region !== "Пусан" ? "центр города" : nearbyDefinitions.find((item) => item.key === kind)!.label;
+export const nearbyConditionLabel = (condition: NearbyCondition, region = "Пусан") => `${nearbyLabel(condition.kind, region)} · до ${condition.maxMeters.toLocaleString("ru-RU")} м по прямой`;
 const validPoint = (point: unknown): point is [number, number] => Array.isArray(point) && point.length === 2
   && Number.isFinite(point[0]) && Math.abs(point[0]) <= 180 && Number.isFinite(point[1]) && Math.abs(point[1]) <= 90;
 function instant(value: unknown): number {

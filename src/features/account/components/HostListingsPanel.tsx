@@ -170,7 +170,7 @@ export function HostListingsPanel({
                   </p>
                   <div className="host-listing-details">
                     <strong>
-                      {price(listing.pricePerNight)} <span>за ночь</span>
+                      {price(listing.pricePerNight, listing.currency)} <span>за ночь</span>
                     </strong>
                   </div>
                   <div className="account-record-actions">

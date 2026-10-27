@@ -97,7 +97,7 @@ export function HotelCard({
   const hasPrice =
     typeof hotel.pricePerNight === "number" &&
     hotel.pricePerNight > 0 &&
-    hotel.currency === "KRW";
+    (hotel.currency === "KRW" || hotel.currency === "RUB");
   const resultLabel = match ? matchLabel(match) : "Условия и источники";
   const hasConditions = !!(match?.best.criteria.length || match?.ownerCriteria?.length);
   const presentationState = match ? matchPresentationState(match) : "unknown";
@@ -161,7 +161,7 @@ export function HotelCard({
         </div>
         {room && <p className="search-room-hotel">{hotel.name}</p>}
         {room && <p className="search-room-capacity">{capacityUnknown || capacity == null ? "Вместимость нужно уточнить" : `Вместимость: до ${capacity} гостей${match?.best.capacityRule ? " по правилу размещения" : ""}`}</p>}
-        <p className="search-hotel-meta">{hotel.address || "Пусан, Хэундэ"}</p>
+        <p className="search-hotel-meta">{hotel.address || "Адрес не указан"}</p>
         {category && !room && (
           <p className="search-hotel-room">
             Категория: {category.name}
@@ -170,7 +170,7 @@ export function HotelCard({
           </p>
         )}
         {roomDetails && <p className="search-hotel-room">{roomDetails}</p>}
-        <NearbySummary matches={match?.best.nearbyMatches || nearbyMatches(hotel, hotelFilters)} />
+        <NearbySummary matches={match?.best.nearbyMatches || nearbyMatches(hotel, hotelFilters)} region={hotel.region} />
         {hotel.route && !hotel.synthetic ? (
           <button
             type="button"
@@ -246,7 +246,7 @@ export function HotelCard({
               <>
                 <strong className="search-hotel-price">
                   {new Intl.NumberFormat("ru-RU").format(hotel.pricePerNight!)}{" "}
-                  ₩ <small>/ ночь</small>
+                  {hotel.currency === "RUB" ? "₽" : "₩"} <small>/ ночь</small>
                 </strong>
                 <span className="search-hotel-price-note">
                   Цена отельера · наличие уточняйте

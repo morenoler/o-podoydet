@@ -55,7 +55,8 @@ public final class ReportedEvidence {
           "value", statement.path("value"), "evidenceStatus", status, "scope", "listing_unit",
           "scopeId", statement.path("scopeId"), "recordedAt", statement.path("recordedAt"),
           "observedOn", statement.path("observedOn"), "validFrom", statement.path("validFrom"),
-          "validTo", statement.path("validTo"), "recheckAt", statement.path("recheckAt")));
+          "validTo", statement.path("validTo"), "recheckAt", statement.path("recheckAt"),
+          "timeZone", statement.path("timeZone").asText(ru.opodoydet.domain.RegionSettings.of(Json.str(trip, "region")).timezone().getId())));
     }
     String status = contradicts(intervals) ? "conflict" : values.contains(false) ? "mismatch"
         : values.contains(true) ? unresolvedUnknown ? "unknown" : "match"

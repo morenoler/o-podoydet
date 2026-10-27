@@ -4,11 +4,12 @@ import { useApp } from "../app/providers/TripProvider";
 import { Steps } from "../app/layout/Steps";
 import { GeoMap } from "../features/map/components/GeoMap";
 import { TripSearchForm } from "../features/trip/components/TripSearchForm";
+import { regionDetails } from "../../shared/regions";
 import "../features/trip/trip-search.css";
 
 /** Shared search entry for the main application and the laboratory. */
 export function TripPage() {
-  const { trip, setTrip, catalog } = useApp();
+  const { trip, setTrip, catalog, regions } = useApp();
   const navigate = useNavigate();
   // Lab fixtures are fictional and must not be presented as real places on the map.
   const mapCatalog = catalog
@@ -32,6 +33,9 @@ export function TripPage() {
       <div className="trip-search-layout">
         <TripSearchForm
           initialTrip={trip}
+          key={trip.region}
+          regions={regions}
+          onRegionChange={setTrip}
           onContinue={(nextTrip) => {
             setTrip(nextTrip);
             navigate("/wishes");
@@ -46,7 +50,7 @@ export function TripPage() {
               <GeoMap dataset={mapCatalog} />
             ) : (
               <div className="trip-search-map-loading" role="status">
-                Загружаем карту Хэундэ…
+                Загружаем карту: {trip.region}…
               </div>
             )}
           </div>
@@ -54,15 +58,14 @@ export function TripPage() {
             <div className="trip-search-destination-title">
               <div>
                 <p>
-                  <MapPin size={15} aria-hidden="true" /> Южная Корея
+                  <MapPin size={15} aria-hidden="true" /> {regionDetails(trip.region)?.country}
                 </p>
-                <h2 id="trip-destination-title">Пусан. Ближе к морю.</h2>
+                <h2 id="trip-destination-title">{trip.region}. Ближе к морю.</h2>
               </div>
               <Waves size={32} aria-hidden="true" />
             </div>
             <p>
-              Начнём с Хэундэ: посмотрим расположение отеля, дорогу до пляжа и
-              условия проживания.
+              {regionDetails(trip.region)?.hint}
             </p>
             <div className="trip-search-map-note">
               На карте реальные объекты из OpenStreetMap. Доступность номеров

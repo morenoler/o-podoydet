@@ -5,9 +5,9 @@ import type {
   ListingClarification,
 } from "../../../shared/clarifications";
 import { features } from "../../../shared/features";
-import { bookingToday } from "../account/format";
+import { propertyTimeZone, todayInTimeZone, timeZoneLabel } from "../../../shared/regions";
 import {
-  clarificationDate as calendarDate,
+  clarificationDate,
   correctableStatements,
   plannedRecheckDate,
 } from "./clarificationDates";
@@ -40,6 +40,9 @@ export function ClarificationAnswerForm({
   const [preview, setPreview] = useState<AnswerClarification | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const timeZone = question.timeZone || propertyTimeZone(question.region || question.trip?.region || "Пусан");
+  const bookingToday = () => todayInTimeZone(timeZone);
+  const calendarDate = (date: string) => clarificationDate(date, timeZone);
   const related = correctableStatements(question);
   function prepare(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -119,7 +122,7 @@ export function ClarificationAnswerForm({
           </div>
           <div>
             <dt>Перепроверить до</dt>
-            <dd>{calendarDate(recheckDate!)} (по времени Пусана)</dd>
+            <dd>{calendarDate(recheckDate!)} ({timeZoneLabel(timeZone)})</dd>
           </div>
           {preview.validFrom && preview.validTo && (
             <div>
@@ -304,9 +307,9 @@ export function ClarificationAnswerForm({
                   : statement.value
                     ? "Да"
                     : "Нет"}{" "}
-                · записано {calendarDate(statement.recordedAt)}
+                · записано {clarificationDate(statement.recordedAt, statement.timeZone || timeZone)}
                 {statement.observedOn
-                  ? `, проверено ${calendarDate(statement.observedOn)}`
+                  ? `, проверено ${clarificationDate(statement.observedOn, statement.timeZone || timeZone)}`
                   : ", дата проверки неизвестна"}
               </span>
             </label>

@@ -28,6 +28,7 @@ import { catalogHotelCandidates, catalogRooms, recommendationItem, recommendatio
 import { listLimitForSelection, uiAdmissionMode } from "../features/search/searchPolicy";
 import { countHotelFilters, hasHotelFilters, matchesHotelFilters } from "../../shared/catalogFilters";
 import { lodgingLabels } from "../features/search/CatalogFilterFields";
+import { regionDetails } from "../../shared/regions";
 import "../features/search/search.css";
 import "../features/search/catalog-filters.css";
 
@@ -37,13 +38,16 @@ export function ResultsPage() {
     trip,
     setTrip,
     catalog,
+    regions,
     catalogError,
     revision,
     rememberSearch,
     refresh,
     effectivePreferences,
   } = useApp();
-  const [data, setData] = useState<SearchResult | null>(null);
+  const [response, setResponse] = useState<{ key: string; value: SearchResult } | null>(null);
+  const tripKey = JSON.stringify(trip);
+  const data = response?.key === tripKey ? response.value : null;
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [compare, setCompare] = useState<string[]>([]);
@@ -60,11 +64,11 @@ export function ResultsPage() {
   const [sort, setSort] = useState("recommended");
   const [query, setQuery] = useState(trip.hotelFilters?.query || "");
   useEffect(() => setQuery(trip.hotelFilters?.query || ""), [trip.hotelFilters?.query]);
-  const validTrip = canSearch(trip);
+  const validTrip = canSearch(trip) && regions.includes(trip.region);
   useEffect(() => {
     let active = true;
     const controller = new AbortController();
-    setData(null);
+    setResponse(null);
     setError("");
     setLimit(8);
     setHotelLimit(8);
@@ -79,7 +83,7 @@ export function ResultsPage() {
     api<SearchResult>("/search", trip, controller.signal)
       .then((result) => {
         if (!active) return;
-        setData(result);
+        setResponse({ key: JSON.stringify(trip), value: result });
         setAlternativesOpen(!result.roomRecommendations.length);
         rememberSearch(trip, result.preferences);
         setLoading(false);
@@ -100,7 +104,7 @@ export function ResultsPage() {
       ? data.roomRecommendations.map(recommendationItem)
       : validTrip
         ? []
-        : catalogRooms(catalog).filter((item) => matchesHotelFilters(item.hotel, trip.hotelFilters, catalog?.facts, item.room));
+        : catalogRooms(catalog).filter((item) => matchesHotelFilters(item.hotel, trip.hotelFilters, catalog?.facts, item.room, regionDetails(trip.region)?.currency));
     if (sort === "distance")
       return [...items].sort(
         (a, b) => (a.hotel.route?.meters ?? Infinity) - (b.hotel.route?.meters ?? Infinity),
@@ -114,7 +118,7 @@ export function ResultsPage() {
           Number(!!accommodationPhotos(a.hotel.id, a.hotel.photos).length),
       );
     return items;
-  }, [data, catalog, sort, validTrip, trip.hotelFilters]);
+  }, [data, catalog, sort, validTrip, trip.hotelFilters, trip.region]);
   const visible = rooms.slice(0, limit);
   const hotelCandidates = useMemo(() => {
     const candidates = data?.hotelCandidates || (validTrip ? [] : catalogHotelCandidates(catalog, trip.hotelFilters));
@@ -171,7 +175,7 @@ export function ResultsPage() {
     <div className="search-page search-page-conversation">
       <div className={`search-layout${sidePanelOpen ? " is-side-panel-open" : ""}`}>
         <div className="search-primary">
-      <SearchBar trip={trip} onSearch={submit} busy={loading} />
+      <SearchBar trip={trip} regions={regions} onSearch={submit} busy={loading} />
       <div className="search-toolbar">
         <form className="search-catalog-query" role="search" aria-label="Поиск в каталоге"
           onSubmit={(event) => { event.preventDefault(); submit({ ...trip, hotelFilters: { ...trip.hotelFilters, query: query.trim() || undefined } }); }}>
@@ -207,14 +211,14 @@ export function ResultsPage() {
         {([
           ["query", trip.hotelFilters?.query ? `Поиск: ${trip.hotelFilters.query}` : ""],
           ["lodgingTypes", trip.hotelFilters?.lodgingTypes?.map((type) => lodgingLabels[type]).join(", ") || ""],
-          ["maxPricePerNight", trip.hotelFilters?.maxPricePerNight ? `До ${trip.hotelFilters.maxPricePerNight.toLocaleString("ru-RU")} ₩ / ночь` : ""],
+          ["maxPricePerNight", trip.hotelFilters?.maxPricePerNight ? `До ${trip.hotelFilters.maxPricePerNight.toLocaleString("ru-RU")} ${regionDetails(trip.region)?.currencySymbol || ""} / ночь` : ""],
           ["maxBeachMeters", trip.hotelFilters?.maxBeachMeters ? `До пляжа: до ${trip.hotelFilters.maxBeachMeters} м по сети` : ""],
         ] as const).filter(([, label]) => label).map(([key, label]) => <button key={key} type="button"
           onClick={() => setTrip({ ...trip, hotelFilters: { ...trip.hotelFilters, [key]: undefined } })}
           aria-label={`Убрать фильтр: ${label}`}><span>{label}</span><X size={15} aria-hidden="true" /></button>)}
         {trip.hotelFilters?.nearby?.map((condition) => <button key={condition.kind} type="button"
           onClick={() => setTrip({ ...trip, hotelFilters: { ...trip.hotelFilters, nearby: trip.hotelFilters?.nearby?.filter((item) => item.kind !== condition.kind) } })}
-          aria-label={`Убрать условие рядом: ${nearbyConditionLabel(condition)}`}><span>{nearbyConditionLabel(condition)}</span><X size={15} aria-hidden="true" /></button>)}
+          aria-label={`Убрать условие рядом: ${nearbyConditionLabel(condition, trip.region)}`}><span>{nearbyConditionLabel(condition, trip.region)}</span><X size={15} aria-hidden="true" /></button>)}
       </div>}
       {!!effectivePreferences.length && (
         <div className="search-active-preferences" aria-label="Активные условия подбора">
@@ -240,7 +244,7 @@ export function ResultsPage() {
       )}
         </div>
         <SearchConversation
-          key={user?.id || "guest"}
+          key={`${user?.id || "guest"}:${trip.region}`}
           scope={user?.id || "guest"}
           trip={trip}
           onApply={setTrip}
@@ -256,8 +260,9 @@ export function ResultsPage() {
           <div className="search-results-heading">
             <div>
               <h1>
-                Отели и номера в Пусане
+                Отели и номера {regionDetails(trip.region)?.inName || trip.region}
               </h1>
+              {trip.region === "Сочи" && <p>{regionDetails(trip.region)?.hint}</p>}
               <p role="status" aria-live="polite">
                 {loading
                   ? "Подбираем номера…"

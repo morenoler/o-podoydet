@@ -75,6 +75,7 @@ public final class SearchService {
   }
 
   public ObjectNode refine(JsonNode input) {
+    Store store = this.store.forTrip(input.path("trip"));
     JsonNode trip = Validation.tripDraft(input.path("trip"), store.region());
     String message = Validation.text(input, "message", 1, 1500).trim();
     if (message.isBlank()) throw new IllegalArgumentException("Напишите пожелание к номеру.");
@@ -93,23 +94,19 @@ public final class SearchService {
 
   private ObjectNode search(JsonNode input, boolean syntheticOnly, String actor)
       throws SQLException {
+    Store store = this.store.forTrip(input);
     JsonNode trip = Validation.trip(input, store.region()).deepCopy();
     ObjectNode interpreted = agents.interpret(trip);
     addCatalogWarning(interpreted, trip);
-    List<JsonNode> hotels;
-    List<JsonNode> facts;
-    String policy;
-    synchronized (store) {
-      hotels = store.hotels();
-      facts = store.matchingFacts();
-      if (syntheticOnly) {
-        hotels = hotels.stream().filter(hotel -> hotel.path("synthetic").asBoolean(false)).toList();
-        var hotelIds =
-            hotels.stream().map(hotel -> Json.str(hotel, "id")).collect(Collectors.toSet());
-        facts =
-            facts.stream().filter(fact -> hotelIds.contains(Json.str(fact, "hotelId"))).toList();
-      }
-      policy = store.evidencePolicy();
+    List<JsonNode> hotels = store.hotels();
+    List<JsonNode> facts = store.matchingFacts();
+    String policy = store.evidencePolicy();
+    if (syntheticOnly) {
+      hotels = hotels.stream().filter(hotel -> hotel.path("synthetic").asBoolean(false)).toList();
+      var hotelIds =
+          hotels.stream().map(hotel -> Json.str(hotel, "id")).collect(Collectors.toSet());
+      facts =
+          facts.stream().filter(fact -> hotelIds.contains(Json.str(fact, "hotelId"))).toList();
     }
     Instant now = clock.instant();
     Map<String, Map<String, JsonNode>> environments = environment.evaluate(hotels, trip, now);
@@ -236,6 +233,7 @@ public final class SearchService {
   }
 
   private ObjectNode advisorContextForActor(JsonNode input, String searchId, String actor) {
+    Store store = this.store.forTrip(input);
     JsonNode trip = Validation.trip(input, store.region()).deepCopy();
     SearchSnapshot snapshot;
     synchronized (snapshots) {
@@ -268,6 +266,7 @@ public final class SearchService {
   }
 
   public ObjectNode detail(String id, JsonNode input) throws SQLException {
+    Store store = this.store.forTrip(input);
     JsonNode trip = Validation.trip(input, store.region()), hotel = store.hotel(id);
     Instant now = clock.instant();
     ObjectNode interpreted = agents.interpret(trip);

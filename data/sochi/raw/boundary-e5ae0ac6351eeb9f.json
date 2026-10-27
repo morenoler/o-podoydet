@@ -1,0 +1,45 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-06-01T08:52:28Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "relation",
+  "id": 365233,
+  "tags": {
+    "addr:region": "Краснодарский край",
+    "admin_level": "6",
+    "boundary": "administrative",
+    "description": "муниципальное образование городской округ город-курорт Сочи",
+    "name": "городской округ Сочи",
+    "name:de": "Stadtkreis Sotschi",
+    "name:en": "town district of Sochi",
+    "name:hr": "Sočinski gradski okrug",
+    "name:lt": "Sočio miesto apygarda",
+    "name:ru": "городской округ Сочи",
+    "name:sr": "Сочински градски округ",
+    "name:uk": "Міський округ Сочі",
+    "official_name": "городской округ Город-курорт Сочи",
+    "official_status": "ru:городской округ",
+    "type": "boundary",
+    "wikidata": "Q3085607",
+    "wikipedia": "ru:Муниципальное образование город-курорт Сочи"
+  }
+},
+{
+  "type": "count",
+  "id": 0,
+  "tags": {
+    "nodes": "0",
+    "ways": "0",
+    "relations": "1",
+    "total": "1"
+  }
+}
+
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "endpoint": "https://overpass.kumi.systems/api/interpreter",
+  "boundaryRelationId": 365233,
+  "license": "ODbL-1.0",
+  "attribution": "© OpenStreetMap contributors",
+  "entries": {
+    "boundary": {
+      "path": "raw/boundary-e5ae0ac6351eeb9f.json",
+      "query": "[out:json][timeout:45];rel(365233);out tags;out count;",
+      "url": "https://overpass.kumi.systems/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A45%5D%3Brel(365233)%3Bout%20tags%3Bout%20count%3B",
+      "method": "GET",
+      "receivedAt": "2026-10-27T19:50:43.086Z",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "sha256": "e5ae0ac6351eeb9f9253c64c294bae0195633554b84f35ef712cd8a4afc1530f",
+      "bytes": 1409,
+      "osmBaseDate": "2026-06-01T08:52:28Z",
+      "count": 1,
+      "validation": "http-json-no-remark-count-checked"
+    }
+  }
+}

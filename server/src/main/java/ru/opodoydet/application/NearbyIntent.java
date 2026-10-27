@@ -39,9 +39,21 @@ final class NearbyIntent {
     return DEFINITIONS.stream().filter(d -> d.kind().equals(kind)).findFirst().orElseThrow();
   }
 
+  static Definition definition(String kind, String region) {
+    Definition original = definition(kind);
+    return kind.equals("city_center") && region.equals("Сочи")
+        ? new Definition(kind, "центр Сочи", original.defaultMaxMeters(),
+            "центр(?:е|а|ом|у)?(?:\\s+города)?|центральн(?:ый|ом|ого)\\s+район(?:е|а)?|city\\s+cent(?:er|re)|downtown")
+        : original;
+  }
+
   private static boolean has(String regex, String text) { return Pattern.compile(regex).matcher(text).find(); }
 
   static Parsed parse(String original) {
+    return parse(original, "Пусан");
+  }
+
+  static Parsed parse(String original, String region) {
     String clause = original.toLowerCase(Locale.ROOT).replace('ё', 'е').strip();
     if (clause.matches("(?:убери|убрать|сбрось|очисти|удали) (?:все )?(?:условия рядом|условия близости|окружение|близость к местам|места рядом|рядом)"))
       return new Parsed(true, List.of(Json.obj("action", "clear")), "", "");
@@ -51,7 +63,7 @@ final class NearbyIntent {
     List<Definition> matched = new ArrayList<>();
     String remainder = clause;
     List<String> specificFirst = List.of("shopping_mall", "supermarket", "train_station", "subway");
-    for (Definition definition : DEFINITIONS.stream().sorted((a, b) -> Integer.compare(
+    for (Definition definition : DEFINITIONS.stream().map(d -> definition(d.kind(), region)).sorted((a, b) -> Integer.compare(
         specificFirst.contains(a.kind()) ? specificFirst.indexOf(a.kind()) : 4,
         specificFirst.contains(b.kind()) ? specificFirst.indexOf(b.kind()) : 4)).toList()) {
       String expression = "(?U)\\b(?:" + definition.aliases() + ")\\b";
@@ -99,7 +111,7 @@ final class NearbyIntent {
     if (has("\\d", remainder)) return Parsed.unsupported(original, "Не распознано расстояние. Укажите метры или километры от 1 до 10000 м.");
     remainder = remainder.replaceAll(FILLER, " ").replaceAll("[\\s:—-]+", " ").strip();
     List<JsonNode> updates = new ArrayList<>();
-    for (Definition definition : DEFINITIONS) if (matched.contains(definition))
+    for (Definition definition : DEFINITIONS.stream().map(d -> definition(d.kind(), region)).toList()) if (matched.contains(definition))
       updates.add(remove ? Json.obj("kind", definition.kind(), "action", "remove")
           : Json.obj("kind", definition.kind(), "action", "add", "maxMeters", meters == null ? definition.defaultMaxMeters() : meters));
     return new Parsed(true, updates, remainder, "");

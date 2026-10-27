@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import { CircleHelp, ExternalLink, Wind, ShieldCheck } from "lucide-react";
 import { api } from "../../../shared/api/client";
 import type { AreaAssessment } from "../../../../shared/area";
+import { regionDetails } from "../../../../shared/regions";
 
-const timestamp = (value: string | null) =>
+const timestamp = (value: string | null, region: string) =>
   value
     ? new Date(value).toLocaleString("ru-RU", {
-        timeZone: "Asia/Seoul",
+        timeZone: regionDetails(region)?.timeZone || "UTC",
         dateStyle: "medium",
         timeStyle: "short",
-      }) + " (Пусан, UTC+9)"
+      }) + ` (${region})`
     : "Время не указано";
 const metricNames = {
   reported_incidents: "Зарегистрированные происшествия",
@@ -17,7 +18,7 @@ const metricNames = {
   crime_rate_per_100000: "Частота на 100 000 жителей",
 };
 
-export function AreaPanel({ hotelId }: { hotelId: string }) {
+export function AreaPanel({ hotelId, region = "Пусан" }: { hotelId: string; region?: string }) {
   const [assessment, setAssessment] = useState<AreaAssessment | null>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "error">(
     "loading",
@@ -131,7 +132,7 @@ export function AreaPanel({ hotelId }: { hotelId: string }) {
                 </dd>
               </div>
             </dl>
-            <p className="area-date">{timestamp(air?.time || null)}</p>
+            <p className="area-date">{timestamp(air?.time || null, region)}</p>
             <p>
               Модель CAMS Global, сетка около 45 км. Эти значения не различают
               соседние улицы и не относятся к выбранным датам поездки.
@@ -157,7 +158,7 @@ export function AreaPanel({ hotelId }: { hotelId: string }) {
                   Лицензия
                 </a>
               </p>
-              <p>Получено: {timestamp(air?.fetchedAt || null)}</p>
+              <p>Получено: {timestamp(air?.fetchedAt || null, region)}</p>
               <ul>
                 {air?.limitations.map((text) => (
                   <li key={text}>{text}</li>

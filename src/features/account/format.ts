@@ -1,13 +1,14 @@
 import type { BookingStatus, WindowDirection } from "../../../shared/account";
+import { propertyTimeZone, todayInTimeZone, type RegionCurrency } from "../../../shared/regions";
 export function countLabel(count: number, forms: [string, string, string]) {
   const remainder = Math.abs(count) % 100;
   const last = remainder % 10;
   return `${count} ${forms[remainder >= 11 && remainder <= 14 ? 2 : last === 1 ? 0 : last >= 2 && last <= 4 ? 1 : 2]}`;
 }
-export const price = (value: number) =>
+export const price = (value: number, currency: RegionCurrency) =>
   new Intl.NumberFormat("ru-RU", {
     style: "currency",
-    currency: "KRW",
+    currency,
     maximumFractionDigits: 0,
   }).format(value);
 export const calendarDate = (value: string) =>
@@ -54,15 +55,9 @@ export function dateRange(from: string, to: string) {
   return formatter.formatRange(first, last);
 }
 /** Booking dates follow the property's current market timezone, the same as the API. */
-export const bookingToday = () =>
-  new Intl.DateTimeFormat("sv-SE", {
-    timeZone: "Asia/Seoul",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
-export function bookingLatestDate() {
-  const date = new Date(`${bookingToday()}T12:00:00`);
+export const bookingToday = (city = "Пусан") => todayInTimeZone(propertyTimeZone(city));
+export function bookingLatestDate(city = "Пусан") {
+  const date = new Date(`${bookingToday(city)}T12:00:00`);
   const month = date.getMonth();
   date.setFullYear(date.getFullYear() + 2);
   if (date.getMonth() !== month) date.setDate(0);

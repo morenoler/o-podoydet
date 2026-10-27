@@ -12,16 +12,23 @@ import ru.opodoydet.accounts.Inputs;
 import ru.opodoydet.accounts.listings.ListingService;
 import ru.opodoydet.accounts.persistence.AccountDatabase;
 import ru.opodoydet.shared.Json;
+import ru.opodoydet.domain.RegionSettings;
 
 public final class BookingService {
   private final AccountDatabase db;
   private final BookingRepository repository;
   private final ListingService listings;
+  private final Clock clock;
 
   public BookingService(AccountDatabase db, ListingService listings) {
+    this(db, listings, Clock.systemUTC());
+  }
+
+  public BookingService(AccountDatabase db, ListingService listings, Clock clock) {
     this.db = db;
     repository = new BookingRepository(db);
     this.listings = listings;
+    this.clock = clock;
   }
 
   public List<ObjectNode> user(String user) throws SQLException {
@@ -36,7 +43,7 @@ public final class BookingService {
     LocalDate from = Inputs.date(input, "checkIn", "Заезд"),
         to = Inputs.date(input, "checkOut", "Выезд");
     long nights = ChronoUnit.DAYS.between(from, to);
-    if (from.isBefore(today()) || nights < 1 || nights > 90 || from.isAfter(today().plusYears(2)))
+    if (nights < 1 || nights > 90)
       throw new AccountProblem(400, "Выберите будущие даты: от 1 до 90 ночей, не дальше двух лет.");
     int guests = Inputs.integer(input, "guests", "Гости", 1, 20);
     String note = Inputs.optional(input, "note", "Комментарий", 1500);
@@ -44,6 +51,9 @@ public final class BookingService {
         () -> {
           db.lockListing(listingId);
           ObjectNode listing = listings.published(listingId);
+          LocalDate today = today(Json.str(listing, "city"));
+          if (from.isBefore(today) || from.isAfter(today.plusYears(2)))
+            throw new AccountProblem(400, "Выберите будущие даты: от 1 до 90 ночей, не дальше двух лет.");
           if (guests > listing.path("capacity").asInt())
             throw new AccountProblem(
                 400, "В объявлении недостаточно мест для выбранного числа гостей.");
@@ -52,7 +62,7 @@ public final class BookingService {
                 409, "На эти даты уже есть подтверждённая бронь. Выберите другие даты.");
           if (repository.duplicate(listingId, user, from.toString(), to.toString()))
             throw new AccountProblem(409, "Заявка на эти даты уже есть в вашем личном кабинете.");
-          String id = UUID.randomUUID().toString(), now = Instant.now().toString();
+          String id = UUID.randomUUID().toString(), now = clock.instant().toString();
           ObjectNode booking =
               Json.obj(
                   "id",
@@ -71,6 +81,8 @@ public final class BookingService {
                   nights,
                   "pricePerNight",
                   listing.path("pricePerNight").asInt(),
+                  "currency",
+                  Json.str(listing, "currency"),
                   "totalPrice",
                   nights * listing.path("pricePerNight").asLong(),
                   "note",
@@ -102,10 +114,10 @@ public final class BookingService {
           if (!status.equals("pending") && !status.equals("confirmed"))
             throw new AccountProblem(409, "Эту заявку уже нельзя отменить.");
           if (status.equals("confirmed")
-              && LocalDate.parse(Json.str(booking, "checkIn")).isBefore(today()))
+              && LocalDate.parse(Json.str(booking, "checkIn")).isBefore(today(Json.str(booking, "city"))))
             throw new AccountProblem(
                 409, "Поездка уже началась. Свяжитесь с отельером для отмены.");
-          repository.status(id, "cancelled", Instant.now().toString());
+          repository.status(id, "cancelled", clock.instant().toString());
           return repository.find(id);
         });
   }
@@ -128,11 +140,11 @@ public final class BookingService {
           if (!allowed)
             throw new AccountProblem(409, "Такое изменение статуса недоступно. Обновите страницу.");
           if (target.equals("completed")
-              && LocalDate.parse(Json.str(booking, "checkOut")).isAfter(today()))
+              && LocalDate.parse(Json.str(booking, "checkOut")).isAfter(today(Json.str(booking, "city"))))
             throw new AccountProblem(409, "Завершить поездку можно после даты выезда.");
           if (target.equals("confirmed")) {
-            if (LocalDate.parse(Json.str(booking, "checkOut")).isBefore(today())
-                || LocalDate.parse(Json.str(booking, "checkOut")).equals(today()))
+            if (LocalDate.parse(Json.str(booking, "checkOut")).isBefore(today(Json.str(booking, "city")))
+                || LocalDate.parse(Json.str(booking, "checkOut")).equals(today(Json.str(booking, "city"))))
               throw new AccountProblem(
                   409, "Даты поездки уже прошли. Эту заявку нельзя подтвердить.");
             if (repository.overlap(
@@ -141,13 +153,13 @@ public final class BookingService {
                 Json.str(booking, "checkOut"),
                 id)) throw new AccountProblem(409, "На эти даты уже есть подтверждённая бронь.");
           }
-          repository.status(id, target, Instant.now().toString());
+          repository.status(id, target, clock.instant().toString());
           return repository.find(id);
         });
   }
 
   // Rental calendar follows the territory of the catalogue, independently of server timezone.
-  private static LocalDate today() {
-    return LocalDate.now(ZoneId.of("Asia/Seoul"));
+  private LocalDate today(String region) {
+    return LocalDate.now(clock.withZone(RegionSettings.of(region).timezone()));
   }
 }

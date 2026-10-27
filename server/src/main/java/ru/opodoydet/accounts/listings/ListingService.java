@@ -57,6 +57,7 @@ public final class ListingService {
 
   public ObjectNode create(String host, JsonNode input) throws SQLException {
     ObjectNode listing = validate(input);
+    listing.put("currency", currency(input, "KRW"));
     ObjectNode profile =
         input.has("searchProfile")
             ? SearchProfileRepository.validate(input.path("searchProfile"))
@@ -87,6 +88,7 @@ public final class ListingService {
         () -> {
           db.lockListing(id);
           ObjectNode existing = owned(id, host);
+          listing.put("currency", currency(input, Json.str(existing, "currency")));
           ListingDetails.apply(listing, input, existing);
           photos.requireOwnership(host, listing.path("photos"));
           if (!ClarificationScope.fingerprint(existing).equals(ClarificationScope.fingerprint(listing)))
@@ -128,6 +130,14 @@ public final class ListingService {
       normalized.add(amenity.asText().trim());
     }
     value.set("amenities", Json.array(normalized));
+    return value;
+  }
+
+  private static String currency(JsonNode input, String fallback) {
+    if (!input.has("currency")) return fallback;
+    String value = Inputs.text(input, "currency", "Валюта", 3, 3);
+    if (!Set.of("KRW", "RUB").contains(value))
+      throw new AccountProblem(400, "Поддерживаются валюты KRW и RUB.");
     return value;
   }
 }

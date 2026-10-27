@@ -64,7 +64,7 @@ public class SearchOverlay implements SearchProjection {
   /** All variants are calculated immediately; no JPA entities escape into stored advisor snapshots. */
   @Override
   public SearchProjection.Snapshot snapshot(JsonNode trip, java.time.Instant now) {
-    Context captured = context(now);
+    Context captured = context(trip, now);
     JsonNode capturedTrip = trip.deepCopy();
     return (matches, preferences, conflicts) -> {
       List<JsonNode> result = matches.stream().map(m -> (JsonNode) m.deepCopy())
@@ -79,7 +79,7 @@ public class SearchOverlay implements SearchProjection {
 
   /** Ответ {@code POST /api/search} старого API → тот же ответ с критериями по ядру. */
   public ObjectNode search(ObjectNode response, JsonNode trip) {
-    Context context = context();
+    Context context = context(trip, clock.instant());
     boolean conflicts = !response.path("conflicts").isEmpty();
     Set<String> preferenceFeatures = features(response.path("preferences"));
 
@@ -112,7 +112,7 @@ public class SearchOverlay implements SearchProjection {
 
   /** Ответ {@code POST /api/hotels/{id}/evaluate}: все условия по каждой категории номера. */
   public ObjectNode detail(ObjectNode match, JsonNode trip) {
-    Context context = context();
+    Context context = context(trip, clock.instant());
     boolean conflicts = !match.path("conflicts").isEmpty();
     recompute(match, trip, context, conflicts, features(match.path("preferences")));
     return match;
@@ -206,16 +206,15 @@ public class SearchOverlay implements SearchProjection {
 
   private record Context(Set<String> hotels, CriterionEvaluator evaluator) {}
 
-  private Context context() { return context(clock.instant()); }
-
-  private Context context(java.time.Instant now) {
-    boolean demo = catalog.dataset().map(Dataset::isDemoPolicy).orElse(false);
+  private Context context(JsonNode trip, java.time.Instant now) {
+    String region = trip.path("region").asText();
+    boolean demo = catalog.requireDataset(region).isDemoPolicy();
     Map<String, Characteristic> characteristics =
         knowledge.characteristics().stream()
             .collect(Collectors.toMap(Characteristic::getCode, Function.identity()));
     var evidence = knowledge.activeEvidenceByHotel();
     return new Context(
-        catalog.hotelIds(),
+        catalog.hotelIds(region),
         new CriterionEvaluator(
             characteristics, evidence, knowledge.confidenceByHotel(), now, demo, json));
   }

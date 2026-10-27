@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, ExternalLink, MapPin } from "lucide-react";
 import type { Dataset, Fact, Hotel } from "../../../../shared/types";
 import { useApp } from "../../../app/providers/TripProvider";
@@ -9,6 +9,7 @@ import { HotelPhotoGallery } from "./HotelPhotoGallery";
 import { FactEvidence } from "./FactEvidence";
 import { roomDetailsLabel } from "../../account/format";
 import { accommodationPath } from "../../../shared/lib/accommodation";
+import { dateFull } from "../../../shared/lib/date";
 
 export function HotelCatalogPreview({
   hotel,
@@ -21,9 +22,11 @@ export function HotelCatalogPreview({
   catalog: Dataset;
   selectedRoomId?: string | null;
 }) {
-  const { trip, setTrip } = useApp();
-  const selectedRoom = hotel.rooms.find((room) => room.id === selectedRoomId);
-  const displayedRooms = selectedRoom ? [selectedRoom] : hotel.rooms;
+  const { trip, setTrip, regions } = useApp();
+  const navigate = useNavigate();
+  const categories = hotel.rooms.filter((room) => room.evidenceStatus === "verified" || room.demo);
+  const selectedRoom = categories.find((room) => room.id === selectedRoomId);
+  const displayedRooms = selectedRoom ? [selectedRoom] : categories;
   const displayedFacts = selectedRoom
     ? facts.filter((fact) => !fact.roomId || fact.roomId === selectedRoom.id)
     : facts;
@@ -32,7 +35,10 @@ export function HotelCatalogPreview({
       <Link to="/results" className="back-link">
         <ArrowLeft size={18} aria-hidden="true" />К номерам
       </Link>
-      <SearchBar trip={trip} onSearch={setTrip} />
+      <SearchBar trip={trip} regions={regions} onSearch={(next) => {
+        setTrip(next);
+        if (next.region !== trip.region) navigate("/results");
+      }} />
       <div className="detail-heading">
         <div>
           <h1>{selectedRoom?.name || hotel.name}</h1>
@@ -60,10 +66,10 @@ export function HotelCatalogPreview({
       <HotelPhotoGallery hotel={hotel} />
       {selectedRoomId && !selectedRoom && <p className="notice">Запрошенная категория больше не доступна в каталоге. Ниже показаны сведения об отеле; выберите другую категорию.</p>}
       <div className="hotel-preview-prompt">
-        <h2>{selectedRoom ? "Подойдёт ли вам этот номер?" : "Какой номер вам подойдёт?"}</h2>
+        <h2>{!categories.length ? "Категории номеров пока не собраны" : selectedRoom ? "Подойдёт ли вам этот номер?" : "Какой номер вам подойдёт?"}</h2>
         <p>
-          Укажите даты и гостей в строке поиска. Проверим вместимость и ваши
-          пожелания {selectedRoom ? "для выбранной категории номера." : "для каждой категории отдельно."}
+          {!categories.length ? "Объект отмечен в OpenStreetMap. Условия конкретной комнаты, вместимость, цену и наличие нужно уточнить у отеля." : <>Укажите даты и гостей в строке поиска. Проверим вместимость и ваши
+          пожелания {selectedRoom ? "для выбранной категории номера." : "для каждой категории отдельно."}</>}
         </p>
       </div>
       <div className="detail-grid">
@@ -99,6 +105,7 @@ export function HotelCatalogPreview({
         <aside className="room-panel">
           <h2>{selectedRoom ? "Выбранная категория" : "Категории номеров"}</h2>
           <p>Цена и наличие не проверены.</p>
+          {!displayedRooms.length && <p>Подтверждённых сведений о категориях нет.</p>}
           {displayedRooms.map((room) => (
             <div className="hotel-preview-room" key={room.id}>
               <h3>{room.name}</h3>
@@ -124,10 +131,10 @@ export function HotelCatalogPreview({
               )}
             </div>
           ))}
-          {selectedRoom && hotel.rooms.length > 1 && <details className="hotel-preview-room">
+          {selectedRoom && categories.length > 1 && <details className="hotel-preview-room">
             <summary>Другие категории в этом отеле</summary>
             <ul>
-              {hotel.rooms.filter((room) => room.id !== selectedRoom.id).map((room) => <li key={room.id}><Link to={accommodationPath(hotel, room.id)}>{room.name}</Link></li>)}
+              {categories.filter((room) => room.id !== selectedRoom.id).map((room) => <li key={room.id}><Link to={accommodationPath(hotel, room.id)}>{room.name}</Link></li>)}
             </ul>
           </details>}
         </aside>
@@ -135,9 +142,13 @@ export function HotelCatalogPreview({
       <section className="subsection evidence-section">
         <h2>Известные сведения и источники</h2>
         <p>
-          {selectedRoom ? "Сведения относятся к выбранной категории и отелю." : "Условия относятся к указанным категориям."} Соответствие вашим датам ещё
+          {selectedRoom ? "Сведения относятся к выбранной категории и отелю." : categories.length ? "Условия относятся к указанным категориям." : "Сведения относятся к объекту размещения."} Соответствие вашим датам ещё
           не проверено.
         </p>
+        {hotel.sourceEvidence && <p>Источник: <a href={hotel.sourceEvidence.sourceUrl} target="_blank" rel="noreferrer">OpenStreetMap</a>. Получено {dateFull(hotel.sourceEvidence.obtainedAt)}.
+          {hotel.sourceEvidence.sourceDate ? ` Дата объекта: ${dateFull(hotel.sourceEvidence.sourceDate)}.` : " Дата объекта неизвестна."}
+          {` Перепроверить до ${dateFull(hotel.sourceEvidence.expiresAt)}. Наличие объекта на карте не подтверждает его работу на даты поездки.`}</p>}
+        {hotel.dataNotes?.map((note) => <p key={note}>{note}</p>)}
         {displayedFacts.map((fact) => (
           <FactEvidence
             key={fact.id}

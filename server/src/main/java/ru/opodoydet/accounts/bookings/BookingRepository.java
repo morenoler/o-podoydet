@@ -13,7 +13,7 @@ public final class BookingRepository {
           + " listingTitle,b.city,b.address,b.user_id AS userId,u.name AS guestName,u.email AS"
           + " guestEmail,l.host_id AS hostId,b.check_in AS checkIn,b.check_out AS"
           + " checkOut,b.guests,b.nights,b.price_per_night AS pricePerNight,b.total_price AS"
-          + " totalPrice,'KRW' AS currency,l.photos,l.room_type AS"
+          + " totalPrice,b.currency,l.photos,l.room_type AS"
           + " roomType,b.status,b.note,b.created_at AS createdAt,b.updated_at AS updatedAt FROM"
           + " account_bookings b JOIN account_listings l ON l.id=b.listing_id JOIN account_users u"
           + " ON u.id=b.user_id ";
@@ -65,8 +65,8 @@ public final class BookingRepository {
   public void insert(ObjectNode b) throws SQLException {
     db.execute(
         "INSERT INTO"
-            + " account_bookings(id,listing_id,user_id,check_in,check_out,guests,nights,price_per_night,total_price,status,note,listing_title,city,address,created_at,updated_at)"
-            + " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            + " account_bookings(id,listing_id,user_id,check_in,check_out,guests,nights,price_per_night,total_price,status,note,listing_title,city,address,created_at,updated_at,currency)"
+            + " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         Json.str(b, "id"),
         Json.str(b, "listingId"),
         Json.str(b, "userId"),
@@ -82,7 +82,8 @@ public final class BookingRepository {
         Json.str(b, "city"),
         Json.str(b, "address"),
         Json.str(b, "createdAt"),
-        Json.str(b, "updatedAt"));
+        Json.str(b, "updatedAt"),
+        Json.str(b, "currency"));
   }
 
   public void status(String id, String status, String now) throws SQLException {

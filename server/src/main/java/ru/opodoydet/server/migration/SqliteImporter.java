@@ -58,7 +58,7 @@ public class SqliteImporter {
               List.of(
                   "id", "host_id", "title", "description", "city", "address", "room_type", "capacity",
                   "price_per_night", "amenities", "status", "created_at", "updated_at", "floor",
-                  "window_directions", "photos"),
+                  "window_directions", "photos", "currency"),
               "created_at"),
           new Copy(
               "account_listing_search_profiles",
@@ -71,7 +71,7 @@ public class SqliteImporter {
               List.of(
                   "id", "listing_id", "user_id", "check_in", "check_out", "guests", "nights",
                   "price_per_night", "total_price", "status", "note", "listing_title", "city",
-                  "address", "created_at", "updated_at"),
+                  "address", "created_at", "updated_at", "currency"),
               "created_at"),
           new Copy(
               "account_questions",
@@ -90,7 +90,7 @@ public class SqliteImporter {
           new Copy("account_clarification_answers", "account_clarification_answers",
               List.of("id", "clarification_id", "host_id", "version", "value", "answer_text", "observed_on",
                   "recorded_at", "valid_from", "valid_to", "recheck_at", "scope_fingerprint", "supersedes",
-                  "superseded_by", "request_key", "payload_hash"), "recorded_at"),
+                  "superseded_by", "request_key", "payload_hash", "time_zone"), "recorded_at"),
           new Copy("advisor_runs", "advisor_run", List.of("id", "created_at", "body", "owner_key", "region"), "created_at"),
           new Copy(
               "questions", "catalog_question", List.of("id", "hotel_id", "room_id", "feature", "body", "region"), "rowid"),

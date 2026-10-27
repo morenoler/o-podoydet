@@ -12,7 +12,7 @@ public final class ListingRepository {
       "SELECT l.id,l.host_id AS hostId,u.name AS"
           + " hostName,l.title,l.description,l.city,l.address,l.room_type AS"
           + " roomType,l.capacity,l.price_per_night AS"
-          + " pricePerNight,l.amenities,l.status,l.floor,l.window_directions AS"
+          + " pricePerNight,l.currency,l.amenities,l.status,l.floor,l.window_directions AS"
           + " windowDirections,l.photos,l.created_at AS createdAt,l.updated_at AS updatedAt FROM"
           + " account_listings l JOIN account_users u ON u.id=l.host_id ";
 
@@ -39,8 +39,8 @@ public final class ListingRepository {
   public void insert(ObjectNode l) throws SQLException {
     db.execute(
         "INSERT INTO"
-            + " account_listings(id,host_id,title,description,city,address,room_type,capacity,price_per_night,amenities,status,created_at,updated_at,floor,window_directions,photos)"
-            + " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            + " account_listings(id,host_id,title,description,city,address,room_type,capacity,price_per_night,amenities,status,created_at,updated_at,floor,window_directions,photos,currency)"
+            + " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         Json.str(l, "id"),
         Json.str(l, "hostId"),
         Json.str(l, "title"),
@@ -56,13 +56,14 @@ public final class ListingRepository {
         Json.str(l, "updatedAt"),
         l.path("floor").isNull() ? null : l.path("floor").asInt(),
         Json.write(l.path("windowDirections")),
-        Json.write(l.path("photos")));
+        Json.write(l.path("photos")),
+        Json.str(l, "currency"));
   }
 
   public void update(String id, ObjectNode l) throws SQLException {
     db.execute(
         "UPDATE account_listings SET"
-            + " title=?,description=?,city=?,address=?,room_type=?,capacity=?,price_per_night=?,amenities=?,status=?,updated_at=?,floor=?,window_directions=?,photos=?"
+            + " title=?,description=?,city=?,address=?,room_type=?,capacity=?,price_per_night=?,amenities=?,status=?,updated_at=?,floor=?,window_directions=?,photos=?,currency=?"
             + " WHERE id=?",
         Json.str(l, "title"),
         Json.str(l, "description"),
@@ -77,6 +78,7 @@ public final class ListingRepository {
         l.path("floor").isNull() ? null : l.path("floor").asInt(),
         Json.write(l.path("windowDirections")),
         Json.write(l.path("photos")),
+        Json.str(l, "currency"),
         id);
   }
 
@@ -85,7 +87,6 @@ public final class ListingRepository {
     node.set("amenities", Json.read(Json.str(node, "amenities")));
     node.set("windowDirections", Json.read(Json.str(node, "windowDirections")));
     node.set("photos", Json.read(Json.str(node, "photos")));
-    node.put("currency", "KRW");
     return node;
   }
 }

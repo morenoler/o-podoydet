@@ -17,8 +17,8 @@ export function BookingRequest({ listing }: { listing: Listing }) {
   const { trip } = useApp();
   const location = useLocation();
   const [form, setForm] = useState({
-    checkIn: trip.checkIn >= bookingToday() ? trip.checkIn : "",
-    checkOut: trip.checkIn >= bookingToday() ? trip.checkOut : "",
+    checkIn: trip.checkIn >= bookingToday(listing.city) ? trip.checkIn : "",
+    checkOut: trip.checkIn >= bookingToday(listing.city) ? trip.checkOut : "",
     guests: Math.max(1, trip.adults + trip.children),
     note: "",
   });
@@ -68,7 +68,7 @@ export function BookingRequest({ listing }: { listing: Listing }) {
     >
       <h2 id="booking-title">Заявка на проживание</h2>
       <p className="listing-night-price">
-        <strong>{price(listing.pricePerNight)}</strong>
+        <strong>{price(listing.pricePerNight, listing.currency)}</strong>
         <span>за ночь</span>
       </p>
       {sent ? (
@@ -120,8 +120,8 @@ export function BookingRequest({ listing }: { listing: Listing }) {
               <input
                 type="date"
                 required
-                min={bookingToday()}
-                max={bookingLatestDate()}
+                min={bookingToday(listing.city)}
+                max={bookingLatestDate(listing.city)}
                 value={form.checkIn}
                 onChange={(event) =>
                   setForm({
@@ -138,7 +138,7 @@ export function BookingRequest({ listing }: { listing: Listing }) {
               <input
                 type="date"
                 required
-                min={form.checkIn ? addDay(form.checkIn) : bookingToday()}
+                min={form.checkIn ? addDay(form.checkIn) : bookingToday(listing.city)}
                 max={form.checkIn ? addDay(form.checkIn, 90) : undefined}
                 value={form.checkOut}
                 onChange={(event) =>
@@ -196,7 +196,7 @@ export function BookingRequest({ listing }: { listing: Listing }) {
           {nights > 0 && nights <= 90 && (
             <div className="listing-total">
               <span>Всего за {nights} ноч.</span>
-              <strong>{price(nights * listing.pricePerNight)}</strong>
+              <strong>{price(nights * listing.pricePerNight, listing.currency)}</strong>
             </div>
           )}
           <button
@@ -206,7 +206,7 @@ export function BookingRequest({ listing }: { listing: Listing }) {
             {busy ? "Отправляем заявку…" : "Отправить заявку"}
           </button>
           <p className="listing-booking-note">
-            Даты по времени Пусана, до 90 ночей. Без списаний. Наличие номера
+            Даты по местному времени ({listing.city}), до 90 ночей. Без списаний. Наличие номера
             подтверждает отельер.
           </p>
         </form>

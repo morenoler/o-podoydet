@@ -12,7 +12,7 @@ import "../features/search/catalog-filters.css";
 import { PersonalWishesSummary } from "../features/hotels/components/PersonalWishesSummary";
 import { MatchBadge } from "../features/hotels/components/MatchBadge";
 import { matchForSelectedPreferences } from "../shared/lib/matchPresentation";
-import { useParams, useSearchParams, Link } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useApp } from "../app/providers/TripProvider";
 import { useState, useEffect } from "react";
 import type { HotelMatch, Hotel, Fact, Question } from "../../shared/types";
@@ -32,16 +32,20 @@ import { FactEvidence } from "../features/hotels/components/FactEvidence";
 import { accommodationPath } from "../shared/lib/accommodation";
 import { CatalogClarificationPlan } from "../features/clarifications/CatalogClarificationPlan";
 import "../features/clarifications/clarifications.css";
+import { changeTripRegion } from "../features/search/searchPolicy";
+import { hasEvaluableRooms } from "../features/search/roomResults";
 
 export function HotelPage() {
   const { id } = useParams();
-  const { trip, setTrip, catalog, catalogError, revision, refresh } = useApp();
+  const navigate = useNavigate();
+  const { trip, setTrip, catalog, catalogError, revision, refresh, regions } = useApp();
   const validTrip = canSearch(trip);
   const [params] = useSearchParams();
   const requestedRoom = params.get("room");
   const tripKey = JSON.stringify(trip);
   const [ranked, setRanked] = useState<HotelMatch | null>(null);
   const [data, setData] = useState<{
+      region?: string;
       hotel: Hotel;
       facts: Fact[];
       questions: Question[];
@@ -53,12 +57,17 @@ export function HotelPage() {
     setData(null);
     setRanked(null);
     setError("");
-    Promise.all([
-      api<typeof data>(`/hotels/${id}`),
-      validTrip
-        ? api<HotelMatch>(`/hotels/${id}/evaluate`, trip)
-        : Promise.resolve(null),
-    ])
+    api<typeof data>(`/hotels/${id}`)
+      .then(async (d) => {
+        if (!active || !d) return [null, null] as const;
+        const region = d.region || d.hotel.region;
+        if (region && region !== trip.region) {
+          setTrip(changeTripRegion(trip, region));
+          return [null, null] as const;
+        }
+        const evaluation = validTrip && hasEvaluableRooms(d.hotel) ? await api<HotelMatch>(`/hotels/${id}/evaluate`, trip) : null;
+        return [d, evaluation] as const;
+      })
       .then(([d, evaluation]) => {
         if (active) {
           setData(d);
@@ -96,7 +105,7 @@ export function HotelPage() {
         <ErrorMessage text={error} />
       </div>
     );
-  if (!data || !catalog || (validTrip && !ranked))
+  if (!data || !catalog || (data.region && data.region !== catalog.region))
     return (
       <div className="page">
         <Loading />
@@ -129,11 +138,12 @@ export function HotelPage() {
       </Link>
       <SearchBar
         trip={trip}
-        onSearch={(next) =>
-          JSON.stringify(next) === JSON.stringify(trip)
-            ? refresh()
-            : setTrip(next)
-        }
+        regions={regions}
+        onSearch={(next) => {
+          if (next.region !== trip.region) { setTrip(next); navigate("/results"); }
+          else if (JSON.stringify(next) === JSON.stringify(trip)) refresh();
+          else setTrip(next);
+        }}
       />
       <div className="detail-heading">
         <div>
@@ -322,7 +332,7 @@ export function HotelPage() {
             )}
           />
           <CapacitySummary match={room} />
-          <NearbySummary matches={room.nearbyMatches || []} />
+          <NearbySummary matches={room.nearbyMatches || []} region={trip.region} />
           {(selectedCriteria.length > 0 || !hasOwnerCriteria) && (
             <WishMatches criteria={selectedCriteria} />
           )}
@@ -366,8 +376,7 @@ export function HotelPage() {
             <div>
               <h2>Район на даты вашей поездки</h2>
               <p>
-                {dateFull(trip.checkIn)} — {dateFull(trip.checkOut)} · время
-                Пусана
+                {dateFull(trip.checkIn)} — {dateFull(trip.checkOut)} · {trip.region}
               </p>
             </div>
           </div>
@@ -397,7 +406,7 @@ export function HotelPage() {
           </div>
         </section>
       )}
-      {!labFixture && <AreaPanel hotelId={hotel.id} />}
+      {!labFixture && <AreaPanel hotelId={hotel.id} region={trip.region} />}
       <section className="subsection evidence-section">
         <h2>Почему мы так считаем</h2>
         <p>

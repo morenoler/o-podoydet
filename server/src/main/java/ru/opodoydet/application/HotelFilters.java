@@ -81,7 +81,7 @@ public final class HotelFilters {
         && Json.list(filters.path("lodgingTypes")).stream()
             .noneMatch(type -> type.asText().equals(Json.str(hotel, "lodgingType")))) return false;
     if (filters.has("maxPricePerNight")
-        && (!Json.str(hotel, "currency").equals("KRW")
+        && (!Json.str(hotel, "currency").equals(ru.opodoydet.domain.RegionSettings.of(Json.str(hotel, "region")).currency())
             || !positiveNumber(hotel.path("pricePerNight"))
             || hotel.path("pricePerNight").asDouble() > filters.path("maxPricePerNight").asDouble())) return false;
     if (filters.has("maxBeachMeters")

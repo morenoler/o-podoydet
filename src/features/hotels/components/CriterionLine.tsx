@@ -4,6 +4,7 @@ import { features } from "../../../../shared/features";
 import { dateFull } from "../../../shared/lib/date";
 import { criterionNeedsClarification } from "../../../shared/lib/matchPresentation";
 import { clarificationDate } from "../../clarifications/clarificationDates";
+import { timeZoneLabel } from "../../../../shared/regions";
 
 export function CriterionLine({
   criterion,
@@ -103,10 +104,10 @@ export function CriterionLine({
                       : "Область заявления — единица размещения из объявления. Актуальность указана отдельно."}
                   </p>
                   <p>
-                    Записано {clarificationDate(e.recordedAt)} · перепроверить
-                    до {clarificationDate(e.recheckAt)} (Пусан).
+                    Записано {clarificationDate(e.recordedAt, e.timeZone)} · перепроверить
+                    до {clarificationDate(e.recheckAt, e.timeZone)} ({timeZoneLabel(e.timeZone || "Asia/Seoul")}).
                     {e.observedOn
-                      ? ` Проверено отельером ${clarificationDate(e.observedOn)}.`
+                      ? ` Проверено отельером ${clarificationDate(e.observedOn, e.timeZone)}.`
                       : " Дата проверки отельером неизвестна."}
                   </p>
                   {e.validFrom && e.validTo && (

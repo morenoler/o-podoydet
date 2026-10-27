@@ -4,8 +4,10 @@ import type {
   ListingSearchProfile,
   WindowDirection,
 } from "../../../../shared/account";
+import { listingCurrency, type RegionCurrency } from "../../../../shared/regions";
 
 export type EditableListing = HostListingInput & {
+  currency: RegionCurrency;
   floor: number | null;
   windowDirections: WindowDirection[];
   photos: string[];
@@ -21,6 +23,7 @@ export function editableListing(listing?: HostListing): EditableListing {
         roomType: listing.roomType,
         capacity: listing.capacity,
         pricePerNight: listing.pricePerNight,
+        currency: listing.currency,
         amenities: listing.amenities,
         status: listing.status,
         floor: listing.floor ?? null,
@@ -36,6 +39,7 @@ export function editableListing(listing?: HostListing): EditableListing {
         roomType: "",
         capacity: 2,
         pricePerNight: 50000,
+        currency: "KRW",
         amenities: [],
         status: "draft",
         floor: null,
@@ -43,6 +47,15 @@ export function editableListing(listing?: HostListing): EditableListing {
         photos: [],
         searchProfile: { notes: "" },
       };
+}
+
+/** Changing currencies requires a fresh amount; never reinterpret an existing numeric price. */
+export function updateEditableListing<K extends keyof EditableListing>(
+  previous: EditableListing, key: K, value: EditableListing[K],
+): EditableListing {
+  const next = { ...previous, [key]: value };
+  const currency = key === "city" ? listingCurrency(String(value)) : next.currency;
+  return currency === previous.currency ? next : { ...next, currency, pricePerNight: 0 };
 }
 export interface ListingFieldsProps {
   value: EditableListing;

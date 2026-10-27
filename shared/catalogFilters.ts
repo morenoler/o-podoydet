@@ -1,5 +1,6 @@
 import type { CatalogSearchSnippet, Fact, Hotel, HotelFilters, Room } from "./types";
 import { matchesNearby } from "./nearby";
+import type { RegionCurrency } from "./regions";
 
 // Keep these deliberately small aliases in sync with application/HotelFilters.java.
 // Translating a word only expands retrieval; it never upgrades evidence about an amenity.
@@ -74,12 +75,12 @@ export function hasHotelFilters(filters?: HotelFilters): boolean {
 }
 
 /** Preview only; the server repeats all limits against its captured catalog/evidence snapshot. */
-export function matchesHotelFilters(hotel: Hotel, filters?: HotelFilters, facts: Fact[] = [], room?: Room): boolean {
+export function matchesHotelFilters(hotel: Hotel, filters?: HotelFilters, facts: Fact[] = [], room?: Room, currency: RegionCurrency = "KRW"): boolean {
   if (!hasHotelFilters(filters)) return true;
   if (!matchesNearby(hotel, filters)) return false;
   if (filters?.lodgingTypes?.length && (!hotel.lodgingType || !filters.lodgingTypes.includes(hotel.lodgingType))) return false;
   if (filters?.maxPricePerNight !== undefined && (
-    hotel.currency !== "KRW" || typeof hotel.pricePerNight !== "number" || !Number.isFinite(hotel.pricePerNight)
+    hotel.currency !== currency || typeof hotel.pricePerNight !== "number" || !Number.isFinite(hotel.pricePerNight)
     || hotel.pricePerNight <= 0 || hotel.pricePerNight > filters.maxPricePerNight
   )) return false;
   if (filters?.maxBeachMeters !== undefined && (

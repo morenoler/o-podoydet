@@ -89,6 +89,32 @@ class ClarificationServiceTest {
     }
   }
 
+  @Test void sochiObservationDateAndRecheckUseMoscowAndPreserveStoredTimezones() throws Exception {
+    try (Fixture f = new Fixture()) {
+      f.listings.update("host", f.id, listing().put("city", "Сочи"));
+      var clock = Clock.fixed(Instant.parse("2026-10-27T18:30:00Z"), ZoneOffset.UTC);
+      var service = new ClarificationService(f.db, f.listings, clock);
+      var request = request("family");
+      request.set("trip", trip("family").put("region", "Сочи"));
+      var question = service.ask("guest", f.id, request);
+      assertEquals("Сочи", question.path("region").asText());
+      assertEquals("Europe/Moscow", question.path("timeZone").asText());
+      var invalid = response(0, true).put("observedOn", "2026-10-28");
+      problem(400, () -> service.answer("host", question.path("id").asText(), invalid));
+      var answered = service.answer("host", question.path("id").asText(), response(0, true).put("observedOn", "2026-10-27"));
+      assertEquals("2026-11-25T21:00:00Z", answered.path("answer").path("recheckAt").asText());
+      assertEquals("Europe/Moscow", answered.path("answer").path("timeZone").asText());
+      var projected = new OwnerListingSearchProvider(f.db, clock).snapshot(request.path("trip"))
+          .apply(List.of(), List.of(Json.obj("feature", "family", "required", true))).getFirst();
+      assertEquals("Europe/Moscow", projected.path("best").path("criteria").get(0).path("reportedEvidence").get(0).path("timeZone").asText());
+      // A later city edit invalidates scope but cannot rewrite the historical timestamp or zone.
+      f.listings.update("host", f.id, listing());
+      var historical = service.host("host").getFirst().path("history").get(0);
+      assertEquals("2026-11-25T21:00:00Z", historical.path("recheckAt").asText());
+      assertEquals("Europe/Moscow", historical.path("timeZone").asText());
+    }
+  }
+
   @Test void booleanAndUnknownAnswerStatesRespectBothAdmissionModesForEverySupportedFeature() throws Exception {
     for (String feature : ClarificationService.FEATURES) for (Boolean value : Arrays.asList(true, false, null)) {
       try (Fixture f = new Fixture()) {

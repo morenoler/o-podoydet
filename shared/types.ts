@@ -90,6 +90,7 @@ export interface NoiseSource {
   coordinates: Point;
 }
 export interface Hotel {
+  region?: string;
   hasCollectedRoomCategories?: boolean;
   nearbyPlaces?: NearbyPlace[];
   sourceEvidence?: { sourceUrl: string; obtainedAt: string; sourceDate?: string; expiresAt: string; status: "reported"; method: "osm" };
@@ -99,7 +100,7 @@ export interface Hotel {
   windowDirections?: WindowDirection[];
   photos?: string[];
   pricePerNight?: number;
-  currency?: "KRW";
+  currency?: "KRW" | "RUB";
   /** Fictional lab listing: its placeholder coordinates must not produce environmental claims. */
   synthetic?: boolean;
   dataNotes?: string[];
@@ -118,6 +119,8 @@ export interface MapLine {
   kind: string;
 }
 export interface Dataset {
+  regions?: { region: string; hotelCount: number; evidencePolicy: "verified-only" | "demo" }[];
+  defaultRegion?: string;
   evidencePolicy?: "verified-only" | "demo";
   region: string;
   fetchedAt: string;
@@ -153,7 +156,7 @@ export interface HotelFilters {
   /** Literal catalog/source-text retrieval, never confirmation of a room amenity. */
   query?: string;
   lodgingTypes?: LodgingType[];
-  /** Published price in KRW; availability and a quote for the travel dates are not checked. */
+  /** Published price in the selected region's currency; availability and a quote for the travel dates are not checked. */
   maxPricePerNight?: number;
   /** Calculated route length, excluding unverified access to the water. */
   maxBeachMeters?: number;

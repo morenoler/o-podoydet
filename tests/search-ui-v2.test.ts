@@ -227,7 +227,8 @@ test("submit reads the displayed fields without discarding wishes or relying on 
   assert.deepEqual(current.scenarios, stale.scenarios);
   assert.equal(current.text, stale.text);
   assert.equal(current.admissionMode, "explore");
-  assert.equal(readSearchForm({ ...stale, region: "Адлер" }, fields).region, "Пусан");
+  assert.equal(readSearchForm({ ...stale, region: "Сочи" }, fields).region, "Сочи");
+  assert.equal(canSearch(readSearchForm({ ...stale, region: "Адлер" }, fields)), false);
 });
 
 function decision(overrides: Partial<CriterionDecision> = {}): CriterionDecision {

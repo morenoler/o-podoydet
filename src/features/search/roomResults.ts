@@ -1,6 +1,7 @@
 import type { Dataset, Hotel, HotelCandidate, HotelFilters, HotelMatch, Room, RoomRecommendation } from "../../../shared/types";
 import { matchesHotelFilters, matchingCatalogSnippets } from "../../../shared/catalogFilters";
 import { nearbyMatches } from "../../../shared/nearby";
+import { regionDetails } from "../../../shared/regions";
 import { accountListingId } from "../../shared/lib/accommodation";
 
 export interface RoomSearchItem {
@@ -8,6 +9,12 @@ export interface RoomSearchItem {
   hotel: Hotel;
   room: Room;
   recommendation?: RoomRecommendation;
+}
+
+/** Fictional lab rooms remain evaluable even though they are not collected real categories. */
+export function hasEvaluableRooms(hotel: Hotel): boolean {
+  return hotel.rooms.some((room) => (hotel.synthetic && room.demo)
+    || (hotel.hasCollectedRoomCategories !== false && room.evidenceStatus === "verified"));
 }
 
 export function recommendationItem(recommendation: RoomRecommendation): RoomSearchItem {
@@ -35,7 +42,7 @@ export function catalogHotelCandidates(catalog: Dataset | null, filters?: HotelF
   return (catalog?.hotels || []).filter((hotel) => !hotel.synthetic && !accountListingId(hotel) && !hotel.hasCollectedRoomCategories
     && !hotel.rooms.some((room) => room.evidenceStatus === "verified" && room.scope === "room_category"))
     .map((hotel) => ({ ...hotel, rooms: [] }))
-    .filter((hotel) => matchesHotelFilters(hotel, filters, catalog?.facts))
+    .filter((hotel) => matchesHotelFilters(hotel, filters, catalog?.facts, undefined, regionDetails(catalog?.region || "")?.currency))
     .map((hotel) => ({ hotel, nearbyMatches: nearbyMatches(hotel, filters), catalogMatches: matchingCatalogSnippets(hotel, filters, catalog?.facts),
       limitations: ["Совпадения относятся к расположению отеля. Условия конкретной комнаты и размещение гостей нужно уточнить."] }));
 }

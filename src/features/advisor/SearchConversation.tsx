@@ -38,7 +38,7 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
   }, [chat.messages.length]);
   const suggestions = chat.messages.length
     ? ["Рядом с кафе", "Убери условия рядом"]
-    : ["В центре города", "Рядом с кафе", "Рядом с метро"];
+    : trip.region === "Сочи" ? ["Рядом с пляжем", "Рядом с кафе", "Рядом с парком"] : ["В центре города", "Рядом с кафе", "Рядом с метро"];
   return (
     <aside id="search-side-panel" className="search-conversation" aria-label="Карта и поиск в чате">
       <div className="conversation-tabs" role="group" aria-label="Содержимое боковой панели">
@@ -57,7 +57,7 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
         {!chat.messages.length && (
         <div className="conversation-welcome">
           <h3>Какой отель ищем?</h3>
-          <p>Например: «в центре города», «рядом с кафе» или «метро не дальше 800 м». Совпадения по карте появятся в карточках.</p>
+          <p>{trip.region === "Сочи" ? "Например: «рядом с пляжем», «рядом с кафе» или «рядом с парком»." : "Например: «в центре города», «рядом с кафе» или «метро не дальше 800 м»."} Совпадения по карте появятся в карточках.</p>
           <p>Можно уточнить бюджет, тип жилья, этаж и окна. Если пожелание не распознано или данных нет, мы сообщим об этом.</p>
           {!!trip.preferences.length && <p>Уже выбранные условия сохранены. Добавьте что-нибудь ещё или уточните их.</p>}
         </div>

@@ -51,6 +51,15 @@ class HotelFiltersTest {
     assertFalse(HotelFilters.matches(hotel, suite, List.of(), Json.obj("query", "!!!")));
   }
 
+  @Test void sochiBudgetsCompareOnlyRublesAndNeverTreatMissingPricesAsFree() {
+    ObjectNode sochi = hotel.deepCopy().put("region", "Сочи").put("currency", "RUB").put("pricePerNight", 5000);
+    ObjectNode budget = Json.obj("maxPricePerNight", 5000);
+    assertTrue(HotelFilters.matches(sochi, suite, List.of(), budget));
+    assertFalse(HotelFilters.matches(sochi.deepCopy().put("currency", "KRW"), suite, List.of(), budget));
+    assertFalse(HotelFilters.matches(sochi.deepCopy().putNull("pricePerNight"), suite, List.of(), budget));
+    assertFalse(HotelFilters.matches(sochi.deepCopy().put("region", "Пусан"), suite, List.of(), budget));
+  }
+
   @Test void quotesPreserveNegativeEvidenceScopeAndProvenance() {
     ObjectNode fact = Json.obj("id", "negative", "hotelId", "test", "roomId", "suite",
         "quote", "No pool is available", "value", false, "demo", false,

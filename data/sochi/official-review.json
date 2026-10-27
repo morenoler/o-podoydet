@@ -1,0 +1,1400 @@
+{
+  "schemaVersion": 1,
+  "regionId": "sochi",
+  "isDemo": false,
+  "reviewedAt": "2026-10-27",
+  "obtainedAtPrecision": "day",
+  "expiresAt": "2026-11-26",
+  "purpose": "Выборочная сверка названий и адресов реальных гостиниц по их собственным сайтам; отдельный слой свидетельств, не подтверждение условий проживания.",
+  "scope": "hotel_identity",
+  "recordCount": 16,
+  "uniqueSourceCount": 15,
+  "selection": "Purposive convenience sample of accessible official hotel websites in Sochi, Khosta, Adler and Lazarevskoye; not random and not statistically representative.",
+  "limitations": [
+    "Все 16 записей имеют статус reported: оператор сайта сообщает название и адрес; независимая проверка не проводилась.",
+    "Дата получения означает чтение через web-инструмент, который может возвращать кэш. Она не является датой изменения сайта или проверкой на месте.",
+    "Известная дата источника отсутствует у всех 16 записей. Copyright, даты отзывов и акций не подставлены в sourceDate.",
+    "Сохранены короткие извлечения с SHA-256, а не полные HTML/HTTP-ответы; инструмент не раскрывает транспортный HTTP-статус.",
+    "Время получения известно с точностью до календарного дня UTC. Полная воспроизводимость сетевого состояния сайтов не заявляется.",
+    "Выборка не случайная и не оценивает полноту каталога Сочи. Связь с OSM должна устанавливаться отдельно по имени и месту, не только по строке названия.",
+    "Сириус исключён из области обзора. Маркетинговое обозначение Адлер само по себе не устанавливает административную принадлежность.",
+    "Заявления о тишине, видах, доступности, маршрутах и категориях комнат не извлекались в подтверждённые факты."
+  ],
+  "quality": {
+    "sourcePageReadCount": 16,
+    "nameAndAddressReportedCount": 16,
+    "knownSourceDateCount": 0,
+    "independentCheckCount": 0,
+    "fieldCheckCount": 0,
+    "osmLinkedCount": 0
+  },
+  "sources": [
+    {
+      "id": "official-zhemchuzhina",
+      "url": "https://www.zhem.ru/contacts/",
+      "title": "Контакты — Гранд отель «Жемчужина»",
+      "sourceType": "official_hotel_website",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "request": {
+        "tool": "web.run",
+        "operation": "open",
+        "url": "https://www.zhem.ru/contacts/"
+      },
+      "availability": "page_text_retrieved",
+      "httpStatus": null,
+      "cacheKind": "selected_short_text_excerpt",
+      "excerpt": "Гранд отель «Жемчужина». 354002, Россия, г. Сочи, ул. Черноморская, 3",
+      "excerptSha256": "3f3f3544f1651ccc6695d9a940fd9ae3737967ef6b1ae02496395560955bf41d",
+      "hashScope": "UTF-8 bytes of excerpt only; not full HTML or HTTP response",
+      "fullResponseCached": false,
+      "locator": "Раздел «Контакты» и подвал страницы",
+      "publisherIndependentlyVerified": false,
+      "recheckAfterDays": 30,
+      "expiresAt": "2026-11-26",
+      "excerptNormalization": "Selected name/address fragments joined; whitespace and punctuation normalized. Not a byte-for-byte HTML snapshot."
+    },
+    {
+      "id": "official-sea-galaxy",
+      "url": "https://seagalaxy.com/contacts",
+      "title": "SEA GALAXY — Контакты",
+      "sourceType": "official_hotel_website",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "request": {
+        "tool": "web.run",
+        "operation": "open",
+        "url": "https://seagalaxy.com/contacts"
+      },
+      "availability": "page_text_retrieved",
+      "httpStatus": null,
+      "cacheKind": "selected_short_text_excerpt",
+      "excerpt": "SEA GALAXY Отель Конгресс и СПА. Россия, г. Сочи, Черноморская ул., 4/1.",
+      "excerptSha256": "2dd1d0d514a472095b727d8b3e99ecb2de4f06565fcae7775910fcb3d2af1696",
+      "hashScope": "UTF-8 bytes of excerpt only; not full HTML or HTTP response",
+      "fullResponseCached": false,
+      "locator": "Подвал страницы",
+      "publisherIndependentlyVerified": false,
+      "recheckAfterDays": 30,
+      "expiresAt": "2026-11-26",
+      "excerptNormalization": "Selected name/address fragments joined; whitespace and punctuation normalized. Not a byte-for-byte HTML snapshot."
+    },
+    {
+      "id": "official-pullman-mercure",
+      "url": "https://sochicentrhotels.ru/",
+      "title": "Отели Pullman & Mercure Сочи Центр — официальный сайт",
+      "sourceType": "official_hotel_website",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "request": {
+        "tool": "web.run",
+        "operation": "open",
+        "url": "https://sochicentrhotels.ru/"
+      },
+      "availability": "page_text_retrieved",
+      "httpStatus": null,
+      "cacheKind": "selected_short_text_excerpt",
+      "excerpt": "Pullman Сочи Центр; Mercure Сочи Центр; Сочи, Орджоникидзе, 11А.",
+      "excerptSha256": "99e116ca1a491bbb7ca7f016751a5213a90a0e7adbce852cea4df9b747973477",
+      "hashScope": "UTF-8 bytes of excerpt only; not full HTML or HTTP response",
+      "fullResponseCached": false,
+      "locator": "Блоки двух отелей и раздел «Контакты»",
+      "publisherIndependentlyVerified": false,
+      "recheckAfterDays": 30,
+      "expiresAt": "2026-11-26",
+      "excerptNormalization": "Selected name/address fragments joined; whitespace and punctuation normalized. Not a byte-for-byte HTML snapshot."
+    },
+    {
+      "id": "official-rodina",
+      "url": "https://grandhotelrodina.ru/kontakty/",
+      "title": "Контакты — RODINA Grand Hotel & SPA",
+      "sourceType": "official_hotel_website",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "request": {
+        "tool": "web.run",
+        "operation": "open",
+        "url": "https://grandhotelrodina.ru/kontakty/"
+      },
+      "availability": "page_text_retrieved",
+      "httpStatus": null,
+      "cacheKind": "selected_short_text_excerpt",
+      "excerpt": "Rodina Grand Hotel & SPA. 354008, Россия, г. Сочи, ул Виноградная д.33",
+      "excerptSha256": "ded7ab9af5f85dd3dcd987bb93c9852a49b3ed148a5d685086867334eee574e7",
+      "hashScope": "UTF-8 bytes of excerpt only; not full HTML or HTTP response",
+      "fullResponseCached": false,
+      "locator": "Основной контактный блок",
+      "publisherIndependentlyVerified": false,
+      "recheckAfterDays": 30,
+      "expiresAt": "2026-11-26",
+      "excerptNormalization": "Selected name/address fragments joined; whitespace and punctuation normalized. Not a byte-for-byte HTML snapshot."
+    },
+    {
+      "id": "official-lazurnaya",
+      "url": "https://www.lazurnaya.ru/",
+      "title": "Официальный сайт SPA-отеля «Лазурная» в Сочи",
+      "sourceType": "official_hotel_website",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "request": {
+        "tool": "web.run",
+        "operation": "open",
+        "url": "https://www.lazurnaya.ru/"
+      },
+      "availability": "page_text_retrieved",
+      "httpStatus": null,
+      "cacheKind": "selected_short_text_excerpt",
+      "excerpt": "ОГК «Лазурная Отель и Спа» расположен по адресу: 354024, г. Сочи, Курортный проспект, 103",
+      "excerptSha256": "0fb465689136fe766bd65d06c844ada588d44a2feaa0289eadebb7fd66f0c580",
+      "hashScope": "UTF-8 bytes of excerpt only; not full HTML or HTTP response",
+      "fullResponseCached": false,
+      "locator": "Блок «Контакты»",
+      "publisherIndependentlyVerified": false,
+      "recheckAfterDays": 30,
+      "expiresAt": "2026-11-26",
+      "excerptNormalization": "Selected name/address fragments joined; whitespace and punctuation normalized. Not a byte-for-byte HTML snapshot."
+    },
+    {
+      "id": "official-grand-karat",
+      "url": "https://grandkarat.com/",
+      "title": "Отель Grand Karat Сочи — Официальный Сайт",
+      "sourceType": "official_hotel_website",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "request": {
+        "tool": "web.run",
+        "operation": "open",
+        "url": "https://grandkarat.com/"
+      },
+      "availability": "page_text_retrieved",
+      "httpStatus": null,
+      "cacheKind": "selected_short_text_excerpt",
+      "excerpt": "Отель Grand Karat Сочи. Краснодарский край, г. Сочи, ул. Орджоникидзе, д. 17",
+      "excerptSha256": "b40fa7af571a58ddd2463baa9c07982964be5c4b2e29cd75729379e4878554a9",
+      "hashScope": "UTF-8 bytes of excerpt only; not full HTML or HTTP response",
+      "fullResponseCached": false,
+      "locator": "Заголовок и подвал страницы",
+      "publisherIndependentlyVerified": false,
+      "recheckAfterDays": 30,
+      "expiresAt": "2026-11-26",
+      "excerptNormalization": "Selected name/address fragments joined; whitespace and punctuation normalized. Not a byte-for-byte HTML snapshot."
+    },
+    {
+      "id": "official-bristol",
+      "url": "https://bristol-hotel.ru/o-otele",
+      "title": "Об отеле — Отель Бристоль",
+      "sourceType": "official_hotel_website",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "request": {
+        "tool": "web.run",
+        "operation": "open",
+        "url": "https://bristol-hotel.ru/o-otele"
+      },
+      "availability": "page_text_retrieved",
+      "httpStatus": null,
+      "cacheKind": "selected_short_text_excerpt",
+      "excerpt": "ОТЕЛЬ «БРИСТОЛЬ» г. Сочи, Лазаревский район, ул. Энтузиастов 10/2",
+      "excerptSha256": "1483dea94f2a6b2203ab8db216eca5923ceb3ec5ae0a8e77587bec5608ef0ec2",
+      "hashScope": "UTF-8 bytes of excerpt only; not full HTML or HTTP response",
+      "fullResponseCached": false,
+      "locator": "Верхняя ссылка собственного отеля; соседний апарт-отель имеет другой адрес",
+      "publisherIndependentlyVerified": false,
+      "recheckAfterDays": 30,
+      "expiresAt": "2026-11-26",
+      "excerptNormalization": "Selected name/address fragments joined; whitespace and punctuation normalized. Not a byte-for-byte HTML snapshot."
+    },
+    {
+      "id": "official-forward",
+      "url": "https://hotel.forwardtower.com/en-gb/",
+      "title": "Forward Aparthotel — Official site",
+      "sourceType": "official_hotel_website",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "request": {
+        "tool": "web.run",
+        "operation": "open",
+        "url": "https://hotel.forwardtower.com/en-gb/"
+      },
+      "availability": "page_text_retrieved",
+      "httpStatus": null,
+      "cacheKind": "selected_short_text_excerpt",
+      "excerpt": "Forward Aparthotel. 354340, Sochi (Adler), street of Kirov, 44",
+      "excerptSha256": "a0f08a3b0e0233b13d035772742a072667015602276c96a499e9dd8113721046",
+      "hashScope": "UTF-8 bytes of excerpt only; not full HTML or HTTP response",
+      "fullResponseCached": false,
+      "locator": "Заголовок и CONTACTS",
+      "publisherIndependentlyVerified": false,
+      "recheckAfterDays": 30,
+      "expiresAt": "2026-11-26",
+      "excerptNormalization": "Selected name/address fragments joined; whitespace and punctuation normalized. Not a byte-for-byte HTML snapshot."
+    },
+    {
+      "id": "official-art-hotel",
+      "url": "https://art-sochi.com/kontakty/",
+      "title": "Контакты — Арт-Отель Хоста (Сочи)",
+      "sourceType": "official_hotel_website",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "request": {
+        "tool": "web.run",
+        "operation": "open",
+        "url": "https://art-sochi.com/kontakty/"
+      },
+      "availability": "page_text_retrieved",
+      "httpStatus": null,
+      "cacheKind": "selected_short_text_excerpt",
+      "excerpt": "Арт-Отель. Сочи, Хоста, ул. Кипарисовая 6.",
+      "excerptSha256": "c182f19670336cb77565b2c2dd28f9e20188ff114831eb3089a7fceb1475d31b",
+      "hashScope": "UTF-8 bytes of excerpt only; not full HTML or HTTP response",
+      "fullResponseCached": false,
+      "locator": "Основной контактный блок и подвал страницы",
+      "publisherIndependentlyVerified": false,
+      "recheckAfterDays": 30,
+      "expiresAt": "2026-11-26",
+      "excerptNormalization": "Selected name/address fragments joined; whitespace and punctuation normalized. Not a byte-for-byte HTML snapshot."
+    },
+    {
+      "id": "official-khosta",
+      "url": "https://zaokhosta.ru/kontakty/",
+      "title": "Контакты — Гостиница Хоста, Сочи",
+      "sourceType": "official_hotel_website",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "request": {
+        "tool": "web.run",
+        "operation": "open",
+        "url": "https://zaokhosta.ru/kontakty/"
+      },
+      "availability": "page_text_retrieved",
+      "httpStatus": null,
+      "cacheKind": "selected_short_text_excerpt",
+      "excerpt": "Гостиница «Хоста». 354037 г. Сочи, улица Ялтинская дом 14",
+      "excerptSha256": "1bbaed783866fd0c11a0d6a470cfc5f28c3931ccfa92ff7d5b0921bd943bc6fa",
+      "hashScope": "UTF-8 bytes of excerpt only; not full HTML or HTTP response",
+      "fullResponseCached": false,
+      "locator": "Контактный блок юридического лица и подвал страницы",
+      "publisherIndependentlyVerified": false,
+      "recheckAfterDays": 30,
+      "expiresAt": "2026-11-26",
+      "excerptNormalization": "Selected name/address fragments joined; whitespace and punctuation normalized. Not a byte-for-byte HTML snapshot."
+    },
+    {
+      "id": "official-staraya-khosta",
+      "url": "https://sthosta.ru/rooms/",
+      "title": "Номера в отеле Старая Хоста — Официальный сайт отеля",
+      "sourceType": "official_hotel_website",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "request": {
+        "tool": "web.run",
+        "operation": "open",
+        "url": "https://sthosta.ru/rooms/"
+      },
+      "availability": "page_text_retrieved",
+      "httpStatus": null,
+      "cacheKind": "selected_short_text_excerpt",
+      "excerpt": "Сочи, Хостинский р-н, ул. Шоссейная, 2/14. Отель «Старая Хоста», 2017. Официальный сайт",
+      "excerptSha256": "b7df9883c1e1a9450426fb685505759e596fd9ee0343ff962bdd71a680d45e1b",
+      "hashScope": "UTF-8 bytes of excerpt only; not full HTML or HTTP response",
+      "fullResponseCached": false,
+      "locator": "Подвал страницы; год копирайта не является датой обновления адреса",
+      "publisherIndependentlyVerified": false,
+      "recheckAfterDays": 30,
+      "expiresAt": "2026-11-26",
+      "excerptNormalization": "Selected name/address fragments joined; whitespace and punctuation normalized. Not a byte-for-byte HTML snapshot."
+    },
+    {
+      "id": "official-laza-hall",
+      "url": "https://lazahall.com/kontakty/",
+      "title": "Контакты — Отель Laza Hall",
+      "sourceType": "official_hotel_website",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "request": {
+        "tool": "web.run",
+        "operation": "open",
+        "url": "https://lazahall.com/kontakty/"
+      },
+      "availability": "page_text_retrieved",
+      "httpStatus": null,
+      "cacheKind": "selected_short_text_excerpt",
+      "excerpt": "Гостиница Laza Hall. г. Сочи, Лазаревский район, п. Лазаревское, Спортивная д.23/9",
+      "excerptSha256": "fe2f96da59e662cfa3476a085a57aded8d9202b31fcc8fe1e8b7b7ff6d46911e",
+      "hashScope": "UTF-8 bytes of excerpt only; not full HTML or HTTP response",
+      "fullResponseCached": false,
+      "locator": "Основной контактный блок",
+      "publisherIndependentlyVerified": false,
+      "recheckAfterDays": 30,
+      "expiresAt": "2026-11-26",
+      "excerptNormalization": "Selected name/address fragments joined; whitespace and punctuation normalized. Not a byte-for-byte HTML snapshot."
+    },
+    {
+      "id": "official-flamingo-adler",
+      "url": "https://www.adler-flamingo.ru/",
+      "title": "Гостиница «Фламинго» Адлер — Официальный сайт",
+      "sourceType": "official_hotel_website",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "request": {
+        "tool": "web.run",
+        "operation": "open",
+        "url": "https://www.adler-flamingo.ru/"
+      },
+      "availability": "page_text_retrieved",
+      "httpStatus": null,
+      "cacheKind": "selected_short_text_excerpt",
+      "excerpt": "Наш адрес: 354340, Краснодарский край, город Сочи, Адлерский район, улица Просвещения, 13А.",
+      "excerptSha256": "5f442f3d9b2b5279df3003fa72a7bda2f69ca513ee975a6bc121c159a14a6a33",
+      "hashScope": "UTF-8 bytes of excerpt only; not full HTML or HTTP response",
+      "fullResponseCached": false,
+      "locator": "Подвал: адрес гостиницы и реквизиты оператора",
+      "publisherIndependentlyVerified": false,
+      "recheckAfterDays": 30,
+      "expiresAt": "2026-11-26",
+      "excerptNormalization": "Selected name/address fragments joined; whitespace and punctuation normalized. Not a byte-for-byte HTML snapshot."
+    },
+    {
+      "id": "official-grace-global",
+      "url": "https://grace-global.ru/",
+      "title": "СПА-отель Грейс Глобал — официальный сайт",
+      "sourceType": "official_hotel_website",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "request": {
+        "tool": "web.run",
+        "operation": "open",
+        "url": "https://grace-global.ru/"
+      },
+      "availability": "page_text_retrieved",
+      "httpStatus": null,
+      "cacheKind": "selected_short_text_excerpt",
+      "excerpt": "Грейс Глобал. Адрес г. Сочи, Адлерский район, ул. Демократическая, д. 6/9",
+      "excerptSha256": "295757285ccf18bfd2b64109a086bf4b33bd7cac4813672dfc11aad008cc803e",
+      "hashScope": "UTF-8 bytes of excerpt only; not full HTML or HTTP response",
+      "fullResponseCached": false,
+      "locator": "Заголовок и адрес в подвале",
+      "publisherIndependentlyVerified": false,
+      "recheckAfterDays": 30,
+      "expiresAt": "2026-11-26",
+      "excerptNormalization": "Selected name/address fragments joined; whitespace and punctuation normalized. Not a byte-for-byte HTML snapshot."
+    },
+    {
+      "id": "official-prometey-club",
+      "url": "https://prometeyclub.ru/en/contacts/",
+      "title": "Contacts — Официальный сайт «Прометей Клуб Отель и СПА»",
+      "sourceType": "official_hotel_website",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "request": {
+        "tool": "web.run",
+        "operation": "open",
+        "url": "https://prometeyclub.ru/en/contacts/"
+      },
+      "availability": "page_text_retrieved",
+      "httpStatus": null,
+      "cacheKind": "selected_short_text_excerpt",
+      "excerpt": "HOTEL & SPA PROMETEY CLUB. 354200, Rechnaya Str., 2a, Lazarevskoye Microdistrict, Sochi.",
+      "excerptSha256": "a4f8698ee72560d353ad3cce6947fbbc66d391162249c705b30d43627ccc3028",
+      "hashScope": "UTF-8 bytes of excerpt only; not full HTML or HTTP response",
+      "fullResponseCached": false,
+      "locator": "Англоязычная страница контактов; русский адрес нормализован из указанного адреса",
+      "publisherIndependentlyVerified": false,
+      "recheckAfterDays": 30,
+      "expiresAt": "2026-11-26",
+      "excerptNormalization": "Selected name/address fragments joined; whitespace and punctuation normalized. Not a byte-for-byte HTML snapshot."
+    }
+  ],
+  "hotels": [
+    {
+      "id": "sochi-official-zhemchuzhina",
+      "subject": {
+        "type": "hotel",
+        "name": "Гранд отель «Жемчужина»",
+        "address": "Сочи, ул. Черноморская, 3"
+      },
+      "officialName": "Гранд отель «Жемчужина»",
+      "address": "Сочи, ул. Черноморская, 3",
+      "localityLabel": "Сочи",
+      "regionId": "sochi",
+      "isDemo": false,
+      "scope": "hotel_identity",
+      "status": "reported",
+      "facts": [
+        {
+          "predicate": "hotel_name",
+          "value": "Гранд отель «Жемчужина»",
+          "status": "reported",
+          "scope": "hotel_identity"
+        },
+        {
+          "predicate": "hotel_address",
+          "value": "Сочи, ул. Черноморская, 3",
+          "status": "reported",
+          "scope": "hotel_identity"
+        }
+      ],
+      "sourceId": "official-zhemchuzhina",
+      "officialUrl": "https://www.zhem.ru/contacts/",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "expiresAt": "2026-11-26",
+      "summary": "На сайте гостиницы опубликованы название и адрес. Это заявление оператора, без независимой или выездной проверки.",
+      "verification": {
+        "sourceContentRead": true,
+        "independentCheck": "not_performed",
+        "fieldCheck": "not_performed",
+        "fieldCheckedAt": null
+      },
+      "osmMatch": {
+        "status": "not_linked",
+        "osmType": null,
+        "osmId": null
+      },
+      "unknownFields": [
+        "physical_rooms",
+        "room_availability",
+        "prices",
+        "room_views",
+        "quietness",
+        "step_free_access",
+        "beach_access",
+        "walking_routes"
+      ]
+    },
+    {
+      "id": "sochi-official-sea-galaxy",
+      "subject": {
+        "type": "hotel",
+        "name": "SEA GALAXY Отель Конгресс и СПА",
+        "address": "Сочи, ул. Черноморская, 4/1"
+      },
+      "officialName": "SEA GALAXY Отель Конгресс и СПА",
+      "address": "Сочи, ул. Черноморская, 4/1",
+      "localityLabel": "Сочи",
+      "regionId": "sochi",
+      "isDemo": false,
+      "scope": "hotel_identity",
+      "status": "reported",
+      "facts": [
+        {
+          "predicate": "hotel_name",
+          "value": "SEA GALAXY Отель Конгресс и СПА",
+          "status": "reported",
+          "scope": "hotel_identity"
+        },
+        {
+          "predicate": "hotel_address",
+          "value": "Сочи, ул. Черноморская, 4/1",
+          "status": "reported",
+          "scope": "hotel_identity"
+        }
+      ],
+      "sourceId": "official-sea-galaxy",
+      "officialUrl": "https://seagalaxy.com/contacts",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "expiresAt": "2026-11-26",
+      "summary": "На сайте гостиницы опубликованы название и адрес. Это заявление оператора, без независимой или выездной проверки.",
+      "verification": {
+        "sourceContentRead": true,
+        "independentCheck": "not_performed",
+        "fieldCheck": "not_performed",
+        "fieldCheckedAt": null
+      },
+      "osmMatch": {
+        "status": "not_linked",
+        "osmType": null,
+        "osmId": null
+      },
+      "unknownFields": [
+        "physical_rooms",
+        "room_availability",
+        "prices",
+        "room_views",
+        "quietness",
+        "step_free_access",
+        "beach_access",
+        "walking_routes"
+      ]
+    },
+    {
+      "id": "sochi-official-pullman",
+      "subject": {
+        "type": "hotel",
+        "name": "Pullman Сочи Центр",
+        "address": "Сочи, ул. Орджоникидзе, 11А"
+      },
+      "officialName": "Pullman Сочи Центр",
+      "address": "Сочи, ул. Орджоникидзе, 11А",
+      "localityLabel": "Сочи",
+      "regionId": "sochi",
+      "isDemo": false,
+      "scope": "hotel_identity",
+      "status": "reported",
+      "facts": [
+        {
+          "predicate": "hotel_name",
+          "value": "Pullman Сочи Центр",
+          "status": "reported",
+          "scope": "hotel_identity"
+        },
+        {
+          "predicate": "hotel_address",
+          "value": "Сочи, ул. Орджоникидзе, 11А",
+          "status": "reported",
+          "scope": "hotel_identity"
+        }
+      ],
+      "sourceId": "official-pullman-mercure",
+      "officialUrl": "https://sochicentrhotels.ru/",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "expiresAt": "2026-11-26",
+      "summary": "На сайте гостиницы опубликованы название и адрес. Это заявление оператора, без независимой или выездной проверки.",
+      "verification": {
+        "sourceContentRead": true,
+        "independentCheck": "not_performed",
+        "fieldCheck": "not_performed",
+        "fieldCheckedAt": null
+      },
+      "osmMatch": {
+        "status": "not_linked",
+        "osmType": null,
+        "osmId": null
+      },
+      "unknownFields": [
+        "physical_rooms",
+        "room_availability",
+        "prices",
+        "room_views",
+        "quietness",
+        "step_free_access",
+        "beach_access",
+        "walking_routes"
+      ]
+    },
+    {
+      "id": "sochi-official-mercure",
+      "subject": {
+        "type": "hotel",
+        "name": "Mercure Сочи Центр",
+        "address": "Сочи, ул. Орджоникидзе, 11А"
+      },
+      "officialName": "Mercure Сочи Центр",
+      "address": "Сочи, ул. Орджоникидзе, 11А",
+      "localityLabel": "Сочи",
+      "regionId": "sochi",
+      "isDemo": false,
+      "scope": "hotel_identity",
+      "status": "reported",
+      "facts": [
+        {
+          "predicate": "hotel_name",
+          "value": "Mercure Сочи Центр",
+          "status": "reported",
+          "scope": "hotel_identity"
+        },
+        {
+          "predicate": "hotel_address",
+          "value": "Сочи, ул. Орджоникидзе, 11А",
+          "status": "reported",
+          "scope": "hotel_identity"
+        }
+      ],
+      "sourceId": "official-pullman-mercure",
+      "officialUrl": "https://sochicentrhotels.ru/",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "expiresAt": "2026-11-26",
+      "summary": "На сайте гостиницы опубликованы название и адрес. Это заявление оператора, без независимой или выездной проверки.",
+      "verification": {
+        "sourceContentRead": true,
+        "independentCheck": "not_performed",
+        "fieldCheck": "not_performed",
+        "fieldCheckedAt": null
+      },
+      "osmMatch": {
+        "status": "not_linked",
+        "osmType": null,
+        "osmId": null
+      },
+      "unknownFields": [
+        "physical_rooms",
+        "room_availability",
+        "prices",
+        "room_views",
+        "quietness",
+        "step_free_access",
+        "beach_access",
+        "walking_routes"
+      ]
+    },
+    {
+      "id": "sochi-official-rodina",
+      "subject": {
+        "type": "hotel",
+        "name": "RODINA Grand Hotel & SPA",
+        "address": "Сочи, ул. Виноградная, 33"
+      },
+      "officialName": "RODINA Grand Hotel & SPA",
+      "address": "Сочи, ул. Виноградная, 33",
+      "localityLabel": "Сочи",
+      "regionId": "sochi",
+      "isDemo": false,
+      "scope": "hotel_identity",
+      "status": "reported",
+      "facts": [
+        {
+          "predicate": "hotel_name",
+          "value": "RODINA Grand Hotel & SPA",
+          "status": "reported",
+          "scope": "hotel_identity"
+        },
+        {
+          "predicate": "hotel_address",
+          "value": "Сочи, ул. Виноградная, 33",
+          "status": "reported",
+          "scope": "hotel_identity"
+        }
+      ],
+      "sourceId": "official-rodina",
+      "officialUrl": "https://grandhotelrodina.ru/kontakty/",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "expiresAt": "2026-11-26",
+      "summary": "На сайте гостиницы опубликованы название и адрес. Это заявление оператора, без независимой или выездной проверки.",
+      "verification": {
+        "sourceContentRead": true,
+        "independentCheck": "not_performed",
+        "fieldCheck": "not_performed",
+        "fieldCheckedAt": null
+      },
+      "osmMatch": {
+        "status": "not_linked",
+        "osmType": null,
+        "osmId": null
+      },
+      "unknownFields": [
+        "physical_rooms",
+        "room_availability",
+        "prices",
+        "room_views",
+        "quietness",
+        "step_free_access",
+        "beach_access",
+        "walking_routes"
+      ]
+    },
+    {
+      "id": "sochi-official-lazurnaya",
+      "subject": {
+        "type": "hotel",
+        "name": "Лазурная Отель и СПА",
+        "address": "Сочи, Курортный проспект, 103"
+      },
+      "officialName": "Лазурная Отель и СПА",
+      "address": "Сочи, Курортный проспект, 103",
+      "localityLabel": "Сочи",
+      "regionId": "sochi",
+      "isDemo": false,
+      "scope": "hotel_identity",
+      "status": "reported",
+      "facts": [
+        {
+          "predicate": "hotel_name",
+          "value": "Лазурная Отель и СПА",
+          "status": "reported",
+          "scope": "hotel_identity"
+        },
+        {
+          "predicate": "hotel_address",
+          "value": "Сочи, Курортный проспект, 103",
+          "status": "reported",
+          "scope": "hotel_identity"
+        }
+      ],
+      "sourceId": "official-lazurnaya",
+      "officialUrl": "https://www.lazurnaya.ru/",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "expiresAt": "2026-11-26",
+      "summary": "На сайте гостиницы опубликованы название и адрес. Это заявление оператора, без независимой или выездной проверки.",
+      "verification": {
+        "sourceContentRead": true,
+        "independentCheck": "not_performed",
+        "fieldCheck": "not_performed",
+        "fieldCheckedAt": null
+      },
+      "osmMatch": {
+        "status": "not_linked",
+        "osmType": null,
+        "osmId": null
+      },
+      "unknownFields": [
+        "physical_rooms",
+        "room_availability",
+        "prices",
+        "room_views",
+        "quietness",
+        "step_free_access",
+        "beach_access",
+        "walking_routes"
+      ]
+    },
+    {
+      "id": "sochi-official-grand-karat",
+      "subject": {
+        "type": "hotel",
+        "name": "Grand Karat Сочи",
+        "address": "Сочи, ул. Орджоникидзе, 17"
+      },
+      "officialName": "Grand Karat Сочи",
+      "address": "Сочи, ул. Орджоникидзе, 17",
+      "localityLabel": "Сочи",
+      "regionId": "sochi",
+      "isDemo": false,
+      "scope": "hotel_identity",
+      "status": "reported",
+      "facts": [
+        {
+          "predicate": "hotel_name",
+          "value": "Grand Karat Сочи",
+          "status": "reported",
+          "scope": "hotel_identity"
+        },
+        {
+          "predicate": "hotel_address",
+          "value": "Сочи, ул. Орджоникидзе, 17",
+          "status": "reported",
+          "scope": "hotel_identity"
+        }
+      ],
+      "sourceId": "official-grand-karat",
+      "officialUrl": "https://grandkarat.com/",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "expiresAt": "2026-11-26",
+      "summary": "На сайте гостиницы опубликованы название и адрес. Это заявление оператора, без независимой или выездной проверки.",
+      "verification": {
+        "sourceContentRead": true,
+        "independentCheck": "not_performed",
+        "fieldCheck": "not_performed",
+        "fieldCheckedAt": null
+      },
+      "osmMatch": {
+        "status": "not_linked",
+        "osmType": null,
+        "osmId": null
+      },
+      "unknownFields": [
+        "physical_rooms",
+        "room_availability",
+        "prices",
+        "room_views",
+        "quietness",
+        "step_free_access",
+        "beach_access",
+        "walking_routes"
+      ]
+    },
+    {
+      "id": "sochi-official-bristol",
+      "subject": {
+        "type": "hotel",
+        "name": "Отель «Бристоль»",
+        "address": "Сочи, Лазаревский район, ул. Энтузиастов, 10/2"
+      },
+      "officialName": "Отель «Бристоль»",
+      "address": "Сочи, Лазаревский район, ул. Энтузиастов, 10/2",
+      "localityLabel": "Лазаревское",
+      "regionId": "sochi",
+      "isDemo": false,
+      "scope": "hotel_identity",
+      "status": "reported",
+      "facts": [
+        {
+          "predicate": "hotel_name",
+          "value": "Отель «Бристоль»",
+          "status": "reported",
+          "scope": "hotel_identity"
+        },
+        {
+          "predicate": "hotel_address",
+          "value": "Сочи, Лазаревский район, ул. Энтузиастов, 10/2",
+          "status": "reported",
+          "scope": "hotel_identity"
+        }
+      ],
+      "sourceId": "official-bristol",
+      "officialUrl": "https://bristol-hotel.ru/o-otele",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "expiresAt": "2026-11-26",
+      "summary": "На сайте гостиницы опубликованы название и адрес. Это заявление оператора, без независимой или выездной проверки.",
+      "verification": {
+        "sourceContentRead": true,
+        "independentCheck": "not_performed",
+        "fieldCheck": "not_performed",
+        "fieldCheckedAt": null
+      },
+      "osmMatch": {
+        "status": "not_linked",
+        "osmType": null,
+        "osmId": null
+      },
+      "unknownFields": [
+        "physical_rooms",
+        "room_availability",
+        "prices",
+        "room_views",
+        "quietness",
+        "step_free_access",
+        "beach_access",
+        "walking_routes"
+      ]
+    },
+    {
+      "id": "sochi-official-forward",
+      "subject": {
+        "type": "hotel",
+        "name": "Forward Aparthotel",
+        "address": "Сочи (Адлер), ул. Кирова, 44"
+      },
+      "officialName": "Forward Aparthotel",
+      "address": "Сочи (Адлер), ул. Кирова, 44",
+      "localityLabel": "Адлер",
+      "regionId": "sochi",
+      "isDemo": false,
+      "scope": "hotel_identity",
+      "status": "reported",
+      "facts": [
+        {
+          "predicate": "hotel_name",
+          "value": "Forward Aparthotel",
+          "status": "reported",
+          "scope": "hotel_identity"
+        },
+        {
+          "predicate": "hotel_address",
+          "value": "Сочи (Адлер), ул. Кирова, 44",
+          "status": "reported",
+          "scope": "hotel_identity"
+        }
+      ],
+      "sourceId": "official-forward",
+      "officialUrl": "https://hotel.forwardtower.com/en-gb/",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "expiresAt": "2026-11-26",
+      "summary": "На сайте гостиницы опубликованы название и адрес. Это заявление оператора, без независимой или выездной проверки.",
+      "verification": {
+        "sourceContentRead": true,
+        "independentCheck": "not_performed",
+        "fieldCheck": "not_performed",
+        "fieldCheckedAt": null
+      },
+      "osmMatch": {
+        "status": "not_linked",
+        "osmType": null,
+        "osmId": null
+      },
+      "unknownFields": [
+        "physical_rooms",
+        "room_availability",
+        "prices",
+        "room_views",
+        "quietness",
+        "step_free_access",
+        "beach_access",
+        "walking_routes"
+      ]
+    },
+    {
+      "id": "sochi-official-art-hotel",
+      "subject": {
+        "type": "hotel",
+        "name": "Арт-Отель",
+        "address": "Сочи, Хоста, ул. Кипарисовая, 6"
+      },
+      "officialName": "Арт-Отель",
+      "address": "Сочи, Хоста, ул. Кипарисовая, 6",
+      "localityLabel": "Хоста",
+      "regionId": "sochi",
+      "isDemo": false,
+      "scope": "hotel_identity",
+      "status": "reported",
+      "facts": [
+        {
+          "predicate": "hotel_name",
+          "value": "Арт-Отель",
+          "status": "reported",
+          "scope": "hotel_identity"
+        },
+        {
+          "predicate": "hotel_address",
+          "value": "Сочи, Хоста, ул. Кипарисовая, 6",
+          "status": "reported",
+          "scope": "hotel_identity"
+        }
+      ],
+      "sourceId": "official-art-hotel",
+      "officialUrl": "https://art-sochi.com/kontakty/",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "expiresAt": "2026-11-26",
+      "summary": "На сайте гостиницы опубликованы название и адрес. Это заявление оператора, без независимой или выездной проверки.",
+      "verification": {
+        "sourceContentRead": true,
+        "independentCheck": "not_performed",
+        "fieldCheck": "not_performed",
+        "fieldCheckedAt": null
+      },
+      "osmMatch": {
+        "status": "not_linked",
+        "osmType": null,
+        "osmId": null
+      },
+      "unknownFields": [
+        "physical_rooms",
+        "room_availability",
+        "prices",
+        "room_views",
+        "quietness",
+        "step_free_access",
+        "beach_access",
+        "walking_routes"
+      ]
+    },
+    {
+      "id": "sochi-official-khosta",
+      "subject": {
+        "type": "hotel",
+        "name": "Гостиница «Хоста»",
+        "address": "Сочи, ул. Ялтинская, 14"
+      },
+      "officialName": "Гостиница «Хоста»",
+      "address": "Сочи, ул. Ялтинская, 14",
+      "localityLabel": "Хоста",
+      "regionId": "sochi",
+      "isDemo": false,
+      "scope": "hotel_identity",
+      "status": "reported",
+      "facts": [
+        {
+          "predicate": "hotel_name",
+          "value": "Гостиница «Хоста»",
+          "status": "reported",
+          "scope": "hotel_identity"
+        },
+        {
+          "predicate": "hotel_address",
+          "value": "Сочи, ул. Ялтинская, 14",
+          "status": "reported",
+          "scope": "hotel_identity"
+        }
+      ],
+      "sourceId": "official-khosta",
+      "officialUrl": "https://zaokhosta.ru/kontakty/",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "expiresAt": "2026-11-26",
+      "summary": "На сайте гостиницы опубликованы название и адрес. Это заявление оператора, без независимой или выездной проверки.",
+      "verification": {
+        "sourceContentRead": true,
+        "independentCheck": "not_performed",
+        "fieldCheck": "not_performed",
+        "fieldCheckedAt": null
+      },
+      "osmMatch": {
+        "status": "not_linked",
+        "osmType": null,
+        "osmId": null
+      },
+      "unknownFields": [
+        "physical_rooms",
+        "room_availability",
+        "prices",
+        "room_views",
+        "quietness",
+        "step_free_access",
+        "beach_access",
+        "walking_routes"
+      ]
+    },
+    {
+      "id": "sochi-official-staraya-khosta",
+      "subject": {
+        "type": "hotel",
+        "name": "Отель «Старая Хоста»",
+        "address": "Сочи, Хостинский район, ул. Шоссейная, 2/14"
+      },
+      "officialName": "Отель «Старая Хоста»",
+      "address": "Сочи, Хостинский район, ул. Шоссейная, 2/14",
+      "localityLabel": "Хоста",
+      "regionId": "sochi",
+      "isDemo": false,
+      "scope": "hotel_identity",
+      "status": "reported",
+      "facts": [
+        {
+          "predicate": "hotel_name",
+          "value": "Отель «Старая Хоста»",
+          "status": "reported",
+          "scope": "hotel_identity"
+        },
+        {
+          "predicate": "hotel_address",
+          "value": "Сочи, Хостинский район, ул. Шоссейная, 2/14",
+          "status": "reported",
+          "scope": "hotel_identity"
+        }
+      ],
+      "sourceId": "official-staraya-khosta",
+      "officialUrl": "https://sthosta.ru/rooms/",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "expiresAt": "2026-11-26",
+      "summary": "На сайте гостиницы опубликованы название и адрес. Это заявление оператора, без независимой или выездной проверки.",
+      "verification": {
+        "sourceContentRead": true,
+        "independentCheck": "not_performed",
+        "fieldCheck": "not_performed",
+        "fieldCheckedAt": null
+      },
+      "osmMatch": {
+        "status": "not_linked",
+        "osmType": null,
+        "osmId": null
+      },
+      "unknownFields": [
+        "physical_rooms",
+        "room_availability",
+        "prices",
+        "room_views",
+        "quietness",
+        "step_free_access",
+        "beach_access",
+        "walking_routes"
+      ]
+    },
+    {
+      "id": "sochi-official-laza-hall",
+      "subject": {
+        "type": "hotel",
+        "name": "Гостиница Laza Hall",
+        "address": "Сочи, Лазаревское, ул. Спортивная, 23/9"
+      },
+      "officialName": "Гостиница Laza Hall",
+      "address": "Сочи, Лазаревское, ул. Спортивная, 23/9",
+      "localityLabel": "Лазаревское",
+      "regionId": "sochi",
+      "isDemo": false,
+      "scope": "hotel_identity",
+      "status": "reported",
+      "facts": [
+        {
+          "predicate": "hotel_name",
+          "value": "Гостиница Laza Hall",
+          "status": "reported",
+          "scope": "hotel_identity"
+        },
+        {
+          "predicate": "hotel_address",
+          "value": "Сочи, Лазаревское, ул. Спортивная, 23/9",
+          "status": "reported",
+          "scope": "hotel_identity"
+        }
+      ],
+      "sourceId": "official-laza-hall",
+      "officialUrl": "https://lazahall.com/kontakty/",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "expiresAt": "2026-11-26",
+      "summary": "На сайте гостиницы опубликованы название и адрес. Это заявление оператора, без независимой или выездной проверки.",
+      "verification": {
+        "sourceContentRead": true,
+        "independentCheck": "not_performed",
+        "fieldCheck": "not_performed",
+        "fieldCheckedAt": null
+      },
+      "osmMatch": {
+        "status": "not_linked",
+        "osmType": null,
+        "osmId": null
+      },
+      "unknownFields": [
+        "physical_rooms",
+        "room_availability",
+        "prices",
+        "room_views",
+        "quietness",
+        "step_free_access",
+        "beach_access",
+        "walking_routes"
+      ]
+    },
+    {
+      "id": "sochi-official-flamingo-adler",
+      "subject": {
+        "type": "hotel",
+        "name": "Отель «Фламинго»",
+        "address": "Сочи, Адлерский район, ул. Просвещения, 13А"
+      },
+      "officialName": "Отель «Фламинго»",
+      "address": "Сочи, Адлерский район, ул. Просвещения, 13А",
+      "localityLabel": "Адлер",
+      "regionId": "sochi",
+      "isDemo": false,
+      "scope": "hotel_identity",
+      "status": "reported",
+      "facts": [
+        {
+          "predicate": "hotel_name",
+          "value": "Отель «Фламинго»",
+          "status": "reported",
+          "scope": "hotel_identity"
+        },
+        {
+          "predicate": "hotel_address",
+          "value": "Сочи, Адлерский район, ул. Просвещения, 13А",
+          "status": "reported",
+          "scope": "hotel_identity"
+        }
+      ],
+      "sourceId": "official-flamingo-adler",
+      "officialUrl": "https://www.adler-flamingo.ru/",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "expiresAt": "2026-11-26",
+      "summary": "На сайте гостиницы опубликованы название и адрес. Это заявление оператора, без независимой или выездной проверки.",
+      "verification": {
+        "sourceContentRead": true,
+        "independentCheck": "not_performed",
+        "fieldCheck": "not_performed",
+        "fieldCheckedAt": null
+      },
+      "osmMatch": {
+        "status": "not_linked",
+        "osmType": null,
+        "osmId": null
+      },
+      "unknownFields": [
+        "physical_rooms",
+        "room_availability",
+        "prices",
+        "room_views",
+        "quietness",
+        "step_free_access",
+        "beach_access",
+        "walking_routes"
+      ]
+    },
+    {
+      "id": "sochi-official-grace-global",
+      "subject": {
+        "type": "hotel",
+        "name": "Грейс Глобал",
+        "address": "Сочи, Адлерский район, ул. Демократическая, 6/9"
+      },
+      "officialName": "Грейс Глобал",
+      "address": "Сочи, Адлерский район, ул. Демократическая, 6/9",
+      "localityLabel": "Адлер",
+      "regionId": "sochi",
+      "isDemo": false,
+      "scope": "hotel_identity",
+      "status": "reported",
+      "facts": [
+        {
+          "predicate": "hotel_name",
+          "value": "Грейс Глобал",
+          "status": "reported",
+          "scope": "hotel_identity"
+        },
+        {
+          "predicate": "hotel_address",
+          "value": "Сочи, Адлерский район, ул. Демократическая, 6/9",
+          "status": "reported",
+          "scope": "hotel_identity"
+        }
+      ],
+      "sourceId": "official-grace-global",
+      "officialUrl": "https://grace-global.ru/",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "expiresAt": "2026-11-26",
+      "summary": "На сайте гостиницы опубликованы название и адрес. Это заявление оператора, без независимой или выездной проверки.",
+      "verification": {
+        "sourceContentRead": true,
+        "independentCheck": "not_performed",
+        "fieldCheck": "not_performed",
+        "fieldCheckedAt": null
+      },
+      "osmMatch": {
+        "status": "not_linked",
+        "osmType": null,
+        "osmId": null
+      },
+      "unknownFields": [
+        "physical_rooms",
+        "room_availability",
+        "prices",
+        "room_views",
+        "quietness",
+        "step_free_access",
+        "beach_access",
+        "walking_routes"
+      ]
+    },
+    {
+      "id": "sochi-official-prometey-club",
+      "subject": {
+        "type": "hotel",
+        "name": "Прометей Клуб Отель и СПА",
+        "address": "Сочи, Лазаревское, ул. Речная, 2а"
+      },
+      "officialName": "Прометей Клуб Отель и СПА",
+      "address": "Сочи, Лазаревское, ул. Речная, 2а",
+      "localityLabel": "Лазаревское",
+      "regionId": "sochi",
+      "isDemo": false,
+      "scope": "hotel_identity",
+      "status": "reported",
+      "facts": [
+        {
+          "predicate": "hotel_name",
+          "value": "Прометей Клуб Отель и СПА",
+          "status": "reported",
+          "scope": "hotel_identity"
+        },
+        {
+          "predicate": "hotel_address",
+          "value": "Сочи, Лазаревское, ул. Речная, 2а",
+          "status": "reported",
+          "scope": "hotel_identity"
+        }
+      ],
+      "sourceId": "official-prometey-club",
+      "officialUrl": "https://prometeyclub.ru/en/contacts/",
+      "obtainedAt": "2026-10-27",
+      "obtainedAtPrecision": "day",
+      "sourceDate": null,
+      "method": "manual_review_of_web_tool_page_text",
+      "expiresAt": "2026-11-26",
+      "summary": "На сайте гостиницы опубликованы название и адрес. Это заявление оператора, без независимой или выездной проверки.",
+      "verification": {
+        "sourceContentRead": true,
+        "independentCheck": "not_performed",
+        "fieldCheck": "not_performed",
+        "fieldCheckedAt": null
+      },
+      "osmMatch": {
+        "status": "not_linked",
+        "osmType": null,
+        "osmId": null
+      },
+      "unknownFields": [
+        "physical_rooms",
+        "room_availability",
+        "prices",
+        "room_views",
+        "quietness",
+        "step_free_access",
+        "beach_access",
+        "walking_routes"
+      ]
+    }
+  ],
+  "researchNotes": [
+    {
+      "issue": "search_results_include_intermediaries",
+      "resolution": "Названия вроде «официальные цены» не принимались за свидетельство сайта отеля. Для Grand Karat выбран grandkarat.com, для Жемчужины — zhem.ru, для Прометея — prometeyclub.ru."
+    },
+    {
+      "issue": "pullman_and_mercure_share_address",
+      "resolution": "Один собственный сайт явно называет два отеля; сохранены две записи с общим источником и адресом. Это не причина автоматически объединять их в одну гостиницу."
+    },
+    {
+      "issue": "citrus_sirius_boundary",
+      "resolution": "Цитрус не включён. Поисковый текст правовой информации указывает пгт Сириус; прямое открытие PDF завершилось таймаутом. Это сигнал для исключения из текущего обзора, не полная проверка документа.",
+      "url": "https://hotelcitrus.ru/docs/639026796477593961-c418932a-cca1-4e91-89d2-d57b622beaaa.pdf",
+      "status": "not_reviewed_directly"
+    },
+    {
+      "issue": "swissotel_page_empty",
+      "resolution": "swissotelsochi.ru перенаправил на accor.ru/sochi/swissotel-resort-sochi-kamelia/ с пустым извлечённым текстом. Объект не засчитан в прочитанные страницы.",
+      "url": "https://swissotelsochi.ru/",
+      "status": "not_reviewed_directly"
+    },
+    {
+      "issue": "weiler_site_unavailable",
+      "resolution": "weilerhotel.ru и weilerhotel.com не открылись инструментом. Сниппеты справочников не заменяют чтение сайта, объект не включён.",
+      "url": "https://weilerhotel.ru/",
+      "status": "not_reviewed_directly"
+    },
+    {
+      "issue": "source_title_year_is_not_source_date",
+      "resolution": "Годы в copyright и на странице «Старая Хоста» не использованы как sourceDate. Все неизвестные даты сохранены null."
+    }
+  ]
+}

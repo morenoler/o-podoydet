@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { nearbyKinds } from "./types";
+import { regionNames } from "./regions";
 export const nearbyConditionsSchema = z.array(z.object({ kind: z.enum(nearbyKinds), maxMeters: z.number().min(1).max(10_000) }).strict())
   .max(nearbyKinds.length).refine((items) => new Set(items.map((item) => item.kind)).size === items.length, "Условия окружения повторяются");
 export const featureSchema = z.enum([
@@ -31,7 +32,7 @@ export const tripSchema = z
   .object({
     admissionMode: z.enum(["explore", "verified"]).optional(),
     hotelFilters: hotelFiltersSchema.optional(),
-    region: z.literal("Пусан"),
+    region: z.enum(regionNames),
     checkIn: date,
     checkOut: date,
     adults: z.number().int().min(1).max(6),

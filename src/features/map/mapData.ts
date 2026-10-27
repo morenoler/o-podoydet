@@ -13,7 +13,7 @@ export function latLng(point: Point): [number, number] {
 
 export function visibleMapHotels(dataset: Dataset, hotel?: Hotel, hotels?: Hotel[]): Hotel[] {
   return (hotels ?? (hotel ? [hotel] : dataset.hotels))
-    .filter((item) => !item.synthetic && isMapPoint(item.coordinates));
+    .filter((item) => !item.synthetic && (!item.region || item.region === dataset.region) && isMapPoint(item.coordinates));
 }
 
 export function validPath(points: Point[] | undefined): Point[] {
@@ -59,6 +59,7 @@ export function groupMapHotels(hotels: Hotel[], project?: (point: Point) => Poin
 export function datasetMapPoints(dataset: Dataset): Point[] {
   const [west, south, east, north] = dataset.bbox;
   const points: Point[] = [[west, south], [east, north]];
-  return points.every(isMapPoint) && west < east && south < north
-    ? points : [[129.12, 35.145], [129.18, 35.18]];
+  if (points.every(isMapPoint) && west < east && south < north) return points;
+  const hotelPoints = visibleMapHotels(dataset).map((hotel) => hotel.coordinates!);
+  return hotelPoints.length ? hotelPoints : [[-180, -85], [180, 85]];
 }

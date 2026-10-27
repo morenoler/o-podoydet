@@ -10,20 +10,24 @@ import type { Trip } from "../../../shared/types";
 import { Modal } from "../../shared/ui/Modal";
 import { dateLabel } from "../../shared/lib/date";
 import { canSearch, hasSearchDates, nextSearchDate, readSearchForm, searchToday, searchTripIssues } from "./searchTrip";
+import { regionDetails } from "../../../shared/regions";
+import { changeTripRegion } from "./searchPolicy";
 
 export function SearchBar({
   trip,
   onSearch,
   busy = false,
+  regions = [trip.region],
 }: {
   trip: Trip;
   onSearch: (trip: Trip) => void;
   busy?: boolean;
+  regions?: string[];
 }) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(trip);
   const [submitted, setSubmitted] = useState(false);
-  const issues = submitted ? searchTripIssues({ ...draft, region: "Пусан" }) : [];
+  const issues = submitted ? searchTripIssues(draft) : [];
   useEffect(() => {
     setDraft(trip);
   }, [trip]);
@@ -58,20 +62,21 @@ export function SearchBar({
         >
           <MapPin aria-hidden="true" size={25} />
           <span>
-            <strong>Пусан, Южная Корея</strong>
+            <strong>{regionDetails(trip.region)?.label || trip.region}</strong>
             <small>
               {dates} · {guests}
             </small>
           </span>
           <ChevronDown size={22} aria-hidden="true" />
         </button>
-        <div className="search-bar-destination">
+        <button className="search-bar-destination" type="button" onClick={edit} aria-haspopup="dialog">
           <MapPin size={23} aria-hidden="true" />
           <span>
             <small>Куда едем</small>
-            <strong>Пусан, Южная Корея</strong>
+            <strong>{regionDetails(trip.region)?.label || trip.region}</strong>
           </span>
-        </div>
+          <ChevronDown size={21} aria-hidden="true" />
+        </button>
         <button
           className="search-bar-field"
           type="button"
@@ -114,16 +119,24 @@ export function SearchBar({
         title="Ваша поездка"
         className="search-trip-modal"
       >
-        <p className="search-dialog-intro">Пусан, Южная Корея · один номер</p>
+        <p className="search-dialog-intro">Один номер · наличие на даты уточняйте у отельера</p>
         <form onSubmit={submit}>
           <div className="search-trip-fields">
+            <label className="field">
+              <span>Направление</span>
+              <select name="region" value={draft.region}
+                aria-invalid={issues.some((issue) => issue.field === "region")}
+                onChange={(event) => setDraft(changeTripRegion(draft, event.target.value))}>
+                {(regions.length ? regions : [trip.region]).map((region) => <option key={region} value={region}>{regionDetails(region)?.label || region}</option>)}
+              </select>
+            </label>
             <label className="field">
               <span>Заезд</span>
               <input
                 name="checkIn"
                 type="date"
                 required
-                min={searchToday()}
+                min={searchToday(draft.region)}
                 value={draft.checkIn}
                 aria-invalid={issues.some((issue) => issue.field === "checkIn")}
                 aria-describedby={issues.some((issue) => issue.field === "checkIn") ? "search-trip-errors" : undefined}
@@ -138,7 +151,7 @@ export function SearchBar({
                 name="checkOut"
                 type="date"
                 required
-                min={nextSearchDate(draft.checkIn) || searchToday()}
+                min={nextSearchDate(draft.checkIn) || searchToday(draft.region)}
                 value={draft.checkOut}
                 aria-invalid={issues.some((issue) => issue.field === "checkOut")}
                 aria-describedby={issues.some((issue) => issue.field === "checkOut") ? "search-trip-errors" : undefined}
@@ -194,6 +207,10 @@ export function SearchBar({
             поездки уточняйте у отельера.
           </p>
           <div className="search-dialog-footer">
+            {!hasSearchDates(draft) && <button className="button secondary" type="button" onClick={() => {
+              onSearch({ ...draft, checkIn: "", checkOut: "" });
+              setOpen(false);
+            }}>Показать каталог без дат</button>}
             <button className="button primary" type="submit">
               <Search size={18} aria-hidden="true" />
               Найти отель

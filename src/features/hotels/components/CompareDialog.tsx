@@ -50,7 +50,7 @@ export function CompareDialog({
             доступные данные и ограничения оценки.
           </p>
           <p className="muted">
-            {dateFull(trip.checkIn)} — {dateFull(trip.checkOut)} · Пусан
+            {dateFull(trip.checkIn)} — {dateFull(trip.checkOut)} · {trip.region}
           </p>
         </div>
         <button
@@ -81,7 +81,7 @@ export function CompareDialog({
             )}
             <h3>{m.best.room.name}</h3>
             <p>{m.hotel.name} · {lodgingLabel(m.hotel)}</p>
-            <NearbySummary matches={m.best.nearbyMatches || []} />
+            <NearbySummary matches={m.best.nearbyMatches || []} region={trip.region} />
             {accountListingId(m.hotel) && (
               <p className="hotel-owner-source">
                 Сведения отельера. Независимая проверка не проведена.

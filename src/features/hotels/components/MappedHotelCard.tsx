@@ -13,7 +13,7 @@ export function MappedHotelCard({ candidate, selected, onSelect, onShowMap }: {
       <div><h3>{hotel.name}</h3><p>{hotel.lodgingType && `${lodgingLabels[hotel.lodgingType]} · `}{hotel.address}</p></div>
       <button type="button" className="button secondary" onClick={onShowMap} aria-label={`На карте: ${hotel.name}`}><MapPin size={17} aria-hidden="true" />На карте</button>
     </div>
-    <NearbySummary matches={nearbyMatches} />
+    <NearbySummary matches={nearbyMatches} region={hotel.region} />
     <p className="mapped-hotel-limits">Категории, вместимость, цена и наличие не собраны.</p>
     <details className="mapped-hotel-sources">
       <summary>Источник и ограничения</summary>

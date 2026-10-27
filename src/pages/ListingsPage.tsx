@@ -35,7 +35,7 @@ export function ListingsPage() {
         .includes(query.trim().toLocaleLowerCase("ru-RU")),
   );
   if (sort === "price")
-    listings.sort((a, b) => a.pricePerNight - b.pricePerNight);
+    listings.sort((a, b) => a.currency.localeCompare(b.currency) || a.pricePerNight - b.pricePerNight);
   if (sort === "capacity") listings.sort((a, b) => b.capacity - a.capacity);
   return (
     <div className="page account-page listings-page public-listings-v2">
@@ -84,7 +84,7 @@ export function ListingsPage() {
           }
         >
           Новые объявления появятся после публикации владельцем. А пока можно
-          изучить отели Пусана в подборе по пожеланиям.
+          изучить каталог отелей в подборе по пожеланиям.
         </AccountEmpty>
       ) : (
         <>
@@ -121,7 +121,7 @@ export function ListingsPage() {
                 onChange={(event) => filter("sort", event.target.value)}
               >
                 <option value="newest">Сначала новые</option>
-                <option value="price">Сначала дешевле</option>
+                <option value="price">Дешевле в каждой валюте</option>
                 <option value="capacity">Больше гостей</option>
               </select>
             </label>
@@ -199,7 +199,7 @@ export function ListingsPage() {
                   </div>
                   <div className="public-listing-action">
                     <div>
-                      <strong>{price(listing.pricePerNight)}</strong>
+                      <strong>{price(listing.pricePerNight, listing.currency)}</strong>
                       <span>за ночь за весь номер</span>
                     </div>
                     <Link

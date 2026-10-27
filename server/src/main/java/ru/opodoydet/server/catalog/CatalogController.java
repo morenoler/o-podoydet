@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.opodoydet.application.Agents;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.server.config.DomainConfig.RuntimeEnv;
@@ -47,12 +48,18 @@ public class CatalogController {
     body.put("runtime", "Java " + Runtime.version().feature());
     body.put("database", "PostgreSQL " + version);
     body.put("region", catalog.dataset().map(Dataset::getRegion).orElse(""));
+    body.put("regions", catalog.regionMetadata().path("regions"));
     return JsonResponses.send(200, body);
   }
 
   @GetMapping("/api/catalog")
-  public ResponseEntity<String> catalog() {
-    return JsonResponses.send(200, catalog.catalog().put("mode", agents.mode()));
+  public ResponseEntity<String> catalog(@RequestParam(required = false) String region) {
+    return JsonResponses.send(200, catalog.catalog(region).put("mode", agents.mode()));
+  }
+
+  @GetMapping("/api/regions")
+  public ResponseEntity<String> regions() {
+    return JsonResponses.send(200, catalog.regionMetadata());
   }
 
   @GetMapping("/api/hotels/{id}")
@@ -62,7 +69,7 @@ public class CatalogController {
         .map(
             body -> {
               List<JsonNode> questions =
-                  store.questions().stream()
+                  store.forRegion(catalog.hotelRegion(id).orElseThrow()).questions().stream()
                       .filter(q -> Json.str(q, "hotelId").equals(id))
                       .toList();
               ObjectNode result = body;

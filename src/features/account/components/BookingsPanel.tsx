@@ -214,7 +214,7 @@ function BookingCard({
           </span>
         </div>
         <div className="booking-price">
-          <strong>{price(booking.totalPrice)}</strong>
+          <strong>{price(booking.totalPrice, booking.currency)}</strong>
           <span>
             за {countLabel(booking.nights, ["ночь", "ночи", "ночей"])}
           </span>

@@ -1,5 +1,7 @@
 import type { Trip } from "../../../shared/types";
 import { tripSchema } from "../../../shared/validation";
+import { regionDetails } from "../../../shared/regions";
+import { changeTripRegion } from "./searchPolicy";
 
 export function canSearch(trip: Trip) {
   return tripSchema.safeParse(trip).success;
@@ -30,7 +32,7 @@ export function searchTripIssues(trip: Trip): SearchTripIssue[] {
         ? "Выезд должен быть позже заезда." : "Укажите корректную дату выезда.",
       adults: "Выберите от 1 до 6 взрослых.",
       children: "Выберите от 0 до 4 детей.",
-      region: "Сейчас доступен поиск только по Пусану.",
+      region: "Выберите доступное направление: Пусан или Сочи.",
       scenarios: issue.code === "custom" ? "Сценарии поездки повторяются. Выберите каждый сценарий только один раз."
         : "Проверьте сценарии поездки: доступны «Отдых у моря», «Поездка с детьми» и «Спокойный отдых».",
       preferences: issue.code === "custom" ? "Пожелания повторяются. Выберите каждое условие только один раз."
@@ -52,8 +54,7 @@ export function searchTripIssues(trip: Trip): SearchTripIssue[] {
 /** Submit actual control values, including a date edit that has not reached React state yet. */
 export function readSearchForm(trip: Trip, fields: Pick<FormData, "get">): Trip {
   return {
-    ...trip,
-    region: "Пусан",
+    ...changeTripRegion(trip, String(fields.get("region") ?? trip.region)),
     checkIn: String(fields.get("checkIn") ?? ""),
     checkOut: String(fields.get("checkOut") ?? ""),
     adults: Number(fields.get("adults") ?? NaN),
@@ -68,9 +69,9 @@ export function nextSearchDate(value: string) {
   return date.toISOString().slice(0, 10);
 }
 
-export function searchToday() {
+export function searchToday(region = "Пусан") {
   return new Intl.DateTimeFormat("sv-SE", {
-    timeZone: "Asia/Seoul",
+    timeZone: regionDetails(region)?.timeZone || "UTC",
     year: "numeric",
     month: "2-digit",
     day: "2-digit",

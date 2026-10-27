@@ -32,7 +32,12 @@ public final class SearchConversation {
       "терраса", "террас[а-я]*", "парковка", "парковк[а-я]*", "завтрак", "завтрак[а-я]*",
       "сауна", "саун[а-я]*", "спортзал", "спортзал[а-я]*|фитнес[а-я]*", "кондиционер", "кондиционер[а-я]*");
   private static final String NUMBER = "(\\d+(?:[ \\u00a0]\\d{3})*(?:[.,]\\d+)?)";
-  private static final String MONEY = NUMBER + "\\s*(тыс(?:яч[аиу]?)?\\.?|[kк])?\\s*(?:krw|₩|вон[а-я]*)";
+  private static String money(String region) {
+    return NUMBER + "\\s*(тыс(?:яч[аиу]?)?\\.?|[kк])?\\s*(?:"
+        + (region.equals("Сочи") ? "rub|₽|руб(?:ль|ля|лей|ли)?" : "krw|₩|вон[а-я]*") + ")";
+  }
+
+  private static String currency(String region) { return ru.opodoydet.domain.RegionSettings.of(region).currency(); }
   private static final String DISTANCE = NUMBER + "\\s*(км|километр[а-я]*|метр[а-я]*|м)(?![а-я])";
   private static final String FILLER = "(?U)\\b(?:хочу|хотим|нуж[а-я]*|надо|важ[а-я]*|обязател[а-я]*|необязател[а-я]*|желател[а-я]*|принципиальн[а-я]*|строго|только|пожалуйста|еще|снова|также|еду|едем|ищу|ищем|найти|снять|жить|чтобы|было|был|была|быть|будет|можно|возможно|по|возможности|не|без|с|со|в|во|у|к|на|от|до|и|а|но|про|это|этот|рядом|поближе|близко|недалеко|пешком|поменьше|меньше|низк[а-я]*|внешн[а-я]*|для|нам|мне|нас|всех|спокойн[а-я]*|район[а-я]*|отел[а-я]*|номер[а-я]*|окн[а-я]*|услов[а-я]*|фильтр[а-я]*|требован[а-я]*|убери|убрать|удали|удалить|сними|снять|смягчи|учитыва[а-я]*|чист[а-я]*|должно|должен|весь|всему|пути|путь|дорог[а-я]*|маршрут[а-я]*|ступен[а-я]*|лестниц[а-я]*)\\b";
 
@@ -48,7 +53,11 @@ public final class SearchConversation {
 
   /** Returned null values explicitly clear a structured filter. */
   static ObjectNode rules(String message, List<String> focus) {
-    String text = message.toLowerCase(Locale.ROOT).replace('ё', 'е').replaceAll("(?<=тыс)\\.(?=\\s*(?:krw|вон|₩))", "");
+    return rules(message, focus, "Пусан");
+  }
+
+  static ObjectNode rules(String message, List<String> focus, String region) {
+    String text = message.toLowerCase(Locale.ROOT).replace('ё', 'е').replaceAll("(?<=тыс)\\.(?=\\s*(?:krw|вон|₩|rub|руб|₽))", "");
     Map<String, JsonNode> updates = new LinkedHashMap<>();
     ObjectNode filters = Json.obj();
     boolean queryAppend = true;
@@ -66,7 +75,7 @@ public final class SearchConversation {
         } else unhandled.add(clause);
         continue;
       }
-      NearbyIntent.Parsed nearby = NearbyIntent.parse(clause);
+      NearbyIntent.Parsed nearby = NearbyIntent.parse(clause, region);
       if (nearby.recognized()) {
         nearbyUpdates.addAll(nearby.updates());
         if (!nearby.warning().isBlank()) nearbyWarnings.add(nearby.warning());
@@ -92,7 +101,7 @@ public final class SearchConversation {
       if (clause.matches("(?:убери|сбрось) (?:бюджет|цену|ограничение цены)|без ограничени[яй] (?:по цене|бюджета)")) { filters.putNull("maxPricePerNight"); continue; }
       if (clause.matches("(?:убери|сбрось) (?:расстояние до пляжа|расстояние до моря|дистанцию до пляжа)")) { filters.putNull("maxBeachMeters"); continue; }
       if (clause.matches("(?:любой|все) тип[ы]? (?:жилья|размещения)|(?:убери|сбрось) тип (?:жилья|размещения)")) { filters.putNull("lodgingTypes"); continue; }
-      var budget = Pattern.compile("^(?:бюджет|цена|стоимость|номер|отель)?\\s*(?:до|не дороже|не более)\\s*" + MONEY + "(?:\\s*(?:за|в) (?:ночь|сутки))?$").matcher(clause);
+      var budget = Pattern.compile("^(?:бюджет|цена|стоимость|номер|отель)?\\s*(?:до|не дороже|не более)\\s*" + money(region) + "(?:\\s*(?:за|в) (?:ночь|сутки))?$").matcher(clause);
       if (budget.matches()) {
         double amount = number(budget.group(1)) * (budget.group(2) == null ? 1 : 1000);
         if (amount > 0 && amount <= 100_000_000) filters.put("maxPricePerNight", amount); else unhandled.add(clause);
@@ -193,7 +202,8 @@ public final class SearchConversation {
       for (JsonNode value : focusInput) { Features.get(value.asText()); if (!focus.contains(value.asText())) focus.add(value.asText()); }
     }
     ObjectNode current = Agents.applyOverrides(Agents.parseRules(Json.str(trip, "text"), Json.list(trip.path("preferences"))), trip);
-    JsonNode edits = rules(message, focus);
+    String region = Json.str(trip, "region");
+    JsonNode edits = rules(message, focus, region);
     Map<String, JsonNode> preferences = new LinkedHashMap<>(), overrides = new LinkedHashMap<>();
     current.path("preferences").forEach(p -> preferences.put(Json.str(p, "feature"), p.deepCopy()));
     trip.path("preferenceOverrides").forEach(p -> overrides.put(Json.str(p, "feature"), p.deepCopy()));
@@ -213,7 +223,9 @@ public final class SearchConversation {
       boolean added = Json.list(edits.path("nearbyUpdates")).stream().anyMatch(edit -> Json.str(edit, "action").equals("add"));
       if (added) warnings.add("Близость проверяем по прямой от точки отеля по данным OpenStreetMap. Пешеходный путь, вход и работа места не подтверждены.");
       if (Json.list(edits.path("nearbyUpdates")).stream().anyMatch(edit -> Json.str(edit, "kind").equals("city_center") && Json.str(edit, "action").equals("add")))
-        warnings.add("За ориентир центра Пусана принят Сомён (Seomyeon); это выбранная точка отсчёта, а не единственная граница центра.");
+        warnings.add(region.equals("Сочи")
+            ? "Ориентир центра Сочи пока не собран. Условие требует расстояния из источников каталога; без него отель не пройдёт этот фильтр."
+            : "За ориентир центра Пусана принят Сомён (Seomyeon); это выбранная точка отсчёта, а не единственная граница центра.");
     }
     if (edits.path("queryAppend").asBoolean() && filterEdits.hasNonNull("query")) {
       String combined = appendQuery(Json.str(trip.path("hotelFilters"), "query"), filterEdits.path("query").asText());
@@ -238,11 +250,11 @@ public final class SearchConversation {
     edits.path("hotelFilters").properties().forEach(edit -> {
       String field = edit.getKey(); JsonNode value = edit.getValue();
       if (value.isNull()) filters.remove(field); else filters.set(field, value);
-      descriptions.add(filterDescription(field, value));
+      descriptions.add(filterDescription(field, value, region));
     });
     if (!edits.path("hotelFilters").isEmpty()) { if (filters.isEmpty()) nextTrip.remove("hotelFilters"); else nextTrip.set("hotelFilters", filters); }
     if (edits.path("hotelFilters").hasNonNull("query")) warnings.add("Поиск по словам в названиях и описаниях. Упоминание удобства не подтверждает его для конкретного номера.");
-    if (edits.path("hotelFilters").hasNonNull("maxPricePerNight")) warnings.add("Лимит относится к указанной цене за ночь в KRW. Объекты без цены исключены; стоимость и наличие на даты нужно уточнить.");
+    if (edits.path("hotelFilters").hasNonNull("maxPricePerNight")) warnings.add("Лимит относится к указанной цене за ночь в " + currency(region) + ". Объекты без цены исключены; стоимость и наличие на даты нужно уточнить.");
     if (edits.path("hotelFilters").hasNonNull("maxBeachMeters")) warnings.add("Расстояние рассчитано только по пешеходной сети; подходы от входа и к воде не включены. Доступность пути к воде не подтверждена.");
     if (!edits.path("ownerClauses").isEmpty()) {
       String original = Json.str(trip, "text");
@@ -258,16 +270,16 @@ public final class SearchConversation {
         "focusFeatures", !edits.path("unhandled").isEmpty() ? List.of() : nextFocus.isEmpty() ? (descriptions.isEmpty() ? focus : List.of()) : nextFocus, "changed", !nextTrip.equals(trip));
   }
 
-  private static String filterDescription(String field, JsonNode value) {
+  private static String filterDescription(String field, JsonNode value, String region) {
     if (field.equals("nearby")) {
       if (value.isNull()) return "условия близости убраны";
-      return String.join(", ", Json.list(value).stream().map(condition -> NearbyIntent.definition(Json.str(condition, "kind")).label()
+      return String.join(", ", Json.list(value).stream().map(condition -> NearbyIntent.definition(Json.str(condition, "kind"), region).label()
           + " до " + condition.path("maxMeters").asText().replaceAll("\\.0$", "") + " м по прямой").toList());
     }
     String label = switch (field) { case "query" -> "поиск по тексту"; case "lodgingTypes" -> "тип размещения"; case "maxPricePerNight" -> "цена за ночь"; case "maxBeachMeters" -> "расстояние до пляжа"; default -> throw new IllegalArgumentException("Неизвестный фильтр"); };
     if (value.isNull()) return label + " — ограничение убрано";
     if (field.equals("query")) return label + " «" + value.asText() + "»";
     if (field.equals("lodgingTypes")) return label + ": " + String.join(", ", Json.list(value).stream().map(v -> switch (v.asText()) { case "hotel" -> "отель"; case "motel" -> "мотель"; case "guest_house" -> "гостевой дом"; case "hostel" -> "хостел"; default -> "апартаменты"; }).toList());
-    return label + " до " + value.asText().replaceAll("\\.0$", "") + (field.equals("maxPricePerNight") ? " KRW" : " м");
+    return label + " до " + value.asText().replaceAll("\\.0$", "") + (field.equals("maxPricePerNight") ? " " + currency(region) : " м");
   }
 }

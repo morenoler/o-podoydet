@@ -49,7 +49,7 @@ public class SeedImporter {
   private final TransactionTemplate tx;
   private final FactResolver resolver;
   private final Clock clock;
-  private final Path dataPath;
+  private final String dataPath;
   private final boolean enabled;
 
   public SeedImporter(
@@ -65,25 +65,51 @@ public class SeedImporter {
     this.tx = tx;
     this.resolver = resolver;
     this.clock = clock;
-    this.dataPath = Path.of(dataPath);
+    this.dataPath = dataPath;
     this.enabled = enabled;
   }
 
   /** Вызывается из {@link ru.opodoydet.server.config.StartupImports} до открытия HTTP-порта. */
   public void run() throws IOException {
     if (!enabled) return;
-    Report report = importFile(dataPath);
-    log.info("Импорт {}: {}", dataPath, report);
+    List<Path> paths = dataPath.isBlank()
+        ? List.of(Path.of("data/busan/verified-hotels.json"), Path.of("data/sochi/verified-hotels.json"))
+        : List.of(Path.of(dataPath));
+    // Read every file before changing the active catalog; import itself is atomic.
+    java.util.ArrayList<JsonNode> seeds = new java.util.ArrayList<>();
+    for (Path path : paths) seeds.add(readFile(path));
+    log.info("Импорт {}: {}", paths, importCatalog(seeds));
     log.info("Факты пересчитаны: {}", resolver.resolveAll());
   }
 
   public Report importFile(Path path) throws IOException {
+    return importSeed(readFile(path));
+  }
+
+  private JsonNode readFile(Path path) throws IOException {
     if (!Files.isRegularFile(path))
       throw new IllegalStateException(
           "Не найден набор данных "
               + path.toAbsolutePath()
               + ". Запускайте сервер из корня репозитория или задайте DATA_PATH.");
-    return importSeed(json.readTree(path.toFile()));
+    return json.readTree(path.toFile());
+  }
+
+  /** Atomically publish an ordered set of datasets, with the first as the default region. */
+  public List<Report> importCatalog(List<JsonNode> seeds) {
+    if (seeds.isEmpty()) throw new IllegalArgumentException("Каталог должен содержать регион");
+    if (seeds.stream().map(seed -> text(seed, "region")).distinct().count() != seeds.size())
+      throw new IllegalArgumentException("Регионы каталога не должны повторяться");
+    return tx.execute(status -> {
+      List<Report> reports = seeds.stream().map(this::importSeed).toList();
+      jdbc.sql("DELETE FROM catalog_region").update();
+      for (int i = 0; i < reports.size(); i++)
+        jdbc.sql("INSERT INTO catalog_region(region, position) VALUES (?, ?)")
+            .params(reports.get(i).region(), i).update();
+      jdbc.sql("UPDATE catalog_runtime SET region = ? WHERE singleton")
+          .param(reports.getFirst().region()).update();
+      return reports;
+    });
   }
 
   public Report importSeed(JsonNode seed) {
@@ -120,6 +146,8 @@ public class SeedImporter {
 
           jdbc.sql("INSERT INTO catalog_runtime(singleton, region) VALUES (TRUE, ?) ON CONFLICT(singleton) DO UPDATE SET region = excluded.region")
               .param(region).update();
+          jdbc.sql("DELETE FROM catalog_region").update();
+          jdbc.sql("INSERT INTO catalog_region(region, position) VALUES (?, 0)").param(region).update();
           jdbc.sql("UPDATE evidence SET active = FALSE WHERE origin = 'seed' AND hotel_id IN (SELECT id FROM hotel WHERE region = ?)")
               .param(region).update();
 

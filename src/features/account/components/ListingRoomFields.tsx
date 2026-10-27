@@ -3,6 +3,7 @@ import { Check, Info } from "lucide-react";
 import type { WindowDirection } from "../../../../shared/account";
 import { directionLabels } from "../format";
 import type { ListingFieldsProps } from "./listingForm";
+import { currencySymbol, listingCurrency } from "../../../../shared/regions";
 
 const directions = Object.keys(directionLabels) as WindowDirection[];
 export function ListingRoomFields({ value, update }: ListingFieldsProps) {
@@ -65,9 +66,10 @@ export function ListingRoomFields({ value, update }: ListingFieldsProps) {
             placeholder="Не указано"
           />
         </label>
-        <label className="field editor-price">
-          <span>Стоимость за ночь, ₩</span>
+        <div className="field editor-price">
+          <label htmlFor={`${id}-price`}>Стоимость за ночь, {currencySymbol(value.currency)}</label>
           <input
+            id={`${id}-price`}
             type="number"
             required
             min={1}
@@ -78,7 +80,14 @@ export function ListingRoomFields({ value, update }: ListingFieldsProps) {
               update("pricePerNight", Number(event.target.value))
             }
           />
-        </label>
+          {!value.pricePerNight && <small role="status">Введите стоимость в {value.currency === "RUB" ? "рублях" : "вонах"}. При смене валюты прежняя сумма сбрасывается.</small>}
+          {value.currency !== listingCurrency(value.city) && <small>
+            Сохранена цена в {value.currency === "RUB" ? "рублях" : "вонах"}.
+            {" "}<button className="text-link" type="button" onClick={() => update("currency", listingCurrency(value.city))}>
+              Указать цену в {listingCurrency(value.city) === "RUB" ? "рублях" : "вонах"}
+            </button>. Потребуется ввести сумму заново.
+          </small>}
+        </div>
         <div
           className="editor-window-directions"
           role="group"

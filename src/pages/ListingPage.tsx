@@ -188,7 +188,7 @@ export function ListingPage() {
               <>
                 <div className="listing-mobile-booking">
                   <div>
-                    <strong>{price(listing.pricePerNight)}</strong>
+                    <strong>{price(listing.pricePerNight, listing.currency)}</strong>
                     <span>за ночь · цена отельера</span>
                   </div>
                   <button

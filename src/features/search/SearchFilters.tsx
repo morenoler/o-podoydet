@@ -38,7 +38,7 @@ export function SearchFilters({
     >
       <form onSubmit={(event) => { event.preventDefault(); apply(); onClose(); }}>
       <div className="search-filters-body">
-        <CatalogFilterFields value={draft.hotelFilters}
+        <CatalogFilterFields value={draft.hotelFilters} region={draft.region}
           onChange={(hotelFilters) => setDraft({ ...draft, hotelFilters })} />
         <h3 className="search-filter-section-title">Условия поездки</h3>
         <AdmissionModePicker value={draft.admissionMode}

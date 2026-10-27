@@ -19,6 +19,8 @@
     "data:fetch": "tsx scripts/fetch-osm.ts",
     "data:fetch:busan": "tsx scripts/fetch-busan.ts --fetch",
     "data:prepare:busan": "tsx scripts/prepare-busan.ts",
+    "data:fetch:sochi": "tsx scripts/fetch-sochi.ts --fetch",
+    "data:prepare:sochi": "tsx scripts/prepare-sochi.ts",
     "data:prepare": "tsx scripts/prepare-data.ts && tsx scripts/prepare-verified-data.ts",
     "data:verify": "tsx scripts/prepare-verified-data.ts",
     "check": "tsc --noEmit",

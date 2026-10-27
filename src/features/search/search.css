@@ -40,6 +40,13 @@
   min-height: 44px;
   cursor: pointer;
 }
+.search-bar-destination {
+  border: 0;
+  background: transparent;
+  min-height: 44px;
+  cursor: pointer;
+}
+.search-bar .search-bar-destination strong { white-space: normal; }
 .search-bar-field > svg,
 .search-bar-destination > svg {
   color: #667890;
@@ -725,6 +732,7 @@
   min-width: 0;
   margin: 0;
 }
+.search-trip-fields .field:first-child { grid-column: 1 / -1; }
 .search-trip-fields input,
 .search-trip-fields select {
   width: 100%;
@@ -749,6 +757,8 @@
   margin-left: auto;
   min-width: 180px;
 }
+.search-trip-modal .search-dialog-footer { flex-wrap: wrap; }
+.search-trip-modal .search-dialog-footer > .button { flex: 1 1 180px; white-space: normal; }
 .search-trip-fields + .search-dialog-intro,
 .search-form-error + .search-dialog-intro {
   margin-top: 20px;

@@ -8,3 +8,6 @@ data/*.raw.geojson -text
 data/busan/raw/*.json -text
 data/busan/place-categories.json text eol=lf
 scripts/extract-busan-pois.py text eol=lf
+# Preserve Sochi snapshots and the byte-hashed official identity review across checkouts.
+data/sochi/raw/*.json -text whitespace=cr-at-eol
+data/sochi/official-review.json -text whitespace=cr-at-eol

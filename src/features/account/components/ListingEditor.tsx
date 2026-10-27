@@ -5,7 +5,7 @@ import { ListingSearchProfileFields } from "./ListingSearchProfileFields";
 import { ListingBasicFields } from "./ListingBasicFields";
 import { ListingRoomFields } from "./ListingRoomFields";
 import { ListingPreview } from "./ListingPreview";
-import { editableListing, type EditableListing } from "./listingForm";
+import { editableListing, updateEditableListing, type EditableListing } from "./listingForm";
 import "../editor-v2.css";
 
 const suggestedAmenities = [
@@ -39,7 +39,7 @@ export function ListingEditor({
     key: K,
     value: EditableListing[K],
   ) {
-    setForm((previous) => ({ ...previous, [key]: value }));
+    setForm((previous) => updateEditableListing(previous, key, value));
   }
   function toggleAmenity(value: string) {
     update(

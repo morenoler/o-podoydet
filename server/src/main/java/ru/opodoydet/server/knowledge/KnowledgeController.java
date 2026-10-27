@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.opodoydet.server.host.DemoHostGuard;
+import ru.opodoydet.server.catalog.CatalogService;
 
 /**
  * Новый API ядра знаний. Здесь видно то, чего не было в старом: итоговый статус факта,
@@ -66,12 +67,14 @@ public class KnowledgeController {
   private final FactResolver resolver;
   private final Clock clock;
   private final DemoHostGuard guard;
+  private final CatalogService catalog;
 
-  KnowledgeController(KnowledgeQueries queries, FactResolver resolver, Clock clock, DemoHostGuard guard) {
+  KnowledgeController(KnowledgeQueries queries, FactResolver resolver, Clock clock, DemoHostGuard guard, CatalogService catalog) {
     this.queries = queries;
     this.resolver = resolver;
     this.clock = clock;
     this.guard = guard;
+    this.catalog = catalog;
   }
 
   @GetMapping("/characteristics")
@@ -81,6 +84,8 @@ public class KnowledgeController {
 
   @GetMapping("/hotels/{id}/knowledge")
   public ResponseEntity<?> hotel(@PathVariable String id) {
+    if (catalog.hotelRegion(id).isEmpty())
+      return ResponseEntity.status(404).body(Map.of("error", "Отель не найден в активном каталоге"));
     List<Fact> facts = queries.facts(id);
     if (facts.isEmpty())
       return ResponseEntity.status(404)
