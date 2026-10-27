@@ -18,6 +18,8 @@ import {
 import { BookingRequest } from "../features/listings/BookingRequest";
 import { ListingQuestions } from "../features/listings/ListingQuestions";
 import { ListingGallery } from "../features/listings/ListingGallery";
+import { SleepingArrangement } from "../features/listings/SleepingArrangement";
+import { ListingLocationMap } from "../features/listings/ListingLocationMap";
 import { ListingClarificationPanel } from "../features/clarifications/ListingClarificationPanel";
 import { FavoriteButton } from "../features/favorites/FavoriteButton";
 import { Modal } from "../shared/ui/Modal";
@@ -81,6 +83,7 @@ export function ListingPage() {
             <div className="listing-title">
               <div>
                 <h1>{listing.title}</h1>
+                {listing.demo && <p className="account-muted">Демо · вымышленное объявление</p>}
                 <p>
                   <MapPin size={20} aria-hidden="true" />
                   <span>
@@ -144,6 +147,7 @@ export function ListingPage() {
                   <p className="listing-owner-source">
                     По сведениям отельера
                   </p>
+                  <SleepingArrangement beds={listing.beds} sleepingPlaces={listing.sleepingPlaces} />
                   <p className="listing-description">{listing.description}</p>
                   <section
                     className="listing-amenity-section"
@@ -164,6 +168,11 @@ export function ListingPage() {
                         Удобства не указаны.
                       </p>
                     )}
+                  </section>
+                  <section className="listing-amenity-section" aria-label="Расположение">
+                    <h2>Расположение</h2>
+                    {listing.coordinates ? <ListingLocationMap coordinates={listing.coordinates} demo={listing.demo} /> :
+                      <p className="account-muted">Отельер пока не отметил расположение на карте.</p>}
                   </section>
                 </section>
                 <details

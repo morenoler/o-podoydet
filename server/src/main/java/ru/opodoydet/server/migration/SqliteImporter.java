@@ -40,6 +40,7 @@ import ru.opodoydet.shared.Json;
 public class SqliteImporter {
 
   private static final Logger log = LoggerFactory.getLogger(SqliteImporter.class);
+  private static final String SYNTHETIC_DEMO_KIND = "opodoydet-synthetic-demo-v1";
 
   /** Таблица SQLite → таблица PostgreSQL и колонки, которые переносим (если есть в источнике). */
   private record Copy(String from, String to, List<String> columns, String order) {}
@@ -58,7 +59,7 @@ public class SqliteImporter {
               List.of(
                   "id", "host_id", "title", "description", "city", "address", "room_type", "capacity",
                   "price_per_night", "amenities", "status", "created_at", "updated_at", "floor",
-                  "window_directions", "photos"),
+                  "window_directions", "photos", "longitude", "latitude", "sleeping_places", "beds", "demo"),
               "created_at"),
           new Copy(
               "account_listing_search_profiles",
@@ -113,11 +114,18 @@ public class SqliteImporter {
     if (path.isBlank()) return;
     Path file = Path.of(path).toAbsolutePath().normalize();
     if (!Files.isRegularFile(file)) return;
-    String marker =
-        "sqlite-import:v2:" + file + ":" + Files.size(file) + ":" + Files.getLastModifiedTime(file).toMillis();
-    boolean done =
-        jdbc.sql("SELECT count(*) FROM migration_marker WHERE name = ?").param(marker).query(Long.class).single() > 0;
-    if (done) return;
+    String identity = file + ":" + Files.size(file) + ":" + Files.getLastModifiedTime(file).toMillis();
+    String marker = "sqlite-import:v3:" + identity;
+    if (completed(marker)) return;
+    if (completed("sqlite-import:v2:" + identity)) {
+      try {
+        restoreLegacyDemoProvenance(file);
+        completedMarker(marker);
+      } catch (RuntimeException | SQLException failure) {
+        log.warn("Не удалось восстановить происхождение демо-образца {}: {}", file, failure.getMessage());
+      }
+      return;
+    }
 
     Map<String, Integer> copied;
     try {
@@ -127,9 +135,7 @@ public class SqliteImporter {
       log.warn("Не удалось перенести данные из {}: {}", file, failure.getMessage());
       return;
     }
-    jdbc.sql("INSERT INTO migration_marker (name, applied_at) VALUES (?, ?) ON CONFLICT DO NOTHING")
-        .params(marker, Timestamp.from(Instant.now()))
-        .update();
+    completedMarker(marker);
     log.info("Перенесено из {}: {}", file, copied);
     if (copied.getOrDefault("evidence", 0) > 0) resolver.resolveAll();
   }
@@ -140,11 +146,12 @@ public class SqliteImporter {
       // A live SQLite source must be one read snapshot across all related tables.
       sqlite.setAutoCommit(false);
       Set<String> tables = tables(sqlite);
+      boolean syntheticDemo = syntheticDemo(sqlite, tables);
       tx.executeWithoutResult(
           status -> {
             try {
               for (Copy copy : TABLES)
-                if (tables.contains(copy.from())) copied.put(copy.to(), copyTable(sqlite, copy));
+                if (tables.contains(copy.from())) copied.put(copy.to(), copyTable(sqlite, copy, syntheticDemo));
               if (tables.contains("facts")) copied.put("evidence", copyHostFacts(sqlite));
             } catch (SQLException e) {
               throw new IllegalStateException("Не удалось перенести " + file + ": " + e.getMessage(), e);
@@ -160,10 +167,54 @@ public class SqliteImporter {
     return config.toProperties();
   }
 
-  private int copyTable(Connection sqlite, Copy copy) throws SQLException {
+  private boolean completed(String marker) {
+    return jdbc.sql("SELECT count(*) FROM migration_marker WHERE name = ?")
+        .param(marker).query(Long.class).single() > 0;
+  }
+
+  private void completedMarker(String marker) {
+    jdbc.sql("INSERT INTO migration_marker (name, applied_at) VALUES (?, ?) ON CONFLICT DO NOTHING")
+        .params(marker, Timestamp.from(Instant.now())).update();
+  }
+
+  private static boolean syntheticDemo(Connection sqlite, Set<String> tables) throws SQLException {
+    if (!tables.contains("demo_seed_metadata")
+        || !columns(sqlite, "demo_seed_metadata").containsAll(Set.of("key", "value"))) return false;
+    try (var statement = sqlite.prepareStatement("SELECT value FROM demo_seed_metadata WHERE key='kind'");
+        var row = statement.executeQuery()) {
+      return row.next() && SYNTHETIC_DEMO_KIND.equals(row.getString(1)) && !row.next();
+    }
+  }
+
+  /** Only an explicit completed v2 source with the same recorded path, size and mtime permits repair.
+   * New v3 imports do not revisit collisions that they deliberately left untouched. */
+  private void restoreLegacyDemoProvenance(Path file) throws SQLException {
+    try (Connection sqlite = DriverManager.getConnection("jdbc:sqlite:" + file, sqliteProps())) {
+      sqlite.setAutoCommit(false);
+      Set<String> tables = tables(sqlite);
+      if (!tables.contains("account_listings") || !syntheticDemo(sqlite, tables)) return;
+      tx.executeWithoutResult(status -> {
+        try (var statement = sqlite.createStatement();
+            var rows = statement.executeQuery("SELECT id,host_id FROM account_listings")) {
+          while (rows.next())
+            jdbc.sql("UPDATE account_listings SET demo=TRUE WHERE id=? AND host_id=? AND NOT demo")
+                .params(rows.getString(1), rows.getString(2)).update();
+        } catch (SQLException failure) {
+          throw new IllegalStateException("Не удалось прочитать происхождение объявлений", failure);
+        }
+      });
+    }
+  }
+
+  private int copyTable(Connection sqlite, Copy copy, boolean syntheticDemo) throws SQLException {
     Set<String> available = columns(sqlite, copy.from());
     List<String> columns = new ArrayList<>(copy.columns().stream().filter(available::contains).toList());
     List<String> expressions = new ArrayList<>(columns);
+    if (copy.from().equals("account_listings") && syntheticDemo) {
+      int index = columns.indexOf("demo");
+      if (index < 0) { columns.add("demo"); expressions.add("1"); }
+      else expressions.set(index, "1");
+    }
     // Main stored ownership separately, keyed by BOTH region and run id.
     if (copy.from().equals("advisor_runs") && !available.contains("owner_key")
         && available.contains("region") && tables(sqlite).contains("advisor_run_owners")) {
@@ -195,7 +246,16 @@ public class SqliteImporter {
         ResultSet rows = statement.executeQuery(select)) {
       while (rows.next()) {
         Object[] values = new Object[columns.size()];
-        for (int i = 0; i < values.length; i++) values[i] = rows.getObject(i + 1);
+        for (int i = 0; i < values.length; i++) {
+          values[i] = rows.getObject(i + 1);
+          if (copy.from().equals("account_listings") && columns.get(i).equals("demo")) {
+            Object value = values[i];
+            if (value instanceof Number number && (number.doubleValue() == 0 || number.doubleValue() == 1))
+              values[i] = number.intValue() == 1;
+            else if (!(value instanceof Boolean))
+              throw new SQLException("Invalid explicit listing demo marker");
+          }
+        }
         verifyRegionIdentity(copy, columns, values);
         count += jdbc.sql(insert).params(values).update();
         // Also check after INSERT: a concurrent import may have won the unique id.

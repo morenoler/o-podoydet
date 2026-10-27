@@ -13,6 +13,16 @@ export interface AuthResponse {
   user: AccountUser | null;
 }
 export type ListingStatus = "draft" | "published";
+/** Coordinates selected by the owner: longitude, latitude. Not a verified entrance. */
+export type ListingCoordinates = [number, number];
+export type BedType = "single" | "double" | "sofa" | "bunk" | "folding" | "futon" | "crib" | "other";
+export interface ListingBed {
+  type: BedType;
+  count: number;
+  placesPerUnit: number;
+  /** Owner's room label, e.g. Bedroom 1; empty means the room was not specified. */
+  room?: string;
+}
 export interface ListingInput {
   title: string;
   description: string;
@@ -26,6 +36,9 @@ export interface ListingInput {
   floor?: number | null;
   windowDirections?: WindowDirection[];
   photos?: string[];
+  coordinates?: ListingCoordinates | null;
+  sleepingPlaces?: number | null;
+  beds?: ListingBed[];
 }
 export interface Listing extends ListingInput {
   id: string;
@@ -37,6 +50,8 @@ export interface Listing extends ListingInput {
   floor: number | null;
   windowDirections: WindowDirection[];
   photos: string[];
+  /** Set only by the explicit synthetic fixture importer, never by a public form. */
+  demo?: boolean;
 }
 export type WindowDirection = "north" | "north_east" | "east" | "south_east" | "south" | "south_west" | "west" | "north_west";
 /** Private owner-only material. Never include this in public listing/search DTOs. */

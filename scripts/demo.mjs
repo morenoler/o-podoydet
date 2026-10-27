@@ -17,30 +17,25 @@ function option(name) {
 try {
   const action = process.argv[2];
   if (action === "seed" || action === "setup") {
-    const argumentsAllowed = new Set(
-      action === "seed" ? ["--date", "--output"] : ["--date"],
-    );
+    const argumentsAllowed = new Set(["--date", "--output"]);
     for (let index = 3; index < process.argv.length; index += 2)
       if (
         !argumentsAllowed.has(process.argv[index]) ||
         !process.argv[index + 1]
       )
         throw new Error(
-          "Ожидаются --date YYYY-MM-DD и, только для seed, --output путь к новой демо-базе.",
+          "Ожидаются --date YYYY-MM-DD и --output путь к новой демо-базе.",
         );
-    const options = { date: option("--date") || demoToday() };
+    const options = { date: option("--date") || demoToday(), ...(option("--output") ? { output: option("--output") } : {}) };
     const result =
       action === "seed"
-        ? seedDemoDatabase({
-            ...options,
-            ...(option("--output") ? { output: option("--output") } : {}),
-          })
+        ? seedDemoDatabase(options)
         : setupDemoDatabase(options);
     console.log(
       `Создана синтетическая демо-база: ${relative(root, result.path)}. Дата примеров: ${result.seedDate}.`,
     );
     console.log(
-      "2 аккаунта, 4 объявления, 6 поездок, 6 вопросов. Сессии и история ИИ отсутствуют.",
+      `${result.counts.account_users} аккаунта, ${result.counts.account_listings} объявлений, ${result.counts.account_bookings} поездок, ${result.counts.account_questions} вопросов. Сессии и история ИИ отсутствуют.`,
     );
     if (action === "setup")
       console.log(
@@ -51,9 +46,10 @@ try {
       throw new Error(
         "Для порта задайте DEMO_PORT; другие аргументы запуска не поддерживаются.",
       );
-    if (!existsSync(localDemoPath))
+    const demoPath = resolve(root, process.env.DEMO_DB_PATH || localDemoPath);
+    if (!existsSync(demoPath))
       throw new Error("Сначала выполните npm run demo:setup.");
-    validateDemoDatabase(localDemoPath, { strict: false });
+    validateDemoDatabase(demoPath, { strict: false });
     if (!existsSync(resolve(root, "dist/index.html")))
       throw new Error(
         "Сначала выполните npm run build:all: демо использует основную сборку dist/.",
@@ -66,7 +62,7 @@ try {
       throw new Error("Схема демо должна отличаться от схемы основного сайта.");
     Object.assign(process.env, {
       PORT: String(port),
-      LEGACY_DB_PATH: localDemoPath, // явный импорт учебной SQLite при первом старте
+      LEGACY_DB_PATH: demoPath, // явный импорт учебной SQLite при первом старте
       DB_SCHEMA: demoSchema,
       UPLOADS_PATH: resolve(root, ".local/demo-uploads"),
       DIST_PATH: "dist",

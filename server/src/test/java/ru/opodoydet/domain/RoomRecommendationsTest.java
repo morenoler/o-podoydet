@@ -220,6 +220,18 @@ class RoomRecommendationsTest {
   }
 
   @Test
+  void fictionalOwnerListingsRetainTheirDemoLabel() {
+    ObjectNode declared = roomMatch("account-room:listing");
+    ((ObjectNode) declared.path("room")).put("demo", true);
+    ObjectNode match = hotelMatchWithOwner(declared);
+    assertEquals("demo", Json.str(select(match).recommendations().getFirst(), "source"));
+    ((ObjectNode) declared.path("room")).put("demo", false);
+    ObjectNode synthetic = hotelMatchWithOwner(declared);
+    ((ObjectNode) synthetic.path("hotel")).put("synthetic", true);
+    assertEquals("demo", Json.str(select(synthetic).recommendations().getFirst(), "source"));
+  }
+
+  @Test
   void fictionalRoomsStayExplicitlyDemoAndAreNotAdmittedByVerifiedPolicy() {
     ObjectNode demo = roomMatch("demo-room");
     ((ObjectNode) demo.path("room")).put("demo", true);

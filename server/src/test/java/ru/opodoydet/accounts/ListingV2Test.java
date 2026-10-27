@@ -38,6 +38,8 @@ class ListingV2Test {
         "Стандарт",
         "capacity",
         3,
+        "sleepingPlaces", 3,
+        "beds", List.of(Json.obj("type", "single", "count", 3, "placesPerUnit", 1)),
         "pricePerNight",
         90000,
         "amenities",
@@ -97,15 +99,21 @@ class ListingV2Test {
       assertEquals(Json.array(List.of("south", "west")), publicListing.path("windowDirections"));
       assertTrue(publicListing.path("photos").isArray());
       assertTrue(publicListing.path("photos").isEmpty());
+      assertTrue(publicListing.path("coordinates").isNull());
+      assertTrue(publicListing.path("sleepingPlaces").isNull());
+      assertTrue(publicListing.path("beds").isEmpty());
+      assertFalse(publicListing.path("demo").asBoolean());
       assertFalse(publicListing.has("searchProfile"));
       assertFalse(publicListing.toString().contains(PRIVATE));
       assertEquals(
           Json.obj("notes", PRIVATE), service.owned("legacy", "host").path("searchProfile"));
       ObjectNode oldRequest = listing();
+      oldRequest.remove(List.of("beds", "sleepingPlaces"));
       JsonNode preserved = service.update("host", "legacy", oldRequest);
       assertEquals(3, preserved.path("floor").asInt());
       assertEquals(publicListing.path("windowDirections"), preserved.path("windowDirections"));
       ObjectNode cleared = listing().putNull("floor");
+      cleared.remove(List.of("beds", "sleepingPlaces"));
       cleared.set("windowDirections", Json.array(List.of()));
       service.update("host", "legacy", cleared);
       // Re-import and restart never overwrite changes already made in PostgreSQL.

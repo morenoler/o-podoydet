@@ -181,6 +181,7 @@ export function ListingsPage() {
                     <p className="public-listing-capacity">
                       <UsersRound size={17} aria-hidden="true" />
                       До {listing.capacity} гостей
+                      {listing.sleepingPlaces != null && ` · спальных мест: ${listing.sleepingPlaces}`}
                     </p>
                     <p className="public-listing-details">
                       {listing.roomType} ·{" "}

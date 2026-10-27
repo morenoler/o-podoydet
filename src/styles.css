@@ -1,3 +1,5 @@
+@import "./features/hotels/compare-dialog.css";
+
 :root {
   font-family: "Nunito Sans", sans-serif;
   color: #172c4c;

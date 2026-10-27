@@ -148,19 +148,19 @@ export function validateDemoDatabase(path, { strict = true } = {}) {
     ])
       counts[table] = db.prepare(`SELECT COUNT(*) AS n FROM ${table}`).get().n;
     if (strict) {
+      const expected = JSON.parse(readFileSync(fixturePath, "utf8"));
       assert.deepEqual(counts, {
         account_users: 2,
         account_sessions: 0,
-        account_listings: 4,
+        account_listings: expected.listings.length,
         account_bookings: 6,
         account_questions: 6,
-        account_listing_search_profiles: 4,
+        account_listing_search_profiles: expected.listings.length,
         account_uploaded_photos: 0,
         advisor_runs: 0,
         questions: 0,
         drafts: 0,
       });
-      const expected = JSON.parse(readFileSync(fixturePath, "utf8"));
       assert.equal(
         metadata(db, "fixtureSha256"),
         createHash("sha256").update(JSON.stringify(expected)).digest("hex"),
@@ -186,7 +186,7 @@ export function validateDemoDatabase(path, { strict = true } = {}) {
             "SELECT COUNT(*) AS n FROM account_listings WHERE status='published'",
           )
           .get().n,
-        3,
+        expected.listings.filter(listing => listing.status === "published").length,
       );
       assert.equal(
         db
@@ -194,8 +194,24 @@ export function validateDemoDatabase(path, { strict = true } = {}) {
             "SELECT COUNT(*) AS n FROM account_listings WHERE status='draft'",
           )
           .get().n,
-        1,
+        expected.listings.filter(listing => listing.status === "draft").length,
       );
+      for (const listing of expected.listings) {
+        const row = db.prepare("SELECT longitude,latitude,sleeping_places,beds,demo FROM account_listings WHERE id=?").get(listing.id);
+        assert.equal(row.demo, 1, "Каждый образец должен быть явно помечен demo");
+        assert.deepEqual(row.longitude == null ? null : [row.longitude, row.latitude], listing.coordinates);
+        assert.deepEqual(JSON.parse(row.beds), listing.beds);
+        assert.equal(row.sleeping_places, listing.sleepingPlaces);
+        if (listing.coordinates) {
+          assert.ok(listing.coordinates.length === 2 && listing.coordinates.every(Number.isFinite));
+          assert.ok(Math.abs(listing.coordinates[0]) <= 180 && Math.abs(listing.coordinates[1]) <= 90);
+        }
+        if (listing.status === "published") {
+          const total = listing.beds.reduce((sum, bed) => sum + (bed.type === "crib" ? 0 : bed.count * bed.placesPerUnit), 0);
+          assert.equal(total, listing.sleepingPlaces);
+          assert.ok(total >= listing.capacity, "Опубликованный образец должен описывать все спальные места");
+        }
+      }
       assert.equal(
         db
           .prepare(
@@ -309,6 +325,10 @@ export function seedDemoDatabase({
       db.exec(
         "ALTER TABLE account_listings ADD COLUMN photos TEXT NOT NULL DEFAULT '[]'",
       );
+    for (const [name, type] of Object.entries({
+      longitude: "REAL", latitude: "REAL", sleeping_places: "INTEGER",
+      beds: "TEXT NOT NULL DEFAULT '[]'", demo: "INTEGER NOT NULL DEFAULT 0",
+    })) if (!columns.has(name)) db.exec(`ALTER TABLE account_listings ADD COLUMN ${name} ${type}`);
     const time = (days) => `${dateAfter(date, days)}T09:00:00.000Z`;
     db.prepare(
       "INSERT INTO account_migrations(name,applied_at) VALUES(?,?)",
@@ -329,7 +349,7 @@ export function seedDemoDatabase({
       );
     fixtures.listings.forEach((listing, index) => {
       db.prepare(
-        "INSERT INTO account_listings(id,host_id,title,description,city,address,room_type,capacity,price_per_night,amenities,status,created_at,updated_at,floor,window_directions,photos) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        "INSERT INTO account_listings(id,host_id,title,description,city,address,room_type,capacity,price_per_night,amenities,status,created_at,updated_at,floor,window_directions,photos,longitude,latitude,sleeping_places,beds,demo) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
       ).run(
         listing.id,
         host.id,
@@ -347,6 +367,11 @@ export function seedDemoDatabase({
         listing.floor,
         JSON.stringify(listing.windowDirections),
         "[]",
+        listing.coordinates?.[0] ?? null,
+        listing.coordinates?.[1] ?? null,
+        listing.sleepingPlaces,
+        JSON.stringify(listing.beds),
+        listing.demo === true ? 1 : 0,
       );
       db.prepare(
         "INSERT INTO account_listing_search_profiles(listing_id,notes) VALUES(?,?)",
