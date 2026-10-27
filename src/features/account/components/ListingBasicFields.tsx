@@ -1,17 +1,20 @@
 import type { ListingFieldsProps } from "./listingForm";
 import { ListingPhotosField } from "./ListingPhotosField";
+import { ListingLocationFields } from "./ListingLocationFields";
 
 export function ListingBasicFields({
   value,
   update,
   onPhotosBusyChange,
   disabled,
+  demo,
 }: ListingFieldsProps & {
   onPhotosBusyChange: (busy: boolean) => void;
   disabled: boolean;
+  demo?: boolean;
 }) {
   return (
-    <fieldset className="editor-main-section">
+    <fieldset className="editor-main-section" disabled={disabled}>
       <legend>Основная информация</legend>
       <label className="field">
         <span>Название объявления</span>
@@ -49,6 +52,7 @@ export function ListingBasicFields({
           />
         </label>
       </div>
+      <ListingLocationFields value={value} update={update} disabled={disabled} demo={demo} />
       <ListingPhotosField
         photos={value.photos}
         onChange={(photos) => update("photos", photos)}

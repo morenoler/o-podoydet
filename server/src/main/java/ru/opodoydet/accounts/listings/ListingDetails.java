@@ -20,6 +20,7 @@ final class ListingDetails {
   private ListingDetails() {}
 
   static void apply(ObjectNode listing, JsonNode input, JsonNode existing) {
+    ListingAccommodation.apply(listing, input, existing);
     JsonNode legacy = input.path("searchProfile");
     JsonNode floor = selected(input, legacy, existing, "floor");
     if (floor == null || floor.isMissingNode()) listing.putNull("floor");

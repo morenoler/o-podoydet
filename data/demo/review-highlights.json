@@ -1,0 +1,241 @@
+{
+  "version": 1,
+  "is_demo": true,
+  "notice": "Все темы и описания вымышлены. Исходных отзывов нет; это образец результата будущего отдельного скрипта. Не использовать как доказательства или для ранжирования.",
+  "listings": [
+    {
+      "subject": {
+        "type": "listing",
+        "id": "33333333-3333-4333-8333-333333333001"
+      },
+      "scope": "listing",
+      "is_demo": true,
+      "status": "demo",
+      "source": "Синтетический сценарий для вымышленного объявления",
+      "sourceDate": null,
+      "obtainedAt": "2026-10-28",
+      "recheckAfter": null,
+      "method": "ai_generated_demo",
+      "reviewCount": null,
+      "highlights": [
+        {
+          "key": "cleanliness",
+          "label": "Чистота",
+          "description": "Аккуратная уборка, свежее бельё и чистая ванная."
+        },
+        {
+          "key": "hosting",
+          "label": "Гостеприимство",
+          "description": "Внимательный хозяин помогает с бытовыми вопросами и подсказывает, куда сходить."
+        },
+        {
+          "key": "kitchen",
+          "label": "Оснащение кухни",
+          "description": "Есть посуда и всё нужное, чтобы приготовить завтрак."
+        },
+        {
+          "key": "space",
+          "label": "Много места",
+          "description": "Достаточно пространства для вещей и совместного отдыха."
+        }
+      ]
+    },
+    {
+      "subject": {
+        "type": "listing",
+        "id": "33333333-3333-4333-8333-333333333002"
+      },
+      "scope": "listing",
+      "is_demo": true,
+      "status": "demo",
+      "source": "Синтетический сценарий для вымышленного объявления",
+      "sourceDate": null,
+      "obtainedAt": "2026-10-28",
+      "recheckAfter": null,
+      "method": "ai_generated_demo",
+      "reviewCount": null,
+      "highlights": [
+        {
+          "key": "beds",
+          "label": "Удобные кровати",
+          "description": "Удобные матрасы и подушки, на которых приятно отдыхать после прогулки."
+        },
+        {
+          "key": "check_in",
+          "label": "Простое заселение",
+          "description": "Понятные инструкции и удобная передача ключей."
+        },
+        {
+          "key": "cleanliness",
+          "label": "Чистота",
+          "description": "Аккуратная уборка, свежее бельё и чистая ванная."
+        }
+      ]
+    },
+    {
+      "subject": {
+        "type": "listing",
+        "id": "33333333-3333-4333-8333-333333333003"
+      },
+      "scope": "listing",
+      "is_demo": true,
+      "status": "demo",
+      "source": "Синтетический сценарий для вымышленного объявления",
+      "sourceDate": null,
+      "obtainedAt": "2026-10-28",
+      "recheckAfter": null,
+      "method": "ai_generated_demo",
+      "reviewCount": null,
+      "highlights": [
+        {
+          "key": "hosting",
+          "label": "Гостеприимство",
+          "description": "Внимательный хозяин помогает с бытовыми вопросами и подсказывает, куда сходить."
+        },
+        {
+          "key": "cleanliness",
+          "label": "Чистота",
+          "description": "Аккуратная уборка, свежее бельё и чистая ванная."
+        },
+        {
+          "key": "value",
+          "label": "Соотношение цены и комфорта",
+          "description": "Обстановка и удобства оставляют приятное впечатление за эту стоимость."
+        }
+      ]
+    },
+    {
+      "subject": {
+        "type": "listing",
+        "id": "33333333-3333-4333-8333-333333333005"
+      },
+      "scope": "listing",
+      "is_demo": true,
+      "status": "demo",
+      "source": "Синтетический сценарий для вымышленного объявления",
+      "sourceDate": null,
+      "obtainedAt": "2026-10-28",
+      "recheckAfter": null,
+      "method": "ai_generated_demo",
+      "reviewCount": null,
+      "highlights": [
+        {
+          "key": "beds",
+          "label": "Удобные кровати",
+          "description": "Удобные матрасы и подушки, на которых приятно отдыхать после прогулки."
+        },
+        {
+          "key": "cleanliness",
+          "label": "Чистота",
+          "description": "Аккуратная уборка, свежее бельё и чистая ванная."
+        },
+        {
+          "key": "check_in",
+          "label": "Простое заселение",
+          "description": "Понятные инструкции и удобная передача ключей."
+        }
+      ]
+    },
+    {
+      "subject": {
+        "type": "listing",
+        "id": "33333333-3333-4333-8333-333333333006"
+      },
+      "scope": "listing",
+      "is_demo": true,
+      "status": "demo",
+      "source": "Синтетический сценарий для вымышленного объявления",
+      "sourceDate": null,
+      "obtainedAt": "2026-10-28",
+      "recheckAfter": null,
+      "method": "ai_generated_demo",
+      "reviewCount": null,
+      "highlights": [
+        {
+          "key": "layout",
+          "label": "Удобная планировка",
+          "description": "Спальные зоны позволяют разместиться своей компанией."
+        },
+        {
+          "key": "value",
+          "label": "Соотношение цены и комфорта",
+          "description": "Обстановка и удобства оставляют приятное впечатление за эту стоимость."
+        },
+        {
+          "key": "hosting",
+          "label": "Гостеприимство",
+          "description": "Внимательный хозяин помогает с бытовыми вопросами и подсказывает, куда сходить."
+        }
+      ]
+    },
+    {
+      "subject": {
+        "type": "listing",
+        "id": "33333333-3333-4333-8333-333333333007"
+      },
+      "scope": "listing",
+      "is_demo": true,
+      "status": "demo",
+      "source": "Синтетический сценарий для вымышленного объявления",
+      "sourceDate": null,
+      "obtainedAt": "2026-10-28",
+      "recheckAfter": null,
+      "method": "ai_generated_demo",
+      "reviewCount": null,
+      "highlights": [
+        {
+          "key": "space",
+          "label": "Много места",
+          "description": "Достаточно пространства для вещей и совместного отдыха."
+        },
+        {
+          "key": "layout",
+          "label": "Удобная планировка",
+          "description": "Спальные зоны позволяют разместиться своей компанией."
+        },
+        {
+          "key": "kitchen",
+          "label": "Оснащение кухни",
+          "description": "Есть посуда и всё нужное, чтобы приготовить завтрак."
+        },
+        {
+          "key": "beds",
+          "label": "Удобные кровати",
+          "description": "Удобные матрасы и подушки, на которых приятно отдыхать после прогулки."
+        }
+      ]
+    },
+    {
+      "subject": {
+        "type": "listing",
+        "id": "33333333-3333-4333-8333-333333333008"
+      },
+      "scope": "listing",
+      "is_demo": true,
+      "status": "demo",
+      "source": "Синтетический сценарий для вымышленного объявления",
+      "sourceDate": null,
+      "obtainedAt": "2026-10-28",
+      "recheckAfter": null,
+      "method": "ai_generated_demo",
+      "reviewCount": null,
+      "highlights": [
+        {
+          "key": "cleanliness",
+          "label": "Чистота",
+          "description": "Аккуратная уборка, свежее бельё и чистая ванная."
+        },
+        {
+          "key": "hosting",
+          "label": "Гостеприимство",
+          "description": "Внимательный хозяин помогает с бытовыми вопросами и подсказывает, куда сходить."
+        },
+        {
+          "key": "layout",
+          "label": "Удобная планировка",
+          "description": "Спальные зоны позволяют разместиться своей компанией."
+        }
+      ]
+    }
+  ]
+}

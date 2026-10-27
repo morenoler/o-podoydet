@@ -5,6 +5,7 @@ import { useResource } from "../features/account/useResource";
 import { useAuth } from "../features/auth/AuthProvider";
 import { price, roomDetailsLabel } from "../features/account/format";
 import { AccommodationPhoto } from "../shared/ui/AccommodationPhoto";
+import { ReviewHighlights } from "../features/listings/ReviewHighlights";
 import { FavoriteButton } from "../features/favorites/FavoriteButton";
 import {
   AccountEmpty,
@@ -181,6 +182,7 @@ export function ListingsPage() {
                     <p className="public-listing-capacity">
                       <UsersRound size={17} aria-hidden="true" />
                       До {listing.capacity} гостей
+                      {listing.sleepingPlaces != null && ` · спальных мест: ${listing.sleepingPlaces}`}
                     </p>
                     <p className="public-listing-details">
                       {listing.roomType} ·{" "}
@@ -196,6 +198,7 @@ export function ListingsPage() {
                         ))}
                       </ul>
                     )}
+                    <ReviewHighlights listing={listing} compact />
                   </div>
                   <div className="public-listing-action">
                     <div>

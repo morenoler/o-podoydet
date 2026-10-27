@@ -1,5 +1,7 @@
 import type { Dataset, Hotel, HotelFilters, HotelMatch, Room, RoomRecommendation } from "../../../../shared/types";
 import { nearbyMatches } from "../../../../shared/nearby";
+import { validListingCoordinates } from "../../../../shared/listingDetails";
+import { ReviewHighlights } from "../../listings/ReviewHighlights";
 import { NearbySummary } from "./NearbySummary";
 import { Link } from "react-router-dom";
 import {
@@ -80,7 +82,9 @@ export function HotelCard({
   const publishedCategoryCount = hotel.rooms.filter(
     (room) => room.scope === "room_category" && room.evidenceStatus === "verified",
   ).length;
-  const sourceHint = ownerId
+  const sourceHint = hotel.synthetic || room?.demo
+    ? "Демонстрационные данные · вымышленное объявление"
+    : ownerId
     ? "Сведения отельера · без независимой проверки"
     : match?.best.room.evidenceStatus === "verified" && match.best.room.scope === "room_category"
       ? "Категория по сведениям официального сайта"
@@ -161,6 +165,7 @@ export function HotelCard({
         </div>
         {room && <p className="search-room-hotel">{hotel.name}</p>}
         {room && <p className="search-room-capacity">{capacityUnknown || capacity == null ? "Вместимость нужно уточнить" : `Вместимость: до ${capacity} гостей${match?.best.capacityRule ? " по правилу размещения" : ""}`}</p>}
+        {room?.sleepingPlaces != null && <p className="search-hotel-room">Спальных мест: {room.sleepingPlaces} · расстановка кроватей в подробностях</p>}
         <p className="search-hotel-meta">{hotel.address || "Адрес не указан"}</p>
         {category && !room && (
           <p className="search-hotel-room">
@@ -171,6 +176,7 @@ export function HotelCard({
         )}
         {roomDetails && <p className="search-hotel-room">{roomDetails}</p>}
         <NearbySummary matches={match?.best.nearbyMatches || nearbyMatches(hotel, hotelFilters)} region={hotel.region} />
+        {ownerId && <ReviewHighlights listing={{ id: ownerId, demo: hotel.synthetic }} compact />}
         {hotel.route && !hotel.synthetic ? (
           <button
             type="button"
@@ -188,7 +194,9 @@ export function HotelCard({
           <p className="search-hotel-unknown">
             <MapPin size={18} aria-hidden="true" />
             {ownerId
-              ? "Расположение на карте не добавлено"
+              ? validListingCoordinates(hotel.coordinates)
+                ? hotel.synthetic ? "Учебная точка на карте · вымышленный объект" : "Точка на карте указана отельером"
+                : "Расположение на карте не добавлено"
               : "Маршрут до пляжа не рассчитан"}
           </p>
         )}

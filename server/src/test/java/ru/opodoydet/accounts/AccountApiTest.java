@@ -85,12 +85,47 @@ class AccountApiTest {
         "Двухместный номер",
         "capacity",
         3,
+        "sleepingPlaces", 3,
+        "beds", List.of(Json.obj("type", "single", "count", 3, "placesPerUnit", 1)),
         "pricePerNight",
         90000,
         "amenities",
         List.of("Wi-Fi", "Кухня"),
         "status",
         status);
+  }
+
+  @Test
+  void apiKeepsDraftLocationsPrivateAndValidatesBeddingBeforePublishing() throws Exception {
+    try (var api = server(true)) {
+      HttpClient host = browser(), other = browser(), anonymous = browser();
+      register(api, host, "layout-host@example.test", "host");
+      register(api, other, "layout-other@example.test", "host");
+      ObjectNode input = listing("draft").put("demo", true);
+      input.set("coordinates", Json.array(List.of(129.16, 35.16)));
+      input.set("beds", Json.array(List.of(Json.obj("type", "double", "count", 1, "placesPerUnit", 2, "room", "Спальня"),
+          Json.obj("type", "sofa", "count", 1, "placesPerUnit", 1, "room", "Гостиная"))));
+      Response created = request(api, host, "/host/listings", input);
+      assertEquals(201, created.status, created.body.toString());
+      assertFalse(created.body.path("demo").asBoolean());
+      String id = Json.str(created.body, "id");
+      assertEquals(404, request(api, anonymous, "/listings/" + id, null).status);
+      assertTrue(request(api, anonymous, "/listings", null).body.isEmpty());
+      assertEquals(404, request(api, other, "/host/listings/" + id, null).status);
+      assertEquals(404, request(api, other, "/host/listings/" + id, input).status);
+      ObjectNode invalid = input.deepCopy().put("status", "published").put("sleepingPlaces", 4);
+      assertEquals(400, request(api, host, "/host/listings/" + id, invalid).status);
+      invalid = input.deepCopy(); invalid.set("coordinates", Json.array(List.of(181, 35)));
+      assertEquals(400, request(api, host, "/host/listings/" + id, invalid).status);
+      ObjectNode publish = listing("published"); publish.remove(List.of("beds", "sleepingPlaces"));
+      assertEquals(200, request(api, host, "/host/listings/" + id, publish).status);
+      JsonNode visible = request(api, anonymous, "/listings/" + id, null).body;
+      assertEquals(input.path("coordinates"), visible.path("coordinates"));
+      assertEquals(input.path("beds"), visible.path("beds"));
+      assertEquals(3, visible.path("sleepingPlaces").asInt());
+      ObjectNode missing = listing("published"); missing.remove(List.of("beds", "sleepingPlaces"));
+      assertEquals(400, request(api, host, "/host/listings", missing).status);
+    }
   }
 
   private static ObjectNode dates() {

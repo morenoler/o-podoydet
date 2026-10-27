@@ -1,3 +1,5 @@
+@import "../listings/sleeping-arrangement.css";
+
 .hotel-detail-page {
   max-width: 1440px;
 }
@@ -146,6 +148,94 @@
   font-size: 13px;
   margin: 8px 0;
 }
+.hotel-primary-information {
+  align-items: start;
+}
+.hotel-room-overview > .field {
+  margin-bottom: 20px;
+}
+.hotel-room-overview > .hotel-preview-room:first-of-type {
+  padding-top: 0;
+  margin-top: 0;
+  border-top: 0;
+}
+.hotel-detail-page .catalog-room-capacity {
+  font-size: 18px;
+  font-weight: 700;
+}
+.catalog-room-basics {
+  display: grid;
+  gap: 16px;
+  margin: 20px 0 12px;
+}
+.catalog-room-basics > div {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 16px;
+  line-height: 1.5;
+}
+.catalog-room-basics dt,
+.catalog-availability-note {
+  color: var(--muted);
+}
+.catalog-room-basics dd {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.catalog-room-basics small {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+}
+.hotel-detail-page .catalog-availability-note {
+  font-size: 13px;
+  margin: 0 0 22px;
+}
+.catalog-room-description {
+  margin: 20px 0 16px;
+  max-width: 68ch;
+  font-size: 16px;
+  line-height: 1.65;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.hotel-trip-fit > .search-bar {
+  margin: 20px 0;
+}
+.hotel-detail-page .hotel-additional > h2 {
+  font-size: 20px;
+}
+.hotel-detail-disclosure {
+  border-top: 1px solid var(--line);
+}
+.hotel-detail-disclosure > summary {
+  padding: 16px 4px;
+  min-height: 48px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.hotel-detail-disclosure > summary:hover {
+  color: var(--blue);
+}
+.hotel-detail-disclosure > summary:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+.hotel-disclosure-content {
+  padding: 4px 0 20px;
+  overflow-wrap: anywhere;
+}
+.hotel-disclosure-content > section + section,
+.hotel-disclosure-content > h3 {
+  margin-top: 24px;
+}
+.hotel-other-rooms {
+  display: grid;
+  gap: 12px;
+  padding: 0 0 16px 20px;
+}
 @media (max-width: 900px) {
   .hotel-detail-page .detail-grid {
     grid-template-columns: 1fr;
@@ -186,6 +276,10 @@
   }
 }
 @media (max-width: 500px) {
+  .catalog-room-basics > div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
   .hotel-detail-gallery.has-room-photo {
     height: 260px;
     grid-template-columns: 1fr;

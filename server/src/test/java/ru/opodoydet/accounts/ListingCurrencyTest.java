@@ -18,7 +18,9 @@ class ListingCurrencyTest {
   private static ObjectNode listing() {
     return Json.obj("title", "Synthetic currency fixture", "description", "Synthetic isolated price fixture for testing.",
         "city", "Сочи", "address", "Synthetic address 1", "roomType", "Synthetic unit", "capacity", 2,
-        "pricePerNight", 5000, "amenities", List.of(), "status", "published");
+        "pricePerNight", 5000, "amenities", List.of(), "status", "published",
+        "coordinates", List.of(39.72, 43.58), "sleepingPlaces", 2,
+        "beds", List.of(Json.obj("type", "double", "count", 1, "placesPerUnit", 2)));
   }
 
   @Test void priceCurrencyIsExplicitAndBookingSnapshotSurvivesLaterEdits() throws Exception {
@@ -31,6 +33,8 @@ class ListingCurrencyTest {
       ObjectNode created = listings.create("host", listing().put("currency", "RUB"));
       String id = created.path("id").asText();
       assertThat(created.path("currency").asText()).isEqualTo("RUB");
+      assertThat(created.path("coordinates").get(0).asDouble()).isEqualTo(39.72);
+      assertThat(created.path("sleepingPlaces").asInt()).isEqualTo(2);
       LocalDate checkIn = LocalDate.now().plusDays(5);
       var booking = bookings.request("guest", id, Json.obj("checkIn", checkIn.toString(), "checkOut", checkIn.plusDays(2).toString(), "guests", 2, "note", ""));
       assertThat(booking.path("currency").asText()).isEqualTo("RUB");

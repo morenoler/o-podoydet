@@ -1,0 +1,8 @@
+.sleeping-arrangement { margin-block: 24px; }
+.sleeping-arrangement-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.sleeping-arrangement-heading h3 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 18px; }
+.sleeping-arrangement-heading > strong { font-size: 16px; }
+.sleeping-arrangement ul { list-style: none; padding: 0; margin: 16px 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 10px; }
+.sleeping-arrangement li { display: grid; align-content: start; gap: 6px; padding: 14px; border: 1px solid var(--border, #dededb); border-radius: 12px; }
+.sleeping-arrangement li span, .sleeping-arrangement p { font-size: 14px; line-height: 1.5; color: var(--text-secondary, #585e65); }
+.sleeping-arrangement p { margin-bottom: 0; }

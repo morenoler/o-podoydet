@@ -6,6 +6,7 @@ import { ListingBasicFields } from "./ListingBasicFields";
 import { ListingRoomFields } from "./ListingRoomFields";
 import { ListingPreview } from "./ListingPreview";
 import { editableListing, updateEditableListing, type EditableListing } from "./listingForm";
+import { sleepingLayoutError, validListingCoordinates } from "../../../../shared/listingDetails";
 import "../editor-v2.css";
 
 const suggestedAmenities = [
@@ -35,6 +36,7 @@ export function ListingEditor({
   const [photosBusy, setPhotosBusy] = useState(false);
   const [error, setError] = useState("");
   const errorRef = useRef<HTMLDivElement>(null);
+  const formTouched = useRef(false);
   function update<K extends keyof EditableListing>(
     key: K,
     value: EditableListing[K],
@@ -52,6 +54,14 @@ export function ListingEditor({
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy || photosBusy) return;
+    const layoutError = sleepingLayoutError(form.beds, form.sleepingPlaces, form.capacity, form.status === "published");
+    const locationError = form.coordinates != null && !validListingCoordinates(form.coordinates)
+      ? "Укажите корректные долготу и широту или уберите точку." : null;
+    if (layoutError || locationError) {
+      setError(layoutError || locationError || "Проверьте параметры объявления.");
+      requestAnimationFrame(() => errorRef.current?.focus());
+      return;
+    }
     setBusy(true);
     setError("");
     try {
@@ -64,6 +74,7 @@ export function ListingEditor({
             city: form.city.trim(),
             address: form.address.trim(),
             roomType: form.roomType.trim(),
+            beds: form.beds.map(({ room, ...bed }) => ({ ...bed, ...(room?.trim() ? { room: room.trim() } : {}) })),
           },
           listing?.id,
         ),
@@ -77,7 +88,7 @@ export function ListingEditor({
   }
   function cancel() {
     if (
-      (photosBusy ||
+      (photosBusy || formTouched.current ||
         JSON.stringify(form) !== JSON.stringify(editableListing(listing))) &&
       !window.confirm("Закрыть форму? Несохранённые изменения будут потеряны.")
     )
@@ -89,6 +100,7 @@ export function ListingEditor({
       <form
         className="account-panel account-form listing-editor listing-editor-v2"
         onSubmit={submit}
+        onInput={() => { formTouched.current = true; }}
       >
         {error && (
           <div
@@ -105,8 +117,9 @@ export function ListingEditor({
           update={update}
           onPhotosBusyChange={setPhotosBusy}
           disabled={busy}
+          demo={listing?.demo}
         />
-        <ListingRoomFields value={form} update={update} />
+        <ListingRoomFields value={form} update={update} disabled={busy} />
         <fieldset className="editor-amenities-section">
           <legend>Удобства</legend>
           <div className="listing-amenities-field">

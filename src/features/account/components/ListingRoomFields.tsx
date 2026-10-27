@@ -4,9 +4,10 @@ import type { WindowDirection } from "../../../../shared/account";
 import { directionLabels } from "../format";
 import type { ListingFieldsProps } from "./listingForm";
 import { currencySymbol, listingCurrency } from "../../../../shared/regions";
+import { ListingSleepingFields } from "./ListingSleepingFields";
 
 const directions = Object.keys(directionLabels) as WindowDirection[];
-export function ListingRoomFields({ value, update }: ListingFieldsProps) {
+export function ListingRoomFields({ value, update, disabled = false }: ListingFieldsProps & { disabled?: boolean }) {
   const id = useId();
   function toggle(direction: WindowDirection) {
     update(
@@ -17,7 +18,7 @@ export function ListingRoomFields({ value, update }: ListingFieldsProps) {
     );
   }
   return (
-    <fieldset className="editor-room-section">
+    <fieldset className="editor-room-section" disabled={disabled}>
       <legend>
         <span className="editor-desktop-title">Номер и размещение</span>
         <span className="editor-mobile-title">Параметры номера</span>
@@ -120,6 +121,7 @@ export function ListingRoomFields({ value, update }: ListingFieldsProps) {
           </p>
         </div>
       </div>
+      <ListingSleepingFields value={value} update={update} disabled={disabled} />
       <div className="editor-mobile-room-help">
         <Info size={22} aria-hidden="true" />
         <p>

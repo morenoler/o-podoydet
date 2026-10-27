@@ -15,6 +15,11 @@ export function regionDetails(region: string) {
   return isRegionName(region) ? regions[region] : undefined;
 }
 
+/** Initial map viewport only; it never becomes the listing's selected coordinates. */
+export function listingMapCenter(city: string): [number, number] {
+  return city.trim().toLocaleLowerCase("ru-RU") === "сочи" ? [39.72, 43.58] : [129.0756, 35.1796];
+}
+
 /** Default for a new owner price; existing prices keep their explicitly saved currency. */
 export function listingCurrency(city: string): RegionCurrency {
   const region = regionNames.find((name) => name.toLocaleLowerCase("ru-RU") === city.trim().toLocaleLowerCase("ru-RU"));

@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
+import { spawnSync } from "node:child_process";
 import {
   existsSync,
   mkdirSync,
@@ -41,8 +42,26 @@ test("synthetic seed has exact status counts, valid foreign keys and Java-compat
     assert.equal(result.counts.advisor_runs, 0);
     assert.equal(result.counts.account_bookings, 6);
     assert.equal(result.counts.account_questions, 6);
+    assert.equal(result.counts.account_listings, 8);
     assert.ok(!existsSync(result.path + "-wal"));
     assert.ok(!existsSync(result.path + "-shm"));
+  }));
+
+test("demo seed preserves bed layouts, unknown location and explicit synthetic flags", () =>
+  temporary((path) => {
+    const result = seedDemoDatabase({ output: join(path, "beds.sqlite3"), date: "2026-10-27" });
+    const db = new DatabaseSync(result.path, { readOnly: true });
+    try {
+      const rows = db.prepare("SELECT status,capacity,sleeping_places,beds,longitude,latitude,demo FROM account_listings").all();
+      assert.equal(rows.filter(row => row.demo === 1).length, 8);
+      assert.equal(rows.filter(row => row.status === "published").length, 7);
+      assert.ok(rows.some(row => row.status === "published" && row.longitude === null && row.latitude === null));
+      for (const row of rows.filter(row => row.status === "published")) {
+        const beds = JSON.parse(row.beds);
+        assert.equal(beds.reduce((n, bed) => n + (bed.type === "crib" ? 0 : bed.count * bed.placesPerUnit), 0), row.sleeping_places);
+        assert.ok(row.sleeping_places >= row.capacity);
+      }
+    } finally { db.close(); }
   }));
 
 test("seed and setup refuse to overwrite any existing database", () =>
@@ -119,4 +138,18 @@ test("invalid dates and paths to the main database are rejected before writing",
       () => seedDemoDatabase({ output: ".local/busan.sqlite3" }),
       /Основные базы недоступны/,
     );
+  }));
+
+test("CLI can prepare a new demo copy and start never falls back from an explicit missing source", () =>
+  temporary((path) => {
+    const target = join(path, "next.sqlite3");
+    const setup = spawnSync(process.execPath, ["scripts/demo.mjs", "setup", "--output", target], { cwd: root, encoding: "utf8", timeout: 30000 });
+    assert.equal(setup.status, 0, setup.stderr);
+    assert.equal(validateDemoDatabase(target).counts.account_listings, 8);
+    const start = spawnSync(process.execPath, ["scripts/demo.mjs", "start"], {
+      cwd: root, encoding: "utf8", timeout: 30000,
+      env: { ...process.env, DEMO_DB_PATH: join(path, "missing.sqlite3") },
+    });
+    assert.equal(start.status, 1);
+    assert.match(start.stderr, /Сначала выполните npm run demo:setup/);
   }));

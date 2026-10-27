@@ -1,4 +1,4 @@
-import type { WindowDirection } from "./account";
+import type { ListingBed, WindowDirection } from "./account";
 import type { ReportedEvidence } from "./clarifications";
 export type Point = [number, number]; // longitude, latitude
 export const nearbyKinds = ["cafe", "restaurant", "supermarket", "convenience", "pharmacy", "park", "subway", "museum", "shopping_mall", "beach", "train_station", "city_center"] as const;
@@ -63,6 +63,10 @@ export interface Room {
   name: string;
   scope?: "room_category" | "unknown";
   capacity: number | null;
+  /** Explicit owner layout; missing values do not establish separate beds or rooms. */
+  sleepingPlaces?: number | null;
+  beds?: ListingBed[];
+  amenities?: string[];
   demo: boolean;
   evidenceStatus?: "verified" | "unknown";
   sourceUrl?: string;

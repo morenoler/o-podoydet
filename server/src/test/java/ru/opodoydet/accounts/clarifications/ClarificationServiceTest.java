@@ -56,6 +56,7 @@ class ClarificationServiceTest {
   static ObjectNode listing() {
     return Json.obj("title", "Объявление для изолированного теста", "description", "Один предлагаемый вариант размещения для проверки уточнений.",
         "city", "Пусан", "address", "Тестовая улица 1", "roomType", "Семейный номер", "capacity", 3,
+        "sleepingPlaces", 3, "beds", List.of(Json.obj("type", "single", "count", 3, "placesPerUnit", 1)),
         "pricePerNight", 10000, "amenities", List.of(), "status", "published", "floor", 2, "windowDirections", List.of("south"));
   }
   static ObjectNode trip(String feature) {
@@ -383,6 +384,34 @@ class ClarificationServiceTest {
       problem(409, () -> f.service.answer("host", Json.str(question, "id"), response(1, true)));
       f.answer(f.ask("courtyard"), true);
       assertEquals("match", Json.str(f.criterion("courtyard", "verified"), "evidenceStatus"));
+    }
+  }
+
+  @Test void locationAndBedLayoutChangesThenRevertsRequireFreshClarification() throws Exception {
+    try (Fixture f = new Fixture()) {
+      ObjectNode original = listing();
+      original.set("coordinates", Json.array(List.of(129.16, 35.16)));
+      f.listings.update("host", f.id, original);
+      List<ObjectNode> changes = new ArrayList<>();
+      ObjectNode moved = original.deepCopy(); moved.set("coordinates", Json.array(List.of(129.17, 35.16))); changes.add(moved);
+      changes.add(original.deepCopy().putNull("coordinates"));
+      ObjectNode rearranged = original.deepCopy();
+      rearranged.set("beds", Json.array(List.of(Json.obj("type", "double", "count", 1, "placesPerUnit", 2),
+          Json.obj("type", "single", "count", 1, "placesPerUnit", 1)))); changes.add(rearranged);
+      ObjectNode morePlaces = original.deepCopy().put("sleepingPlaces", 4);
+      morePlaces.set("beds", Json.array(List.of(Json.obj("type", "single", "count", 4, "placesPerUnit", 1)))); changes.add(morePlaces);
+      ObjectNode rooms = original.deepCopy();
+      ((ObjectNode) rooms.path("beds").get(0)).put("room", "Спальня 2"); changes.add(rooms);
+      for (ObjectNode changed : changes) {
+        JsonNode question = f.ask("courtyard"); f.answer(question, true);
+        assertEquals("match", Json.str(f.criterion("courtyard", "verified"), "evidenceStatus"));
+        f.listings.update("host", f.id, changed);
+        f.listings.update("host", f.id, original);
+        assertEquals("unknown", Json.str(f.criterion("courtyard", "verified"), "evidenceStatus"));
+        JsonNode stale = f.service.user("guest").stream().filter(q -> Json.str(q, "id").equals(Json.str(question, "id"))).findFirst().orElseThrow();
+        assertEquals("scope_changed", Json.str(stale.path("answer"), "state"));
+        problem(409, () -> f.service.answer("host", Json.str(question, "id"), response(1, true)));
+      }
     }
   }
 
