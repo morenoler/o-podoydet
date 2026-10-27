@@ -74,7 +74,7 @@ public final class Agents {
       if (Json.str(edit, "action").equals("remove")) excluded.add(feature);
       else inferred.add(Json.obj("feature", feature, "required", Json.str(edit, "action").equals("required")));
     }
-    if (!edits.path("unhandled").isEmpty() || !edits.path("hotelFilters").isEmpty())
+    if (!edits.path("unhandled").isEmpty() || !edits.path("hotelFilters").isEmpty() || !edits.path("nearbyUpdates").isEmpty())
       warnings.add("Часть текста не входит в условия подбора. Используйте фильтры или уточните пожелание в чате; проверяйте применённые условия.");
     if (inferred.stream().anyMatch(p -> Json.str(p, "feature").equals("low_noise")))
       warnings.add("Оценка внешнего шума не гарантирует тишину в конкретном номере.");

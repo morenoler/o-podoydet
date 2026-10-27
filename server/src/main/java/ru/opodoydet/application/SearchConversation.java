@@ -53,6 +53,8 @@ public final class SearchConversation {
     ObjectNode filters = Json.obj();
     boolean queryAppend = true;
     List<String> unhandled = new ArrayList<>(), ownerClauses = new ArrayList<>();
+    List<JsonNode> nearbyUpdates = new ArrayList<>();
+    List<String> nearbyWarnings = new ArrayList<>();
     for (String raw : splitClauses(text)) {
       String clause = raw.strip();
       if (clause.isBlank()) continue;
@@ -63,6 +65,18 @@ public final class SearchConversation {
           filters.put("query", query.group(1).strip()); queryAppend = false;
         } else unhandled.add(clause);
         continue;
+      }
+      NearbyIntent.Parsed nearby = NearbyIntent.parse(clause);
+      if (nearby.recognized()) {
+        nearbyUpdates.addAll(nearby.updates());
+        if (!nearby.warning().isBlank()) nearbyWarnings.add(nearby.warning());
+        if (nearby.updates().isEmpty()) { unhandled.add(clause); continue; }
+        String originalAction = action(clause);
+        clause = nearby.remainder();
+        if (clause.isBlank()) continue;
+        if (originalAction.equals("required")) clause = "обязательно " + clause;
+        if (originalAction.equals("optional")) clause = "желательно " + clause;
+        if (originalAction.equals("remove")) clause = "убери " + clause;
       }
       var name = Pattern.compile("^(?:найди|ищи|поищи)\\s+(?:отель\\s+|по названию\\s+)([^«\"]{1,240})$|^(?:найди|ищи|поищи)\\s+([a-z][a-z0-9 '-]{1,239})$").matcher(clause);
       if (name.matches()) {
@@ -101,7 +115,8 @@ public final class SearchConversation {
       if (!lodging.isEmpty() && leftover.replaceAll("(?U)\\b(?:или|и)\\b|\\s+", "").isBlank()) { filters.set("lodgingTypes", Json.array(lodging)); continue; }
       if (ownerClause(clause)) { ownerClauses.add(clause); continue; }
       if (has("\\d", clause)) { unhandled.add(clause); continue; }
-      List<String> matched = new ArrayList<>(Features.ids().stream().filter(f -> has(TOPICS.get(f), clause)).toList());
+      List<String> matched = new ArrayList<>();
+      for (String feature : Features.ids()) if (has(TOPICS.get(feature), clause)) matched.add(feature);
       String act = action(clause);
       boolean rejectsNoise = has("(?:не хочу|не хотим|не нужен|не нужна|не нужны|не должно быть).{0,16}шум|шум.{0,10}не нуж|не ?шумн", clause);
       boolean rejectsSteps = has("(?:не хочу|не хотим|не нужны|не должно быть).{0,16}(?:ступен|лестниц)", clause);
@@ -121,7 +136,7 @@ public final class SearchConversation {
       residue = residue.replaceAll(FILLER, " ").replaceAll("[\\s:—-]+", "");
       if (!residue.isBlank()) unhandled.add(clause);
     }
-    return Json.obj("updates", updates.values(), "unhandled", unhandled, "hotelFilters", filters, "queryAppend", queryAppend, "ownerClauses", ownerClauses);
+    return Json.obj("updates", updates.values(), "unhandled", unhandled, "hotelFilters", filters, "queryAppend", queryAppend, "ownerClauses", ownerClauses, "nearbyUpdates", nearbyUpdates, "nearbyWarnings", nearbyWarnings);
   }
 
   private static List<String> splitClauses(String text) {
@@ -183,7 +198,23 @@ public final class SearchConversation {
     current.path("preferences").forEach(p -> preferences.put(Json.str(p, "feature"), p.deepCopy()));
     trip.path("preferenceOverrides").forEach(p -> overrides.put(Json.str(p, "feature"), p.deepCopy()));
     List<String> descriptions = new ArrayList<>(), nextFocus = new ArrayList<>(), warnings = new ArrayList<>();
+    for (JsonNode warning : edits.path("nearbyWarnings")) warnings.add(warning.asText());
     ObjectNode filterEdits = (ObjectNode) edits.path("hotelFilters");
+    if (!edits.path("nearbyUpdates").isEmpty()) {
+      Map<String, JsonNode> nearby = new LinkedHashMap<>();
+      for (JsonNode condition : trip.path("hotelFilters").path("nearby")) nearby.put(Json.str(condition, "kind"), condition.deepCopy());
+      for (JsonNode edit : edits.path("nearbyUpdates")) {
+        String action = Json.str(edit, "action"), kind = Json.str(edit, "kind");
+        if (action.equals("clear")) nearby.clear();
+        else if (action.equals("remove")) nearby.remove(kind);
+        else nearby.put(kind, Json.obj("kind", kind, "maxMeters", edit.path("maxMeters")));
+      }
+      if (nearby.isEmpty()) filterEdits.putNull("nearby"); else filterEdits.set("nearby", Json.array(nearby.values()));
+      boolean added = Json.list(edits.path("nearbyUpdates")).stream().anyMatch(edit -> Json.str(edit, "action").equals("add"));
+      if (added) warnings.add("Близость проверяем по прямой от точки отеля по данным OpenStreetMap. Пешеходный путь, вход и работа места не подтверждены.");
+      if (Json.list(edits.path("nearbyUpdates")).stream().anyMatch(edit -> Json.str(edit, "kind").equals("city_center") && Json.str(edit, "action").equals("add")))
+        warnings.add("За ориентир центра Пусана принят Сомён (Seomyeon); это выбранная точка отсчёта, а не единственная граница центра.");
+    }
     if (edits.path("queryAppend").asBoolean() && filterEdits.hasNonNull("query")) {
       String combined = appendQuery(Json.str(trip.path("hotelFilters"), "query"), filterEdits.path("query").asText());
       if (combined.length() <= 240) filterEdits.put("query", combined);
@@ -220,7 +251,7 @@ public final class SearchConversation {
       if (combined.length() <= 1500) { nextTrip.put("text", combined); descriptions.add(appended); warnings.add("Этаж и направление окон проверяем только по сведениям владельца одного варианта размещения. Неизвестные данные не подтверждают пожелание; прежние условия сохраняются."); }
       else warnings.add("Пожелание об этаже или окнах не добавлено: текст уже достиг предела длины.");
     }
-    String reply = descriptions.isEmpty() ? "Условия не изменились. Можно написать «до 100000 KRW за ночь», «до пляжа 500 м», «только апартаменты» или «ищи «балкон»»." : "Учтено: " + String.join("; ", descriptions) + ".";
+    String reply = descriptions.isEmpty() ? "Условия не изменились. Например: «в центре города», «рядом с кафе», «метро до 800 м» или «ищи «балкон»»." : "Учтено: " + String.join("; ", descriptions) + ".";
     if (!edits.path("unhandled").isEmpty()) reply += " Не применено: «" + String.join("», «", Json.list(edits.path("unhandled")).stream().map(JsonNode::asText).toList()) + "». Уточните эту часть отдельно. Для поиска упоминания используйте: ищи «нужное слово».";
     if (!descriptions.isEmpty() && Json.str(trip, "checkIn").isEmpty()) reply += " Выберите даты и гостей над подборкой, чтобы проверить отели.";
     return Json.obj("trip", nextTrip, "message", reply, "mode", "rules", "warnings", warnings,
@@ -228,6 +259,11 @@ public final class SearchConversation {
   }
 
   private static String filterDescription(String field, JsonNode value) {
+    if (field.equals("nearby")) {
+      if (value.isNull()) return "условия близости убраны";
+      return String.join(", ", Json.list(value).stream().map(condition -> NearbyIntent.definition(Json.str(condition, "kind")).label()
+          + " до " + condition.path("maxMeters").asText().replaceAll("\\.0$", "") + " м по прямой").toList());
+    }
     String label = switch (field) { case "query" -> "поиск по тексту"; case "lodgingTypes" -> "тип размещения"; case "maxPricePerNight" -> "цена за ночь"; case "maxBeachMeters" -> "расстояние до пляжа"; default -> throw new IllegalArgumentException("Неизвестный фильтр"); };
     if (value.isNull()) return label + " — ограничение убрано";
     if (field.equals("query")) return label + " «" + value.asText() + "»";

@@ -3,6 +3,7 @@ package ru.opodoydet.application;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.text.Normalizer;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -65,11 +66,17 @@ public final class HotelFilters {
 
   public static boolean active(JsonNode filters) {
     return !Json.str(filters, "query").isBlank() || !filters.path("lodgingTypes").isEmpty()
-        || filters.has("maxPricePerNight") || filters.has("maxBeachMeters");
+        || filters.has("maxPricePerNight") || filters.has("maxBeachMeters")
+        || !filters.path("nearby").isEmpty();
   }
 
   public static boolean matches(JsonNode hotel, JsonNode room, List<JsonNode> facts, JsonNode filters) {
+    return matches(hotel, room, facts, filters, Instant.now());
+  }
+
+  public static boolean matches(JsonNode hotel, JsonNode room, List<JsonNode> facts, JsonNode filters, Instant now) {
     if (!active(filters)) return true;
+    if (!NearbyPlaces.matches(hotel, filters, now)) return false;
     if (!filters.path("lodgingTypes").isEmpty()
         && Json.list(filters.path("lodgingTypes")).stream()
             .noneMatch(type -> type.asText().equals(Json.str(hotel, "lodgingType")))) return false;
@@ -99,6 +106,10 @@ public final class HotelFilters {
 
   /** Filter after owner/knowledge overlays, so no candidate or advisor relaxation bypasses limits. */
   public static List<JsonNode> apply(List<JsonNode> ranked, List<JsonNode> facts, JsonNode filters) {
+    return apply(ranked, facts, filters, Instant.now());
+  }
+
+  public static List<JsonNode> apply(List<JsonNode> ranked, List<JsonNode> facts, JsonNode filters, Instant now) {
     if (!active(filters)) return ranked;
     List<JsonNode> result = new ArrayList<>();
     for (JsonNode original : ranked) {
@@ -107,7 +118,9 @@ public final class HotelFilters {
       List<JsonNode> rooms = new ArrayList<>();
       for (JsonNode roomMatch : match.path("rooms")) {
         JsonNode room = roomMatch.path("room");
-        if (!matches(hotel, room, facts, filters)) continue;
+        if (!matches(hotel, room, facts, filters, now)) continue;
+        if (!filters.path("nearby").isEmpty())
+          ((ObjectNode) roomMatch).set("nearbyMatches", Json.array(NearbyPlaces.selected(hotel, filters, now)));
         if (!Json.str(filters, "query").isBlank())
           ((ObjectNode) roomMatch).set("catalogMatches", Json.array(snippets(hotel, room, facts, filters)));
         rooms.add(roomMatch);

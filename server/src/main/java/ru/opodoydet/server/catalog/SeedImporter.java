@@ -128,9 +128,9 @@ public class SeedImporter {
           for (JsonNode hotel : seed.path("hotels")) {
             String hotelId = text(hotel, "id");
             text(hotel, "name");
-            if (!hotel.path("rooms").isArray() || hotel.path("rooms").isEmpty())
+            if (!hotel.path("rooms").isArray())
               throw new IllegalArgumentException(
-                  "Отель " + hotelId + " должен иметь хотя бы одну категорию номера");
+                  "Отель " + hotelId + " должен иметь массив категорий номера (возможно пустой)");
             ObjectNode body = hotel.deepCopy();
             body.remove("rooms");
             JsonNode coordinates = hotel.path("coordinates");

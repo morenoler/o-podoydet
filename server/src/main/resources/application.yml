@@ -33,7 +33,7 @@ spring:
     default-schema: ${DB_SCHEMA:public}
 
 catalog:
-  data-path: ${DATA_PATH:data/verified-hotels.json}
+  data-path: ${DATA_PATH:data/busan/verified-hotels.json}
   import-on-startup: ${CATALOG_IMPORT:true}
 
 knowledge:

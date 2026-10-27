@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,7 +131,8 @@ public final class SearchService {
                     requested,
                     conflict),
                 snapshotFacts,
-                trip.path("hotelFilters"));
+                trip.path("hotelFilters"),
+                now);
     List<JsonNode> ranked = ranker.apply(preferences);
     for (JsonNode match : ranked)
       ((ObjectNode) match).set("personalWishes", interpreted.path("personalWishes").deepCopy());
@@ -167,6 +169,7 @@ public final class SearchService {
     RoomRecommendations.Selection rooms = RoomRecommendations.select(ranked, now, policy);
     interpreted.set("roomRecommendations", Json.array(rooms.recommendations()));
     interpreted.set("roomAlternatives", Json.array(rooms.alternatives()));
+    interpreted.set("hotelCandidates", Json.array(hotelCandidates(snapshotHotels, snapshotFacts, trip, now)));
     interpreted.put("unverifiedHotelCount", rooms.unverifiedHotelCount());
     interpreted.set(
         "results",
@@ -317,7 +320,7 @@ public final class SearchService {
       List<JsonNode> projected = projection
           .snapshot(trip, now)
           .apply(List.of(match), preferences, !interpreted.path("conflicts").isEmpty());
-      List<JsonNode> filtered = HotelFilters.apply(projected, List.of(), trip.path("hotelFilters"));
+      List<JsonNode> filtered = HotelFilters.apply(projected, List.of(), trip.path("hotelFilters"), now);
       return filtered.isEmpty() ? null : filtered.getFirst().deepCopy();
     }
     List<JsonNode> facts =
@@ -370,7 +373,7 @@ public final class SearchService {
     List<JsonNode> projected = projection
         .snapshot(trip, now)
         .apply(List.of(match), preferences, !interpreted.path("conflicts").isEmpty());
-    List<JsonNode> filtered = HotelFilters.apply(projected, facts, trip.path("hotelFilters"));
+    List<JsonNode> filtered = HotelFilters.apply(projected, facts, trip.path("hotelFilters"), now);
     return filtered.isEmpty() ? null : filtered.getFirst().deepCopy();
   }
 
@@ -379,6 +382,37 @@ public final class SearchService {
       interpreted.withArray("warnings").add(
           "Поиск по словам показывает совпадения в названии, адресе, категории и цитатах источников."
               + " Совпадение текста не подтверждает наличие удобства или его доступность на даты поездки.");
+    if (!trip.path("hotelFilters").path("nearby").isEmpty())
+      interpreted.withArray("warnings").add(
+          "Места рядом найдены в OpenStreetMap. Расстояния рассчитаны по прямой до точки на карте;"
+              + " пеший проход и работа места на даты поездки не проверены.");
+  }
+
+  /** Map hotels without collected categories remain visible, separately from room recommendations. */
+  private static List<JsonNode> hotelCandidates(
+      List<JsonNode> hotels, List<JsonNode> facts, JsonNode trip, Instant now) {
+    JsonNode filters = trip.path("hotelFilters");
+    return hotels.stream()
+        .filter(hotel -> !hotel.path("synthetic").asBoolean()
+            && !hotel.hasNonNull("accountListingId") && !hotel.path("hasCollectedRoomCategories").asBoolean()
+            && Json.list(hotel.path("rooms")).stream()
+                .noneMatch(room -> Json.str(room, "evidenceStatus").equals("verified")
+                    && Json.str(room, "scope").equals("room_category")))
+        .filter(hotel -> HotelFilters.matches(hotel, null, facts, filters, now))
+        .sorted(Comparator.comparing((JsonNode hotel) -> Json.str(hotel, "name"))
+            .thenComparing(hotel -> Json.str(hotel, "id")))
+        .map(hotel -> {
+          ObjectNode withoutPlaceholder = hotel.deepCopy();
+          withoutPlaceholder.set("rooms", Json.array(List.of()));
+          return (JsonNode) Json.obj(
+            "hotel", withoutPlaceholder,
+            "nearbyMatches", NearbyPlaces.selected(hotel, filters, now),
+            "catalogMatches", HotelFilters.snippets(hotel, null, facts, filters),
+            "limitations", List.of(
+                "Категории номеров не подтверждены; вместимость и пожелания к номеру не проверены.",
+                "Наличие мест и цены на даты поездки не проверены."));
+        })
+        .toList();
   }
 
   private static void excludeForConflict(ObjectNode match) {

@@ -1,4 +1,4 @@
-import type { Preference, Trip } from "../../../shared/types";
+import { nearbyKinds, type Preference, type Trip } from "../../../shared/types";
 
 /** Keep explicit edits authoritative even when the old free text mentions the same wish. */
 export function editPreferences(trip: Trip, next: Preference[], current = trip.preferences): Trip {
@@ -18,6 +18,16 @@ export function applyFilterDraft(trip: Trip, current: Preference[], initial: Tri
   const admissionMode = initial.admissionMode === draft.admissionMode ? trip.admissionMode : draft.admissionMode;
   if (reset) return { ...trip, admissionMode, preferences: draft.preferences, text: draft.text, scenarios: draft.scenarios, preferenceOverrides: undefined, hotelFilters: draft.hotelFilters };
   const hotelFilters = { ...trip.hotelFilters };
+  const nearby = new Map((trip.hotelFilters?.nearby || []).map((condition) => [condition.kind, condition]));
+  for (const kind of nearbyKinds) {
+    const before = initial.hotelFilters?.nearby?.find((condition) => condition.kind === kind);
+    const after = draft.hotelFilters?.nearby?.find((condition) => condition.kind === kind);
+    if (before?.maxMeters === after?.maxMeters) continue;
+    if (after) nearby.set(kind, after);
+    else nearby.delete(kind);
+  }
+  if (nearby.size) hotelFilters.nearby = [...nearby.values()];
+  else delete hotelFilters.nearby;
   for (const key of ["query", "lodgingTypes", "maxPricePerNight", "maxBeachMeters"] as const) {
     if (JSON.stringify(initial.hotelFilters?.[key]) === JSON.stringify(draft.hotelFilters?.[key])) continue;
     Object.assign(hotelFilters, { [key]: draft.hotelFilters?.[key] });

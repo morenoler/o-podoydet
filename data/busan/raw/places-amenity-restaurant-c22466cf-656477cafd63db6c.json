@@ -1,0 +1,1638 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.4 2390de5a",
+  "osm3s": {
+    "timestamp_osm_base": "2026-10-27T12:11:06Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 368707242,
+  "lat": 35.1550890,
+  "lon": 129.0548400,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "meat;sogogi;hanwoo;korean_food",
+    "name": "초원가든",
+    "name:ko": "초원가든",
+    "name:ko-Latn": "chowon garden"
+  }
+},
+{
+  "type": "node",
+  "id": 368956717,
+  "lat": 35.1598680,
+  "lon": 129.0659770,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "송광도매횟집",
+    "name:en": "Songgwangdomae Fish Restaurant",
+    "name:ko": "송광도매횟집",
+    "name:ko-Latn": "Songgwangdomaehoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368956856,
+  "lat": 35.1591460,
+  "lon": 129.0568020,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "소소횟집",
+    "name:en": "Soso Fish Restaurant",
+    "name:ko": "소소횟집",
+    "name:ko-Latn": "Sosohoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368957330,
+  "lat": 35.1618800,
+  "lon": 129.0606910,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "자매횟집",
+    "name:en": "Jamae Fish Restaurant",
+    "name:ko": "자매횟집",
+    "name:ko-Latn": "Jamaehoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368957399,
+  "lat": 35.1579721,
+  "lon": 129.0558823,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "fish",
+    "name": "희락횟집",
+    "name:en": "Huirak Fish Restaurant",
+    "name:ko-Latn": "Huirakhoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368957523,
+  "lat": 35.1607920,
+  "lon": 129.0644530,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "울산횟집",
+    "name:en": "Ulsan Fish Restaurant",
+    "name:ko": "울산횟집",
+    "name:ko-Latn": "Ulsanhoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368957596,
+  "lat": 35.1622000,
+  "lon": 129.0570610,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "일미횟집",
+    "name:en": "Ilmi Fish Restaurant",
+    "name:ko": "일미횟집",
+    "name:ko-Latn": "Ilmihoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368957646,
+  "lat": 35.1592280,
+  "lon": 129.0567260,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "제일횟집",
+    "name:en": "Jeil Fish Restaurant",
+    "name:ko": "제일횟집",
+    "name:ko-Latn": "Jeilhoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368957717,
+  "lat": 35.1590370,
+  "lon": 129.0620700,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "풍미횟집",
+    "name:en": "Pungmi Fish Restaurant",
+    "name:ko": "풍미횟집",
+    "name:ko-Latn": "Pungmihoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368957851,
+  "lat": 35.1553500,
+  "lon": 129.0661270,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "경남횟집",
+    "name:en": "Gyeongnam Fish Restaurant",
+    "name:ko": "경남횟집",
+    "name:ko-Latn": "Gyeongnamhoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368958118,
+  "lat": 35.1581503,
+  "lon": 129.0615103,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "항도횟집",
+    "name:en": "Hangdo Fish Restaurant",
+    "name:ko": "항도횟집",
+    "name:ko-Latn": "Hangdohoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368958187,
+  "lat": 35.1645670,
+  "lon": 129.0523170,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "제일횟집",
+    "name:en": "Jeil Fish Restaurant",
+    "name:ko": "제일횟집",
+    "name:ko-Latn": "Jeilhoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368958220,
+  "lat": 35.1538310,
+  "lon": 129.0635830,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "어심횟집",
+    "name:en": "Eosim Fish Restaurant",
+    "name:ko": "어심횟집",
+    "name:ko-Latn": "Eosimhoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368958257,
+  "lat": 35.1487490,
+  "lon": 129.0582370,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "삼성횟집",
+    "name:en": "Samseong Fish Restaurant",
+    "name:ko": "삼성횟집",
+    "name:ko-Latn": "Samseonghoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368958264,
+  "lat": 35.1605383,
+  "lon": 129.0582508,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "우정횟집",
+    "name:en": "Ujeong Fish Restaurant",
+    "name:ko": "우정횟집",
+    "name:ko-Latn": "Ujeonghoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368958344,
+  "lat": 35.1588920,
+  "lon": 129.0622000,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "동신횟집",
+    "name:en": "Dongsin Fish Restaurant",
+    "name:ko": "동신횟집",
+    "name:ko-Latn": "Dongsinhoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368958365,
+  "lat": 35.1601410,
+  "lon": 129.0564090,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "금호횟집",
+    "name:en": "Geumho Fish Restaurant",
+    "name:ko": "금호횟집",
+    "name:ko-Latn": "Geumhohoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368958451,
+  "lat": 35.1579530,
+  "lon": 129.0572490,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "fish",
+    "name": "남천횟집",
+    "name:en": "Namcheon Fish Restaurant",
+    "name:ko-Latn": "Namcheonhoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368958480,
+  "lat": 35.1597860,
+  "lon": 129.0567880,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "목화횟집",
+    "name:en": "Mokhwa Fish Restaurant",
+    "name:ko": "목화횟집",
+    "name:ko-Latn": "Mokhwahoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368958553,
+  "lat": 35.1600410,
+  "lon": 129.0565060,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "어원횟집",
+    "name:en": "Eowon Fish Restaurant",
+    "name:ko": "어원횟집",
+    "name:ko-Latn": "Eowonhoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368958588,
+  "lat": 35.1595250,
+  "lon": 129.0568180,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "녹산횟집",
+    "name:en": "Noksan Fish Restaurant",
+    "name:ko": "녹산횟집",
+    "name:ko-Latn": "Noksanhoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368958682,
+  "lat": 35.1608470,
+  "lon": 129.0643110,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "포항횟집",
+    "name:en": "Pohang Fish Restaurant",
+    "name:ko": "포항횟집",
+    "name:ko-Latn": "Pohanghoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368958705,
+  "lat": 35.1612650,
+  "lon": 129.0577630,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "성원횟집",
+    "name:en": "Seongwon Fish Restaurant",
+    "name:ko": "성원횟집",
+    "name:ko-Latn": "Seongwonhoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368958872,
+  "lat": 35.1593940,
+  "lon": 129.0573100,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "천일횟집",
+    "name:en": "Cheonil Fish Restaurant",
+    "name:ko": "천일횟집",
+    "name:ko-Latn": "Cheonilhoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368958905,
+  "lat": 35.1524320,
+  "lon": 129.0576150,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "청해횟집",
+    "name:en": "Cheonghae Fish Restaurant",
+    "name:ko": "청해횟집",
+    "name:ko-Latn": "Cheonghaehoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368958917,
+  "lat": 35.1598360,
+  "lon": 129.0562400,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "부광횟집",
+    "name:en": "Bugwang Fish Restaurant",
+    "name:ko": "부광횟집",
+    "name:ko-Latn": "Bugwanghoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368958963,
+  "lat": 35.1571520,
+  "lon": 129.0487520,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "천일횟집",
+    "name:en": "Cheonil Fish Restaurant",
+    "name:ko": "천일횟집",
+    "name:ko-Latn": "Cheonilhoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368959466,
+  "lat": 35.1618920,
+  "lon": 129.0613820,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "동원횟집",
+    "name:en": "Dongwon Fish Restaurant",
+    "name:ko": "동원횟집",
+    "name:ko-Latn": "Dongwonhoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368959656,
+  "lat": 35.1590590,
+  "lon": 129.0616090,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "수림횟집",
+    "name:en": "Surim Fish Restaurant",
+    "name:ko": "수림횟집",
+    "name:ko-Latn": "Surimhoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368959785,
+  "lat": 35.1550310,
+  "lon": 129.0552120,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "동명횟집",
+    "name:en": "Dongmyeong Fish Restaurant",
+    "name:ko": "동명횟집",
+    "name:ko-Latn": "Dongmyeonghoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 368959802,
+  "lat": 35.1498580,
+  "lon": 129.0664060,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "한라횟집",
+    "name:en": "Halla Fish Restaurant",
+    "name:ko": "한라횟집",
+    "name:ko-Latn": "Hallahoetjip"
+  }
+},
+{
+  "type": "node",
+  "id": 1933151313,
+  "lat": 35.1552549,
+  "lon": 129.0582748,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "italian",
+    "name": "스수아",
+    "name:fr": "Ce Soir",
+    "name:ko": "스수아",
+    "website": "https://www.facebook.com/cesoir4u"
+  }
+},
+{
+  "type": "node",
+  "id": 2138554864,
+  "lat": 35.1557702,
+  "lon": 129.0553614,
+  "tags": {
+    "amenity": "restaurant"
+  }
+},
+{
+  "type": "node",
+  "id": 2138554870,
+  "lat": 35.1543369,
+  "lon": 129.0585423,
+  "tags": {
+    "amenity": "restaurant",
+    "brand": "Pizza Hut",
+    "brand:wikidata": "Q191615",
+    "brand:wikipedia": "en:Pizza Hut",
+    "cuisine": "pizza",
+    "name": "Pizza Hut"
+  }
+},
+{
+  "type": "node",
+  "id": 2138554871,
+  "lat": 35.1541836,
+  "lon": 129.0601424,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "16",
+    "addr:street": "중앙대로692번길",
+    "addr:subdistrict": "부전동",
+    "amenity": "restaurant",
+    "cuisine": "steak_house",
+    "name": "아웃백스테이크하우스 부전점",
+    "opening_hours": "Mo-Su 11:30-23:00"
+  }
+},
+{
+  "type": "node",
+  "id": 2515612340,
+  "lat": 35.1553456,
+  "lon": 129.0565537,
+  "tags": {
+    "amenity": "restaurant",
+    "source": "image,2013-09;Bing"
+  }
+},
+{
+  "type": "node",
+  "id": 2515612341,
+  "lat": 35.1553499,
+  "lon": 129.0566593,
+  "tags": {
+    "amenity": "restaurant",
+    "source": "image,2013-09;Bing"
+  }
+},
+{
+  "type": "node",
+  "id": 2515612342,
+  "lat": 35.1553510,
+  "lon": 129.0564209,
+  "tags": {
+    "amenity": "restaurant",
+    "source": "image,2013-09;Bing"
+  }
+},
+{
+  "type": "node",
+  "id": 2515612351,
+  "lat": 35.1554724,
+  "lon": 129.0566997,
+  "tags": {
+    "amenity": "restaurant",
+    "source": "image,2013-09;Bing"
+  }
+},
+{
+  "type": "node",
+  "id": 2515612467,
+  "lat": 35.1558037,
+  "lon": 129.0567274,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine:ja": "あわびのおかゆ",
+    "name:ja": "済州家",
+    "source": "image,2013-09;Bing"
+  }
+},
+{
+  "type": "node",
+  "id": 4528190492,
+  "lat": 35.1591265,
+  "lon": 129.0581535,
+  "tags": {
+    "amenity": "restaurant",
+    "name:en": "KyoChon Chicken",
+    "name:zh": "橋村炸雞"
+  }
+},
+{
+  "type": "node",
+  "id": 4535689493,
+  "lat": 35.1635642,
+  "lon": 129.0640897,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "馬鈴薯排骨湯連鎖店",
+    "name:ko": "馬鈴薯排骨湯連鎖店"
+  }
+},
+{
+  "type": "node",
+  "id": 4604869897,
+  "lat": 35.1527600,
+  "lon": 129.0589469,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "시골밥상",
+    "name:ja": "シゴルバプサン",
+    "name:ko": "시골밥상"
+  }
+},
+{
+  "type": "node",
+  "id": 4646428757,
+  "lat": 35.1672886,
+  "lon": 129.0707751,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "korean_meal",
+    "name": "이모네 밥집"
+  }
+},
+{
+  "type": "node",
+  "id": 4646428758,
+  "lat": 35.1686277,
+  "lon": 129.0705008,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "pizza",
+    "name": "피자스쿨 부산여대점"
+  }
+},
+{
+  "type": "node",
+  "id": 4646428759,
+  "lat": 35.1675887,
+  "lon": 129.0706129,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "Chinese_dishes",
+    "name": "번개반점"
+  }
+},
+{
+  "type": "node",
+  "id": 4646428760,
+  "lat": 35.1673719,
+  "lon": 129.0707485,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "chinese",
+    "name": "영남관"
+  }
+},
+{
+  "type": "node",
+  "id": 4662037100,
+  "lat": 35.1529665,
+  "lon": 129.0575632,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "buffet",
+    "name": "골든뷰 뷔페 서면점",
+    "start_date": "2012"
+  }
+},
+{
+  "type": "node",
+  "id": 4706120901,
+  "lat": 35.1542093,
+  "lon": 129.0584738,
+  "tags": {
+    "amenity": "restaurant",
+    "name:zh": "黃色炸雞",
+    "phone": "+82 51 807 9187"
+  }
+},
+{
+  "type": "node",
+  "id": 4731530921,
+  "lat": 35.1642997,
+  "lon": 129.0505791,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "더파티",
+    "name:en": "The Party"
+  }
+},
+{
+  "type": "node",
+  "id": 4731530922,
+  "lat": 35.1665042,
+  "lon": 129.0518134,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "20년 전통 순두부"
+  }
+},
+{
+  "type": "node",
+  "id": 4873756521,
+  "lat": 35.1522004,
+  "lon": 129.0583738,
+  "tags": {
+    "amenity": "restaurant",
+    "name:zh": "皇帝蒸海鮮"
+  }
+},
+{
+  "type": "node",
+  "id": 5054999921,
+  "lat": 35.1549985,
+  "lon": 129.0644808,
+  "tags": {
+    "addr:street": "서전로46번길",
+    "amenity": "restaurant",
+    "cuisine": "korean",
+    "name": "곁집",
+    "name:en": "GyeotJib"
+  }
+},
+{
+  "type": "node",
+  "id": 5084886896,
+  "lat": 35.1552046,
+  "lon": 129.0612507,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "38",
+    "addr:street": "중앙대로680번가길",
+    "addr:subdistrict": "부전동",
+    "amenity": "restaurant",
+    "cuisine": "pizza",
+    "name": "피자헛",
+    "name:en": "Pizza Hut",
+    "phone": "+82 70 7843 2768"
+  }
+},
+{
+  "type": "node",
+  "id": 5084890871,
+  "lat": 35.1548479,
+  "lon": 129.0600315,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:floor": "2",
+    "addr:housenumber": "69",
+    "addr:postcode": "47295",
+    "addr:street": "서전로10번길",
+    "addr:subdistrict": "부전동",
+    "amenity": "restaurant",
+    "cuisine": "pizza",
+    "name": "미스터피자",
+    "name:en": "Mr. Pizza",
+    "opening_hours": "Mo-Su 11:00-22:00",
+    "phone": "+82 51 805 0004"
+  }
+},
+{
+  "type": "node",
+  "id": 5272942924,
+  "lat": 35.1575599,
+  "lon": 129.0499358,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "명인만두"
+  }
+},
+{
+  "type": "node",
+  "id": 5286768421,
+  "lat": 35.1550866,
+  "lon": 129.0598233,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "burger",
+    "name:en": "burger king",
+    "name:ko": "버거킹"
+  }
+},
+{
+  "type": "node",
+  "id": 5321812721,
+  "lat": 35.1548983,
+  "lon": 129.0637888,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "마마돈"
+  }
+},
+{
+  "type": "node",
+  "id": 5596694232,
+  "lat": 35.1563414,
+  "lon": 129.0648318,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "INUKI",
+    "name:ja": "イヌキ",
+    "name:ko": "이누키",
+    "opening_hours": "Mo-Su 11:00-20:00"
+  }
+},
+{
+  "type": "node",
+  "id": 5607494221,
+  "lat": 35.1545390,
+  "lon": 129.0613123,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "유가네",
+    "name:ja": "ユガネ",
+    "opening_hours": "Mo-Su 11:00-01:00"
+  }
+},
+{
+  "type": "node",
+  "id": 5618752625,
+  "lat": 35.1543715,
+  "lon": 129.0604724,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "korean;fish",
+    "name": "새우상회 서면점",
+    "name:ja": "セウ商会 西面店",
+    "opening_hours": "Mo-Su 13:00-01:00",
+    "phone": "070-8871-9295"
+  }
+},
+{
+  "type": "node",
+  "id": 5618753622,
+  "lat": 35.1540233,
+  "lon": 129.0582948,
+  "tags": {
+    "addr:housenumber": "73",
+    "addr:street": "신천대로62번길",
+    "amenity": "restaurant",
+    "cuisine": "korean",
+    "name": "개미집 서면점",
+    "name:ja": "ケミチッ 西面店",
+    "name:zh": "螞蟻家",
+    "phone": "051-819-8809",
+    "website": "http://www.gaemizib.com"
+  }
+},
+{
+  "type": "node",
+  "id": 5618754621,
+  "lat": 35.1547067,
+  "lon": 129.0612486,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "korean",
+    "name": "유가네 서면본점",
+    "name:ja": "ユガネ 西面本店",
+    "opening_hours": "Mo-Su 11:00-01:00",
+    "phone": "051-802-7573",
+    "website": "http://www.yoogane.co.kr"
+  }
+},
+{
+  "type": "node",
+  "id": 5618754622,
+  "lat": 35.1548489,
+  "lon": 129.0603745,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "korean;local;fish",
+    "name": "개미집 쥬디스태화점",
+    "name:ja": "ケミチッ ジュディス太和店",
+    "opening_hours": "Mo-Su 10:30-23:00",
+    "phone": "051-819-8891",
+    "website": "http://www.gaemizib.com"
+  }
+},
+{
+  "type": "node",
+  "id": 5620037522,
+  "lat": 35.1548807,
+  "lon": 129.0643237,
+  "tags": {
+    "addr:housenumber": "64",
+    "addr:street": "서전로46번길",
+    "amenity": "restaurant",
+    "cuisine": "korean;fish;local",
+    "name": "갈곳이없다그래서제주도로",
+    "opening_hours": "Mo-Su 11:30-16:00, 17:00-22:00",
+    "phone": "051-802-6200"
+  }
+},
+{
+  "type": "node",
+  "id": 5621204621,
+  "lat": 35.1571492,
+  "lon": 129.0615035,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "korean",
+    "name": "고기굽는남자",
+    "name:ja": "コギクムヌン男子(ナムジャ)",
+    "opening_hours": "Mo-Su 16:00-02:00",
+    "phone": "051-804-3809"
+  }
+},
+{
+  "type": "node",
+  "id": 5621495821,
+  "lat": 35.1566856,
+  "lon": 129.0582577,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "korean;noodles",
+    "name": "가야밀면",
+    "name:ja": "カヤミルミョン(伽耶冷麺)",
+    "opening_hours": "Mo-Su 10:30-00:00",
+    "phone": "051-804-4599"
+  }
+},
+{
+  "type": "node",
+  "id": 5621747421,
+  "lat": 35.1533689,
+  "lon": 129.0604008,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "korean;local",
+    "name": "한옥집",
+    "name:ja": "ハノッチッ キムチチム",
+    "opening_hours": "Mo-Su 11:00-22:00",
+    "phone": "051-818-5822"
+  }
+},
+{
+  "type": "node",
+  "id": 5697968121,
+  "lat": 35.1562035,
+  "lon": 129.0609343,
+  "tags": {
+    "amenity": "restaurant",
+    "name:en": "Night Market"
+  }
+},
+{
+  "type": "node",
+  "id": 5826201853,
+  "lat": 35.1563557,
+  "lon": 129.0613949,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "korean",
+    "name:ja": "オヌル金海ティッコギ 西面店",
+    "operator": "韓国語のみで日本語通じません",
+    "phone": "01020572587"
+  }
+},
+{
+  "type": "node",
+  "id": 6152867856,
+  "lat": 35.1479573,
+  "lon": 129.0676256,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "정집밥"
+  }
+},
+{
+  "type": "node",
+  "id": 6367416591,
+  "lat": 35.1548790,
+  "lon": 129.0645329,
+  "tags": {
+    "addr:housenumber": "64",
+    "addr:postcode": "47294",
+    "addr:street": "서전로46번길",
+    "amenity": "restaurant",
+    "name": "카를로스타코스",
+    "name:en": "Carlos TACOS",
+    "opening_hours": "Mo-Su 13:00-02:00",
+    "phone": "051-804-6864"
+  }
+},
+{
+  "type": "node",
+  "id": 6405375986,
+  "lat": 35.1557364,
+  "lon": 129.0585495,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "송정3대국밥",
+    "name:ja": "松亭3代クッパ"
+  }
+},
+{
+  "type": "node",
+  "id": 6430216286,
+  "lat": 35.1567415,
+  "lon": 129.0573374,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "korean;soup;noodle;seafood",
+    "internet_access:fee": "no",
+    "name": "Yetnal Sonjjajang",
+    "name:en": "Yetnal Sonjjajang",
+    "name:fr": "Yetnal Sonjjajang",
+    "opening_hours:kitchen": "Mo-Su 11:00-22:00"
+  }
+},
+{
+  "type": "node",
+  "id": 6430228803,
+  "lat": 35.1538326,
+  "lon": 129.0604607,
+  "tags": {
+    "amenity": "restaurant",
+    "name:en": "Podocheong",
+    "name:fr": "Podo Cheong"
+  }
+},
+{
+  "type": "node",
+  "id": 6460745986,
+  "lat": 35.1537003,
+  "lon": 129.0608987,
+  "tags": {
+    "addr:housenumber": "29",
+    "addr:street": "중앙대로680번가길",
+    "amenity": "restaurant",
+    "cuisine": "italian_pizza;italian",
+    "internet_access": "wlan",
+    "name": "eu pizzeria",
+    "name:en": "eu pizza",
+    "name:ko": "eu pizza",
+    "name:nl": "eu pizza"
+  }
+},
+{
+  "type": "node",
+  "id": 6699551685,
+  "lat": 35.1557507,
+  "lon": 129.0606470,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "연막술",
+    "name:ja": "ヨンマクスル"
+  }
+},
+{
+  "type": "node",
+  "id": 6780744386,
+  "lat": 35.1552933,
+  "lon": 129.0569404,
+  "tags": {
+    "amenity": "restaurant",
+    "name:zh": "金剛部隊鍋"
+  }
+},
+{
+  "type": "node",
+  "id": 6780744685,
+  "lat": 35.1530929,
+  "lon": 129.0589738,
+  "tags": {
+    "amenity": "restaurant",
+    "name:zh": "鄉間飯桌"
+  }
+},
+{
+  "type": "node",
+  "id": 6787715589,
+  "lat": 35.1562936,
+  "lon": 129.0589223,
+  "tags": {
+    "amenity": "restaurant",
+    "name:zh": "釜山豬肉湯飯"
+  }
+},
+{
+  "type": "node",
+  "id": 6787728186,
+  "lat": 35.1559443,
+  "lon": 129.0584268,
+  "tags": {
+    "amenity": "restaurant",
+    "name:zh": "釜山豬肉湯飯美食店"
+  }
+},
+{
+  "type": "node",
+  "id": 8110774517,
+  "lat": 35.1553781,
+  "lon": 129.0572978,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "무한리필",
+    "name:ko": "무한리필샐러드바      점심8900저녁11000"
+  }
+},
+{
+  "type": "node",
+  "id": 8110776918,
+  "lat": 35.1554569,
+  "lon": 129.0571680,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "1974골목갈비집"
+  }
+},
+{
+  "type": "node",
+  "id": 8863181517,
+  "lat": 35.1592002,
+  "lon": 129.0599278,
+  "tags": {
+    "addr:housenumber": "6",
+    "addr:street": "중앙대로743번길",
+    "amenity": "restaurant",
+    "cuisine": "korean;local",
+    "name": "가미레스토랑"
+  }
+},
+{
+  "type": "node",
+  "id": 9267565002,
+  "lat": 35.1450330,
+  "lon": 129.0599070,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "60",
+    "addr:postcode": "47357",
+    "addr:street": "황령대로8번길",
+    "addr:subdistrict": "범천동",
+    "amenity": "restaurant",
+    "cuisine": "chinese",
+    "name": "태호양꼬치"
+  }
+},
+{
+  "type": "node",
+  "id": 9267588920,
+  "lat": 35.1465949,
+  "lon": 129.0590357,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "185",
+    "addr:postcode": "47358",
+    "addr:street": "범일로",
+    "addr:subdistrict": "범천동",
+    "amenity": "restaurant",
+    "name": "김여사밥상"
+  }
+},
+{
+  "type": "node",
+  "id": 9267588936,
+  "lat": 35.1452551,
+  "lon": 129.0582995,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "chicken",
+    "name": "BBQ 부산범내골점"
+  }
+},
+{
+  "type": "node",
+  "id": 9267588943,
+  "lat": 35.1468365,
+  "lon": 129.0616354,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "연돼지국밥"
+  }
+},
+{
+  "type": "node",
+  "id": 9267588945,
+  "lat": 35.1463318,
+  "lon": 129.0626897,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "chicken",
+    "name": "굽네치킨 부산범천점"
+  }
+},
+{
+  "type": "node",
+  "id": 9283370720,
+  "lat": 35.1468806,
+  "lon": 129.0560881,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "50-1",
+    "addr:postcode": "47370",
+    "addr:street": "신암로",
+    "addr:subdistrict": "범천동",
+    "amenity": "restaurant",
+    "name": "진미식당"
+  }
+},
+{
+  "type": "node",
+  "id": 10596645985,
+  "lat": 35.1610301,
+  "lon": 129.0545749,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "117-10",
+    "addr:postcode": "47255",
+    "addr:street": "부전로",
+    "addr:subdistrict": "부전동",
+    "amenity": "restaurant",
+    "cuisine": "pizza",
+    "name": "고르도피자",
+    "phone": "+82507-1344-6436"
+  }
+},
+{
+  "type": "node",
+  "id": 10806908705,
+  "lat": 35.1561906,
+  "lon": 129.0548356,
+  "tags": {
+    "amenity": "restaurant",
+    "name:ja": "韓国料理店"
+  }
+},
+{
+  "type": "node",
+  "id": 10819419899,
+  "lat": 35.1566318,
+  "lon": 129.0607322,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "69",
+    "addr:postcode": "47292",
+    "addr:street": "중앙대로680번가길",
+    "addr:subdistrict": "부전동",
+    "amenity": "restaurant",
+    "cuisine": "korean",
+    "diet:meat": "yes",
+    "name": "돈마초",
+    "phone": "+82507-1373-5070",
+    "website": "https://www.instagram.com/donmacho_busan/"
+  }
+},
+{
+  "type": "node",
+  "id": 10824102705,
+  "lat": 35.1531563,
+  "lon": 129.0576127,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "한방장어구이",
+    "opening_hours": "Su-Fr 11:00-23:00",
+    "phone": "051-819-0066"
+  }
+},
+{
+  "type": "node",
+  "id": 11030192362,
+  "lat": 35.1552083,
+  "lon": 129.0641726,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "17-6",
+    "addr:postcode": "47294",
+    "addr:street": "전포대로209번길",
+    "addr:subdistrict": "전포동",
+    "amenity": "restaurant",
+    "cuisine": "korean",
+    "diet:meat": "yes",
+    "name": "올드맨션",
+    "phone": "+82507-1413-2213",
+    "website": "https://blog.naver.com/oldmansion"
+  }
+},
+{
+  "type": "node",
+  "id": 11049265626,
+  "lat": 35.1559406,
+  "lon": 129.0674935,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "41-1",
+    "addr:postcode": "47302",
+    "addr:street": "서전로68번길",
+    "addr:subdistrict": "전포동",
+    "amenity": "restaurant",
+    "name": "스지고집전포"
+  }
+},
+{
+  "type": "node",
+  "id": 11335476693,
+  "lat": 35.1553256,
+  "lon": 129.0658049,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "6",
+    "addr:postcode": "47304",
+    "addr:street": "전포대로210번길",
+    "addr:subdistrict": "전포동",
+    "amenity": "restaurant",
+    "name": "조개대교 전포점",
+    "phone": "+82507-1413-7811",
+    "website": "https://www.instagram.com/jogae_bridge_jeonpo"
+  }
+},
+{
+  "type": "node",
+  "id": 11357297670,
+  "lat": 35.1580336,
+  "lon": 129.0625039,
+  "tags": {
+    "addr:housenumber": "25",
+    "addr:postcode": "47247",
+    "addr:street": "서전로",
+    "amenity": "restaurant",
+    "name": "서면밀면",
+    "opening_hours": "Su-Sa 10:30-20:30",
+    "phone": "0507-1314-2812",
+    "website": "https://naver.me/Gl79Gt6b"
+  }
+},
+{
+  "type": "node",
+  "id": 11365662750,
+  "lat": 35.1559166,
+  "lon": 129.0662879,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "13",
+    "addr:postcode": "47303",
+    "addr:street": "전포대로216번길",
+    "addr:subdistrict": "전포동",
+    "amenity": "restaurant",
+    "cuisine": "mexican",
+    "name": "Oldentaco",
+    "phone": "+82507-1335-0855",
+    "website": "https://www.makeus.net/58588"
+  }
+},
+{
+  "type": "node",
+  "id": 11637725082,
+  "lat": 35.1581540,
+  "lon": 129.0642776,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "36",
+    "addr:postcode": "47247",
+    "addr:street": "동천로108번길",
+    "addr:subdistrict": "전포동",
+    "amenity": "restaurant",
+    "name": "전포 친밀감"
+  }
+},
+{
+  "type": "node",
+  "id": 11951596863,
+  "lat": 35.1586073,
+  "lon": 129.0630264,
+  "tags": {
+    "addr:housenumber": "11",
+    "addr:street": "동천로108번길",
+    "air_conditioning": "yes",
+    "amenity": "restaurant",
+    "cuisine": "burger",
+    "name": "Burger Shop Jeonpo\n버거샵 전포",
+    "opening_hours": "Mo, Tu, Th-Su 11:00-20:30",
+    "payment:credit_cards": "yes",
+    "payment:debit_cards": "yes",
+    "smoking": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 11974232669,
+  "lat": 35.1570341,
+  "lon": 129.0599815,
+  "tags": {
+    "amenity": "restaurant",
+    "name:en": "TAE TAE TAE"
+  }
+},
+{
+  "type": "node",
+  "id": 11985196877,
+  "lat": 35.1474233,
+  "lon": 129.0581929,
+  "tags": {
+    "amenity": "restaurant",
+    "level": "1",
+    "name": "부산돼지국밥",
+    "name:ko": "부산돼지국밥"
+  }
+},
+{
+  "type": "node",
+  "id": 12317829152,
+  "lat": 35.1535396,
+  "lon": 129.0628893,
+  "tags": {
+    "amenity": "restaurant",
+    "check_date": "2024-11-06",
+    "cuisine": "noodle",
+    "name": "구포촌국수",
+    "name:en": "Gupochon Noodles",
+    "payment:cash": "yes",
+    "payment:credit_cards": "yes",
+    "payment:debit_cards": "yes",
+    "payment:qr_code": "yes",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12319797008,
+  "lat": 35.1547887,
+  "lon": 129.0616297,
+  "tags": {
+    "amenity": "restaurant",
+    "check_date": "2024-11-07",
+    "cuisine": "regional",
+    "name": "우정 돌솥비빔밥 전문점",
+    "name:en": "Woojung's Stonepot Bibimbap",
+    "opening_hours": "10:30-21:00",
+    "payment:cash": "yes",
+    "payment:credit_cards": "yes",
+    "payment:debit_cards": "yes",
+    "payment:qr_code": "yes",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 12321399424,
+  "lat": 35.1547171,
+  "lon": 129.0617719,
+  "tags": {
+    "amenity": "restaurant",
+    "check_date": "2024-11-07",
+    "cuisine": "regional",
+    "name": "한뚝배기",
+    "name:en": "Handukbaegi",
+    "name:ko": "한뚝배기",
+    "opening_hours": "24/7",
+    "payment:cash": "yes",
+    "payment:credit_cards": "yes",
+    "payment:debit_cards": "yes",
+    "payment:qr_code": "yes",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12333911561,
+  "lat": 35.1535579,
+  "lon": 129.0628695,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "regional",
+    "name": "구포촌국수 서면",
+    "opening_hours": "Mo-Sa 10:30-20:00"
+  }
+},
+{
+  "type": "node",
+  "id": 12475172816,
+  "lat": 35.1548568,
+  "lon": 129.0634118,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "taiwanese",
+    "level": "0",
+    "level:ref": "1",
+    "name": "바오하우스"
+  }
+},
+{
+  "type": "node",
+  "id": 12475190455,
+  "lat": 35.1553277,
+  "lon": 129.0648877,
+  "tags": {
+    "amenity": "restaurant",
+    "branch": "서면별관",
+    "level": "1",
+    "name": "이재모피자"
+  }
+},
+{
+  "type": "node",
+  "id": 12475190456,
+  "lat": 35.1553078,
+  "lon": 129.0639648,
+  "tags": {
+    "amenity": "restaurant",
+    "branch": "서면점",
+    "cuisine": "pizza",
+    "level": "0",
+    "name": "이재모피자",
+    "opening_hours": "Mo-Su 10:00-21:30"
+  }
+},
+{
+  "type": "node",
+  "id": 12475213001,
+  "lat": 35.1582116,
+  "lon": 129.0622409,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "japanese",
+    "name": "칸다소바"
+  }
+},
+{
+  "type": "node",
+  "id": 12503893601,
+  "lat": 35.1530986,
+  "lon": 129.0594785,
+  "tags": {
+    "amenity": "restaurant",
+    "contact:tripadvisor": "https://tripadvisor.com/Restaurant_Review-g297884-d28986408-Reviews-Royal_India_Seomyeon-Busan.html",
+    "cuisine": "indian;nepalese",
+    "delivery": "yes",
+    "diet:halal": "yes",
+    "diet:vegetarian": "yes",
+    "level": "5",
+    "name": "Royal India Seomyeon",
+    "opening_hours": "Mo-Su 11:00-22:00",
+    "phone": "+82 51-802-1946",
+    "reservation": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12690523942,
+  "lat": 35.1530268,
+  "lon": 129.0595716,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "mexican",
+    "name": "차차차"
+  }
+},
+{
+  "type": "node",
+  "id": 12690523943,
+  "lat": 35.1523787,
+  "lon": 129.0671882,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "mexican",
+    "name": "스모크앤프레스"
+  }
+},
+{
+  "type": "node",
+  "id": 12690523944,
+  "lat": 35.1463959,
+  "lon": 129.0660915,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "indian",
+    "name": "봄베이브로이"
+  }
+},
+{
+  "type": "node",
+  "id": 13176453801,
+  "lat": 35.1545729,
+  "lon": 129.0580998,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "vietnamese",
+    "name": "The Pho"
+  }
+},
+{
+  "type": "node",
+  "id": 13179915901,
+  "lat": 35.1549142,
+  "lon": 129.0585068,
+  "tags": {
+    "addr:housenumber": "45",
+    "addr:street": "Seomyeon-ro 68beon-gil",
+    "amenity": "restaurant",
+    "cuisine": "vietnamese",
+    "name": "Bich pho hanoi"
+  }
+},
+{
+  "type": "node",
+  "id": 13185678301,
+  "lat": 35.1523775,
+  "lon": 129.0662523,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "american;chicken",
+    "name": "Chicken burger club"
+  }
+},
+{
+  "type": "node",
+  "id": 13382764301,
+  "lat": 35.1593140,
+  "lon": 129.0617265,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "Yeonhwa Dupbab"
+  }
+},
+{
+  "type": "node",
+  "id": 13895190301,
+  "lat": 35.1550323,
+  "lon": 129.0661166,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "Mount Batten",
+    "opening_hours": "Mo-Su 11:00-21:30"
+  }
+},
+{
+  "type": "node",
+  "id": 14213645903,
+  "lat": 35.1561333,
+  "lon": 129.0584906,
+  "tags": {
+    "addr:housenumber": "19",
+    "addr:street": "서면로68번길",
+    "amenity": "restaurant",
+    "name": "1984 이바구밀면&국밥"
+  }
+},
+{
+  "type": "way",
+  "id": 611041093,
+  "center": {
+    "lat": 35.1548086,
+    "lon": 129.0583164
+  },
+  "nodes": [
+    5786142732,
+    5786142733,
+    5786142734,
+    5786142735,
+    5786142732
+  ],
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "68번길 50, 2층",
+    "addr:postcode": "47286",
+    "addr:street": "서면로",
+    "addr:subdistrict": "부전동",
+    "amenity": "restaurant",
+    "building": "yes",
+    "capacity": "12",
+    "cuisine": "보쌈;boiled_pork;asian",
+    "delivery": "no",
+    "name": "용보쌈(부산 서면)",
+    "name_1": "서면1번가용보쌈",
+    "name_2": "용보쌈서면1번가",
+    "opening_hours": "Mo-Fr 11:30-15:00, 17:00-19:00",
+    "outdoor_seating": "no",
+    "smoking": "no",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "count",
+  "id": 0,
+  "tags": {
+    "nodes": "121",
+    "ways": "1",
+    "relations": "0",
+    "total": "122"
+  }
+}
+
+  ]
+}

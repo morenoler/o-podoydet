@@ -1,0 +1,317 @@
+{
+  "area": "Busan Metropolitan City administrative boundary",
+  "boundaryRelationId": 2396450,
+  "sourceUrl": "https://www.openstreetmap.org/relation/2396450",
+  "lodgingSnapshotObtainedAt": "2026-10-27T12:00:18.991Z",
+  "placesSnapshotObtainedAt": "2026-10-27T12:22:07.512106Z",
+  "placesScope": {
+    "kind": "boundary-bounding-box",
+    "bbox": [
+      128.7568072,
+      34.7252504,
+      129.4889527,
+      35.3892236
+    ],
+    "includesNeighboringMunicipalities": true,
+    "source": "regional-pbf-derivative",
+    "bboxOrder": "west,south,east,north"
+  },
+  "regionalPlaceSource": {
+    "source": {
+      "url": "https://download.geofabrik.de/asia/south-korea-261026.osm.pbf",
+      "receivedAt": "2026-10-27T12:22:07.512106Z",
+      "sha256": "a8583ab6b7f0ed1a96dc8d8d1546474951370947710de94a016bf32c4f8d3bdd",
+      "bytes": 290178112,
+      "osmBaseDate": "2026-10-26T21:24:46Z",
+      "publisherMd5": "021fc0eb86574d04893a6584a13d4360",
+      "publisherMd5Verified": true,
+      "httpStatus": 200,
+      "attribution": "© OpenStreetMap contributors, processed by Geofabrik; ODbL 1.0",
+      "licenseUrl": "https://opendatacommons.org/licenses/odbl/1-0/"
+    },
+    "extract": {
+      "path": "raw/busan-pois-geofabrik-261026.json",
+      "sha256": "d2745c990e1d5caaef0f6969bb0b271a9907da5d98dae1dfe7822d880eacdcad",
+      "bytes": 2103097,
+      "elementsCount": 6527,
+      "bbox": [
+        128.7568072,
+        34.7252504,
+        129.4889527,
+        35.3892236
+      ],
+      "method": "pyosmium-4.3.2-nwr-bbox-center-v1",
+      "configSha256": "5463e2f622e7876ed28027a4c89969c83f1d2dae76c1f2012c263d42118e3ec1",
+      "extractorSha256": "11b15c931c341cb212b2bf095426fe52089581ddddbfdbc0a3b20944289e9464",
+      "counts": {
+        "included_node": 5009,
+        "category_subway": 886,
+        "category_train_station": 63,
+        "category_cafe": 650,
+        "category_museum": 91,
+        "category_supermarket": 836,
+        "category_pharmacy": 98,
+        "category_convenience": 534,
+        "category_restaurant": 2378,
+        "category_beach": 19,
+        "included_without_name": 1369,
+        "category_shopping_mall": 21,
+        "category_park": 951,
+        "included_way": 1486,
+        "outside_bbox_way": 26356,
+        "outside_bbox_relation": 317,
+        "included_relation": 32,
+        "excluded_nested_relation": 2
+      },
+      "limitations": [
+        "BBox selection, not administrative-boundary clipping.",
+        "Way/relation position is the bounding-box center, not an entrance or access point.",
+        "Relations containing nested relations or unresolved geometry are excluded and counted.",
+        "Object timestamp is source edit time, not current opening-state verification.",
+        "Only features carrying configured OSM tags are included; missing places remain unknown.",
+        "The selected city-center anchor is a separate explicit research choice."
+      ],
+      "boundarySha256": "3c354b42a9202d48e3947acfea035db1c872b7792da931cb1f08c2a81305765d"
+    },
+    "auditPath": "regional-extract-audit.json",
+    "initialAuditPath": "regional-extract-initial-audit.json",
+    "reproduction": {
+      "byteIdentical": true,
+      "sha256": "d2745c990e1d5caaef0f6969bb0b271a9907da5d98dae1dfe7822d880eacdcad",
+      "extractor": "scripts/extract-busan-pois.py",
+      "checkedAt": "2026-10-27T12:32:08.255042Z"
+    }
+  },
+  "lodgingOsmBaseDate": "2026-10-27T11:57:58Z",
+  "placesOsmBaseDate": "2026-10-26T21:24:46Z",
+  "lodgingTypes": [
+    "hotel",
+    "motel",
+    "guest_house",
+    "hostel",
+    "apartment"
+  ],
+  "completeness": "Matching mapped OSM objects returned within the administrative boundary; not all real accommodation businesses.",
+  "originalGeographyScope": "The retained walking graph and noise observations cover the original Haeundae snapshot only.",
+  "distanceAlgorithm": "haversine-osm-v1",
+  "distanceModel": "Great-circle distance, Earth radius 6371008.8 m, representative OSM points, rounded up; not a walking route.",
+  "centerDefinition": {
+    "osmId": "node/5782717000",
+    "name": "Сомён (Seomyeon)",
+    "coordinates": [
+      129.0592588,
+      35.1577739
+    ],
+    "definition": "Явно выбранная точка станции Сомён как ориентир центрального коммерческого района. Это не геометрический или единственный центр Пусана; радиус по умолчанию 1500 м по прямой — настройка поиска.",
+    "officialSource": {
+      "url": "https://visitbusan.net/en/index.do?menuCd=DOM_000000303011001000&uc_seq=394&lang_cd=en",
+      "title": "Seomyeon Medical Street, the hub for medical tours — Visit Busan",
+      "obtainedAt": "2026-10-27",
+      "obtainedVia": "web search excerpt from official Visit Busan page; date precision: day",
+      "quote": "As the downtown area of Busan, Seomyeon is concentrated with popular spots",
+      "scope": "Обоснование выбора района; конкретный OSM-ориентир и радиус — явное допущение проекта."
+    }
+  },
+  "conflictingPlacesExcluded": [],
+  "precisionEquivalentPlaces": [
+    "way/991534331",
+    "way/611041093"
+  ],
+  "counts": {
+    "originalHotels": 96,
+    "fetchedLodgings": 876,
+    "overlapByOsmId": 96,
+    "addedHotels": 780,
+    "totalHotels": 876,
+    "fetchedPlaces": 6527,
+    "nonConflictingPlaces": 6527,
+    "eligiblePlaces": 6527,
+    "excludedNewLodgings": 0,
+    "fieldVerifiedHotels": 0,
+    "fieldVerifiedNearbyPlaces": 0
+  },
+  "exclusions": [],
+  "byKind": {
+    "city_center": {
+      "hotelRecords": 876,
+      "withinDefaultRadius": 71,
+      "defaultMaxMeters": 1500
+    },
+    "cafe": {
+      "hotelRecords": 876,
+      "withinDefaultRadius": 684,
+      "defaultMaxMeters": 500
+    },
+    "restaurant": {
+      "hotelRecords": 876,
+      "withinDefaultRadius": 837,
+      "defaultMaxMeters": 500
+    },
+    "supermarket": {
+      "hotelRecords": 876,
+      "withinDefaultRadius": 801,
+      "defaultMaxMeters": 700
+    },
+    "convenience": {
+      "hotelRecords": 876,
+      "withinDefaultRadius": 629,
+      "defaultMaxMeters": 400
+    },
+    "pharmacy": {
+      "hotelRecords": 876,
+      "withinDefaultRadius": 439,
+      "defaultMaxMeters": 700
+    },
+    "park": {
+      "hotelRecords": 876,
+      "withinDefaultRadius": 775,
+      "defaultMaxMeters": 800
+    },
+    "subway": {
+      "hotelRecords": 876,
+      "withinDefaultRadius": 690,
+      "defaultMaxMeters": 800
+    },
+    "museum": {
+      "hotelRecords": 876,
+      "withinDefaultRadius": 645,
+      "defaultMaxMeters": 1500
+    },
+    "shopping_mall": {
+      "hotelRecords": 876,
+      "withinDefaultRadius": 293,
+      "defaultMaxMeters": 1200
+    },
+    "beach": {
+      "hotelRecords": 876,
+      "withinDefaultRadius": 223,
+      "defaultMaxMeters": 1000
+    },
+    "train_station": {
+      "hotelRecords": 876,
+      "withinDefaultRadius": 352,
+      "defaultMaxMeters": 1500
+    }
+  },
+  "lodgingTypeCounts": {
+    "hotel": 205,
+    "motel": 598,
+    "guest_house": 27,
+    "hostel": 20,
+    "apartment": 26
+  },
+  "duplicateAudit": {
+    "method": "Same NFKC lowercase letter/digit-only name within 100 m; candidates retained, not automatically merged. No translation or identity verification.",
+    "candidatePairs": 13,
+    "candidates": [
+      {
+        "ids": [
+          "node-368663565",
+          "way-305381774"
+        ],
+        "normalizedName": "geulloricondominium",
+        "meters": 19
+      },
+      {
+        "ids": [
+          "node-368706721",
+          "node-368707325"
+        ],
+        "normalizedName": "oberonmotel",
+        "meters": 4
+      },
+      {
+        "ids": [
+          "node-368707310",
+          "way-992351408"
+        ],
+        "normalizedName": "wamotel",
+        "meters": 9
+      },
+      {
+        "ids": [
+          "way-627347066",
+          "way-992351417"
+        ],
+        "normalizedName": "더베이호텔",
+        "meters": 24
+      },
+      {
+        "ids": [
+          "node-3785255104",
+          "node-12783938401"
+        ],
+        "normalizedName": "benikeahotelhaeundae",
+        "meters": 81
+      },
+      {
+        "ids": [
+          "node-368704055",
+          "node-368704080"
+        ],
+        "normalizedName": "wmotel",
+        "meters": 26
+      },
+      {
+        "ids": [
+          "node-368704419",
+          "node-368705165"
+        ],
+        "normalizedName": "rubimotel",
+        "meters": 21
+      },
+      {
+        "ids": [
+          "node-368706322",
+          "node-368723106"
+        ],
+        "normalizedName": "romangseumotel",
+        "meters": 21
+      },
+      {
+        "ids": [
+          "node-368705546",
+          "node-368706676"
+        ],
+        "normalizedName": "beokinggeommotel",
+        "meters": 13
+      },
+      {
+        "ids": [
+          "node-368706605",
+          "node-368707542"
+        ],
+        "normalizedName": "dejabyumotel",
+        "meters": 4
+      },
+      {
+        "ids": [
+          "node-368707449",
+          "node-368707510"
+        ],
+        "normalizedName": "enmotel",
+        "meters": 42
+      },
+      {
+        "ids": [
+          "node-368952221",
+          "node-368954726"
+        ],
+        "normalizedName": "dongbusantouristhotel",
+        "meters": 4
+      },
+      {
+        "ids": [
+          "node-14108038301",
+          "node-14108046501"
+        ],
+        "normalizedName": "aventreehotelbusan",
+        "meters": 0
+      }
+    ]
+  },
+  "unknownRoomHotels": 870,
+  "hotelsWithOfficialCategories": 6,
+  "officialCategoryCount": 46,
+  "unnamedNewLodgings": 54
+}

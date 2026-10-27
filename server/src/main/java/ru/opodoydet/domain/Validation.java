@@ -89,10 +89,29 @@ public final class Validation {
   public static void hotelFilters(JsonNode filters) {
     if (!filters.isObject()) throw new IllegalArgumentException("Некорректные фильтры жилья");
     filters.fieldNames().forEachRemaining(key -> {
-      if (!Set.of("query", "lodgingTypes", "maxPricePerNight", "maxBeachMeters").contains(key))
+      if (!Set.of("query", "lodgingTypes", "maxPricePerNight", "maxBeachMeters", "nearby").contains(key))
         throw new IllegalArgumentException("Неизвестный фильтр жилья: " + key);
     });
     if (filters.has("query")) text(filters, "query", 0, 240);
+    if (filters.has("nearby")) {
+      JsonNode nearby = filters.path("nearby");
+      Set<String> kinds = Set.of("cafe", "restaurant", "supermarket", "convenience", "pharmacy", "park",
+          "subway", "museum", "shopping_mall", "beach", "train_station", "city_center");
+      Set<String> unique = new HashSet<>();
+      if (!nearby.isArray() || nearby.size() > kinds.size())
+        throw new IllegalArgumentException("Некорректные условия расположения");
+      for (JsonNode requirement : nearby) {
+        if (!requirement.isObject() || requirement.size() != 2
+            || !requirement.path("kind").isTextual()
+            || !kinds.contains(requirement.path("kind").asText())
+            || !unique.add(requirement.path("kind").asText()))
+          throw new IllegalArgumentException("Некорректные или повторяющиеся условия расположения");
+        JsonNode limit = requirement.path("maxMeters");
+        if (!limit.isNumber() || !Double.isFinite(limit.asDouble())
+            || limit.asDouble() < 1 || limit.asDouble() > 10_000)
+          throw new IllegalArgumentException("Расстояние до места должно быть от 1 до 10000 метров");
+      }
+    }
     if (filters.has("lodgingTypes")) {
       JsonNode types = filters.path("lodgingTypes");
       Set<String> unique = new HashSet<>();

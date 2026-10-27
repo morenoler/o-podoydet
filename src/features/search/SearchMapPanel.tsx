@@ -47,19 +47,19 @@ export function SearchMapPanel({
                       : "Координаты отельер пока не указал"}
                 </p>
               </div>
-              <Link
+              {!selectedRoom && !selected.accountListingId ? <a href={selected.osmUrl} target="_blank" rel="noreferrer" aria-label={`Объект в OSM: ${selected.name}`}><ArrowRight size={24} aria-hidden="true" /></a> : <Link
                 to={accommodationPath(selected, selectedRoom?.id)}
                 aria-label={`Подробнее: ${selectedRoom ? `${selectedRoom.name}, ` : ""}${selected.name}`}
               >
                 <ArrowRight size={24} aria-hidden="true" />
-              </Link>
+              </Link>}
             </div>
           )}
         </div>
       )}
       <p className="search-map-note">
         Карта OpenStreetMap. Вход и подходы к сети не проверены и не включены в длину маршрута. На карте — отели
-        выбранных категорий номеров с известными координатами. При недоступности
+        из выдачи с известными координатами. При недоступности
         картографического сервиса покажем сохранённую схему.
       </p>
     </aside>

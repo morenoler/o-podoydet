@@ -77,6 +77,56 @@ class SearchFiltersIntegrationTest {
     }
   }
 
+  @Test void nearbyConditionsUseSnapshotTimeAndHotelCandidatesNeverBecomeRooms() throws Exception {
+    Instant now = Instant.now();
+    List<JsonNode> hotels = new ArrayList<>();
+    for (String id : List.of("verified-near", "verified-far", "verified-stale", "capacity-wrong", "candidate-near", "candidate-far", "candidate-expired")) {
+      List<JsonNode> rooms = id.startsWith("candidate") ? List.of()
+          : List.of(room(id + "-suite", "Test suite", "Synthetic test category", id.equals("verified-stale") ? now.minusSeconds(40L * 86400) : now)
+              .put("capacity", id.equals("capacity-wrong") ? 1 : 2));
+      ObjectNode place = NearbyPlacesTest.place("cafe", id.endsWith("far") ? 501 : 500, now);
+      if (id.endsWith("expired")) place.put("expiresAt", now.toString());
+      hotels.add(Json.obj("id", id, "name", "Test " + id, "address", "Busan test address",
+          "lodgingType", "hotel", "coordinates", List.of(129.16, 35.16), "currency", "KRW",
+          "route", Json.obj("meters", null), "rooms", rooms, "noise", List.of(),
+          "nearbyPlaces", List.of(place), "sourceEvidence", Json.obj("sourceUrl", "https://www.openstreetmap.org/node/456")));
+    }
+    ObjectNode seed = Json.obj("region", "Пусан", "evidencePolicy", "verified-only", "hotels", hotels, "facts", List.of());
+    ObjectNode trip = Json.obj("region", "Пусан", "checkIn", "2027-06-01", "checkOut", "2027-06-02",
+        "adults", 2, "children", 0, "scenarios", List.of(), "text", "", "preferences", List.of(),
+        "hotelFilters", NearbyPlacesTest.filters("cafe", 500));
+    try (var database = TestDatabases.create(seed)) {
+      SearchService service = new SearchService(database.store(), new Agents(Agents.Config.from(Map.of())),
+          new Environment(directory.resolve("air.json"), directory.resolve("noise.json")), Clock.fixed(now, ZoneOffset.UTC));
+      JsonNode result = service.search(trip, "browser:test");
+      assertEquals(1, result.path("roomRecommendations").size());
+      assertEquals("verified-near", result.path("roomRecommendations").get(0).path("hotel").path("id").asText());
+      assertEquals(1, result.path("roomRecommendations").get(0).path("room").path("nearbyMatches").size());
+      assertEquals(1, result.path("hotelCandidates").size());
+      JsonNode candidate = result.path("hotelCandidates").get(0);
+      assertEquals("candidate-near", candidate.path("hotel").path("id").asText());
+      assertFalse(candidate.path("limitations").isEmpty());
+      assertFalse(candidate.has("room"));
+      assertTrue(candidate.path("hotel").path("rooms").isEmpty(), "No synthetic placeholder category on hotel-only cards");
+      assertFalse(candidate.path("hotel").path("hasCollectedRoomCategories").asBoolean());
+      assertEquals("https://www.openstreetmap.org/node/456", candidate.path("hotel").path("sourceEvidence").path("sourceUrl").asText());
+      assertTrue(database.store().hotel("verified-stale").path("hasCollectedRoomCategories").asBoolean(),
+          "Expired categories retain collection history and must not reappear as hotel-only candidates");
+      assertEquals(1, candidate.path("nearbyMatches").size());
+      assertTrue(candidate.path("catalogMatches").isEmpty());
+      assertNull(service.detail("verified-far", trip));
+      assertEquals(1, service.detail("verified-near", trip).path("best").path("nearbyMatches").size());
+      JsonNode advice = service.advisorContext(trip, result.path("searchId").asText(), "browser:test");
+      for (JsonNode recommendation : advice.path("candidates"))
+        assertFalse(recommendation.path("id").asText().startsWith("candidate-"));
+      ((ObjectNode) trip.path("hotelFilters")).put("query", "suite");
+      assertTrue(service.search(trip).path("hotelCandidates").isEmpty(), "Room text must not qualify a hotel-only candidate");
+      ((ObjectNode) trip.path("hotelFilters")).remove("query");
+      ((ObjectNode) trip.path("hotelFilters")).put("maxPricePerNight", 100_000);
+      assertTrue(service.search(trip).path("hotelCandidates").isEmpty(), "An unknown price must not pass a hard budget");
+    }
+  }
+
   private static ObjectNode room(String id, String name, String quote, Instant now) {
     return Json.obj("id", id, "name", name, "capacity", 2, "demo", false, "scope", "room_category",
         "evidenceStatus", "verified", "sourceUrl", "https://example.org/rooms/" + id,

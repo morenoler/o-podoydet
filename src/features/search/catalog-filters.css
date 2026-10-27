@@ -72,6 +72,29 @@
 .search-catalog-query:focus-within { outline: 2px solid #245e3b; outline-offset: 2px; }
 .search-catalog-query input:focus-visible { outline: none; }
 .search-mobile-assistant { display: none; }
+.hotel-nearby-summary { margin: 12px 0; font-size: 13px; line-height: 1.5; }
+.hotel-nearby-summary ul { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0 0 5px; padding: 0; list-style: none; }
+.hotel-nearby-summary li { display: flex; align-items: baseline; gap: 6px; color: #245e3b; }
+.hotel-nearby-summary li svg { flex-shrink: 0; align-self: center; }
+.hotel-nearby-summary a { color: inherit; text-underline-offset: 3px; }
+.hotel-nearby-summary small { color: #52627a; }
+.mapped-hotel-section { margin-top: 28px; }
+.mapped-hotel-section > h2 { margin: 0 0 10px; font-size: 22px; }
+.mapped-hotel-section > p { margin: 0 0 20px; color: #52627a; line-height: 1.6; }
+.mapped-hotel-card { padding: 20px; border: 1px solid #dce5ef; border-radius: 14px; background: white; }
+.mapped-hotel-card.is-selected { border-color: #5a806a; }
+.mapped-hotel-heading { display: flex; align-items: start; justify-content: space-between; gap: 16px; }
+.mapped-hotel-heading h3 { margin: 0; font-size: 19px; overflow-wrap: anywhere; }
+.mapped-hotel-heading p, .mapped-hotel-limits { margin: 7px 0; font-size: 13px; line-height: 1.6; color: #52627a; }
+.mapped-hotel-heading .button { flex-shrink: 0; padding: 9px 12px; min-height: 44px; }
+.mapped-hotel-sources { margin-top: 12px; font-size: 13px; line-height: 1.6; color: #52627a; }
+.mapped-hotel-sources summary { cursor: pointer; color: #245e3b; }
+.mapped-hotel-sources a { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; }
+.catalog-nearby-options { display: grid; gap: 10px; }
+.catalog-nearby-option { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; }
+.catalog-nearby-option label { display: flex; gap: 9px; align-items: center; }
+.catalog-nearby-option input[type="checkbox"] { width: 18px; height: 18px; accent-color: #245e3b; }
+.catalog-nearby-option input[type="number"] { width: 105px; padding: 9px; font: inherit; border: 1px solid #bac8d7; border-radius: 8px; }
 @media (max-width: 900px) {
   .search-mobile-assistant { display: flex; width: 100%; margin-top: 14px; }
   .search-layout:not(.is-side-panel-open) > .search-conversation { display: none; }

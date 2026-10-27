@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { nearbyKinds } from "./types";
+export const nearbyConditionsSchema = z.array(z.object({ kind: z.enum(nearbyKinds), maxMeters: z.number().min(1).max(10_000) }).strict())
+  .max(nearbyKinds.length).refine((items) => new Set(items.map((item) => item.kind)).size === items.length, "Условия окружения повторяются");
 export const featureSchema = z.enum([
   "beach_walk",
   "step_free_route",
@@ -17,6 +20,7 @@ const date = z
     return !isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s;
   }, "Некорректная дата");
 export const hotelFiltersSchema = z.object({
+  nearby: nearbyConditionsSchema.optional(),
   query: z.string().max(240).transform((value) => value.trim()).optional(),
   lodgingTypes: z.array(z.enum(["hotel", "motel", "guest_house", "hostel", "apartment"]))
     .max(5).refine((values) => new Set(values).size === values.length, "Типы жилья повторяются").optional(),

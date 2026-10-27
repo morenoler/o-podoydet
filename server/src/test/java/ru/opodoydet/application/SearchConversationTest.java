@@ -298,4 +298,67 @@ class SearchConversationTest {
     assertEquals("recognized", excludedWishes.path("status").asText());
     assertEquals("family", excludedWishes.path("excludedFeatures").path(0).asText());
   }
+
+  @Test
+  void exactCityCenterRequestAppliesAnExplicitReferenceWithoutInventingEvidence() {
+    ObjectNode response = say(trip(), "хочу отель в центре города");
+    JsonNode filters = response.path("trip").path("hotelFilters");
+    assertEquals("city_center", filters.path("nearby").path(0).path("kind").asText());
+    assertEquals(1500, filters.path("nearby").path(0).path("maxMeters").asDouble());
+    assertFalse(filters.has("query"));
+    assertTrue(response.path("message").asText().contains("Сомён"));
+    assertTrue(response.path("message").asText().contains("по прямой"));
+    assertTrue(response.path("warnings").toString().contains("выбранная точка"));
+    assertFalse(response.toString().contains("подтверждено"));
+  }
+
+  @Test
+  void nearbyWishesAccumulateReplaceTheirOwnDistanceAndPreserveManualFilters() {
+    ObjectNode initial = trip();
+    initial.set("hotelFilters", Json.obj("query", "Signiel", "maxPricePerNight", 100000,
+        "lodgingTypes", List.of("hotel"), "nearby", List.of(Json.obj("kind", "park", "maxMeters", 600))));
+    JsonNode first = say(initial, "Хочу рядом с кафе; метро до 0,8 км; обязательно тихо").path("trip");
+    assertEquals(3, first.path("hotelFilters").path("nearby").size());
+    assertEquals(initial.path("hotelFilters").path("query"), first.path("hotelFilters").path("query"));
+    assertEquals(initial.path("hotelFilters").path("maxPricePerNight"), first.path("hotelFilters").path("maxPricePerNight"));
+    assertTrue(preference(first, "low_noise").path("required").asBoolean());
+    JsonNode second = say(first, "кафе до 200 м").path("trip");
+    assertEquals(3, second.path("hotelFilters").path("nearby").size());
+    assertEquals(200, Json.list(second.path("hotelFilters").path("nearby")).stream().filter(p -> p.path("kind").asText().equals("cafe")).findFirst().orElseThrow().path("maxMeters").asDouble());
+    assertEquals(600, second.path("hotelFilters").path("nearby").path(0).path("maxMeters").asDouble());
+    assertEquals(initial.path("checkIn"), second.path("checkIn"));
+    assertEquals(1, initial.path("hotelFilters").path("nearby").size(), "The original trip used by undo must remain immutable");
+    Validation.tripDraft(second, "Пусан");
+  }
+
+  @Test
+  void nearbyRemovalOnlyTouchesNamedKindsAndClearDeletesTheWholeField() {
+    JsonNode first = say(trip(), "рядом с кафе и рестораном").path("trip");
+    assertEquals(2, first.path("hotelFilters").path("nearby").size());
+    JsonNode second = say(first, "кафе неважно").path("trip");
+    assertEquals("restaurant", second.path("hotelFilters").path("nearby").path(0).path("kind").asText());
+    JsonNode third = say(second, "убери условия рядом").path("trip");
+    assertFalse(third.has("hotelFilters"));
+    JsonNode fourth = say(first, "убери условия рядом; хочу рядом с аптекой").path("trip");
+    assertEquals(1, fourth.path("hotelFilters").path("nearby").size());
+    assertEquals("pharmacy", fourth.path("hotelFilters").path("nearby").path(0).path("kind").asText());
+  }
+
+  @Test
+  void proximityClausesDoNotSwallowUnsupportedDetailsOrExistingFeatureGrammar() {
+    ObjectNode response = say(trip(), "Тихий отель рядом с кафе; нужен аквапарк");
+    assertNotNull(preference(response.path("trip"), "low_noise"));
+    assertEquals("cafe", response.path("trip").path("hotelFilters").path("nearby").path(0).path("kind").asText());
+    assertTrue(response.path("message").asText().contains("Не применено"));
+    assertTrue(response.path("message").asText().contains("аквапарк"));
+    assertTrue(response.path("focusFeatures").isEmpty());
+    ObjectNode qualified = say(trip(), "рядом с веганским рестораном");
+    assertTrue(qualified.path("message").asText().contains("Не применено: «веганским»"));
+    for (String unsupported : List.of("рядом с кафе или рестораном", "или рестораном", "подальше от метро", "не рядом с кафе", "кафе за пять минут пешком"))
+      assertFalse(say(trip(), unsupported).path("changed").asBoolean(), unsupported);
+    JsonNode existingBeach = say(trip(), "до пляжа 500 м").path("trip");
+    assertEquals(500, existingBeach.path("hotelFilters").path("maxBeachMeters").asDouble());
+    assertFalse(existingBeach.path("hotelFilters").has("nearby"));
+    assertEquals("кафе", say(trip(), "ищи «кафе»").path("trip").path("hotelFilters").path("query").asText());
+  }
 }

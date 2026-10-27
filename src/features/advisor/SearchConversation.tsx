@@ -37,8 +37,8 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
     return () => { resize.disconnect(); node.removeEventListener("scroll", trackScroll); };
   }, [chat.messages.length]);
   const suggestions = chat.messages.length
-    ? ["Убери бюджет", "Тишина не обязательна"]
-    : ["До пляжа 500 м", "До 100000 KRW за ночь", "Ищи «балкон»"];
+    ? ["Рядом с кафе", "Убери условия рядом"]
+    : ["В центре города", "Рядом с кафе", "Рядом с метро"];
   return (
     <aside id="search-side-panel" className="search-conversation" aria-label="Карта и поиск в чате">
       <div className="conversation-tabs" role="group" aria-label="Содержимое боковой панели">
@@ -57,8 +57,8 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
         {!chat.messages.length && (
         <div className="conversation-welcome">
           <h3>Какой отель ищем?</h3>
-          <p>Уточните бюджет в вонах, расстояние до пляжа или тип жилья. Для поиска по описаниям напишите: ищи «балкон».</p>
-          <p>Можно добавить этаж и направление окон. Если данных для пожелания нет, мы сообщим об этом.</p>
+          <p>Например: «в центре города», «рядом с кафе» или «метро не дальше 800 м». Совпадения по карте появятся в карточках.</p>
+          <p>Можно уточнить бюджет, тип жилья, этаж и окна. Если пожелание не распознано или данных нет, мы сообщим об этом.</p>
           {!!trip.preferences.length && <p>Уже выбранные условия сохранены. Добавьте что-нибудь ещё или уточните их.</p>}
         </div>
         )}
@@ -72,7 +72,7 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
       </div>
       <div className="conversation-bottom">
         <div className="conversation-search-state" role="status" aria-atomic="true">
-          <span>{searchError ? "Подборка не обновилась. Повторите поиск." : searching ? "Обновляем подборку…" : !canSearch(trip) ? "Пожелания можно добавить до выбора дат" : result ? `Категорий под все условия: ${result.roomRecommendations.length}.${result.roomAlternatives?.length ? ` Требуют уточнения: ${result.roomAlternatives.length}.` : ""}` : "Добавьте пожелание, чтобы уточнить поиск"}</span>
+          <span>{searchError ? "Подборка не обновилась. Повторите поиск." : searching ? "Обновляем подборку…" : !canSearch(trip) ? "Пожелания применяются и до выбора дат" : result ? `Категории: ${result.roomRecommendations.length}. Отели без собранных категорий: ${result.hotelCandidates?.length || 0}.` : "Добавьте пожелание, чтобы уточнить поиск"}</span>
         </div>
         <div className="conversation-suggestions" aria-label="Примеры пожеланий">
           {suggestions.map((text) => <button key={text} type="button" disabled={chat.busy} onClick={() => void chat.send(text)}>{text}</button>)}
@@ -80,7 +80,7 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
         <form className="conversation-form" onSubmit={(event) => { event.preventDefault(); void chat.send(); }}>
           <label htmlFor="hotel-chat-message">Что ещё учесть?</label>
           <div className="conversation-composer">
-            <textarea id="hotel-chat-message" rows={2} maxLength={1500} placeholder="Например, только апартаменты" value={chat.draft} disabled={chat.busy}
+            <textarea id="hotel-chat-message" rows={2} maxLength={1500} placeholder="Например, отель рядом с рестораном" value={chat.draft} disabled={chat.busy}
               onChange={(event) => chat.setDraft(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {

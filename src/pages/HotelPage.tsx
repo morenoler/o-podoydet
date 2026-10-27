@@ -7,6 +7,8 @@ import { roomDetailsLabel } from "../features/account/format";
 import "../features/search/search.css";
 import "../features/hotels/hotel-details.css";
 import { CapacitySummary } from "../features/hotels/components/CapacitySummary";
+import { NearbySummary } from "../features/hotels/components/NearbySummary";
+import "../features/search/catalog-filters.css";
 import { PersonalWishesSummary } from "../features/hotels/components/PersonalWishesSummary";
 import { MatchBadge } from "../features/hotels/components/MatchBadge";
 import { matchForSelectedPreferences } from "../shared/lib/matchPresentation";
@@ -320,6 +322,7 @@ export function HotelPage() {
             )}
           />
           <CapacitySummary match={room} />
+          <NearbySummary matches={room.nearbyMatches || []} />
           {(selectedCriteria.length > 0 || !hasOwnerCriteria) && (
             <WishMatches criteria={selectedCriteria} />
           )}

@@ -1,4 +1,6 @@
-import type { Dataset, Hotel, HotelMatch, Room, RoomRecommendation } from "../../../../shared/types";
+import type { Dataset, Hotel, HotelFilters, HotelMatch, Room, RoomRecommendation } from "../../../../shared/types";
+import { nearbyMatches } from "../../../../shared/nearby";
+import { NearbySummary } from "./NearbySummary";
 import { Link } from "react-router-dom";
 import {
   Check,
@@ -27,6 +29,7 @@ import {
 } from "../../../shared/lib/matchPresentation";
 
 export function HotelCard({
+  hotelFilters,
   match: hotelMatch,
   roomRecommendation,
   previewRoom,
@@ -39,6 +42,7 @@ export function HotelCard({
   onSelect,
   onShowMap,
 }: {
+  hotelFilters?: HotelFilters;
   match?: HotelMatch;
   roomRecommendation?: RoomRecommendation;
   previewRoom?: Room;
@@ -166,6 +170,7 @@ export function HotelCard({
           </p>
         )}
         {roomDetails && <p className="search-hotel-room">{roomDetails}</p>}
+        <NearbySummary matches={match?.best.nearbyMatches || nearbyMatches(hotel, hotelFilters)} />
         {hotel.route && !hotel.synthetic ? (
           <button
             type="button"

@@ -1,4 +1,6 @@
-import type { Dataset, Hotel, HotelMatch, Room, RoomRecommendation } from "../../../shared/types";
+import type { Dataset, Hotel, HotelCandidate, HotelFilters, HotelMatch, Room, RoomRecommendation } from "../../../shared/types";
+import { matchesHotelFilters, matchingCatalogSnippets } from "../../../shared/catalogFilters";
+import { nearbyMatches } from "../../../shared/nearby";
 import { accountListingId } from "../../shared/lib/accommodation";
 
 export interface RoomSearchItem {
@@ -26,4 +28,14 @@ export function catalogRooms(catalog: Dataset | null): RoomSearchItem[] {
 
 export function roomHotels(items: RoomSearchItem[]): Hotel[] {
   return [...new Map(items.filter(({ hotel }) => hotel.coordinates && !hotel.synthetic).map(({ hotel }) => [hotel.id, hotel])).values()];
+}
+
+/** Hotel presence on the map does not establish a room category or capacity. */
+export function catalogHotelCandidates(catalog: Dataset | null, filters?: HotelFilters): HotelCandidate[] {
+  return (catalog?.hotels || []).filter((hotel) => !hotel.synthetic && !accountListingId(hotel) && !hotel.hasCollectedRoomCategories
+    && !hotel.rooms.some((room) => room.evidenceStatus === "verified" && room.scope === "room_category"))
+    .map((hotel) => ({ ...hotel, rooms: [] }))
+    .filter((hotel) => matchesHotelFilters(hotel, filters, catalog?.facts))
+    .map((hotel) => ({ hotel, nearbyMatches: nearbyMatches(hotel, filters), catalogMatches: matchingCatalogSnippets(hotel, filters, catalog?.facts),
+      limitations: ["Совпадения относятся к расположению отеля. Условия конкретной комнаты и размещение гостей нужно уточнить."] }));
 }

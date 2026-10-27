@@ -56,7 +56,9 @@ public class KnowledgeCommands {
         characteristics
             .findById(s.characteristic())
             .orElseThrow(() -> new IllegalArgumentException("Неизвестная характеристика"));
-    Instant now = clock.instant();
+    // PostgreSQL timestamps have microsecond precision and otherwise round up. Keep the JSON
+    // and SQL instant identical so a newly received statement cannot appear to be in the future.
+    Instant now = clock.instant().truncatedTo(ChronoUnit.MICROS);
     Instant expires = now.plus(c.getTtlDays(), ChronoUnit.DAYS);
     String id = "host-" + UUID.randomUUID();
 

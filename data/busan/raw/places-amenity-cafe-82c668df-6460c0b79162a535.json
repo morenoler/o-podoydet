@@ -1,0 +1,1067 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.4 2390de5a",
+  "osm3s": {
+    "timestamp_osm_base": "2026-10-27T12:11:06Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 2138554865,
+  "lat": 35.1537492,
+  "lon": 129.0585637,
+  "tags": {
+    "amenity": "cafe",
+    "cuisine": "waffle;coffee",
+    "name:en": "Waffle Bant"
+  }
+},
+{
+  "type": "node",
+  "id": 2516172249,
+  "lat": 35.1542925,
+  "lon": 129.0579859,
+  "tags": {
+    "amenity": "cafe",
+    "brand": "엔제리너스",
+    "brand:en": "Angel-in-us Coffee",
+    "brand:ko": "엔제리너스",
+    "brand:wikidata": "Q12606781",
+    "cuisine": "coffee_shop",
+    "name": "엔제리너스",
+    "name:en": "Angel-in-us Coffee",
+    "name:ko": "엔제리너스",
+    "source": "image,2013-09;Bing",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3785217646,
+  "lat": 35.1568586,
+  "lon": 129.0580024,
+  "tags": {
+    "amenity": "cafe",
+    "brand": "Starbucks",
+    "brand:en": "Starbucks",
+    "brand:wikidata": "Q37158",
+    "brand:wikipedia": "en:Starbucks",
+    "cuisine": "coffee_shop",
+    "name": "Starbucks",
+    "name:en": "Starbucks",
+    "name:ja": "スターバックス",
+    "name:ko": "스타벅스",
+    "official_name": "Starbucks Coffee",
+    "payment:american_express": "yes",
+    "payment:coins": "yes",
+    "payment:diners_club": "yes",
+    "payment:discover_card": "yes",
+    "payment:jcb": "yes",
+    "payment:mastercard": "yes",
+    "payment:notes": "yes",
+    "payment:unionpay": "yes",
+    "payment:visa": "yes",
+    "smoking": "no",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3785217647,
+  "lat": 35.1544315,
+  "lon": 129.0573674,
+  "tags": {
+    "amenity": "cafe",
+    "name": "TomnToms Coffee",
+    "name:en": "Tout les jours"
+  }
+},
+{
+  "type": "node",
+  "id": 4215262936,
+  "lat": 35.1481036,
+  "lon": 129.0581071,
+  "tags": {
+    "amenity": "cafe",
+    "name": "Coffee Congssine",
+    "opening_hours": "09:00-21:00"
+  }
+},
+{
+  "type": "node",
+  "id": 4388626289,
+  "lat": 35.1450625,
+  "lon": 129.0627600,
+  "tags": {
+    "amenity": "cafe",
+    "branch": "부산문현금융단지점",
+    "brand": "투썸플레이스",
+    "brand:en": "A Twosome Place",
+    "brand:ko": "투썸플레이스",
+    "brand:wikidata": "Q12621301",
+    "cuisine": "coffee_shop",
+    "name": "투썸플레이스",
+    "name:en": "A Twosome Place",
+    "name:ko": "투썸플레이스",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4444865890,
+  "lat": 35.1535440,
+  "lon": 129.0582800,
+  "tags": {
+    "amenity": "cafe",
+    "cuisine": "korean",
+    "level": "4",
+    "name": "다전",
+    "name:en": "Dajeon",
+    "name:ko": "다전"
+  }
+},
+{
+  "type": "node",
+  "id": 4655811195,
+  "lat": 35.1484678,
+  "lon": 129.0621653,
+  "tags": {
+    "amenity": "cafe",
+    "cuisine": "coffee_shop",
+    "internet_access": "wlan",
+    "internet_access:fee": "yes",
+    "name": "mega coffee"
+  }
+},
+{
+  "type": "node",
+  "id": 4724283670,
+  "lat": 35.1578828,
+  "lon": 129.0619637,
+  "tags": {
+    "amenity": "cafe",
+    "brand": "스타벅스",
+    "brand:en": "Starbucks",
+    "brand:wikidata": "Q37158",
+    "cuisine": "coffee_shop",
+    "int_name": "Starbucks",
+    "name": "스타벅스",
+    "name:de": "Starbucks",
+    "name:en": "Starbucks",
+    "name:ja": "スターバックス",
+    "name:ko": "스타벅스",
+    "name:ru": "Старбакс",
+    "name:zh": "星巴克",
+    "operator": "(주)스타벅스커피 코리아",
+    "payment:american_express": "yes",
+    "payment:cash": "yes",
+    "payment:coins": "yes",
+    "payment:diners_club": "yes",
+    "payment:discover_card": "yes",
+    "payment:jcb": "yes",
+    "payment:mastercard": "yes",
+    "payment:notes": "yes",
+    "payment:unionpay": "yes",
+    "payment:visa": "yes",
+    "smoking": "no",
+    "website": "http://www.istarbucks.co.kr/index.do"
+  }
+},
+{
+  "type": "node",
+  "id": 4724283671,
+  "lat": 35.1578521,
+  "lon": 129.0612878,
+  "tags": {
+    "amenity": "cafe",
+    "cuisine": "coffee",
+    "name": "이디야 커피",
+    "name:en": "EDIYA Coffee"
+  }
+},
+{
+  "type": "node",
+  "id": 4724283674,
+  "lat": 35.1578367,
+  "lon": 129.0601290,
+  "tags": {
+    "amenity": "cafe",
+    "brand": "스타벅스",
+    "brand:en": "Starbucks",
+    "brand:ko": "스타벅스",
+    "brand:wikidata": "Q37158",
+    "cuisine": "coffee_shop",
+    "int_name": "Starbucks",
+    "name": "스타벅스",
+    "name:de": "Starbucks",
+    "name:en": "Starbucks",
+    "name:ja": "スターバックス",
+    "name:ko": "스타벅스",
+    "name:ru": "Старбакс",
+    "name:zh": "星巴克",
+    "operator": "(주)스타벅스커피 코리아",
+    "payment:american_express": "yes",
+    "payment:cash": "yes",
+    "payment:coins": "yes",
+    "payment:diners_club": "yes",
+    "payment:discover_card": "yes",
+    "payment:jcb": "yes",
+    "payment:mastercard": "yes",
+    "payment:notes": "yes",
+    "payment:unionpay": "yes",
+    "payment:visa": "yes",
+    "smoking": "no",
+    "takeaway": "yes",
+    "website": "http://www.istarbucks.co.kr/index.do"
+  }
+},
+{
+  "type": "node",
+  "id": 4807649121,
+  "lat": 35.1547054,
+  "lon": 129.0663522,
+  "tags": {
+    "amenity": "cafe",
+    "name": "명가떡집",
+    "name:ko": "명가떡집"
+  }
+},
+{
+  "type": "node",
+  "id": 5068419221,
+  "lat": 35.1553106,
+  "lon": 129.0630959,
+  "tags": {
+    "amenity": "cafe",
+    "internet_access": "wlan",
+    "name": "고유커피",
+    "name:en": "Goyu Coffee",
+    "opening_hours": "Tu-Su 13:00-23:00"
+  }
+},
+{
+  "type": "node",
+  "id": 5085592164,
+  "lat": 35.1540973,
+  "lon": 129.0615567,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "46-10",
+    "addr:street": "중앙대로692번길",
+    "addr:subdistrict": "부전동",
+    "amenity": "cafe",
+    "brand": "스타벅스",
+    "brand:en": "Starbucks",
+    "brand:wikidata": "Q37158",
+    "check_date": "2024-11-07",
+    "cuisine": "coffee_shop",
+    "int_name": "Starbucks",
+    "internet_access": "wlan",
+    "name": "스타벅스 부산서면점",
+    "name:de": "Starbucks",
+    "name:en": "Starbucks Busanseomyeon",
+    "name:ja": "スターバックス 釜山西面店",
+    "name:ko": "스타벅스",
+    "name:ru": "Старбакс",
+    "name:zh": "星巴克",
+    "opening_hours": "09:00-21:30",
+    "operator": "(주)스타벅스커피 코리아",
+    "payment:american_express": "yes",
+    "payment:cash": "yes",
+    "payment:coins": "yes",
+    "payment:diners_club": "yes",
+    "payment:discover_card": "yes",
+    "payment:jcb": "yes",
+    "payment:mastercard": "yes",
+    "payment:notes": "yes",
+    "payment:unionpay": "yes",
+    "payment:visa": "yes",
+    "smoking": "no",
+    "website": "http://www.istarbucks.co.kr/index.do"
+  }
+},
+{
+  "type": "node",
+  "id": 5104410833,
+  "lat": 35.1543204,
+  "lon": 129.0619365,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "50",
+    "addr:street": "중앙대로692번길",
+    "addr:subdistrict": "부전동",
+    "amenity": "cafe",
+    "check_date": "2024-11-06",
+    "cuisine": "coffee_shop",
+    "name": "투썸플레이스 서면중앙점",
+    "name:en": "A Twosome Place",
+    "opening_hours": "24/7",
+    "phone": "+82 51 803 3690"
+  }
+},
+{
+  "type": "node",
+  "id": 5283198871,
+  "lat": 35.1644282,
+  "lon": 129.0540826,
+  "tags": {
+    "amenity": "cafe"
+  }
+},
+{
+  "type": "node",
+  "id": 5283198880,
+  "lat": 35.1642233,
+  "lon": 129.0532659,
+  "tags": {
+    "amenity": "cafe",
+    "name": "이디야커피",
+    "name:en": "EDIYA COFFEE"
+  }
+},
+{
+  "type": "node",
+  "id": 5292823207,
+  "lat": 35.1644153,
+  "lon": 129.0514700,
+  "tags": {
+    "amenity": "cafe",
+    "brand": "카페베네",
+    "brand:en": "Caffe Bene",
+    "brand:wikidata": "Q5017149",
+    "cuisine": "coffee_shop",
+    "name": "카페베네",
+    "name:en": "Caffe Bene",
+    "name:ja": "カフェベネ",
+    "name:ko": "카페베네",
+    "operator": "Caffe Bene",
+    "payment:american_express": "yes",
+    "payment:cash": "yes",
+    "payment:coins": "yes",
+    "payment:diners_club": "yes",
+    "payment:discover_card": "yes",
+    "payment:jcb": "yes",
+    "payment:mastercard": "yes",
+    "payment:notes": "yes",
+    "payment:unionpay": "yes",
+    "payment:visa": "yes",
+    "smoking": "no",
+    "website": "http://www.caffebene.co.kr/"
+  }
+},
+{
+  "type": "node",
+  "id": 5296767126,
+  "lat": 35.1671768,
+  "lon": 129.0510153,
+  "tags": {
+    "amenity": "cafe",
+    "name": "탐앤탐스",
+    "name:en": "TOM N TOMS COFFEE"
+  }
+},
+{
+  "type": "node",
+  "id": 5321433126,
+  "lat": 35.1549884,
+  "lon": 129.0655673,
+  "tags": {
+    "amenity": "cafe",
+    "name": "쇼코디저트"
+  }
+},
+{
+  "type": "node",
+  "id": 5321811121,
+  "lat": 35.1592201,
+  "lon": 129.0646143,
+  "tags": {
+    "amenity": "cafe",
+    "name": "카페숨은"
+  }
+},
+{
+  "type": "node",
+  "id": 5596676625,
+  "lat": 35.1527471,
+  "lon": 129.0667158,
+  "tags": {
+    "amenity": "cafe",
+    "name": "패럿",
+    "name:en": "parrot",
+    "name:ja": "パロット"
+  }
+},
+{
+  "type": "node",
+  "id": 5596703223,
+  "lat": 35.1533984,
+  "lon": 129.0612762,
+  "tags": {
+    "amenity": "cafe",
+    "name": "몰레",
+    "name:en": "MOLLE",
+    "name:ja": "モルレ",
+    "opening_hours": "Mo-Su 11:30-22:30"
+  }
+},
+{
+  "type": "node",
+  "id": 5618752623,
+  "lat": 35.1535698,
+  "lon": 129.0616521,
+  "tags": {
+    "amenity": "cafe",
+    "cuisine": "cake;coffee_shop",
+    "name": "타르타르 부산서면점",
+    "name:ja": "TARR TARR 釜山西面店",
+    "opening_hours": "Mo-Su 11:00-23:00"
+  }
+},
+{
+  "type": "node",
+  "id": 5618752624,
+  "lat": 35.1543449,
+  "lon": 129.0606880,
+  "tags": {
+    "amenity": "cafe",
+    "name": "설빙 서면점",
+    "name:ja": "ソルビン 西面店",
+    "opening_hours": "Mo-Su 10:00-23:00",
+    "phone": "051-809-3300"
+  }
+},
+{
+  "type": "node",
+  "id": 5618752626,
+  "lat": 35.1545785,
+  "lon": 129.0630819,
+  "tags": {
+    "addr:housenumber": "38",
+    "addr:street": "전포대로199번길",
+    "amenity": "cafe",
+    "cuisine": "ice_cream;cake;coffee_shop;tea",
+    "name": "빈티지38",
+    "name:en": "VINTAGE38",
+    "name:ja": "VINTAGE38",
+    "opening_hours": "24/7",
+    "phone": "051-807-5555"
+  }
+},
+{
+  "type": "node",
+  "id": 5618754629,
+  "lat": 35.1554723,
+  "lon": 129.0639468,
+  "tags": {
+    "addr:housenumber": "22",
+    "addr:street": "전포대로209번길",
+    "amenity": "cafe",
+    "cuisine": "ice_cream;cake;pancake",
+    "name": "유달리 서면점",
+    "name:en": "U:DALLY",
+    "name:ja": "U:DALLY 西面店",
+    "opening_hours": "Mo-Su 10:00-23:00",
+    "phone": "051-804-2470"
+  }
+},
+{
+  "type": "node",
+  "id": 5620034421,
+  "lat": 35.1552631,
+  "lon": 129.0608945,
+  "tags": {
+    "amenity": "cafe",
+    "cuisine": "cake;coffee_shop;tea;breakfast",
+    "name": "파스쿠찌",
+    "name:en": "CAFFE PASCUCCI",
+    "name:ja": "CAFFE PASCUCCI",
+    "opening_hours": "24/7"
+  }
+},
+{
+  "type": "node",
+  "id": 5620142823,
+  "lat": 35.1543885,
+  "lon": 129.0602565,
+  "tags": {
+    "amenity": "cafe",
+    "cuisine": "coffee_shop;sandwich;cake;tea;ice_cream",
+    "name": "엔제리너스커피",
+    "name:en": "Angel-in-us Coffee",
+    "name:ja": "Angel-in-us Coffee",
+    "opening_hours": "Mo-Su 08:00-22:00",
+    "website": "http://angelinus.com"
+  }
+},
+{
+  "type": "node",
+  "id": 5621537621,
+  "lat": 35.1558129,
+  "lon": 129.0639069,
+  "tags": {
+    "addr:housenumber": "41",
+    "addr:street": "서전로 38번길",
+    "amenity": "cafe",
+    "cuisine": "cake;coffee_shop;tea",
+    "name": "아뜰리에마카롱",
+    "name:en": "Atelier Macaron'",
+    "name:ja": "アトリエ・マカロン",
+    "opening_hours": "Tu-Su 10:30-22:00",
+    "operator": "マカロン",
+    "phone": "051-818-2908"
+  }
+},
+{
+  "type": "node",
+  "id": 5623362521,
+  "lat": 35.1550504,
+  "lon": 129.0644869,
+  "tags": {
+    "addr:housenumber": "62-8",
+    "addr:street": "서전로46번길",
+    "amenity": "cafe",
+    "cuisine": "ice_cream;coffee_shop;tea",
+    "name": "연운당 전포카페거리점",
+    "name:ja": "軟雲堂 田浦カフェ通り店",
+    "opening_hours": "Mo-Su 11:30-22:00",
+    "operator": "パッピンス",
+    "phone": "051-804-2026"
+  }
+},
+{
+  "type": "node",
+  "id": 5753818422,
+  "lat": 35.1519732,
+  "lon": 129.0584668,
+  "tags": {
+    "addr:street": "신천대로50번길",
+    "amenity": "cafe",
+    "phone": "0518069880"
+  }
+},
+{
+  "type": "node",
+  "id": 5758510522,
+  "lat": 35.1543857,
+  "lon": 129.0612920,
+  "tags": {
+    "amenity": "cafe",
+    "name:ja": "モルレ"
+  }
+},
+{
+  "type": "node",
+  "id": 5758526921,
+  "lat": 35.1553025,
+  "lon": 129.0612957,
+  "tags": {
+    "amenity": "cafe",
+    "name:ja": "サーティワン"
+  }
+},
+{
+  "type": "node",
+  "id": 5886996685,
+  "lat": 35.1560263,
+  "lon": 129.0599332,
+  "tags": {
+    "amenity": "cafe",
+    "contact:instagram": "blackup_coffee",
+    "diet:vegan": "yes",
+    "diet:vegetarian": "yes",
+    "indoor_seating": "yes",
+    "internet_access": "wlan",
+    "internet_access:fee": "customers",
+    "internet_access:ssid": "BlackupCoffee 2F",
+    "level": "0;1;2",
+    "level:ref": "1F;2F;3F",
+    "name": "Blackup Coffee",
+    "opening_hours": "Mo-Fr 10:00-19:00",
+    "outdoor_seating": "no",
+    "payment:credit_cards": "yes",
+    "payment:debit_cards": "yes",
+    "power_supply": "yes",
+    "smoking": "no",
+    "website": "https://blackupcoffee.com"
+  }
+},
+{
+  "type": "node",
+  "id": 5994313785,
+  "lat": 35.1582043,
+  "lon": 129.0536983,
+  "tags": {
+    "amenity": "cafe",
+    "name": "eobeullim"
+  }
+},
+{
+  "type": "node",
+  "id": 6127299463,
+  "lat": 35.1554609,
+  "lon": 129.0589374,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "701",
+    "addr:street": "중앙대로",
+    "addr:subdistrict": "부전동",
+    "amenity": "cafe",
+    "brand": "스타벅스",
+    "brand:en": "Starbucks",
+    "brand:wikidata": "Q37158",
+    "cuisine": "coffee_shop",
+    "int_name": "Starbucks",
+    "internet_access": "wlan",
+    "name": "스타벅스",
+    "name:de": "Starbucks",
+    "name:en": "Starbucks",
+    "name:ja": "スターバックス",
+    "name:ko": "스타벅스",
+    "name:ru": "Старбакс",
+    "name:zh": "星巴克",
+    "operator": "(주)스타벅스커피 코리아",
+    "payment:american_express": "yes",
+    "payment:cash": "yes",
+    "payment:coins": "yes",
+    "payment:diners_club": "yes",
+    "payment:discover_card": "yes",
+    "payment:jcb": "yes",
+    "payment:mastercard": "yes",
+    "payment:notes": "yes",
+    "payment:unionpay": "yes",
+    "payment:visa": "yes",
+    "smoking": "no",
+    "website": "http://www.istarbucks.co.kr/index.do"
+  }
+},
+{
+  "type": "node",
+  "id": 6253532388,
+  "lat": 35.1501049,
+  "lon": 129.0628147,
+  "tags": {
+    "amenity": "cafe",
+    "name": "Tom N Tom"
+  }
+},
+{
+  "type": "node",
+  "id": 6321678879,
+  "lat": 35.1582969,
+  "lon": 129.0577609,
+  "tags": {
+    "amenity": "cafe",
+    "name:en": "Sulbing"
+  }
+},
+{
+  "type": "node",
+  "id": 6405375988,
+  "lat": 35.1462176,
+  "lon": 129.0658785,
+  "tags": {
+    "amenity": "cafe",
+    "name": "스타벅스 BIFC몰점",
+    "name:ja": "スターバックス"
+  }
+},
+{
+  "type": "node",
+  "id": 7106019185,
+  "lat": 35.1476525,
+  "lon": 129.0588800,
+  "tags": {
+    "amenity": "cafe",
+    "internet_access": "wlan",
+    "name:en": "Better Monday Coffe"
+  }
+},
+{
+  "type": "node",
+  "id": 7961780785,
+  "lat": 35.1545855,
+  "lon": 129.0637718,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "26",
+    "addr:street": "전포대로199번길",
+    "addr:subdistrict": "전포동",
+    "amenity": "cafe",
+    "internet_access": "wlan",
+    "name": "FM커피하우스 1호점",
+    "name:en": "fm coffee",
+    "opening_hours": "Mo-Su 10:00-22:00"
+  }
+},
+{
+  "type": "node",
+  "id": 8396109060,
+  "lat": 35.1567250,
+  "lon": 129.0646165,
+  "tags": {
+    "amenity": "cafe",
+    "name": "라운지커피",
+    "name:ko": "라운지커피"
+  }
+},
+{
+  "type": "node",
+  "id": 9161024405,
+  "lat": 35.1554847,
+  "lon": 129.0644027,
+  "tags": {
+    "amenity": "cafe",
+    "name": "Escape Cafe"
+  }
+},
+{
+  "type": "node",
+  "id": 9161039123,
+  "lat": 35.1553273,
+  "lon": 129.0639367,
+  "tags": {
+    "amenity": "cafe",
+    "name": "CoffeeSmith"
+  }
+},
+{
+  "type": "node",
+  "id": 9267588931,
+  "lat": 35.1453779,
+  "lon": 129.0589405,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "171",
+    "addr:postcode": "47358",
+    "addr:street": "범일로",
+    "addr:subdistrict": "범천동",
+    "amenity": "cafe",
+    "name": "모로코페스"
+  }
+},
+{
+  "type": "node",
+  "id": 9267588939,
+  "lat": 35.1480773,
+  "lon": 129.0594809,
+  "tags": {
+    "amenity": "cafe",
+    "name": "범내골커피"
+  }
+},
+{
+  "type": "node",
+  "id": 9267588944,
+  "lat": 35.1467994,
+  "lon": 129.0618152,
+  "tags": {
+    "amenity": "cafe",
+    "name": "카페반디트리 서면점"
+  }
+},
+{
+  "type": "node",
+  "id": 9267588955,
+  "lat": 35.1463981,
+  "lon": 129.0656393,
+  "tags": {
+    "amenity": "cafe",
+    "name": "텐퍼센트커피 문현금융단지점"
+  }
+},
+{
+  "type": "node",
+  "id": 9267588956,
+  "lat": 35.1462175,
+  "lon": 129.0661341,
+  "tags": {
+    "amenity": "cafe",
+    "name": "이디야커피 부산국제금융센터점"
+  }
+},
+{
+  "type": "node",
+  "id": 9864834917,
+  "lat": 35.1491484,
+  "lon": 129.0595029,
+  "tags": {
+    "amenity": "cafe",
+    "check_date": "2024-09-25",
+    "name": "Tous les jours",
+    "name:en": "Bakery"
+  }
+},
+{
+  "type": "node",
+  "id": 10286943709,
+  "lat": 35.1551106,
+  "lon": 129.0599223,
+  "tags": {
+    "amenity": "cafe"
+  }
+},
+{
+  "type": "node",
+  "id": 10286943809,
+  "lat": 35.1550669,
+  "lon": 129.0599289,
+  "tags": {
+    "amenity": "cafe",
+    "name": "RENDE JA-VOUS ﾗﾝﾃﾞｼﾞｬﾋﾞｭ"
+  }
+},
+{
+  "type": "node",
+  "id": 10563214571,
+  "lat": 35.1550707,
+  "lon": 129.0627787,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "39-8",
+    "addr:postcode": "47294",
+    "addr:street": "전포대로209번길",
+    "addr:subdistrict": "전포동",
+    "amenity": "cafe",
+    "cuisine": "coffee_shop",
+    "internet_access": "wlan",
+    "internet_access:fee": "customers",
+    "name": "온나드로잉카페",
+    "outdoor_seating": "no",
+    "phone": "+82507-1394-7410",
+    "website": "https://z-p15.www.instagram.com/onna_drawing/"
+  }
+},
+{
+  "type": "node",
+  "id": 10651115197,
+  "lat": 35.1558735,
+  "lon": 129.0663345,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "13",
+    "addr:postcode": "47303",
+    "addr:street": "전포대로216번길",
+    "addr:subdistrict": "전포동",
+    "amenity": "cafe",
+    "cuisine": "coffee_shop",
+    "internet_access": "wlan",
+    "internet_access:fee": "customers",
+    "name": "카페드에떼",
+    "phone": "+82507-1345-6114",
+    "website": "https://www.instagram.com/_cafe_de_ete_/"
+  }
+},
+{
+  "type": "node",
+  "id": 11924025504,
+  "lat": 35.1578996,
+  "lon": 129.0677352,
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "9",
+    "addr:postcode": "47301",
+    "addr:street": "동성로87번길",
+    "addr:subdistrict": "전포동",
+    "amenity": "cafe",
+    "name": "14wagon",
+    "phone": "+82507-1327-5504"
+  }
+},
+{
+  "type": "node",
+  "id": 12198579616,
+  "lat": 35.1483250,
+  "lon": 129.0591247,
+  "tags": {
+    "amenity": "cafe",
+    "check_date": "2024-09-25",
+    "name": "Cafe de Boston"
+  }
+},
+{
+  "type": "node",
+  "id": 12319779395,
+  "lat": 35.1540471,
+  "lon": 129.0616050,
+  "tags": {
+    "amenity": "cafe",
+    "brand": "스타벅스",
+    "brand:en": "Starbucks",
+    "brand:ko": "스타벅스",
+    "brand:wikidata": "Q37158",
+    "check_date": "2024-11-07",
+    "cuisine": "coffee_shop",
+    "name": "스타벅스",
+    "name:en": "Starbucks",
+    "name:ko": "스타벅스",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12321399423,
+  "lat": 35.1546221,
+  "lon": 129.0617781,
+  "tags": {
+    "amenity": "cafe",
+    "brand": "Cộng Cà Phê",
+    "brand:wikidata": "Q63864181",
+    "check_date": "2024-11-07",
+    "cuisine": "coffee_shop;vietnamese",
+    "name": "Cộng Cà Phê",
+    "name:vi": "Cộng Cà Phê",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12475228602,
+  "lat": 35.1531671,
+  "lon": 129.0668418,
+  "tags": {
+    "amenity": "cafe",
+    "name": "꼬까자"
+  }
+},
+{
+  "type": "node",
+  "id": 12964003156,
+  "lat": 35.1586253,
+  "lon": 129.0659916,
+  "tags": {
+    "air_conditioning": "yes",
+    "amenity": "cafe",
+    "diet:vegan": "only",
+    "diet:vegetarian": "yes",
+    "name": "OHH! Good Thing",
+    "opening_hours": "Th-Mo 12:30-21:00; Tu,We off"
+  }
+},
+{
+  "type": "node",
+  "id": 13086288574,
+  "lat": 35.1690230,
+  "lon": 129.0578076,
+  "tags": {
+    "amenity": "cafe",
+    "name": "Hollys"
+  }
+},
+{
+  "type": "node",
+  "id": 13185678102,
+  "lat": 35.1523360,
+  "lon": 129.0660780,
+  "tags": {
+    "amenity": "cafe",
+    "name": "Chai coffee",
+    "opening_hours": "Mo-Su 08:00-21:00"
+  }
+},
+{
+  "type": "node",
+  "id": 13185678401,
+  "lat": 35.1524522,
+  "lon": 129.0662489,
+  "tags": {
+    "amenity": "cafe",
+    "cuisine": "cake;coffee_shop",
+    "name": "달달한놀이터",
+    "name:en": "Dessert shop"
+  }
+},
+{
+  "type": "node",
+  "id": 13188138201,
+  "lat": 35.1482731,
+  "lon": 129.0614601,
+  "tags": {
+    "amenity": "cafe",
+    "cuisine": "cake;coffee_shop",
+    "name": "Horeng coffee",
+    "opening_hours": "Mo-Sa 07:00-22:00"
+  }
+},
+{
+  "type": "node",
+  "id": 13235892501,
+  "lat": 35.1549970,
+  "lon": 129.0640806,
+  "tags": {
+    "amenity": "cafe",
+    "name": "UPPER YEAST"
+  }
+},
+{
+  "type": "way",
+  "id": 991534331,
+  "center": {
+    "lat": 35.1554843,
+    "lon": 129.0644120
+  },
+  "nodes": [
+    9161024406,
+    9161024407,
+    9161024408,
+    9161024409,
+    9161024406
+  ],
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "14",
+    "addr:street": "서전로38번길",
+    "addr:subdistrict": "전포동",
+    "amenity": "cafe",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 991534335,
+  "center": {
+    "lat": 35.1552966,
+    "lon": 129.0639895
+  },
+  "nodes": [
+    9161039124,
+    9161039125,
+    9161039126,
+    9161039127,
+    9161039128,
+    9161039124
+  ],
+  "tags": {
+    "addr:city": "부산광역시",
+    "addr:district": "부산진구",
+    "addr:housenumber": "21",
+    "addr:street": "전포대로209번길",
+    "addr:subdistrict": "전포동",
+    "amenity": "cafe",
+    "building": "yes"
+  }
+},
+{
+  "type": "count",
+  "id": 0,
+  "tags": {
+    "nodes": "66",
+    "ways": "2",
+    "relations": "0",
+    "total": "68"
+  }
+}
+
+  ]
+}

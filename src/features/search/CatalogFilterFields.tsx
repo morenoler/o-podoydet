@@ -1,4 +1,5 @@
 import type { HotelFilters } from "../../../shared/types";
+import { nearbyDefinitions } from "../../../shared/nearby";
 
 export const lodgingLabels = {
   hotel: "Отель",
@@ -46,6 +47,20 @@ export function CatalogFilterFields({ value = {}, onChange }: {
           onChange={(event) => onChange({ ...value, maxBeachMeters: event.target.value === "" ? undefined : Number(event.target.value) })} />
       </label>
     </div>
+    <details className="catalog-nearby-filter">
+      <summary>Что должно быть рядом{value.nearby?.length ? ` · ${value.nearby.length}` : ""}</summary>
+      <p className="search-dialog-intro">Расстояние по прямой до отмеченного на карте места. «Центр» — район станции Сомён; в Пусане несколько городских центров.</p>
+      <div className="catalog-nearby-options">{nearbyDefinitions.map((definition) => {
+        const condition = value.nearby?.find((item) => item.kind === definition.key);
+        return <div className="catalog-nearby-option" key={definition.key}>
+          <label><input type="checkbox" checked={!!condition} onChange={(event) => onChange({ ...value, nearby: event.target.checked
+            ? [...(value.nearby || []), { kind: definition.key, maxMeters: definition.defaultMaxMeters }]
+            : value.nearby?.filter((item) => item.kind !== definition.key) })} /><span>{definition.label}</span></label>
+          {condition && <label><span className="sr-only">{definition.label}: не дальше, м</span><input type="number" min={1} max={10000} step="any" value={condition.maxMeters}
+            onChange={(event) => onChange({ ...value, nearby: value.nearby?.map((item) => item.kind === definition.key ? { ...item, maxMeters: Number(event.target.value) } : item) })} /><span aria-hidden="true">м</span></label>}
+        </div>;
+      })}</div>
+    </details>
     <p className="search-dialog-intro">При ограничении цены или маршрута варианты без этих данных не показываем. Цена указана отельером; маршрут рассчитан по карте без непроверенных подходов. Поиск по словам находит упоминания, а наличие удобств нужно уточнить.</p>
   </section>;
 }

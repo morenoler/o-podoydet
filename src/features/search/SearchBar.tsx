@@ -58,7 +58,7 @@ export function SearchBar({
         >
           <MapPin aria-hidden="true" size={25} />
           <span>
-            <strong>Пусан, Хэундэ</strong>
+            <strong>Пусан, Южная Корея</strong>
             <small>
               {dates} · {guests}
             </small>

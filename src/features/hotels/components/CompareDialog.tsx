@@ -1,4 +1,5 @@
 import { CapacitySummary } from "./CapacitySummary";
+import { NearbySummary } from "./NearbySummary";
 import type { HotelMatch, Trip } from "../../../../shared/types";
 import { useRef, useEffect } from "react";
 import { dateFull } from "../../../shared/lib/date";
@@ -80,6 +81,7 @@ export function CompareDialog({
             )}
             <h3>{m.best.room.name}</h3>
             <p>{m.hotel.name} · {lodgingLabel(m.hotel)}</p>
+            <NearbySummary matches={m.best.nearbyMatches || []} />
             {accountListingId(m.hotel) && (
               <p className="hotel-owner-source">
                 Сведения отельера. Независимая проверка не проведена.

@@ -121,6 +121,10 @@ public class CatalogService {
   private ObjectNode hotelNode(Hotel hotel, Instant now, boolean demo) {
     ObjectNode node = (ObjectNode) read(hotel.getBody());
     List<JsonNode> rooms = hotel.getRooms().stream().map(r -> read(r.getBody())).toList();
+    // Keep collection history visible even when current room evidence has expired.
+    node.put("hasCollectedRoomCategories", rooms.stream().anyMatch(room ->
+        room.path("evidenceStatus").asText().equals("verified")
+            && room.path("scope").asText().equals("room_category")));
     node.set(
         "rooms",
         json.valueToTree(RoomPolicy.visible(hotel.getId(), rooms, now, demo, json)));

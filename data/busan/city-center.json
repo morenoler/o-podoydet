@@ -1,0 +1,17 @@
+{
+  "osmId": "node/5782717000",
+  "name": "Сомён (Seomyeon)",
+  "coordinates": [
+    129.0592588,
+    35.1577739
+  ],
+  "definition": "Явно выбранная точка станции Сомён как ориентир центрального коммерческого района. Это не геометрический или единственный центр Пусана; радиус по умолчанию 1500 м по прямой — настройка поиска.",
+  "officialSource": {
+    "url": "https://visitbusan.net/en/index.do?menuCd=DOM_000000303011001000&uc_seq=394&lang_cd=en",
+    "title": "Seomyeon Medical Street, the hub for medical tours — Visit Busan",
+    "obtainedAt": "2026-10-27",
+    "obtainedVia": "web search excerpt from official Visit Busan page; date precision: day",
+    "quote": "As the downtown area of Busan, Seomyeon is concentrated with popular spots",
+    "scope": "Обоснование выбора района; конкретный OSM-ориентир и радиус — явное допущение проекта."
+  }
+}

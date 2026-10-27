@@ -1,6 +1,23 @@
 import type { WindowDirection } from "./account";
 import type { ReportedEvidence } from "./clarifications";
 export type Point = [number, number]; // longitude, latitude
+export const nearbyKinds = ["cafe", "restaurant", "supermarket", "convenience", "pharmacy", "park", "subway", "museum", "shopping_mall", "beach", "train_station", "city_center"] as const;
+export type NearbyKind = typeof nearbyKinds[number];
+export interface NearbyCondition { kind: NearbyKind; maxMeters: number }
+export interface NearbyPlace {
+  kind: NearbyKind;
+  name: string;
+  meters: number;
+  coordinates: Point;
+  sourceUrl: string;
+  osmId: string;
+  obtainedAt: string;
+  sourceDate?: string;
+  expiresAt: string;
+  method: "haversine-osm-v1";
+  status: "supported";
+  scope: "hotel_surroundings";
+}
 export type FeatureId =
   | "beach_walk"
   | "step_free_route"
@@ -73,6 +90,9 @@ export interface NoiseSource {
   coordinates: Point;
 }
 export interface Hotel {
+  hasCollectedRoomCategories?: boolean;
+  nearbyPlaces?: NearbyPlace[];
+  sourceEvidence?: { sourceUrl: string; obtainedAt: string; sourceDate?: string; expiresAt: string; status: "reported"; method: "osm" };
   /** Published owner listing; has no fabricated OpenStreetMap geometry. */
   accountListingId?: string;
   floor?: number | null;
@@ -128,6 +148,8 @@ export interface PersonalWishes {
 export type LodgingType = "hotel" | "motel" | "guest_house" | "hostel" | "apartment";
 /** Hard catalog limits. Missing price/distance does not satisfy a supplied maximum. */
 export interface HotelFilters {
+  /** Each proximity condition must hold; distances are straight-line OSM estimates. */
+  nearby?: NearbyCondition[];
   /** Literal catalog/source-text retrieval, never confirmation of a room amenity. */
   query?: string;
   lodgingTypes?: LodgingType[];
@@ -201,6 +223,7 @@ export interface CriterionDecision extends Criterion {
   sourceExplanation: string;
 }
 export interface RoomMatch {
+  nearbyMatches?: NearbyPlace[];
   /** Text matches only: the criteria below retain their independent evidence status. */
   catalogMatches?: CatalogSearchSnippet[];
   /** An explicit reported capacity remains distinct from independently sourced category evidence. */
@@ -255,6 +278,8 @@ export interface Trace {
   tool?: string;
 }
 export interface SearchResult {
+  /** Real mapped hotels without collected room categories, never room recommendations. */
+  hotelCandidates?: HotelCandidate[];
   personalWishes?: PersonalWishes;
   admissionMode?: "explore" | "verified";
   searchId: string;
@@ -268,6 +293,12 @@ export interface SearchResult {
   conflicts: string[];
   trace: Trace[];
   mode: "rules" | "llm";
+}
+export interface HotelCandidate {
+  hotel: Hotel;
+  nearbyMatches: NearbyPlace[];
+  catalogMatches: CatalogSearchSnippet[];
+  limitations: string[];
 }
 export interface Question {
   id: string;
