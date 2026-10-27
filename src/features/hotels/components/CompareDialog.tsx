@@ -90,8 +90,9 @@ export function CompareDialog({
               <Footprints size={18} />
               {accountListingId(m.hotel)
                 ? "Нет данных о маршруте до пляжа"
-                : `${m.hotel.route?.meters ?? "—"} м до пляжа`}
+                : m.hotel.route ? `${m.hotel.route.meters} м по пешеходной сети до пляжа` : "Маршрут неизвестен"}
             </div>
+            {!!m.hotel.route?.connectionMeters && <p>Подходы к сети: ещё ≈{Math.round(m.hotel.route.connectionMeters)} м, не проверены.</p>}
             {ids.map((id) => {
               const c = m.best.criteria.find((c) => c.feature === id);
               return c ? (

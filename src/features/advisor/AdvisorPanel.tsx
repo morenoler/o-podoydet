@@ -1,6 +1,5 @@
-import { useState } from "react";
 import { Bot, Play, RefreshCw, Square } from "lucide-react";
-import type { AdvisorMode, AdvisorStatus } from "../../../shared/advisor";
+import type { AdvisorStatus } from "../../../shared/advisor";
 import type { PersonalWishes, Trip } from "../../../shared/types";
 import { ErrorMessage } from "../../shared/ui/Feedback";
 import { advisorIsActive, useAdvisor } from "./useAdvisor";
@@ -38,7 +37,6 @@ export function AdvisorPanel({
   onRefreshSearch: () => void;
 }) {
   const advisor = useAdvisor(trip, searchId);
-  const [mode, setMode] = useState<AdvisorMode>("rules");
   const active = advisorIsActive(advisor.run);
   const { run } = advisor;
 
@@ -49,7 +47,6 @@ export function AdvisorPanel({
           <Bot size={25} aria-hidden="true" />
         </span>
         <div>
-          <p className="advisor-eyebrow">Помощник по выбору · бесплатно</p>
           <h2 id="advisor-heading">
             {needsClarification
               ? "Разберёмся в пожеланиях"
@@ -58,7 +55,7 @@ export function AdvisorPanel({
                 : "Поможем выбрать среди вариантов"}
           </h2>
           <p className="advisor-muted">
-            Агенты разберут пожелания, сравнят категории и проверят ограничения.
+            Сравним категории номеров и объясним ограничения данных.
             Обязательные условия меняете только вы.
           </p>
         </div>
@@ -79,28 +76,12 @@ export function AdvisorPanel({
         />
       )}
       <div className="advisor-controls">
-        <label className="field">
-          <span>Как выполнить разбор</span>
-          <select
-            value={mode}
-            onChange={(event) => setMode(event.target.value as AdvisorMode)}
-            disabled={active || !!advisor.busy || advisor.loading}
-          >
-            {(advisor.config?.modes || ["rules"]).map((item) => (
-              <option key={item} value={item}>
-                {item === "rules"
-                  ? "По правилам · без модели и API"
-                  : "Локальная модель · без платы за API"}
-              </option>
-            ))}
-          </select>
-        </label>
         {!active && searchId && (
           <button
             type="button"
             className="button primary"
             disabled={!advisor.config || !!advisor.busy || advisor.loading}
-            onClick={() => void advisor.start(mode)}
+            onClick={() => void advisor.start("rules")}
           >
             <Play size={16} aria-hidden="true" />
             {advisor.busy === "start"
@@ -252,18 +233,6 @@ export function AdvisorPanel({
             </p>
           </details>
         </>
-      )}
-      {advisor.config && !advisor.config.modes.includes("local") && (
-        <details className="advisor-setup">
-          <summary>Бесплатная локальная модель</summary>
-          <p>
-            Разбор по правилам уже доступен без установки модели. Для локального
-            ИИ установите Ollama, загрузите модель и укажите её имя в{" "}
-            <code>ADVISOR_LOCAL_MODEL</code> файла <code>.env</code>. После
-            перезапуска Java-сервера появится второй режим. Внешние платные API
-            помощник не использует.
-          </p>
-        </details>
       )}
     </section>
   );

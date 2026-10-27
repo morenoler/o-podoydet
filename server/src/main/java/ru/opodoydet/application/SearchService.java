@@ -94,6 +94,7 @@ public final class SearchService {
       throws SQLException {
     JsonNode trip = Validation.trip(input, store.region()).deepCopy();
     ObjectNode interpreted = agents.interpret(trip);
+    addCatalogWarning(interpreted, trip);
     List<JsonNode> hotels;
     List<JsonNode> facts;
     String policy;
@@ -120,13 +121,16 @@ public final class SearchService {
     boolean conflict = !interpreted.path("conflicts").isEmpty();
     java.util.function.Function<List<JsonNode>, List<JsonNode>> ranker =
         requested ->
-            projected.apply(
-                extra.apply(
-                    Matching.rank(
-                        snapshotHotels, snapshotFacts, requested, trip, now, environments, policy),
-                    requested),
-                requested,
-                conflict);
+            HotelFilters.apply(
+                projected.apply(
+                    extra.apply(
+                        Matching.rank(
+                            snapshotHotels, snapshotFacts, requested, trip, now, environments, policy),
+                        requested),
+                    requested,
+                    conflict),
+                snapshotFacts,
+                trip.path("hotelFilters"));
     List<JsonNode> ranked = ranker.apply(preferences);
     for (JsonNode match : ranked)
       ((ObjectNode) match).set("personalWishes", interpreted.path("personalWishes").deepCopy());
@@ -136,14 +140,14 @@ public final class SearchService {
                 ? AdvisorPlanner.plan(
                     trip,
                     interpreted,
-                    hotels.size() + extra.additionalHotels(),
+                    HotelFilters.active(trip.path("hotelFilters")) ? ranked.size() : hotels.size() + extra.additionalHotels(),
                     now,
                     ranked,
                     ranker)
                 : AdvisorPlanner.planRooms(
                     trip,
                     interpreted,
-                    hotels.size() + extra.additionalHotels(),
+                    HotelFilters.active(trip.path("hotelFilters")) ? ranked.size() : hotels.size() + extra.additionalHotels(),
                     now,
                     ranked,
                     ranker,
@@ -264,6 +268,7 @@ public final class SearchService {
     JsonNode trip = Validation.trip(input, store.region()), hotel = store.hotel(id);
     Instant now = clock.instant();
     ObjectNode interpreted = agents.interpret(trip);
+    addCatalogWarning(interpreted, trip);
     List<JsonNode> preferences = Json.list(interpreted.path("preferences"));
     List<JsonNode> allPreferences =
         Features.ids().stream()
@@ -309,11 +314,11 @@ public final class SearchService {
       if (!interpreted.path("conflicts").isEmpty()) excludeForConflict(match);
       for (String key : List.of("preferences", "warnings", "conflicts", "mode", "personalWishes"))
         match.set(key, interpreted.path(key));
-      return projection
+      List<JsonNode> projected = projection
           .snapshot(trip, now)
-          .apply(List.of(match), preferences, !interpreted.path("conflicts").isEmpty())
-          .getFirst()
-          .deepCopy();
+          .apply(List.of(match), preferences, !interpreted.path("conflicts").isEmpty());
+      List<JsonNode> filtered = HotelFilters.apply(projected, List.of(), trip.path("hotelFilters"));
+      return filtered.isEmpty() ? null : filtered.getFirst().deepCopy();
     }
     List<JsonNode> facts =
         store.matchingFacts().stream().filter(f -> Json.str(f, "hotelId").equals(id)).toList();
@@ -362,11 +367,18 @@ public final class SearchService {
     if (!interpreted.path("conflicts").isEmpty()) excludeForConflict(match);
     for (String key : List.of("preferences", "warnings", "conflicts", "mode", "personalWishes"))
       match.set(key, interpreted.path(key));
-    return projection
+    List<JsonNode> projected = projection
         .snapshot(trip, now)
-        .apply(List.of(match), preferences, !interpreted.path("conflicts").isEmpty())
-        .getFirst()
-        .deepCopy();
+        .apply(List.of(match), preferences, !interpreted.path("conflicts").isEmpty());
+    List<JsonNode> filtered = HotelFilters.apply(projected, facts, trip.path("hotelFilters"));
+    return filtered.isEmpty() ? null : filtered.getFirst().deepCopy();
+  }
+
+  private static void addCatalogWarning(ObjectNode interpreted, JsonNode trip) {
+    if (!Json.str(trip.path("hotelFilters"), "query").isBlank())
+      interpreted.withArray("warnings").add(
+          "Поиск по словам показывает совпадения в названии, адресе, категории и цитатах источников."
+              + " Совпадение текста не подтверждает наличие удобства или его доступность на даты поездки.");
   }
 
   private static void excludeForConflict(ObjectNode match) {

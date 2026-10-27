@@ -125,6 +125,27 @@ export interface PersonalWishes {
   excludedFeatures: FeatureId[];
   ownerCriteria: Pick<OwnerCriterion, "id" | "feature" | "label" | "required">[];
 }
+export type LodgingType = "hotel" | "motel" | "guest_house" | "hostel" | "apartment";
+/** Hard catalog limits. Missing price/distance does not satisfy a supplied maximum. */
+export interface HotelFilters {
+  /** Literal catalog/source-text retrieval, never confirmation of a room amenity. */
+  query?: string;
+  lodgingTypes?: LodgingType[];
+  /** Published price in KRW; availability and a quote for the travel dates are not checked. */
+  maxPricePerNight?: number;
+  /** Calculated route length, excluding unverified access to the water. */
+  maxBeachMeters?: number;
+}
+export interface CatalogSearchSnippet {
+  field: "name" | "address" | "room" | "quote";
+  text: string;
+  sourceUrl?: string;
+  roomId?: string;
+  factId?: string;
+  obtainedAt?: string;
+  sourceDate?: string;
+  expiresAt?: string;
+}
 export interface Trip {
   /** Omission keeps the legacy verified admission contract. */
   admissionMode?: "explore" | "verified";
@@ -136,6 +157,7 @@ export interface Trip {
   scenarios: string[];
   preferences: Preference[];
   preferenceOverrides?: PreferenceOverride[];
+  hotelFilters?: HotelFilters;
   text: string;
 }
 export type MatchStatus =
@@ -179,6 +201,8 @@ export interface CriterionDecision extends Criterion {
   sourceExplanation: string;
 }
 export interface RoomMatch {
+  /** Text matches only: the criteria below retain their independent evidence status. */
+  catalogMatches?: CatalogSearchSnippet[];
   /** An explicit reported capacity remains distinct from independently sourced category evidence. */
   capacitySource?: "owner" | "official";
   /** True only when admission relies on missing or outdated mandatory evidence. */

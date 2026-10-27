@@ -1276,18 +1276,18 @@
 .search-primary .search-admission > p { margin-top: 0; }
 .search-layout > .search-list-section { grid-column: 1; grid-row: 2; }
 .search-layout > .search-conversation { grid-column: 2; grid-row: 1 / span 2; }
-.search-primary .search-bar { grid-template-columns: minmax(130px, .95fr) minmax(165px, 1.2fr) minmax(120px, .9fr) 106px; min-height: 80px; border-color: transparent; border-radius: 24px; }
+.search-primary .search-bar { grid-template-columns: minmax(130px, .95fr) minmax(165px, 1.2fr) minmax(120px, .9fr) 106px; min-height: 80px; border-color: #dce5ef; border-radius: 14px; }
 .search-primary .search-bar-field, .search-primary .search-bar-destination { gap: 8px; padding: 0 12px; }
 .search-primary .search-bar strong { font-size: 15px; }
 .search-primary .search-bar-field > svg:first-child { display: none; }
 .search-primary .search-bar-submit { min-width: 0; height: 52px; padding: 12px; border: 0; border-radius: 18px; background: #6cdb9b; color: #20251f; }
 .search-primary .search-bar-submit:hover { background: #5bce8b; }
 .search-primary .search-toolbar { flex-wrap: wrap; gap: 10px; border: 0; padding: 16px 0 0; }
-.search-primary .search-chip { min-height: 48px; padding: 10px 17px; border-color: transparent; border-radius: 20px; }
+.search-primary .search-chip { min-height: 48px; padding: 10px 17px; border-color: #dce5ef; border-radius: 12px; }
 .search-primary .search-chip.is-active { border-color: #9ecfb1; background: #e3f5e9; color: #245e3b; }
 .search-primary .search-filter-count { background: #d9efdf; color: #245e3b; }
 .search-primary .search-active-preferences button { border-color: #b5d6c1; background: #e5f3ea; color: #245e3b; border-radius: 14px; }
-.search-page-conversation .search-hotel-card { border-color: transparent; border-radius: 22px; }
+.search-page-conversation .search-hotel-card { border-color: #e0e7e3; border-radius: 14px; }
 .search-page-conversation .search-hotel-card.is-selected, .search-page-conversation .search-hotel-card:focus-within { border-color: #b5d6c1; }
 @media (min-width: 901px) and (max-width: 1199px) {
   .search-layout { grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; }

@@ -17,6 +17,7 @@ import { FavoriteButton } from "../../favorites/FavoriteButton";
 import { PersonalWishesSummary } from "./PersonalWishesSummary";
 import { features } from "../../../../shared/features";
 import { directionLabels } from "../../account/format";
+import { dateFull } from "../../../shared/lib/date";
 import { recommendationMatch } from "../../search/roomResults";
 import {
   capacityNeedsClarification,
@@ -94,6 +95,7 @@ export function HotelCard({
     hotel.pricePerNight > 0 &&
     hotel.currency === "KRW";
   const resultLabel = match ? matchLabel(match) : "Условия и источники";
+  const hasConditions = !!(match?.best.criteria.length || match?.ownerCriteria?.length);
   const presentationState = match ? matchPresentationState(match) : "unknown";
   return (
     <article
@@ -156,7 +158,7 @@ export function HotelCard({
         {room && <p className="search-room-hotel">{hotel.name}</p>}
         {room && <p className="search-room-capacity">{capacityUnknown || capacity == null ? "Вместимость нужно уточнить" : `Вместимость: до ${capacity} гостей${match?.best.capacityRule ? " по правилу размещения" : ""}`}</p>}
         <p className="search-hotel-meta">{hotel.address || "Пусан, Хэундэ"}</p>
-        {category && (
+        {category && !room && (
           <p className="search-hotel-room">
             Категория: {category.name}
             {!capacityUnknown && !match?.best.capacityRule && category.capacity !== null && !category.capacityMayVary
@@ -175,7 +177,7 @@ export function HotelCard({
             disabled={!onSelect && !onShowMap}
           >
             <Waves size={20} aria-hidden="true" />
-            {hotel.route.meters} м пешком до пляжа
+            {hotel.route.meters} м по пешеходной сети до пляжа
           </button>
         ) : (
           <p className="search-hotel-unknown">
@@ -188,12 +190,12 @@ export function HotelCard({
         <p className="search-hotel-evidence">
           <CircleHelp size={18} aria-hidden="true" />
           <span>
-            {roomRecommendation && !alternative && !match?.best.provisional
+            {roomRecommendation && hasConditions && !alternative && !match?.best.provisional
               ? roomRecommendation.source === "owner"
                 ? "Все критерии совпали по сведениям отельера"
                 : roomRecommendation.source === "demo"
                   ? "Совпадение в демонстрационных данных"
-                  : "Условия проверены для этой категории номера"
+                  : "Условия сопоставлены с источниками категории"
               : capacityUnknown
               ? "Вместимость требует уточнения"
               : missingOwner
@@ -252,7 +254,7 @@ export function HotelCard({
                 >
                   {roomRecommendation ? (
                     <>{alternative || match?.best.provisional ? <CircleHelp size={17} aria-hidden="true" /> : <Check size={17} aria-hidden="true" />}
-                      {match?.best.provisional ? "Вариант для уточнения" : alternative ? "Не все условия подтверждены" : "Совпали все критерии"}
+                      {match?.best.provisional ? "Вариант для уточнения" : alternative ? "Не все условия подтверждены" : hasConditions ? "Совпали выбранные условия" : "Подходит по вместимости"}
                     </>
                   ) : match ? (
                     <>
@@ -279,6 +281,18 @@ export function HotelCard({
           </Link>
         </div>
       </div>
+      {!!hotel.route?.connectionMeters && !hotel.synthetic && <p className="search-route-caveat">Подходы к сети: ещё ≈{Math.round(hotel.route.connectionMeters)} м, не проверены.</p>}
+      {!!match?.best.catalogMatches?.length && <details className="search-source-matches">
+        <summary>Совпадения в тексте источников</summary>
+        <p>Упоминание не подтверждает наличие удобства в конкретном номере.</p>
+        {match.best.catalogMatches.map((snippet, index) => <blockquote key={index}>
+          {snippet.text}
+          {snippet.sourceUrl && <a href={snippet.sourceUrl} target="_blank" rel="noreferrer">Источник</a>}
+          <small>{snippet.sourceDate ? `Дата источника: ${dateFull(snippet.sourceDate)}.` : "Дата источника неизвестна."}
+            {snippet.obtainedAt && ` Получено: ${dateFull(snippet.obtainedAt)}.`}
+            {snippet.expiresAt && ` Перепроверить до: ${dateFull(snippet.expiresAt)}.`}</small>
+        </blockquote>)}
+      </details>}
       {match && <PersonalWishesSummary match={match} />}
     </article>
   );

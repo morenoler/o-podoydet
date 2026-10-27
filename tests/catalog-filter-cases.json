@@ -1,0 +1,15 @@
+[
+  { "query": "ＰＡＲＫ люкс с балконом", "roomId": "suite", "expected": true },
+  { "query": "ТВИН с кухней", "roomId": "twin", "expected": true },
+  { "query": "Haeun 해운대", "roomId": "suite", "expected": true },
+  { "query": "Park sea", "roomId": "suite", "expected": true },
+  { "query": "ПУСАН", "roomId": "twin", "expected": true },
+  { "query": "люкс кухня", "roomId": "suite", "expected": false },
+  { "query": "люкс кухня", "roomId": "twin", "expected": false },
+  { "query": "балкон", "roomId": "twin", "expected": false },
+  { "query": "Park absent", "roomId": "suite", "expected": false },
+  { "query": "без балкона", "roomId": "suite", "expected": false },
+  { "query": "!!!", "roomId": "suite", "expected": false },
+  { "query": "   ", "roomId": "suite", "expected": true },
+  { "query": "завтрак сауна спортзал кондиционер", "roomId": "suite", "quote": "Breakfast, sauna, fitness studio, air-conditioning", "expected": true }
+]

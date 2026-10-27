@@ -14,6 +14,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import ru.opodoydet.domain.EvidencePeriod;
 import ru.opodoydet.server.catalog.RoomPolicy;
 import ru.opodoydet.server.knowledge.Characteristic;
 import ru.opodoydet.server.knowledge.Evidence;
@@ -85,10 +86,7 @@ final class CriterionEvaluator {
         continue;
       if (hotelScope ? e.getRoomId() != null : !roomId.equals(e.getRoomId())) continue;
       JsonNode raw = raw(e);
-      if (raw.hasNonNull("validFrom")
-          && raw.path("validFrom").asText().compareTo(trip.path("checkIn").asText()) > 0) continue;
-      if (raw.hasNonNull("validTo")
-          && raw.path("validTo").asText().compareTo(trip.path("checkOut").asText()) < 0) continue;
+      if (!EvidencePeriod.applies(raw, trip, definition.getThreshold())) continue;
       relevant.add(e);
     }
     List<Evidence> active =
@@ -106,7 +104,7 @@ final class CriterionEvaluator {
 
     List<Evidence> valued = active.stream().filter(e -> hasValue(e.getValue())).toList();
     annotate(result, hotelId, hotelScope ? null : roomId, feature, valued);
-    if (groups(valued, definition.getValueType()) > 1)
+    if (groups(valued, definition.getValueType(), definition.getThreshold()) > 1)
       return status(result, "conflict", "Источники содержат несовместимые значения");
     if (valued.isEmpty())
       return status(
@@ -151,15 +149,18 @@ final class CriterionEvaluator {
     if (c != null) result.put("confidence", c);
   }
 
-  private static int groups(List<Evidence> valued, String valueType) {
+  private static int groups(List<Evidence> valued, String valueType, Integer threshold) {
     List<JsonNode> representatives = new ArrayList<>();
     for (Evidence e : valued)
-      if (representatives.stream().noneMatch(r -> same(r, e.getValue(), valueType)))
+      if (representatives.stream().noneMatch(r -> same(r, e.getValue(), valueType, threshold)))
         representatives.add(e.getValue());
     return representatives.size();
   }
 
-  static boolean same(JsonNode a, JsonNode b, String valueType) {
+  static boolean same(JsonNode a, JsonNode b, String valueType, Integer threshold) {
+    // Approximate measurements can agree only when they imply the same search decision.
+    if (threshold != null && a.isNumber() && b.isNumber()
+        && (a.asDouble() <= threshold) != (b.asDouble() <= threshold)) return false;
     if ("meters".equals(valueType) && a.isNumber() && b.isNumber()) {
       double x = a.asDouble(), y = b.asDouble();
       return Math.abs(x - y) <= Math.max(50.0, 0.25 * Math.min(x, y));

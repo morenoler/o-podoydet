@@ -74,10 +74,11 @@ test("room recommendations name and link the exact category, with hotel photos l
   assert.ok(html.includes("/hotels/real-hotel?room=deluxe-twin"));
   assert.ok(html.includes("Вместимость: до 2 гостей"));
   assert.ok(html.includes("Фото отеля"));
-  assert.ok(html.includes("Совпали все критерии"));
+  assert.ok(html.includes("Подходит по вместимости"));
+  assert.ok(!html.includes("Совпали выбранные условия"), "an empty criterion set must not imply amenity verification");
   const partial = markup(undefined, { roomRecommendation: recommendation, alternative: true });
   assert.ok(partial.includes("Не все условия подтверждены"));
-  assert.ok(!partial.includes("Совпали все критерии"));
+  assert.ok(!partial.includes("Совпали выбранные условия"));
 });
 
 test("two categories in one hotel keep separate comparison identity and one map marker", () => {

@@ -84,14 +84,112 @@ class SearchConversationTest {
 
   @Test
   void unsupportedAndMixedRequestsAreNotSilentlyClaimedAsApplied() {
-    ObjectNode response = say(trip(), "Рядом с морем, и нужен бассейн");
+    ObjectNode response = say(trip(), "Рядом с морем, и нужен аквапарк");
     assertNotNull(preference(response.path("trip"), "beach_walk"));
     assertTrue(response.path("message").asText().contains("Не применено"));
     for (String message :
         List.of(
-            "Вид на море", "Бюджет до 5000", "До моря 100 метров", "Грязный воздух", "Без детей")) {
+            "Вид на море", "Бюджет до 5000", "До моря -100 метров", "Грязный воздух", "Без детей")) {
       assertFalse(say(trip(), message).path("changed").asBoolean(), message);
     }
+  }
+
+  @Test
+  void structuredFiltersAccumulateAndClearWithoutChangingDatesOrOtherFields() {
+    JsonNode first = say(trip(), "Только апартаменты; до 100 000 KRW за ночь; до пляжа 0,5 км").path("trip");
+    assertEquals("apartment", first.path("hotelFilters").path("lodgingTypes").path(0).asText());
+    assertEquals(100000, first.path("hotelFilters").path("maxPricePerNight").asDouble());
+    assertEquals(500, first.path("hotelFilters").path("maxBeachMeters").asDouble());
+    JsonNode second = say(first, "Ищи «балкон, море и кухня»").path("trip");
+    assertEquals("балкон, море и кухня", second.path("hotelFilters").path("query").asText());
+    assertTrue(second.path("preferences").isEmpty());
+    JsonNode third = say(second, "Убери бюджет").path("trip");
+    assertFalse(third.path("hotelFilters").has("maxPricePerNight"));
+    assertEquals(500, third.path("hotelFilters").path("maxBeachMeters").asDouble());
+    assertEquals(trip().path("checkIn"), third.path("checkIn"));
+    Validation.tripDraft(third, "Пусан");
+  }
+
+  @Test
+  void floorsAndWindowDirectionUseExistingOwnerGrammarWithoutInventingEvidence() {
+    ObjectNode reply = say(trip(), "Не выше 3 этажа; окна на восток");
+    assertTrue(reply.path("changed").asBoolean());
+    assertEquals("не выше 3 этажа. окна на восток", reply.path("trip").path("text").asText());
+    assertTrue(reply.path("warnings").toString().contains("Неизвестные данные"));
+    assertTrue(reply.path("trip").path("preferences").isEmpty());
+    assertFalse(say(trip(), "Не выше 999 этажа").path("changed").asBoolean());
+  }
+
+  @Test
+  void unrecognizedPartOfSameClauseIsReportedAndNegationDoesNotLeakAcrossConjunction() {
+    ObjectNode mixed = say(trip(), "Тихий отель с аквапарком");
+    assertNotNull(preference(mixed.path("trip"), "low_noise"));
+    assertTrue(mixed.path("message").asText().contains("Не применено"));
+    JsonNode split = say(trip(), "Пляж не нужен и окна во двор обязательны").path("trip");
+    assertNull(preference(split, "beach_walk"));
+    assertTrue(preference(split, "courtyard").path("required").asBoolean());
+    assertFalse(say(trip(), "Не тихий отель").path("changed").asBoolean());
+  }
+
+  @Test
+  void limitsAndUnsupportedCurrenciesAreNeverApproximated() {
+    for (String message : List.of("До 100 долларов", "До 0 KRW", "До пляжа 0 м", "До пляжа 100001 м", "Не хочу апартаменты", "До моря 10 минут", "До 100000001 KRW"))
+      assertFalse(say(trip(), message).path("changed").asBoolean(), message);
+    assertEquals(150000, say(trip(), "Бюджет до 150 тыс вон").path("trip").path("hotelFilters").path("maxPricePerNight").asDouble());
+    assertEquals(100, say(trip(), "До моря 100 метров").path("trip").path("hotelFilters").path("maxBeachMeters").asDouble());
+  }
+
+  @Test
+  void naturalNamesAndAmenitiesAreSourceQueriesWithExplicitLimits() {
+    for (String message : List.of("Найди Signiel", "Найди отель Signiel"))
+      assertEquals("signiel", say(trip(), message).path("trip").path("hotelFilters").path("query").asText());
+    ObjectNode response = say(trip(), "Хочу номер с балконом и нужна кухня");
+    assertEquals("балкон кухня", response.path("trip").path("hotelFilters").path("query").asText());
+    assertTrue(response.path("warnings").toString().contains("не подтверждает"));
+    for (String message : List.of("Без бассейна", "Не хочу балкон", "Не нужны бассейн и парковка", "Без бассейна и балкона", "Нужна кухня для детского питания", "Найди отель без бассейна"))
+      assertFalse(say(trip(), message).path("changed").asBoolean(), message);
+    assertEquals("бассейн", say(trip(), "С бассейном").path("trip").path("hotelFilters").path("query").asText());
+  }
+
+  @Test
+  void unknownWishClearsAmbiguousPronounFocus() {
+    JsonNode quiet = say(trip(), "Тихо");
+    JsonNode unknown = chat.refine(quiet.path("trip"), "Аквапарк", quiet.path("focusFeatures"));
+    assertTrue(unknown.path("focusFeatures").isEmpty());
+    JsonNode pronoun = chat.refine(unknown.path("trip"), "Это обязательно", unknown.path("focusFeatures"));
+    assertFalse(pronoun.path("changed").asBoolean());
+    assertFalse(preference(pronoun.path("trip"), "low_noise").path("required").asBoolean());
+  }
+
+  @Test
+  void amenitiesAppendToCurrentNameWhileExplicitSearchReplacesIt() {
+    ObjectNode initial = trip();
+    initial.set("hotelFilters", Json.obj("query", "Signiel"));
+    JsonNode appended = say(initial, "Нужен балкон").path("trip");
+    assertEquals("Signiel балкон", appended.path("hotelFilters").path("query").asText());
+    assertEquals("Signiel", initial.path("hotelFilters").path("query").asText(), "Journal's original trip must remain intact");
+    JsonNode multiple = say(appended, "Нужен балкон и нужна кухня").path("trip");
+    assertEquals("Signiel балкон кухня", multiple.path("hotelFilters").path("query").asText());
+    JsonNode named = say(multiple, "Найди Hilton").path("trip");
+    assertEquals("hilton", named.path("hotelFilters").path("query").asText());
+    JsonNode quoted = say(multiple, "Ищи «терраса»").path("trip");
+    assertEquals("терраса", quoted.path("hotelFilters").path("query").asText());
+    assertFalse(say(multiple, "Очисти текстовый поиск").path("trip").has("hotelFilters"));
+    assertEquals("кухня", say(multiple, "Очисти текстовый поиск; нужна кухня").path("trip").path("hotelFilters").path("query").asText());
+    assertEquals("hilton кухня", say(multiple, "Нужен балкон; найди Hilton; нужна кухня").path("trip").path("hotelFilters").path("query").asText());
+  }
+
+  @Test
+  void appendedSearchDeduplicatesLiteralWordsAndRejectsOverflowAtomically() {
+    ObjectNode initial = trip();
+    initial.set("hotelFilters", Json.obj("query", "Signiel БАЛКОН"));
+    assertFalse(say(initial, "Нужен балкон").path("changed").asBoolean());
+    String longQuery = "x".repeat(229);
+    initial.set("hotelFilters", Json.obj("query", longQuery));
+    JsonNode reply = say(initial, "Нужен балкон и нужна кухня");
+    assertFalse(reply.path("changed").asBoolean(), "An oversized append must not apply only its first amenity");
+    assertEquals(longQuery, reply.path("trip").path("hotelFilters").path("query").asText());
+    assertTrue(reply.path("warnings").toString().contains("240"));
   }
 
   @Test

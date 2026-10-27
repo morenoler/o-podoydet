@@ -115,7 +115,8 @@ export function HotelPage() {
     ),
   );
   const hasOwnerCriteria = !!ranked.ownerCriteria?.length;
-  const allConditionsMatch = room.status === "fits" && room.capacityEvidenceStatus === "match"
+  const allConditionsMatch = (selectedCriteria.length > 0 || hasOwnerCriteria)
+    && room.status === "fits" && room.capacityEvidenceStatus === "match"
     && !room.capacityAssumed && room.room.evidenceStatus === "verified"
     && [...selectedCriteria, ...(ranked.ownerCriteria || [])].every((criterion) =>
       criterion.status === "match" && criterion.evidenceStatus === "match" && !criterion.assumed);
@@ -274,7 +275,7 @@ export function HotelPage() {
           )}
         </section>
         <aside className="room-panel">
-          <h2>{allConditionsMatch ? "Этот номер подходит по всем условиям" : "Условия выбранного номера"}</h2>
+          <h2>{allConditionsMatch ? "Категория подходит по выбранным условиям" : "Условия выбранной категории"}</h2>
           <p>
             Все пожелания проверяются в одной категории. Наличие конкретного номера на даты нужно уточнить у отеля.
           </p>

@@ -258,7 +258,7 @@ class SearchConversationApiTest {
   }
 
   @Test
-  void validatedModelEditsUseCurrentPreferencesAndDoNotChangeTripDetails() throws Exception {
+  void configuredModelIsNotCalledAndLocalEditsKeepCurrentPreferencesAndTripDetails() throws Exception {
     AtomicReference<JsonNode> request = new AtomicReference<>();
     AtomicInteger calls = new AtomicInteger();
     HttpServer model = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
@@ -293,26 +293,23 @@ class SearchConversationApiTest {
           "preferences", Json.array(List.of(Json.obj("feature", "family", "required", true))));
       JsonNode response =
           new SearchConversation(configured)
-              .refine(initial, "И окна непременно во внутренний двор", Json.array(List.of()));
-      assertEquals("llm", response.path("mode").asText());
+              .refine(initial, "И обязательно окна во двор", Json.array(List.of()));
+      assertEquals("rules", response.path("mode").asText());
       assertTrue(response.path("warnings").isEmpty());
       assertEquals(2, response.path("trip").path("preferences").size());
       assertTrue(response.path("trip").path("preferences").path(0).path("required").asBoolean());
       assertEquals("courtyard", response.path("focusFeatures").path(0).asText());
       for (String field : List.of("region", "checkIn", "checkOut", "adults", "children", "text"))
         assertEquals(initial.path(field), response.path("trip").path(field));
-      JsonNode modelInput = Json.read(request.get().path("input").asText());
-      assertEquals(initial.path("preferences"), modelInput.path("preferences"));
-      assertEquals(
-          "search_conversation", request.get().path("text").path("format").path("name").asText());
-      assertEquals(1, calls.get());
+      assertNull(request.get());
+      assertEquals(0, calls.get());
     } finally {
       model.stop(0);
     }
   }
 
   @Test
-  void malformedUnknownDuplicateOrInvalidModelEditsFallBackExplicitly() throws Exception {
+  void modelResponsesCannotOverrideLocallyUnderstoodEdits() throws Exception {
     AtomicReference<String> output = new AtomicReference<>();
     AtomicInteger calls = new AtomicInteger();
     HttpServer model = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
@@ -363,13 +360,13 @@ class SearchConversationApiTest {
         JsonNode response = chat.refine(trip(), "Хочу окна во двор", Json.array(List.of()));
         assertEquals("rules", response.path("mode").asText(), invalid);
         assertTrue(response.path("changed").asBoolean());
-        assertFalse(response.path("warnings").isEmpty());
+        assertTrue(response.path("warnings").isEmpty());
         assertEquals(1, response.path("trip").path("preferences").size());
         assertEquals(
             "courtyard",
             response.path("trip").path("preferences").path(0).path("feature").asText());
       }
-      assertEquals(badOutputs.size(), calls.get());
+      assertEquals(0, calls.get());
     } finally {
       model.stop(0);
     }

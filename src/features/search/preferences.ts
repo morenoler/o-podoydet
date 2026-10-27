@@ -16,7 +16,12 @@ export function editPreferences(trip: Trip, next: Preference[], current = trip.p
 /** Rebase a modal's own edits if a chat reply arrived while the modal was open. */
 export function applyFilterDraft(trip: Trip, current: Preference[], initial: Trip, draft: Trip, reset = false): Trip {
   const admissionMode = initial.admissionMode === draft.admissionMode ? trip.admissionMode : draft.admissionMode;
-  if (reset) return { ...trip, admissionMode, preferences: draft.preferences, text: draft.text, scenarios: draft.scenarios, preferenceOverrides: undefined };
+  if (reset) return { ...trip, admissionMode, preferences: draft.preferences, text: draft.text, scenarios: draft.scenarios, preferenceOverrides: undefined, hotelFilters: draft.hotelFilters };
+  const hotelFilters = { ...trip.hotelFilters };
+  for (const key of ["query", "lodgingTypes", "maxPricePerNight", "maxBeachMeters"] as const) {
+    if (JSON.stringify(initial.hotelFilters?.[key]) === JSON.stringify(draft.hotelFilters?.[key])) continue;
+    Object.assign(hotelFilters, { [key]: draft.hotelFilters?.[key] });
+  }
   const next = new Map(current.map((p) => [p.feature, p]));
   for (const feature of new Set([...initial.preferences, ...draft.preferences].map((p) => p.feature))) {
     const before = initial.preferences.find((p) => p.feature === feature);
@@ -25,5 +30,5 @@ export function applyFilterDraft(trip: Trip, current: Preference[], initial: Tri
     if (after) next.set(feature, after);
     else next.delete(feature);
   }
-  return { ...editPreferences(trip, [...next.values()], current), admissionMode, text: initial.text === draft.text ? trip.text : draft.text };
+  return { ...editPreferences(trip, [...next.values()], current), admissionMode, hotelFilters, text: initial.text === draft.text ? trip.text : draft.text };
 }

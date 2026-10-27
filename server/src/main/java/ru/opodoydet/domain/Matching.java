@@ -65,12 +65,7 @@ public final class Matching {
                         && (definition.scope().equals("hotel")
                             ? !f.hasNonNull("roomId")
                             : Json.str(f, "roomId").equals(Json.str(room, "id"))))
-            .filter(
-                f ->
-                    (!f.hasNonNull("validFrom")
-                            || Json.str(f, "validFrom").compareTo(Json.str(trip, "checkIn")) <= 0)
-                        && (!f.hasNonNull("validTo")
-                            || Json.str(f, "validTo").compareTo(Json.str(trip, "checkOut")) >= 0))
+            .filter(f -> EvidencePeriod.applies(f, trip, definition.threshold()))
             .toList();
     List<JsonNode> active =
         relevant.stream()

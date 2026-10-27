@@ -16,9 +16,17 @@ const date = z
     const d = new Date(s + "T12:00:00Z");
     return !isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s;
   }, "Некорректная дата");
+export const hotelFiltersSchema = z.object({
+  query: z.string().max(240).transform((value) => value.trim()).optional(),
+  lodgingTypes: z.array(z.enum(["hotel", "motel", "guest_house", "hostel", "apartment"]))
+    .max(5).refine((values) => new Set(values).size === values.length, "Типы жилья повторяются").optional(),
+  maxPricePerNight: z.number().positive().max(100_000_000).optional(),
+  maxBeachMeters: z.number().positive().max(100_000).optional(),
+}).strict();
 export const tripSchema = z
   .object({
     admissionMode: z.enum(["explore", "verified"]).optional(),
+    hotelFilters: hotelFiltersSchema.optional(),
     region: z.literal("Пусан"),
     checkIn: date,
     checkOut: date,

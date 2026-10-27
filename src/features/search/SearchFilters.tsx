@@ -2,11 +2,11 @@ import { useState } from "react";
 import type { Preference, Trip } from "../../../shared/types";
 import { Modal } from "../../shared/ui/Modal";
 import { PreferencePicker } from "../preferences/PreferencePicker";
-import { Link } from "react-router-dom";
-import { canSearch } from "./searchTrip";
 import { applyFilterDraft, editPreferences } from "./preferences";
 import { AdmissionModePicker } from "./AdmissionModePicker";
 import type { FeatureId } from "../../../shared/types";
+import { CatalogFilterFields } from "./CatalogFilterFields";
+import { countHotelFilters } from "../../../shared/catalogFilters";
 
 const groups: { title: string; ids: FeatureId[] }[] = [
   { title: "Пляж и дорога", ids: ["beach_walk", "step_free_route"] },
@@ -36,7 +36,11 @@ export function SearchFilters({
       title="Настроить поиск"
       className="search-filters-modal"
     >
+      <form onSubmit={(event) => { event.preventDefault(); apply(); onClose(); }}>
       <div className="search-filters-body">
+        <CatalogFilterFields value={draft.hotelFilters}
+          onChange={(hotelFilters) => setDraft({ ...draft, hotelFilters })} />
+        <h3 className="search-filter-section-title">Условия поездки</h3>
         <AdmissionModePicker value={draft.admissionMode}
           onChange={(admissionMode) => setDraft({ ...draft, admissionMode })} />
         <p className="search-dialog-intro">
@@ -60,49 +64,27 @@ export function SearchFilters({
           placeholder="Например: не выше 3 этажа, окна на восток"
         />
       </label>
-      <p className="search-dialog-intro">
-        Неизвестные условия и предположения будут отмечены в результатах.
-      </p>
-      <p className="search-dialog-intro">
-        {draft.scenarios.length
-          ? "Также учтены сценарии вашей поездки. "
-          : "Можно выбрать готовый сценарий поездки. "}
-        <Link
-          to={canSearch(draft) ? "/wishes" : "/trip"}
-          onClick={() => {
-            apply();
-            onClose();
-          }}
-        >
-          {canSearch(draft)
-            ? "Сценарии и пожелания"
-            : "Выбрать даты и сценарий"}
-        </Link>
-      </p>
       </div>
       <div className="search-dialog-footer search-filters-footer">
-        <span className="search-filters-count">Выбрано: {draft.preferences.length}</span>
+        <span className="search-filters-count">Выбрано: {draft.preferences.length + countHotelFilters(draft.hotelFilters)}</span>
         <button
           className="button secondary"
           type="button"
           onClick={() => {
             setReset(true);
-            setDraft({ ...draft, preferences: [], scenarios: [], text: "", preferenceOverrides: undefined });
+            setDraft({ ...draft, preferences: [], scenarios: [], text: "", preferenceOverrides: undefined, hotelFilters: undefined });
           }}
         >
           Сбросить
         </button>
         <button
           className="button primary"
-          type="button"
-          onClick={() => {
-            apply();
-            onClose();
-          }}
+          type="submit"
         >
           Применить
         </button>
       </div>
+      </form>
     </Modal>
   );
 }
