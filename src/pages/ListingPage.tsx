@@ -3,6 +3,7 @@ import { Link, useLocation, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   Check,
+  ChevronDown,
   Compass,
   MapPin,
   UsersRound,
@@ -38,6 +39,7 @@ export function ListingPage() {
       ![
         "#listing-about",
         "#listing-amenities",
+        "#listing-additional",
         "#listing-questions",
         "#listing-questions-title",
         "#listing-fit",
@@ -45,10 +47,19 @@ export function ListingPage() {
       ].includes(hash)
     )
       return;
+    if (["#listing-questions", "#listing-questions-title", "#listing-fit", "#listing-fit-question"].includes(hash)) {
+      const additional = document.getElementById("listing-additional");
+      if (additional instanceof HTMLDetailsElement) additional.open = true;
+    }
+    const target = document.getElementById(hash.slice(1))
+      || (hash === "#listing-fit-question" ? document.getElementById("listing-fit") : null);
+    let disclosure = target?.closest<HTMLDetailsElement>("details");
+    while (disclosure) {
+      disclosure.open = true;
+      disclosure = disclosure.parentElement?.closest<HTMLDetailsElement>("details");
+    }
     const frame = requestAnimationFrame(() =>
-      document
-        .getElementById(hash.slice(1))
-        ?.scrollIntoView({ block: "start" }),
+      target?.scrollIntoView({ block: "start" }),
     );
     return () => cancelAnimationFrame(frame);
   }, [hash, listing]);
@@ -91,17 +102,14 @@ export function ListingPage() {
             <ListingGallery name={listing.title} photos={listing.photos} />
             <div className="listing-detail-layout">
               <div className="listing-main">
-                <nav
-                  className="listing-detail-tabs"
-                  aria-label="Разделы объявления"
-                >
-                  <a href="#listing-about">О жилье</a>
-                  <a href="#listing-amenities">Удобства</a>
-                  <a href="#listing-fit">Подойдёт ли вам</a>
-                  <a href="#listing-questions">Вопросы отельеру</a>
-                </nav>
                 <section className="listing-overview" id="listing-about">
-                  <h2>{listing.roomType}</h2>
+                  <div className="listing-overview-heading">
+                    <h2>{listing.roomType}</h2>
+                    <p className="listing-overview-price">
+                      <strong>{price(listing.pricePerNight)}</strong>
+                      <span>за ночь</span>
+                    </p>
+                  </div>
                   <dl className="listing-room-details">
                     <div>
                       <dt>
@@ -134,14 +142,14 @@ export function ListingPage() {
                     </div>
                   </dl>
                   <p className="listing-owner-source">
-                    Сведения отельера · независимая проверка не проведена
+                    По сведениям отельера
                   </p>
                   <p className="listing-description">{listing.description}</p>
                   <section
                     className="listing-amenity-section"
                     id="listing-amenities"
                   >
-                    <h2>Удобства по объявлению</h2>
+                    <h2>Удобства</h2>
                     {listing.amenities.length ? (
                       <ul className="listing-amenities">
                         {listing.amenities.map((amenity) => (
@@ -153,10 +161,20 @@ export function ListingPage() {
                       </ul>
                     ) : (
                       <p className="account-muted">
-                        Удобства пока не указаны. Уточните их у отельера.
+                        Удобства не указаны.
                       </p>
                     )}
                   </section>
+                </section>
+                <details
+                  className="listing-additional"
+                  id="listing-additional"
+                  key={listing.id}
+                >
+                  <summary>
+                    <span>Уточнения и вопросы</span>
+                    <ChevronDown size={20} aria-hidden="true" />
+                  </summary>
                   <div className="listing-host">
                     <span className="account-avatar" aria-hidden="true">
                       {listing.hostName
@@ -165,18 +183,18 @@ export function ListingPage() {
                         .toLocaleUpperCase("ru-RU")}
                     </span>
                     <div>
-                      <strong>Принимает {listing.hostName}</strong>
-                      <p>Автор объявления · детали можно уточнить до заявки</p>
+                      <strong>{listing.hostName}</strong>
+                      <p>Автор объявления</p>
                     </div>
                   </div>
-                </section>
-                <ListingClarificationPanel key={listing.id} listing={listing} />
-                <div id="listing-questions">
-                  <ListingQuestions
-                    key={`questions-${listing.id}`}
-                    listingId={listing.id}
-                  />
-                </div>
+                  <ListingClarificationPanel key={listing.id} listing={listing} />
+                  <div id="listing-questions">
+                    <ListingQuestions
+                      key={`questions-${listing.id}`}
+                      listingId={listing.id}
+                    />
+                  </div>
+                </details>
               </div>
               {!mobile && (
                 <aside className="listing-booking-column">

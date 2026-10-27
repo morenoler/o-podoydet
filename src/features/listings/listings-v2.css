@@ -108,27 +108,33 @@
   background: none;
   box-shadow: none;
 }
-.listing-detail-tabs {
+.listing-overview-heading {
   display: flex;
-  align-items: center;
-  gap: 40px;
-  border-bottom: 1px solid var(--line);
-  margin: 0 0 32px;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-bottom: 18px;
 }
-.listing-detail-tabs a {
-  padding: 0 0 18px;
-  color: var(--muted);
-  font-size: 15px;
-  font-weight: 600;
-}
-.listing-detail-tabs a:first-child {
-  color: var(--blue);
-  border-bottom: 3px solid var(--blue);
-  font-weight: 700;
-}
-.listing-v2 .listing-overview > h2 {
+.listing-v2 .listing-overview-heading h2 {
   font-size: 28px;
-  margin: 0 0 16px;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.listing-overview-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0;
+}
+.listing-overview-price strong {
+  font-size: 24px;
+  line-height: 1.3;
+}
+.listing-overview-price span {
+  font-size: 14px;
+  color: var(--muted);
 }
 .listing-room-details {
   display: flex;
@@ -163,7 +169,7 @@
   white-space: pre-line;
   font-size: 16px;
   line-height: 1.6;
-  color: var(--muted);
+  color: var(--ink);
 }
 .listing-v2 .listing-amenity-section h2 {
   font-size: 23px;
@@ -197,28 +203,63 @@
   flex-shrink: 0;
 }
 .listing-v2 .listing-host {
-  margin: 24px 0 32px;
-  padding: 24px;
-  border: 1px solid var(--line);
-  background: white;
-  border-radius: 12px;
+  margin: 0 0 20px;
+  padding: 12px 0;
+  border: 0;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 12px;
 }
 .listing-v2 .listing-host strong {
-  font-size: 18px;
+  font-size: 16px;
 }
 .listing-v2 .listing-host p {
   font-size: 13px;
   color: var(--muted);
-  margin-top: 6px;
+  margin: 4px 0 0;
 }
 .listing-v2 .account-avatar {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
   background: var(--soft-blue);
   color: var(--blue);
+}
+.listing-additional {
+  margin-top: 32px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  scroll-margin-top: 24px;
+}
+.listing-additional > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 56px;
+  padding: 16px 0;
+  list-style: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+}
+.listing-additional > summary::-webkit-details-marker {
+  display: none;
+}
+.listing-additional > summary:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+.listing-additional > summary svg {
+  flex-shrink: 0;
+  color: var(--muted);
+}
+.listing-additional[open] > summary svg {
+  transform: rotate(180deg);
+}
+.listing-additional[open] {
+  padding-bottom: 24px;
 }
 .listing-booking-column {
   position: sticky;
@@ -408,10 +449,7 @@
   .listing-v2 .listing-detail-layout {
     display: block;
   }
-  .listing-detail-tabs {
-    display: none;
-  }
-  .listing-v2 .listing-overview > h2 {
+  .listing-v2 .listing-overview-heading h2 {
     font-size: 22px;
   }
   .listing-room-details {
@@ -434,14 +472,6 @@
   .listing-v2 .listing-amenities {
     gap: 20px 16px;
     font-size: 15px;
-  }
-  .listing-v2 .listing-host {
-    padding: 20px;
-    gap: 16px;
-    margin: 28px 0;
-  }
-  .listing-v2 .listing-host strong {
-    font-size: 17px;
   }
   .listing-v2 .listing-mobile-booking {
     position: fixed;
