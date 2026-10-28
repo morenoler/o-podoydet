@@ -40,6 +40,8 @@ public final class IsolatedPostgresInitializer
       properties.put("FRONTEND_ORIGIN", "");
       properties.put("LEGACY_DB_PATH", "");
       properties.put("LLM_API_KEY", "");
+      properties.put("AI_PROVIDER", "");
+      properties.put("DEEPSEEK_API_KEY", "");
       properties.put("LLM_MODEL", "");
       properties.put("ADVISOR_LOCAL_MODEL", "");
       properties.put("UPLOADS_PATH", Files.createTempDirectory("opodoydet-pg-uploads-").toString());

@@ -45,7 +45,7 @@ try {
     );
     process.env.DATA_PATH = labDataPath;
     process.env.DIST_PATH = process.env.LAB_DIST_PATH || "dist-lab";
-    // Lab experiments must never invoke the optional paid search text parser.
+    // Disable legacy paid parsing; explicit AI_PROVIDER=deepseek opts into the shared provider.
     process.env.LLM_API_KEY = "";
     const { startBackend } = await import("./backend.mjs");
     const child = startBackend();

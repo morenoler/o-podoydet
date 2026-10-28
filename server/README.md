@@ -146,3 +146,7 @@ npm run lab:build
 Java-тесты используют настоящий PostgreSQL: Testcontainers либо явно заданные `TEST_DATABASE_URL`, `TEST_DATABASE_USER`, `TEST_DATABASE_PASSWORD`. Каждый экземпляр тестового приложения получает отдельную случайную схему; рабочие данные и пользовательские загрузки не используются. Проверяются HTTP, приватность, конкурентные записи, импорт SQLite, история после перезапуска, итоговый снимок поиска и лабораторные ограничения.
 
 `contract/requests.json` и `contract/snapshots/` содержат 85 эталонов, заново снятых с отдельной проверенной сборки актуального `main` e4faa2d; [происхождение эталонов](../contract/README.md). `npm run contract:verify` сравнивает Spring с ними в отдельной схеме. Личные уточнения, конечный снимок помощника и конкурентные операции дополнительно проверяются интеграционными тестами. Фактические результаты и ограничения: [SPRING_MIGRATION_QUALITY.md](../docs/SPRING_MIGRATION_QUALITY.md).
+
+## Общий провайдер DeepSeek
+
+AI_PROVIDER=deepseek и DEEPSEEK_API_KEY включают DeepSeek во всех модельных путях Java и Python. AI_PROVIDER=rules отключает модели. [Настройка, лимиты и офлайн-проверки](../docs/DEEPSEEK_MODULE.md).

@@ -1,5 +1,6 @@
 import { Bot, Play, RefreshCw, Square } from "lucide-react";
 import type { AdvisorStatus } from "../../../shared/advisor";
+import { advisorModeLabel } from "../../../shared/advisor";
 import type { PersonalWishes, Trip } from "../../../shared/types";
 import { ErrorMessage } from "../../shared/ui/Feedback";
 import { advisorIsActive, useAdvisor } from "./useAdvisor";
@@ -76,12 +77,13 @@ export function AdvisorPanel({
         />
       )}
       <div className="advisor-controls">
+        {advisor.config?.defaultMode === "deepseek" && <span className="advisor-muted">Разбор через DeepSeek API</span>}
         {!active && searchId && (
           <button
             type="button"
             className="button primary"
             disabled={!advisor.config || !!advisor.busy || advisor.loading}
-            onClick={() => void advisor.start("rules")}
+            onClick={() => void advisor.start(advisor.config?.defaultMode ?? "rules")}
           >
             <Play size={16} aria-hidden="true" />
             {advisor.busy === "start"
@@ -153,17 +155,17 @@ export function AdvisorPanel({
         <>
           <p className="advisor-run-status" role="status" aria-atomic="true">
             {statuses[run.status]} ·{" "}
-            {run.mode === "local" && active
+            {run.mode !== "rules" && active
               ? run.status === "queued"
-                ? "локальный ИИ ожидает запуска"
-                : "локальный ИИ выполняется"
+                ? `${advisorModeLabel(run.mode)} ожидает запуска`
+                : `${advisorModeLabel(run.mode)} выполняется`
               : run.execution === "rules_fallback"
                 ? "резервный ответ по правилам, ИИ не завершил работу"
-                : run.execution === "local"
-                  ? "локальная модель"
+                : run.execution === "local" || run.execution === "deepseek"
+                  ? advisorModeLabel(run.execution)
                   : run.mode === "rules" || run.execution === "rules"
                     ? "без модели"
-                    : "локальный ИИ запрошен, исполнение ещё не подтверждено"}
+                    : `${advisorModeLabel(run.mode)} запрошен, исполнение ещё не подтверждено`}
           </p>
           <ol className="advisor-stages" aria-label="Работа агентов">
             {stages.map((stage) => {

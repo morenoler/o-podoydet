@@ -11,7 +11,7 @@ import json
 import time
 from datetime import datetime, timezone
 
-from .runtime import AdvisorError, ModelClient, Settings
+from .runtime import AdvisorError, Settings, model_client
 
 MAX_MODEL_CALLS = 2
 MAX_RECOMMENDATIONS = 3
@@ -193,7 +193,7 @@ def mandatory_cautions(candidates):
 class AdvisorEngine:
     def __init__(self, settings: Settings, *, model=None, progress=lambda data: None):
         self.settings = settings
-        self.model = model if model is not None else ModelClient(settings)
+        self.model = model if model is not None else model_client(settings)
         self.progress = progress
         self.result = {"events": [], "report": None, "modelCalls": 0, "inputTokens": 0, "outputTokens": 0,
                        "warnings": [], "execution": "rules", "model": settings.model, "diagnostics": []}
@@ -204,10 +204,10 @@ class AdvisorEngine:
 
     def call(self, agent, prompt, data, schema, references=None):
         if self.result["modelCalls"] >= MAX_MODEL_CALLS:
-            raise AdvisorError("Достигнут лимит двух запросов к локальной модели.")
+            raise AdvisorError("Достигнут лимит двух запросов к модели.")
         # Match transport preflight before recording an actual model attempt.
         if len(json.dumps(data, ensure_ascii=False, separators=(",", ":"))) > 24_000:
-            raise AdvisorError("Превышен лимит контекста локальной модели; запрос не отправлен.")
+            raise AdvisorError("Превышен лимит контекста модели; запрос не отправлен.")
         if len(json.dumps(data, ensure_ascii=False).encode("utf-8")) > 32 * 1024:
             raise AdvisorError("Контекст превышает диагностический лимит; данные не обрезались.")
         call_number = self.result["modelCalls"] + 1
@@ -265,18 +265,18 @@ class AdvisorEngine:
         selection = deterministic_selection(candidates, scenarios, questions)
         self.emit("needs", "completed", "Выбран вопрос по неопределённым условиям поездки." if questions else "Дополнительных вопросов по текущему контексту нет.")
         self.emit("selector", "running", "Сравниваем варианты по обязательным условиям и полноте доказательств.")
-        if self.settings.mode == "local" and outcome != "clarification_needed":
+        if self.settings.mode in ("local", "deepseek") and outcome != "clarification_needed":
             try:
                 selection = self.local_selection(outcome, candidates, scenarios, questions, selection)
-                self.result["execution"] = "local"
+                self.result["execution"] = self.settings.mode
             except AdvisorError as error:
                 self.result["execution"] = "rules_fallback"
                 self.result["warnings"].append(f"{error} Использован бесплатный разбор по правилам; повторных запросов нет.")
-                self.emit("selector", "warning", "Локальная модель не дала пригодный результат. Возвращаемся к проверяемым правилам.")
+                self.emit("selector", "warning", "Модель не дала пригодный результат. Возвращаемся к проверяемым правилам.")
                 selection = deterministic_selection(candidates, scenarios, questions)
         else:
             self.result["warnings"].append("Разбор выполнен по правилам без вызова модели и без расходов на API.")
-        if self.result["execution"] != "local":
+        if self.result["execution"] not in ("local", "deepseek"):
             self.emit("selector", "completed", f"По правилам для просмотра выбрано вариантов: {len(selection['candidateIds'])}.")
         selected = [next(item for item in candidates if item["id"] == identifier) for identifier in selection["candidateIds"]]
         cautions = mandatory_cautions(selected)
@@ -303,7 +303,7 @@ class AdvisorEngine:
                 or (candidates and not answer["candidateIds"])):
             self.invalid_response("Модель предложила неподтверждённые идентификаторы или пустой список вариантов.")
         chosen = [item for item in context["candidates"] if item["id"] in answer["candidateIds"]]
-        self.emit("selector", "completed", f"Локальная модель выбрала вариантов: {len(chosen)}. Передаём их независимому критику.")
+        self.emit("selector", "completed", f"Модель выбрала вариантов: {len(chosen)}. Передаём их независимому критику.")
         self.emit("critic", "running", "Независимый агент проверяет выбранные варианты по исходным доказательствам.")
         # Required candidate keys guarantee coverage without pre-filling verdicts.
         # Every array still permits all criteria, safe and risky, or an empty list.

@@ -110,7 +110,7 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
             <button type="submit" aria-label="Отправить пожелание" disabled={chat.busy || !chat.draft.trim()}><ArrowUp size={23} aria-hidden="true" /></button>
           </div>
           {chat.error && <p className="conversation-error" id="conversation-error" role="alert">{chat.error}</p>}
-          <p id="conversation-hint" className="conversation-hint">{lastAssistant?.mode === "rules" ? "Разбор по правилам. Расположение проверяем по сохранённым данным карты." : lastAssistant?.mode === "local_model" ? "Запрос разбирает локальная модель. Расстояния считаются по карте." : "Добавляйте, уточняйте или убирайте пожелания."}</p>
+          <p id="conversation-hint" className="conversation-hint">{lastAssistant?.mode === "rules" ? "Разбор по правилам. Расположение проверяем по сохранённым данным карты." : lastAssistant?.mode === "deepseek" ? "Запрос разбирает DeepSeek. Расстояния считаются по карте." : lastAssistant?.mode === "local_model" ? "Запрос разбирает локальная модель. Расстояния считаются по карте." : "Добавляйте, уточняйте или убирайте пожелания."}</p>
         </form>
         {result && <button className="conversation-analyze" type="button" onClick={onAnalyze}>Разобрать найденные варианты</button>}
       </div>

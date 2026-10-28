@@ -10,7 +10,7 @@ interface Message {
   id: string;
   role: "user" | "assistant";
   text: string;
-  mode?: "rules" | "llm" | "local_model";
+  mode?: "rules" | "llm" | "local_model" | "deepseek";
 }
 interface Conversation {
   messages: Message[];
@@ -22,7 +22,7 @@ interface Reply {
   trip: Trip;
   message: string;
   warnings: string[];
-  mode: "rules" | "llm" | "local_model";
+  mode: "rules" | "llm" | "local_model" | "deepseek";
   focusFeatures: FeatureId[];
   changed: boolean;
 }

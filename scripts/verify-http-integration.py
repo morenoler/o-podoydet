@@ -416,7 +416,7 @@ def main():
                      "data/traffic-ktdb-2024.json", "services/window-view/data/scenes.json", "server/target/o-podoydet-server.jar"):
             report["inputSha256"][file] = digest(ROOT / file)
         env = os.environ.copy()
-        env.update(LLM_API_KEY="", ADVISOR_LOCAL_MODEL="", ADVISOR_PYTHON=sys.executable,
+        env.update(LLM_API_KEY="", ADVISOR_LOCAL_MODEL="", AI_PROVIDER="rules", DEEPSEEK_API_KEY="", ADVISOR_PYTHON=sys.executable,
                    ACCOUNT_MODE="true", SESSION_COOKIE_SECURE="false",
                    WINDOW_VIEW_URL=f"http://127.0.0.1:{args.view_port}", PYTHONUTF8="1", FRONTEND_ORIGIN="")
         tmp = run_dir / "tmp"

@@ -15,12 +15,13 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import ru.opodoydet.application.SearchService;
+import ru.opodoydet.application.ProviderSettings;
 import ru.opodoydet.domain.AdmissionPolicy;
 import ru.opodoydet.domain.Validation;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.shared.Json;
 
-/** Runs Python advice against immutable server-calculated facts, with no paid provider. */
+/** Runs Python advice against immutable server-calculated facts and an explicit provider. */
 public final class AdvisorService implements AutoCloseable {
   @FunctionalInterface
   public interface Worker {
@@ -48,10 +49,12 @@ public final class AdvisorService implements AutoCloseable {
     this.search = search;
     this.worker = worker;
     List<String> modes = new ArrayList<>(List.of("rules"));
-    String model = env.getOrDefault("ADVISOR_LOCAL_MODEL", "");
-    if (!model.isBlank() && !model.toLowerCase(java.util.Locale.ROOT).contains("cloud"))
-      modes.add("local");
-    config = Json.obj("modes", modes, "defaultMode", "rules", "maxModelCalls", 2, "model", model);
+    ProviderSettings selected = ProviderSettings.from(env);
+    String model = selected.provider().equals("rules") ? "" : selected.model();
+    if (selected.provider().equals("deepseek")) modes.add("deepseek");
+    else if (!model.isBlank() && !model.toLowerCase(java.util.Locale.ROOT).contains("cloud")) modes.add("local");
+    String defaultMode = modes.contains(selected.provider()) ? selected.provider() : "rules";
+    config = Json.obj("modes", modes, "defaultMode", defaultMode, "maxModelCalls", 2, "model", model);
     store.recoverAdvisorRuns();
   }
 
@@ -137,7 +140,7 @@ public final class AdvisorService implements AutoCloseable {
             0,
             "warnings",
             List.of());
-    run.put("model", mode.equals("local") ? Json.str(config, "model") : "");
+    run.put("model", mode.equals("rules") ? "" : Json.str(config, "model"));
     run.set("diagnostics", Json.array(List.of()));
     if (mode.equals("rules")) run.put("execution", "rules");
     if (actor == null) store.saveAdvisorRun(run);
@@ -166,8 +169,8 @@ public final class AdvisorService implements AutoCloseable {
             run.put("status", "failed")
                 .put(
                     "error",
-                    "Помощник не завершил работу. Проверьте Python и локальную модель. Платные API"
-                        + " не использовались.");
+                    "Помощник не завершил работу. Проверьте Python и настройки провайдера."
+                        + (mode.equals("deepseek") ? " Уже отправленные запросы могли быть оплачены." : ""));
             finishInterruptedDiagnostics(run, "Вызов прерван до получения результата.");
             save(run);
           } catch (SQLException persistenceError) {

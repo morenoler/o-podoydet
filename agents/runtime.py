@@ -1,4 +1,4 @@
-"""Optional local-model transport. No remote-provider mode or API credentials."""
+"""Explicit provider selection; legacy local transport remains available."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import socket
 import urllib.error
 import urllib.parse
 import urllib.request
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 class AdvisorError(Exception):
@@ -31,14 +31,24 @@ class Settings:
     mode: str
     model: str = ""
     endpoint: str = ""
+    provider_settings: object = field(default=None, repr=False)
 
     @classmethod
     def for_mode(cls, mode: str, env=None):
         env = os.environ if env is None else env
         if mode == "rules":
             return cls(mode)
+        provider = env.get("AI_PROVIDER", "").strip()
+        if mode == "deepseek":
+            if provider != "deepseek":
+                raise AdvisorError("DeepSeek не включён через AI_PROVIDER.")
+            from .deepseek import DeepSeekSettings
+            settings = DeepSeekSettings.from_env(env)
+            return cls(mode, settings.model, settings.endpoint, settings)
+        if provider in ("rules", "deepseek"):
+            raise AdvisorError("Локальная модель отключена выбранным AI_PROVIDER.")
         if mode != "local":
-            raise AdvisorError("Поддерживаются только бесплатные режимы: правила и локальная модель.")
+            raise AdvisorError("Поддерживаются режимы rules, local и deepseek.")
         model = env.get("ADVISOR_LOCAL_MODEL", "").strip()
         base = env.get("ADVISOR_LOCAL_BASE_URL", "http://127.0.0.1:11434/v1").strip()
         if not model or "cloud" in model.lower():
@@ -56,6 +66,15 @@ class Settings:
         except (ValueError, OSError):
             raise AdvisorError("Локальная модель должна быть доступна только по loopback-адресу.") from None
         return cls(mode, model, base.rstrip("/") + "/chat/completions")
+
+
+def model_client(settings):
+    if settings.mode == "deepseek":
+        from .deepseek import DeepSeekClient, DeepSeekSettings
+        if not isinstance(settings.provider_settings, DeepSeekSettings):
+            raise AdvisorError("Не переданы настройки DeepSeek.")
+        return DeepSeekClient(settings.provider_settings)
+    return ModelClient(settings)
 
 
 class ModelClient:

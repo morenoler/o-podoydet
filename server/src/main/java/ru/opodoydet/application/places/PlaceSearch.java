@@ -237,13 +237,13 @@ public final class PlaceSearch {
           wishes = proposed;
           messages.addAll(applied);
           handled = true;
-          mode = "local_model";
+          mode = planner.mode();
           remaining.clear();
           String remainder = Json.str(result, "remainingText");
           if (!remainder.isBlank()) remaining.add(remainder);
         }
       } catch (Exception ignored) {
-        warnings.add("Локальная модель не смогла надёжно разобрать пожелание. Укажите место и расстояние, например «кафе в пределах 500 м».");
+        warnings.add("Модель не смогла надёжно разобрать пожелание. Укажите место и расстояние, например «кафе в пределах 500 м».");
       }
     }
     return Json.obj("locationWishes", wishes.values(), "pendingLocationQuery", pending,

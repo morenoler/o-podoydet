@@ -70,6 +70,8 @@ try {
       TRAFFIC_DATA_PATH: "data/traffic-ktdb-2024.json",
       FRONTEND_ORIGIN: "",
       LLM_API_KEY: "",
+      AI_PROVIDER: "rules",
+      DEEPSEEK_API_KEY: "",
       LLM_MODEL: "",
       ADVISOR_LOCAL_MODEL: "",
     },
