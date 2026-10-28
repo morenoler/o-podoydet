@@ -458,6 +458,17 @@ public final class AdvisorPlanner {
       derived.set("sources", Json.array(List.of()));
       criteria.add(derived);
     }
+    for (JsonNode criterion : match.path("locationCriteria")) {
+      ObjectNode derived = criterion.deepCopy();
+      derived.put("id", id + "::location-" + Json.str(criterion, "id"));
+      derived.put("feature", "location");
+      derived.put("assumed", false);
+      derived.set("sources", Json.array(Json.list(criterion.path("places")).stream()
+          .filter(place -> safeUrl(place.path("sourceUrl")))
+          .map(place -> Json.obj("url", place.path("sourceUrl"), "label", place.path("name")))
+          .limit(3).toList()));
+      criteria.add(derived);
+    }
     return Json.obj(
         "id",
         id,

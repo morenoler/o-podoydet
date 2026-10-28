@@ -1,5 +1,6 @@
 import type { HotelMatch, PersonalWishes } from "../../../shared/types";
 import { features } from "../../../shared/features";
+import { locationState } from "../../features/places/locationPresentation";
 
 export type PersonalWishState = "match" | "reported" | "unknown" | "mismatch" | "excluded";
 export interface PersonalWishItem {
@@ -10,7 +11,10 @@ export interface PersonalWishItem {
 
 export function personalWishItems(match: HotelMatch): PersonalWishItem[] {
   const wishes = match.personalWishes;
-  if (!wishes || wishes.status !== "recognized") return [];
+  const locationItems: PersonalWishItem[] = (match.locationCriteria || []).map((criterion) => ({
+    id: `location:${criterion.id}`, label: criterion.label || criterion.query, state: locationState(criterion),
+  }));
+  if (!wishes || wishes.status !== "recognized") return locationItems;
   const items: PersonalWishItem[] = [...new Set(wishes.features)].map((feature) => {
     // Only this room can satisfy this request. Other rooms are not evidence.
     const criterion = match.best.criteria.find((item) => item.feature === feature);
@@ -30,14 +34,14 @@ export function personalWishItems(match: HotelMatch): PersonalWishItem[] {
   for (const feature of new Set(wishes.excludedFeatures)) {
     items.push({ id: `excluded:${feature}`, label: features[feature].label, state: "excluded" });
   }
-  return items;
+  return [...items, ...locationItems];
 }
 
 export function personalWishSummary(match: HotelMatch) {
   const status = match.personalWishes?.status;
-  if (!status || status === "not_requested") return null;
+  if ((!status || status === "not_requested") && !match.locationCriteria?.length) return null;
   const items = personalWishItems(match);
-  if (status === "unrecognized") return {
+  if (status === "unrecognized" && !match.locationCriteria?.length) return {
     tone: "unknown", title: "Личные пожелания не учтены", items,
     note: "В тексте ничего не распознано. Уточните пожелание или выберите готовые условия.",
   };

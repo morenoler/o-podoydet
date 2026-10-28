@@ -66,7 +66,7 @@ class OwnerUnitDetailTest {
       assertEquals("fits", Json.str(detail.path("best"), "status"));
       assertEquals(-2, detail.path("best").path("score").asInt());
       assertTrue(detail.path("best").path("provisional").asBoolean());
-      assertEquals(8, detail.path("best").path("criteria").size());
+      assertEquals(ru.opodoydet.domain.Features.ids().size(), detail.path("best").path("criteria").size());
       assertEquals(detail.path("best"), detail.path("rooms").get(0));
       assertEquals(1, detail.path("preferences").size());
       assertNull(service.detail("account-listing:private-or-missing", trip()));

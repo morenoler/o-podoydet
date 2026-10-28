@@ -4,6 +4,17 @@ import type {
   RoomMatch,
   Preference,
 } from "../../../shared/types";
+import { locationState } from "../../features/places/locationPresentation";
+import { isAmenityId, amenityFeatures } from "../../../shared/amenities";
+
+/** Owner declarations can be known while remaining distinct from independent verification. */
+export function hasKnownOwnerAmenity(criterion: CriterionDecision) {
+  const evidence = criterion.ownerAmenityEvidence;
+  if (!isAmenityId(criterion.feature) || !evidence || evidence.source !== "owner" ||
+      evidence.method !== "structured_owner_declaration" || evidence.scope !== amenityFeatures[criterion.feature].scope ||
+      typeof evidence.value !== "boolean" || !Number.isFinite(Date.parse(evidence.obtainedAt))) return false;
+  return criterion.evidenceStatus === (evidence.value ? "match" : "mismatch");
+}
 
 /** A detail evaluation may include reference-only conditions that the traveler never selected. */
 export function matchForSelectedPreferences(
@@ -40,7 +51,7 @@ export function criterionNeedsClarification(criterion: CriterionDecision) {
         evidence.evidenceStatus === criterion.evidenceStatus,
     );
   return (
-    (criterion.assumed && !knownOwnerStatement) ||
+    (criterion.assumed && !knownOwnerStatement && !hasKnownOwnerAmenity(criterion)) ||
     (criterion.evidenceStatus !== "match" &&
       criterion.evidenceStatus !== "mismatch")
   );
@@ -78,7 +89,7 @@ export function hasKnownRequiredMismatch(match: HotelMatch) {
     ) ||
     !!match.ownerCriteria?.some(
       (c) => c.required && c.evidenceStatus === "mismatch",
-    )
+    ) || !!match.locationCriteria?.some((c) => c.required && locationState(c) === "mismatch")
   );
 }
 
@@ -91,18 +102,20 @@ export function matchLabel(match: HotelMatch) {
   if (
     capacityNeedsClarification(match.best) ||
     match.best.criteria.some(criterionNeedsClarification) ||
-    match.ownerCriteria?.some((c) => c.evidenceStatus === "unknown")
+    match.ownerCriteria?.some((c) => c.evidenceStatus === "unknown") ||
+    match.locationCriteria?.some((c) => locationState(c) === "unknown")
   )
     return "Есть условия для уточнения";
   if (
     match.best.criteria.some((c) => c.status === "mismatch") ||
-    match.ownerCriteria?.some((c) => c.evidenceStatus === "mismatch")
+    match.ownerCriteria?.some((c) => c.evidenceStatus === "mismatch") ||
+    match.locationCriteria?.some((c) => locationState(c) === "mismatch")
   )
     return "Есть несовпадения с пожеланиями";
   return match.best.capacitySource === "owner" ||
     match.ownerCriteria?.some((c) => c.assumed) ||
     match.best.criteria.some(
-      (criterion) => !!criterion.reportedEvidence?.length,
+      (criterion) => !!criterion.reportedEvidence?.length || hasKnownOwnerAmenity(criterion),
     )
     ? "Подходит по сведениям отельера"
     : "Подходит под фильтры";
@@ -117,11 +130,13 @@ export function matchPresentationState(
     match.best.provisional ||
     capacityNeedsClarification(match.best) ||
     match.best.criteria.some(criterionNeedsClarification) ||
-    match.ownerCriteria?.some((c) => c.evidenceStatus === "unknown")
+    match.ownerCriteria?.some((c) => c.evidenceStatus === "unknown") ||
+    match.locationCriteria?.some((c) => locationState(c) === "unknown")
   )
     return "unknown";
   return match.best.criteria.some((c) => c.status === "mismatch") ||
-    match.ownerCriteria?.some((c) => c.evidenceStatus === "mismatch")
+    match.ownerCriteria?.some((c) => c.evidenceStatus === "mismatch") ||
+    match.locationCriteria?.some((c) => locationState(c) === "mismatch")
     ? "mismatch"
     : "match";
 }

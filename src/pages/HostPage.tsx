@@ -113,7 +113,7 @@ export function HostPage() {
             </label>
             <div className="host-mode">
               <span className="live-dot" />
-              {catalog.mode === "llm"
+              {catalog.mode === "local_model" ? "Подключена локальная модель" : catalog.mode === "llm"
                 ? "Подключена языковая модель"
                 : "Локальный разбор по правилам"}
               <small>

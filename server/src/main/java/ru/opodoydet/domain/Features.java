@@ -101,6 +101,7 @@ public final class Features {
             "Низкий расчётный риск внешнего шума",
             "Есть факторы повышенного риска внешнего шума",
             null));
+    ALL.putAll(Amenities.definitions());
   }
 
   public static List<String> ids() {

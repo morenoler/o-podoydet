@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.opodoydet.application.SearchService;
 import ru.opodoydet.server.web.AdvisorIdentity;
@@ -47,5 +48,11 @@ public class SearchController {
     ObjectNode match = search.detail(id, input);
     if (match == null) return JsonResponses.notFound("Отель не найден");
     return JsonResponses.send(200, match);
+  }
+
+  @GetMapping("/api/hotels/{id}/places")
+  public ResponseEntity<String> places(@PathVariable String id) {
+    ObjectNode surroundings = search.surroundings(id);
+    return surroundings == null ? JsonResponses.notFound("Отель не найден") : JsonResponses.send(200, surroundings);
   }
 }

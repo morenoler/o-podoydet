@@ -17,6 +17,7 @@ import { MatchBadge } from "../hotels/components/MatchBadge";
 import { CriterionLine } from "../hotels/components/CriterionLine";
 import { CapacitySummary } from "../hotels/components/CapacitySummary";
 import { PersonalWishesSummary } from "../hotels/components/PersonalWishesSummary";
+import { LocationCriteria } from "../places/LocationCriteria";
 import {
   AccountLoading,
   ResourceError,
@@ -28,6 +29,7 @@ import {
   matchForSelectedPreferences,
 } from "../../shared/lib/matchPresentation";
 import { clarificationApi } from "./api";
+import { DecisionNextSteps } from "./DecisionNextSteps";
 import {
   clarificationItems,
   ownerClarifiableFeatures,
@@ -44,38 +46,39 @@ export const privateQuestionText: Record<ClarificationFeature, string> = {
 };
 
 export function ListingClarificationPanel({ listing }: { listing: Listing }) {
+  const { hash } = useLocation();
+  const { user, loading: authLoading } = useAuth();
   const { trip, setTrip, revision, refresh } = useApp();
   const validTrip = canSearch(trip);
   const tripKey = JSON.stringify(trip);
-  const [match, setMatch] = useState<HotelMatch | null>(null);
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
+  const requestKey = JSON.stringify([listing.id, listing.updatedAt, tripKey, revision, user?.id || "guest"]);
+  const [response, setResponse] = useState<{ key: string; match: HotelMatch | null; error: string } | null>(null);
+  const current = !authLoading && response?.key === requestKey ? response : null;
+  const match = current?.match || null;
+  const error = current?.error || "";
+  const busy = validTrip && !current;
   useEffect(() => {
     let active = true;
-    setMatch(null);
-    setError("");
-    if (!validTrip) {
-      setBusy(false);
-      return;
-    }
-    setBusy(true);
+    if (!validTrip || authLoading) return;
     api<HotelMatch>(
       `/hotels/${encodeURIComponent(`account-listing:${listing.id}`)}/evaluate`,
       trip,
     )
       .then((result) => {
-        if (active) setMatch(result);
+        if (active) setResponse({ key: requestKey, match: result, error: "" });
       })
       .catch((failure) => {
-        if (active) setError((failure as Error).message);
-      })
-      .finally(() => {
-        if (active) setBusy(false);
+        if (active) setResponse({ key: requestKey, match: null, error: (failure as Error).message });
       });
     return () => {
       active = false;
     };
-  }, [listing.id, listing.updatedAt, tripKey, revision, validTrip]);
+  }, [listing.id, listing.updatedAt, tripKey, revision, validTrip, user?.id, authLoading]);
+  useEffect(() => {
+    if (!match || !["#decision-next-steps", "#listing-fit-question"].includes(hash)) return;
+    const frame = requestAnimationFrame(() => document.getElementById(hash.slice(1))?.scrollIntoView({ block: "start" }));
+    return () => cancelAnimationFrame(frame);
+  }, [hash, match]);
   return (
     <section
       id="listing-fit"
@@ -115,6 +118,7 @@ export function ListingClarificationPanel({ listing }: { listing: Listing }) {
       ) : (
         match && (
           <>
+            <DecisionNextSteps match={match} room={match.best} trip={trip} connected />
             <div className="listing-fit-summary">
               <MatchBadge
                 match={matchForSelectedPreferences(
@@ -142,6 +146,7 @@ export function ListingClarificationPanel({ listing }: { listing: Listing }) {
                   />
                 ))}
             </div>
+            <LocationCriteria criteria={match.locationCriteria} detailed />
             <PersonalWishesSummary match={match} />
             <PrivateQuestionComposer
               key={`${listing.id}:${tripKey}`}
@@ -199,6 +204,9 @@ function PrivateQuestionComposer({
     );
   });
   const [open, setOpen] = useState(location.hash === "#listing-fit-question");
+  useEffect(() => {
+    if (location.hash === "#listing-fit-question") setOpen(true);
+  }, [location.hash]);
   const [requestKey, setRequestKey] = useState(() => crypto.randomUUID());
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");

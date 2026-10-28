@@ -1,0 +1,9 @@
+.structured-amenities { scroll-margin-top: 96px; }
+.structured-amenities > p { max-width: 72ch; color: var(--muted); line-height: 1.6; }
+.structured-amenities h3 { margin: 24px 0 14px; font-size: 17px; }
+.structured-amenities ul { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); list-style: none; padding: 0; gap: 20px 28px; }
+.structured-amenities li { display: flex; gap: 10px; align-items: flex-start; }
+.structured-amenities li > svg { flex-shrink: 0; margin-top: 3px; color: var(--muted); }
+.structured-amenities li > div { display: grid; gap: 4px; }
+.structured-amenities li span, .structured-amenities li small { color: var(--muted); font-size: 14px; }
+@media (max-width: 560px) { .structured-amenities ul { grid-template-columns: 1fr; } }

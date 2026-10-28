@@ -136,18 +136,18 @@ class AdvisorTest {
 
   @Test
   void unsupportedPersonalTextIsDisclosedEvenWhenSelectedChipsProduceMatches() {
-    ObjectNode query = trip(List.of(preference("family", false))).put("text", "Бассейн с горками");
+    ObjectNode query = trip(List.of(preference("family", false))).put("text", "Батут с горками");
     ObjectNode context = plan(hotel(), query, List.of(fact("room", "family", true)));
     ObjectNode checked = AdvisorService.checkedReport(context, report(context));
     assertEquals("shortlist", Json.str(checked, "outcome"));
     assertTrue(Json.str(checked, "summary").startsWith("В личном пожелании ничего не распознано."));
     assertEquals(checked, AdvisorService.checkedReport(context, checked), "Notice must not repeat on progress updates");
-    assertFalse(context.path("personalWishes").toString().contains("Бассейн"));
+    assertFalse(context.path("personalWishes").toString().contains("Батут"));
   }
 
   @Test
   void personalTextNoticePreservesTheSummaryLimitAndCanBeValidatedAgain() {
-    ObjectNode context = plan(hotel(), trip(List.of()).put("text", "Бассейн"), List.of());
+    ObjectNode context = plan(hotel(), trip(List.of()).put("text", "Батут"), List.of());
     ObjectNode checked = AdvisorService.checkedReport(context, report(context).put("summary", "А".repeat(1800)));
     assertEquals(1800, Json.str(checked, "summary").length());
     assertTrue(Json.str(checked, "summary").startsWith("В личном пожелании ничего не распознано."));
@@ -157,7 +157,7 @@ class AdvisorTest {
 
   @Test
   void recognizedPersonalTextNeverClaimsCompletenessAndBlankTextHasNoNotice() {
-    ObjectNode known = trip(List.of()).put("text", "Семейное размещение и бассейн");
+    ObjectNode known = trip(List.of()).put("text", "Семейное размещение и батут");
     ObjectNode context = plan(hotel(), known, List.of(fact("room", "family", true)));
     ObjectNode checked = AdvisorService.checkedReport(context, report(context));
     assertTrue(Json.str(checked, "summary").contains("остальной текст не проверен"));
@@ -169,7 +169,7 @@ class AdvisorTest {
   @Test
   void personalTextNoticeDoesNotEraseProvisionalCautionsOrChangeOutcome() {
     ObjectNode query = trip(List.of(preference("family", true)))
-        .put("admissionMode", "explore").put("text", "Бассейн с горками");
+        .put("admissionMode", "explore").put("text", "Батут с горками");
     ObjectNode context = plan(hotel(), query, List.of());
     ObjectNode checked = AdvisorService.checkedReport(context, report(context));
     assertEquals("shortlist", Json.str(checked, "outcome"));

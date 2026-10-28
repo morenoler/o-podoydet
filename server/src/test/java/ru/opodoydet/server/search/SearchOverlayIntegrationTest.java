@@ -68,6 +68,25 @@ class SearchOverlayIntegrationTest {
     }
   }
 
+  @Test void structuredAmenityCatalogUsesExactRoomScopeAndIntersectingPoolClosures() throws Exception {
+    ObjectNode query = trip("explore", "pool");
+    ObjectNode pool = fact(null,"pool",true).put("id","pool-open");
+    ObjectNode closure = fact(null,"pool",false).put("id","pool-closed")
+        .put("validFrom",query.path("checkOut").asText()).put("validTo",query.path("checkOut").asText());
+    try (var db = TestDatabases.create(seed(List.of(pool,closure,
+        fact("r1","dishwasher",true),fact("r2","washing_machine",true))))) {
+      ObjectNode result = search(db).search(query);
+      assertTrue(result.path("results").isEmpty());
+      assertEquals("conflict",criterion(only(result),"pool").path("evidenceStatus").asText());
+      ObjectNode separated = search(db).search(trip("verified","dishwasher","washing_machine"));
+      assertTrue(separated.path("results").isEmpty(),"Amenities from two rooms must never combine");
+      for (JsonNode roomMatch : only(separated).path("rooms")) {
+        assertEquals(1,Json.list(roomMatch.path("criteria")).stream().filter(c -> c.path("evidenceStatus").asText().equals("match")).count());
+        assertEquals(1,Json.list(roomMatch.path("criteria")).stream().filter(c -> c.path("evidenceStatus").asText().equals("unknown")).count());
+      }
+    }
+  }
+
   @Test void hostEvidenceChangesSearchAndAdvisorUsesThatFinalImmutableResult() throws Exception {
     try (var db = TestDatabases.create(seed(List.of()))) {
       ObjectNode trip = trip("verified", "courtyard");

@@ -1,0 +1,13 @@
+{
+  "id": "seomyeon-geocode",
+  "url": "https://nominatim.openstreetmap.org/search?q=Seomyeon%20station%2C%20Busan&format=jsonv2&limit=3&addressdetails=1",
+  "request": {
+    "method": "GET",
+    "url": "https://nominatim.openstreetmap.org/search?q=Seomyeon%20station%2C%20Busan&format=jsonv2&limit=3&addressdetails=1"
+  },
+  "obtainedAt": "2026-10-27T10:13:58.908Z",
+  "sourceDate": null,
+  "sha256": "c63fd933bb77c04962c2281e21d0584ae83bcc1980e036d9b4fbd4fdc4f069c4",
+  "contentType": "application/json; charset=utf-8",
+  "body": "[{\"place_id\":268903913,\"licence\":\"Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright\",\"osm_type\":\"node\",\"osm_id\":5782717001,\"lat\":\"35.1581652\",\"lon\":\"129.0595263\",\"category\":\"railway\",\"type\":\"stop\",\"place_rank\":30,\"importance\":7.220035095745812e-05,\"addresstype\":\"railway\",\"name\":\"서면\",\"display_name\":\"서면, 중앙대로, 범전동, 부전1동, 부산진구, 부산광역시, 47251, 대한민국\",\"address\":{\"railway\":\"서면\",\"road\":\"중앙대로\",\"quarter\":\"범전동\",\"suburb\":\"부전1동\",\"borough\":\"부산진구\",\"city\":\"부산광역시\",\"ISO3166-2-lvl4\":\"KR-26\",\"postcode\":\"47251\",\"country\":\"대한민국\",\"country_code\":\"kr\"},\"boundingbox\":[\"35.1581152\",\"35.1582152\",\"129.0594763\",\"129.0595763\"]}]"
+}

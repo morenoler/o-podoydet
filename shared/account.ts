@@ -1,4 +1,5 @@
 /** Personal accounts API contract. Amounts are whole KRW; dates are ISO calendar dates. */
+import type { AmenityStates, AmenityEvidenceMap } from "./amenities";
 export type AccountRole = "user" | "host";
 export interface AccountUser {
   id: string;
@@ -14,6 +15,7 @@ export interface AuthResponse {
 }
 export type ListingStatus = "draft" | "published";
 export interface ListingInput {
+  amenityStates?: AmenityStates;
   title: string;
   description: string;
   city: string;
@@ -28,6 +30,7 @@ export interface ListingInput {
   photos?: string[];
 }
 export interface Listing extends ListingInput {
+  amenityEvidence?: AmenityEvidenceMap;
   id: string;
   hostId: string;
   hostName: string;
@@ -65,6 +68,9 @@ export interface Booking {
   currency: "KRW";
   status: BookingStatus;
   note: string;
+  /** Private owner message; it does not confirm a booking, payment, or search condition. */
+  hostReply?: string;
+  repliedAt?: string;
   createdAt: string;
   updatedAt: string;
   photos: string[];

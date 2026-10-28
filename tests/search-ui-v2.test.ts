@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { MemoryRouter } from "react-router-dom";
-import { FavoritesProvider } from "../src/features/favorites/FavoritesProvider";
+import { FavoritesTestProvider as FavoritesProvider } from "./helpers/favoritesTestProvider";
 import { HotelCard } from "../src/features/hotels/components/HotelCard";
 import { canSearch, hasSearchDates, readSearchForm, searchTripIssues } from "../src/features/search/searchTrip";
 import { catalogRooms, recommendationItem, recommendationMatch, roomHotels } from "../src/features/search/roomResults";

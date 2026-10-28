@@ -1,0 +1,52 @@
+.location-criteria { min-width: 0; margin: 18px 0 0; padding-top: 16px; border-top: 1px solid var(--line); }
+.location-criteria h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; font-size: 15px; line-height: 1.4; }
+.location-criteria h3 svg { flex-shrink: 0; }
+.location-criteria-list, .location-place-list { list-style: none; margin: 0; padding: 0; }
+.location-criteria-list { display: grid; gap: 18px; }
+.location-criterion { min-width: 0; overflow-wrap: anywhere; }
+.location-criterion-heading { display: flex; align-items: flex-start; gap: 8px; }
+.location-criterion-heading > svg { flex-shrink: 0; margin-top: 2px; }
+.location-criterion-heading strong { display: block; color: var(--ink); font-size: 14px; line-height: 1.5; }
+.location-criterion-heading span { display: block; margin-top: 3px; font-size: 12px; line-height: 1.5; }
+.location-criterion.is-match .location-criterion-heading { color: #176247; }
+.location-criterion.is-mismatch .location-criterion-heading { color: #973a34; }
+.location-criterion.is-unknown .location-criterion-heading { color: #617087; }
+.location-criterion > p { margin: 8px 0; font-size: 13px; line-height: 1.5; color: var(--muted); }
+.location-place-list { display: grid; gap: 8px; margin-top: 10px; }
+.location-place-list li { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; font-size: 13px; line-height: 1.5; }
+.location-place-list a { text-decoration: underline; text-underline-offset: 3px; }
+.location-place-list span { color: var(--muted); }
+.location-criteria-note { margin: 14px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.location-criterion-evidence { margin-top: 12px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.location-criterion-evidence ul { margin: 0; padding-left: 18px; }
+.location-criteria.is-detailed h3 { font-size: 19px; }
+.location-criteria.is-detailed .location-criterion-heading strong { font-size: 16px; }
+.location-criteria.is-detailed .location-criterion > p { font-size: 14px; }
+.search-location-wishes { margin-top: 12px; }
+.search-location-wishes > p { margin: 0 0 8px; color: var(--muted); font-size: 13px; }
+.search-location-pending { margin: 12px 0 0; padding: 12px 16px; border: 1px solid var(--line); border-radius: 12px; font-size: 13px; line-height: 1.5; color: var(--muted); }
+.search-location-pending strong { color: var(--ink); }
+.conversation-room-recommendation .location-criteria { margin: 8px 0 0; padding-top: 12px; }
+.conversation-room-recommendation .location-criteria h3 { font-size: 13px; }
+.conversation-room-recommendation .location-criterion-heading strong { font-size: 13px; }
+.conversation-room-recommendation .location-place-list a { font-size: 13px; font-weight: 600; }
+.conversation-room-recommendation .location-criteria-note { font-size: 11px; }
+.nearby-places { margin: 28px 0; padding: 24px; border: 1px solid var(--line); border-radius: 16px; background: white; }
+.nearby-places h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 20px; font-size: 22px; }
+.nearby-places h2 svg { flex-shrink: 0; }
+.nearby-places > p { color: var(--muted); line-height: 1.6; }
+.nearby-place-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 32px; list-style: none; margin: 0 0 20px; padding: 0; }
+.nearby-place-list li { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; min-width: 0; overflow-wrap: anywhere; }
+.nearby-place-list a { font-size: 15px; line-height: 1.5; text-decoration: underline; text-underline-offset: 3px; }
+.nearby-place-list span { font-size: 13px; color: var(--muted); }
+.nearby-centers { margin-top: 22px; }
+.nearby-centers h3 { margin: 0 0 14px; font-size: 18px; }
+.nearby-centers p { margin: 6px 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.nearby-places-evidence { font-size: 12px; line-height: 1.6; color: var(--muted); }
+.nearby-places-evidence ul { padding-left: 18px; margin: 14px 0; }
+.nearby-places-evidence p { margin: 8px 0 0; }
+@media (max-width: 700px) {
+  .nearby-places { padding: 20px; }
+  .nearby-places h2 { font-size: 20px; }
+  .nearby-place-list { grid-template-columns: 1fr; }
+}

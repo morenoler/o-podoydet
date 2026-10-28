@@ -597,7 +597,7 @@ class BackendTest {
       Agents agents =
           new Agents(
               new Agents.Config(
-                  "test-only", "test-model", "http://127.0.0.1:" + mock.getAddress().getPort()));
+                  "test-only", "test-model", "http://127.0.0.1:" + mock.getAddress().getPort(), Agents.Protocol.RESPONSES));
       JsonNode interpreted = agents.interpret(trip().put("text", "Тихий номер"));
       assertEquals("rules", Json.str(interpreted, "mode"));
       assertTrue(interpreted.path("warnings").toString().contains("недоступен"));

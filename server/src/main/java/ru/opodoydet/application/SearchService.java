@@ -20,6 +20,8 @@ import ru.opodoydet.domain.RoomRecommendations;
 import ru.opodoydet.domain.Validation;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.shared.Json;
+import ru.opodoydet.application.places.PlaceSearch;
+import ru.opodoydet.domain.LocationAdmission;
 
 /** Application orchestration; HTTP and persistence never decide whether a criterion passes. */
 public final class SearchService {
@@ -29,6 +31,7 @@ public final class SearchService {
   private final Clock clock;
   private final SearchExtension extension;
   private final SearchProjection projection;
+  private final PlaceSearch places;
   private final Map<String, SearchSnapshot> snapshots = new LinkedHashMap<>();
   private static final Duration SNAPSHOT_LIFETIME = Duration.ofMinutes(10);
   private static final int MAX_SNAPSHOTS = 20;
@@ -55,12 +58,19 @@ public final class SearchService {
       Clock clock,
       SearchExtension extension,
       SearchProjection projection) {
+    this(store, agents, environment, clock, extension, projection, null);
+  }
+
+  public SearchService(
+      Store store, Agents agents, Environment environment, Clock clock,
+      SearchExtension extension, SearchProjection projection, PlaceSearch places) {
     this.store = store;
     this.agents = agents;
     this.environment = environment;
     this.clock = clock;
     this.extension = extension;
     this.projection = projection;
+    this.places = places;
   }
 
   public ObjectNode search(JsonNode input) throws SQLException {
@@ -77,7 +87,43 @@ public final class SearchService {
     JsonNode trip = Validation.tripDraft(input.path("trip"), store.region());
     String message = Validation.text(input, "message", 1, 1500).trim();
     if (message.isBlank()) throw new IllegalArgumentException("Напишите пожелание к номеру.");
-    return new SearchConversation(agents).refine(trip, message, input.path("focusFeatures"));
+    if (places != null && message.toLowerCase(java.util.Locale.ROOT).matches(
+        ".*(что.{0,25}(?:рядом|поблизости)|какие.{0,30}рядом|(?:он|номер|отель|это).{0,15}в центре\\s*\\??|находится ли.{0,25}центр).*"))
+      return explainSurroundings(input, trip);
+    return new SearchConversation(agents, places).refine(trip, message, input.path("focusFeatures"));
+  }
+
+  public ObjectNode surroundings(String hotelId) {
+    JsonNode hotel = store.hotel(hotelId);
+    if (hotel == null) return null;
+    return places == null ? Json.obj("status", "unknown", "places", List.of(), "centers", List.of(),
+        "method", "unavailable", "assumptions", List.of("Данные об окружении пока не подключены."))
+        : places.surroundings(hotel, 1000, clock.instant());
+  }
+
+  private ObjectNode explainSurroundings(JsonNode input, JsonNode trip) {
+    String id = input.hasNonNull("contextHotelId") ? Validation.text(input, "contextHotelId", 1, 180) : "";
+    JsonNode hotel = id.isBlank() ? null : store.hotel(id);
+    String reply;
+    if (hotel == null) {
+      reply = "Выберите номер в подборке. Для оценки окружения нужны координаты отеля; по одному названию или адресу я их не угадываю.";
+    } else {
+      ObjectNode nearby = places.surroundings(hotel, 1000, clock.instant());
+      List<String> descriptions = new java.util.ArrayList<>();
+      for (JsonNode place : nearby.path("places")) {
+        if (descriptions.size() >= 6) break;
+        descriptions.add(Json.str(place, "name") + " — около " + place.path("meters").asInt() + " м");
+      }
+      reply = "Рядом с «" + Json.str(hotel, "name") + "»: "
+          + (descriptions.isEmpty() ? "в сохранённых данных нет достаточных сведений о местах в радиусе 1 км."
+              : String.join("; ", descriptions) + ".");
+      for (JsonNode center : nearby.path("centers"))
+        reply += " До ориентира «" + Json.str(center, "name") + "» — около "
+            + center.path("meters").asInt() + " м.";
+      reply += " Расстояния по прямой от здания, не пеший маршрут от двери номера. Центр обозначен ориентиром, а не официальной границей. Источники и даты доступны в карточке номера.";
+    }
+    return Json.obj("trip", trip.deepCopy(), "message", reply, "mode", "rules", "warnings", List.of(),
+        "focusFeatures", input.path("focusFeatures").isMissingNode() ? Json.array(List.of()) : input.path("focusFeatures"), "changed", false);
   }
 
   /** Lab-only experiment entry point. The HTTP layer independently gates its availability. */
@@ -120,13 +166,13 @@ public final class SearchService {
     boolean conflict = !interpreted.path("conflicts").isEmpty();
     java.util.function.Function<List<JsonNode>, List<JsonNode>> ranker =
         requested ->
-            projected.apply(
+            applyLocations(projected.apply(
                 extra.apply(
                     Matching.rank(
                         snapshotHotels, snapshotFacts, requested, trip, now, environments, policy),
                     requested),
                 requested,
-                conflict);
+                conflict), trip, now);
     List<JsonNode> ranked = ranker.apply(preferences);
     for (JsonNode match : ranked)
       ((ObjectNode) match).set("personalWishes", interpreted.path("personalWishes").deepCopy());
@@ -157,6 +203,7 @@ public final class SearchService {
           searchId, new SearchSnapshot(actor, trip.deepCopy(), advisorContext.deepCopy(), now));
     }
     interpreted.put("searchId", searchId);
+    if (trip.has("locationWishes")) interpreted.set("locationWishes", trip.path("locationWishes").deepCopy());
     interpreted.put("admissionMode", AdmissionPolicy.explore(trip) ? "explore" : "verified");
     if (!interpreted.path("conflicts").isEmpty())
       for (JsonNode match : ranked) excludeForConflict((ObjectNode) match);
@@ -309,9 +356,9 @@ public final class SearchService {
       if (!interpreted.path("conflicts").isEmpty()) excludeForConflict(match);
       for (String key : List.of("preferences", "warnings", "conflicts", "mode", "personalWishes"))
         match.set(key, interpreted.path(key));
-      return projection
+      return applyLocations(projection
           .snapshot(trip, now)
-          .apply(List.of(match), preferences, !interpreted.path("conflicts").isEmpty())
+          .apply(List.of(match), preferences, !interpreted.path("conflicts").isEmpty()), trip, now)
           .getFirst()
           .deepCopy();
     }
@@ -362,11 +409,20 @@ public final class SearchService {
     if (!interpreted.path("conflicts").isEmpty()) excludeForConflict(match);
     for (String key : List.of("preferences", "warnings", "conflicts", "mode", "personalWishes"))
       match.set(key, interpreted.path(key));
-    return projection
+    return applyLocations(projection
         .snapshot(trip, now)
-        .apply(List.of(match), preferences, !interpreted.path("conflicts").isEmpty())
+        .apply(List.of(match), preferences, !interpreted.path("conflicts").isEmpty()), trip, now)
         .getFirst()
         .deepCopy();
+  }
+
+  private List<JsonNode> applyLocations(List<JsonNode> ranked, JsonNode trip, Instant now) {
+    if (places == null || trip.path("locationWishes").isEmpty()) return ranked;
+    List<JsonNode> result = new java.util.ArrayList<>();
+    for (JsonNode match : ranked)
+      result.add(LocationAdmission.apply(match, places.evaluate(match.path("hotel"), trip, now), trip));
+    result.sort(java.util.Comparator.comparing((JsonNode match) -> match.path("best"), LocationAdmission.ROOM_ORDER));
+    return result;
   }
 
   private static void excludeForConflict(ObjectNode match) {

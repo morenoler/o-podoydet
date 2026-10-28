@@ -8,7 +8,7 @@ import {
 import type { Dataset, Preference, Trip } from "../../../shared/types";
 import { api } from "../../shared/api/client";
 import { normalizeSearchTrip, restoreSearchTrip } from "../../features/search/searchPolicy";
-type Catalog = Dataset & { mode: "rules" | "llm" };
+type Catalog = Dataset & { mode: "rules" | "llm" | "local_model" };
 const initialTrip: Trip = {
   region: "Пусан",
   checkIn: "",

@@ -134,6 +134,8 @@ public class AccountController {
           return JsonResponses.send(200, questions.answer(host, parts[4], body(ex)));
         if (parts[3].equals("bookings") && parts[5].equals("status"))
           return JsonResponses.send(200, bookings.status(host, parts[4], body(ex)));
+        if (parts[3].equals("bookings") && parts[5].equals("reply"))
+          return JsonResponses.send(200, bookings.reply(host, parts[4], body(ex)));
       }
     }
     if (path.equals("/api/listings") && method.equals("GET"))

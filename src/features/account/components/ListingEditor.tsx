@@ -4,6 +4,7 @@ import { accountApi } from "../api";
 import { ListingSearchProfileFields } from "./ListingSearchProfileFields";
 import { ListingBasicFields } from "./ListingBasicFields";
 import { ListingRoomFields } from "./ListingRoomFields";
+import { ListingAmenityFields } from "./ListingAmenityFields";
 import { ListingPreview } from "./ListingPreview";
 import { editableListing, type EditableListing } from "./listingForm";
 import "../editor-v2.css";
@@ -107,8 +108,10 @@ export function ListingEditor({
           disabled={busy}
         />
         <ListingRoomFields value={form} update={update} />
+        <ListingAmenityFields value={form.amenityStates || {}} onChange={value => update("amenityStates", value)} />
         <fieldset className="editor-amenities-section">
-          <legend>Удобства</legend>
+          <legend>Дополнительное описание удобств</legend>
+          <p>Эти подписи отображаются в описании. Для подбора используются отдельные ответы выше.</p>
           <div className="listing-amenities-field">
             <div className="listing-amenity-options">
               {suggestedAmenities.map((value) => (

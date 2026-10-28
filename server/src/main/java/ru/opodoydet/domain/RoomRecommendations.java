@@ -49,7 +49,9 @@ public final class RoomRecommendations {
                         : "verified");
         if (match.has("personalWishes"))
           item.set("personalWishes", match.path("personalWishes").deepCopy());
-        if (matchesAll(roomMatch, match.path("ownerCriteria"), owner)) exact.add(item);
+        if (match.has("locationCriteria")) item.set("locationCriteria", match.path("locationCriteria").deepCopy());
+        if (matchesAll(roomMatch, match.path("ownerCriteria"), owner)
+            && LocationAdmission.matchesAll(match.path("locationCriteria"))) exact.add(item);
         else alternatives.add(item);
       }
       if (!hasConcreteRoom) unverified++;

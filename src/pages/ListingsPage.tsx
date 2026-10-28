@@ -1,5 +1,5 @@
 import { Link, useSearchParams } from "react-router-dom";
-import { Building2, MapPin, Plus, Search, UsersRound } from "lucide-react";
+import { Building2, MapPin, Plus, RotateCcw, Search, UsersRound } from "lucide-react";
 import type { Listing } from "../../shared/account";
 import { useResource } from "../features/account/useResource";
 import { useAuth } from "../features/auth/AuthProvider";
@@ -125,6 +125,10 @@ export function ListingsPage() {
                 <option value="capacity">Больше гостей</option>
               </select>
             </label>
+            <button type="button" className="button secondary listing-reset-filters"
+              disabled={!params.size} onClick={() => setParams({})}>
+              <RotateCcw size={18} aria-hidden="true" />Сбросить все
+            </button>
           </div>
           <div className="listing-result-summary">
             <p aria-live="polite">Найдено объявлений: {listings.length}</p>
@@ -191,7 +195,7 @@ export function ListingsPage() {
                     </p>
                     {listing.amenities.length > 0 && (
                       <ul className="listing-amenities">
-                        {listing.amenities.slice(0, 4).map((amenity) => (
+                        {listing.amenities.map((amenity) => (
                           <li key={amenity}>{amenity}</li>
                         ))}
                       </ul>

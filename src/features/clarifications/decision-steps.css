@@ -1,0 +1,29 @@
+.decision-next-steps, .catalog-availability { padding: 24px; margin: 24px 0; border: 1px solid var(--line); border-radius: 16px; background: var(--paper); scroll-margin-top: 24px; }
+.decision-next-heading { display: flex; align-items: flex-start; gap: 14px; }
+.decision-next-heading > svg { color: var(--blue); margin-top: 4px; }
+.decision-next-heading h2, .catalog-availability h2 { font-size: 22px; }
+.decision-next-heading p, .catalog-availability > p { margin-top: 8px; color: var(--muted); }
+.decision-checklist { list-style: none; margin: 20px 0; padding: 0; display: grid; gap: 0; }
+.decision-checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 14px 0; border-top: 1px solid var(--line); }
+.decision-checklist li > svg { margin-top: 3px; color: #89601a; }
+.decision-checklist li.is-mismatch > svg, .decision-checklist li.is-conflict > svg { color: #973a34; }
+.decision-checklist strong { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 15px; }
+.decision-checklist strong span { font-size: 11px; font-weight: 600; padding: 2px 7px; border: 1px solid var(--line); border-radius: 5px; }
+.decision-checklist p { margin-top: 5px; font-size: 14px; color: var(--muted); max-width: 76ch; }
+.decision-blocked { padding: 14px; background: var(--wish-mismatch-bg); color: var(--wish-mismatch-ink); border-radius: 8px; }
+.decision-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+.decision-next-steps .decision-source-note, .catalog-availability .decision-source-note { margin-top: 16px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.availability-draft { display: grid; gap: 14px; margin-top: 20px; }
+.availability-draft .field { display: grid; }
+.availability-draft textarea { width: 100%; }
+.availability-draft > button { justify-self: start; }
+.availability-draft > p { color: var(--muted); font-size: 13px; }
+.booking-request-context { margin: 12px 0; padding: 12px; border-radius: 10px; background: var(--soft-blue); font-size: 13px; }
+.booking-request-context p { margin-bottom: 8px; }
+.booking-fields { display: grid; gap: 18px; border: 0; padding: 0; margin: 0; min-width: 0; }
+@media (max-width: 600px) {
+  .decision-next-steps, .catalog-availability { padding: 18px; }
+  .decision-next-heading h2, .catalog-availability h2 { font-size: 19px; }
+  .decision-actions { flex-direction: column; }
+  .decision-actions .button { width: 100%; }
+}

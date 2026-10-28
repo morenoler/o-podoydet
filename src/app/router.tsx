@@ -45,6 +45,9 @@ const FavoritesPage = lazy(() =>
     default: m.FavoritesPage,
   })),
 );
+const SharedShortlistPage = lazy(() =>
+  import("../pages/SharedShortlistPage").then((m) => ({ default: m.SharedShortlistPage })),
+);
 const AboutPage = lazy(() =>
   import("../pages/AboutPage").then((m) => ({ default: m.AboutPage })),
 );
@@ -102,6 +105,7 @@ export function AppRouter() {
           }
         />
         <Route path="/favorites" element={<FavoritesPage />} />
+        <Route path="/shortlists/:token" element={<SharedShortlistPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route
           path="/wishes"

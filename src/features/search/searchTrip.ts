@@ -1,5 +1,5 @@
 import type { Trip } from "../../../shared/types";
-import { tripSchema } from "../../../shared/validation";
+import { tripSchema, featureSchema } from "../../../shared/validation";
 
 export function canSearch(trip: Trip) {
   return tripSchema.safeParse(trip).success;
@@ -34,13 +34,15 @@ export function searchTripIssues(trip: Trip): SearchTripIssue[] {
       scenarios: issue.code === "custom" ? "Сценарии поездки повторяются. Выберите каждый сценарий только один раз."
         : "Проверьте сценарии поездки: доступны «Отдых у моря», «Поездка с детьми» и «Спокойный отдых».",
       preferences: issue.code === "custom" ? "Пожелания повторяются. Выберите каждое условие только один раз."
-        : issue.code === "too_big" ? "Можно выбрать не больше 8 пожеланий."
+        : issue.code === "too_big" ? `Можно выбрать не больше ${featureSchema.options.length} пожеланий.`
         : "Проверьте сохранённые пожелания и их обязательность в настройках поиска.",
       text: typeof trip.text === "string" && trip.text.length > 1500
         ? "Сократите особое пожелание до 1500 символов."
         : "Проверьте текст особого пожелания в настройках поиска.",
       admissionMode: "Выберите режим допуска в настройках поиска.",
       preferenceOverrides: "Проверьте изменения пожеланий в настройках поиска или сбросьте чат и его фильтры.",
+      locationWishes: "Проверьте пожелания о расположении в диалоге: укажите место и расстояние от 50 м до 20 км.",
+      pendingLocationQuery: "Уточните пожелание о расположении в диалоге или сбросьте его.",
       form: "Проверьте параметры поездки и пожелания.",
     }[field] || "Проверьте параметры поездки и пожелания.";
     issues.set(field, message);

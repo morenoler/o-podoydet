@@ -118,7 +118,7 @@ class SearchServiceTest {
       assertEquals(searched.path("best").path("room"), detailed.path("best").path("room"));
       assertEquals(searched.path("best").path("score"), detailed.path("best").path("score"));
       assertEquals(1, searched.path("best").path("criteria").size());
-      assertEquals(8, detailed.path("best").path("criteria").size());
+      assertEquals(ru.opodoydet.domain.Features.ids().size(), detailed.path("best").path("criteria").size());
       assertEquals("fits", Json.str(detailed.path("best"), "status"));
     }
   }

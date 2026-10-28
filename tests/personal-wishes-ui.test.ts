@@ -6,7 +6,7 @@ import { MemoryRouter } from "react-router-dom";
 import type { CriterionDecision, HotelMatch, MatchStatus, PersonalWishes } from "../shared/types";
 import { personalWishItems, personalWishNotice, personalWishSummary } from "../src/shared/lib/personalWishes";
 import { HotelCard } from "../src/features/hotels/components/HotelCard";
-import { FavoritesProvider } from "../src/features/favorites/FavoritesProvider";
+import { FavoritesTestProvider as FavoritesProvider } from "./helpers/favoritesTestProvider";
 import { PersonalWishesNotice } from "../src/features/advisor/PersonalWishesNotice";
 
 const recognition: PersonalWishes = {

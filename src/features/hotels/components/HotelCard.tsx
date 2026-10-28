@@ -15,12 +15,16 @@ import {
 import { AccommodationPhoto } from "../../../shared/ui/AccommodationPhoto";
 import { FavoriteButton } from "../../favorites/FavoriteButton";
 import { PersonalWishesSummary } from "./PersonalWishesSummary";
+import { LocationCriteria } from "../../places/LocationCriteria";
+import { CriterionLine } from "./CriterionLine";
+import { locationState } from "../../places/locationPresentation";
 import { features } from "../../../../shared/features";
 import { directionLabels } from "../../account/format";
 import { recommendationMatch } from "../../search/roomResults";
 import {
   capacityNeedsClarification,
   criterionNeedsClarification,
+  hasKnownOwnerAmenity,
   matchLabel,
   matchPresentationState,
 } from "../../../shared/lib/matchPresentation";
@@ -63,7 +67,8 @@ export function HotelCard({
   const capacity = match?.best.capacityRule?.maxGuests ?? room?.capacity;
   const needsClarification = capacityUnknown ||
     match?.best.criteria.some(criterionNeedsClarification) ||
-    match?.ownerCriteria?.some((c) => c.evidenceStatus === "unknown");
+    match?.ownerCriteria?.some((c) => c.evidenceStatus === "unknown") ||
+    match?.locationCriteria?.some((c) => locationState(c) === "unknown");
   const declared = match?.ownerCriteria?.some((c) => c.assumed);
   const estimated = needsClarification || declared || match?.best.provisional;
   const uncertain = match?.best.criteria.find(
@@ -82,8 +87,7 @@ export function HotelCard({
       : !match && publishedCategoryCount > 0
         ? `Категории с официального сайта: ${publishedCategoryCount}`
         : "Категорию и условия номера нужно уточнить";
-  const category = match?.best.room.evidenceStatus === "verified" &&
-    match.best.room.scope === "room_category" ? match.best.room : undefined;
+  const category = match?.best.room.evidenceStatus === "verified" && match.best.room.scope === "room_category" ? match.best.room : undefined;
   const roomDetails = [
     hotel.floor == null ? "" : `Этаж: ${hotel.floor}`,
     hotel.windowDirections?.length
@@ -95,6 +99,7 @@ export function HotelCard({
     hotel.currency === "KRW";
   const resultLabel = match ? matchLabel(match) : "Условия и источники";
   const presentationState = match ? matchPresentationState(match) : "unknown";
+  const conditionCount = (match?.best.criteria.length || 0) + (match?.ownerCriteria?.length || 0) + (match?.locationCriteria?.length || 0);
   return (
     <article
       className={`search-hotel-card${selected ? " is-selected" : ""}`}
@@ -156,13 +161,7 @@ export function HotelCard({
         {room && <p className="search-room-hotel">{hotel.name}</p>}
         {room && <p className="search-room-capacity">{capacityUnknown || capacity == null ? "Вместимость нужно уточнить" : `Вместимость: до ${capacity} гостей${match?.best.capacityRule ? " по правилу размещения" : ""}`}</p>}
         <p className="search-hotel-meta">{hotel.address || "Пусан, Хэундэ"}</p>
-        {category && (
-          <p className="search-hotel-room">
-            Категория: {category.name}
-            {!capacityUnknown && !match?.best.capacityRule && category.capacity !== null && !category.capacityMayVary
-              ? ` · до ${category.capacity} гостей` : ""}
-          </p>
-        )}
+        {!room && category && <p className="search-hotel-room">Категория: {category.name}{!capacityUnknown && !match?.best.capacityRule && category.capacity !== null && !category.capacityMayVary ? ` · до ${category.capacity} гостей` : ""}</p>}
         {roomDetails && <p className="search-hotel-room">{roomDetails}</p>}
         {hotel.route && !hotel.synthetic ? (
           <button
@@ -188,7 +187,7 @@ export function HotelCard({
         <p className="search-hotel-evidence">
           <CircleHelp size={18} aria-hidden="true" />
           <span>
-            {roomRecommendation && !alternative && !match?.best.provisional
+            {roomRecommendation && !alternative && !match?.best.provisional && presentationState === "match"
               ? roomRecommendation.source === "owner"
                 ? "Все критерии совпали по сведениям отельера"
                 : roomRecommendation.source === "demo"
@@ -203,21 +202,25 @@ export function HotelCard({
                 : sourceHint}
           </span>
         </p>
+        {conditionCount > 0 && <details className="search-card-evidence">
+          <summary>Все условия и источники <span>{conditionCount}</span></summary>
+          <p className="search-card-source">{sourceHint}</p>
         {!!match?.best.criteria.length && (
           <ul className="search-hotel-criteria" aria-label="Совпадение с вашими пожеланиями">
-            {(room ? match.best.criteria : match.best.criteria.slice(0, 3)).map((criterion) => {
-              const ownerDeclared = roomRecommendation?.source === "owner" && criterion.evidenceStatus === "match";
-              const uncertain = !ownerDeclared && criterionNeedsClarification(criterion);
+            {match.best.criteria.map((criterion) => {
+              const uncertain = criterionNeedsClarification(criterion);
+              const ownerDeclared = !uncertain && (hasKnownOwnerAmenity(criterion) || !!criterion.reportedEvidence?.length);
               const fits = criterion.status === "match";
               const Icon = uncertain ? CircleHelp : fits ? Check : X;
               return (
                 <li key={criterion.feature} className={uncertain ? "is-uncertain" : fits ? "is-match" : "is-mismatch"}>
-                  <Icon size={15} aria-hidden="true" />
-                  <span>{features[criterion.feature].label}: {uncertain ? "нужно уточнить" : fits ? ownerDeclared ? "по сведениям отельера" : "совпадает" : "не совпадает"}</span>
+                  <div className="search-card-criterion">
+                    <span><Icon size={15} aria-hidden="true" />{features[criterion.feature].label}: {uncertain ? "нужно уточнить" : fits ? ownerDeclared ? "по сведениям отельера" : "совпадает" : "не совпадает"}</span>
+                    <CriterionLine criterion={criterion} detailed />
+                  </div>
                 </li>
               );
             })}
-            {!room && match.best.criteria.length > 3 && <li><Link to={detailsPath}>Ещё {match.best.criteria.length - 3} условия в подробностях</Link></li>}
           </ul>
         )}
         {!!roomRecommendation?.ownerCriteria?.length && <ul className="search-hotel-criteria" aria-label="Дополнительные условия номера">
@@ -225,6 +228,8 @@ export function HotelCard({
             <span>{criterion.label}: {criterion.evidenceStatus === "unknown" ? "нет данных" : criterion.status === "match" ? "по сведениям отельера" : "не совпадает"}</span>
           </li>)}
         </ul>}
+        <LocationCriteria criteria={match?.locationCriteria} detailed />
+        </details>}
         {hasPrice && match && (
           <p className={`search-hotel-result${presentationState === "mismatch" ? " is-mismatch" : estimated ? " is-estimate" : ""}`}>
             {presentationState === "match"
@@ -251,8 +256,8 @@ export function HotelCard({
                   className={`search-hotel-result${!match ? " is-preview" : presentationState === "mismatch" ? " is-mismatch" : presentationState === "unknown" || estimated ? " is-estimate" : ""}`}
                 >
                   {roomRecommendation ? (
-                    <>{alternative || match?.best.provisional ? <CircleHelp size={17} aria-hidden="true" /> : <Check size={17} aria-hidden="true" />}
-                      {match?.best.provisional ? "Вариант для уточнения" : alternative ? "Не все условия подтверждены" : "Совпали все критерии"}
+                    <>{alternative || match?.best.provisional || presentationState !== "match" ? <CircleHelp size={17} aria-hidden="true" /> : <Check size={17} aria-hidden="true" />}
+                      {match?.best.provisional || needsClarification ? "Вариант для уточнения" : alternative || presentationState === "mismatch" ? "Не все условия подтверждены" : "Совпали все критерии"}
                     </>
                   ) : match ? (
                     <>
@@ -271,12 +276,15 @@ export function HotelCard({
               </>
             )}
           </div>
+          <div className="search-card-actions">
+          {match && (needsClarification || presentationState !== "match") && <Link to={`${detailsPath}#decision-next-steps`} className="search-card-next-step">Что уточнить</Link>}
           <Link
             to={detailsPath}
             className={`button ${selected ? "primary" : "secondary"}`}
           >
             {room ? "Посмотреть номер" : "Подробнее"}
           </Link>
+          </div>
         </div>
       </div>
       {match && <PersonalWishesSummary match={match} />}

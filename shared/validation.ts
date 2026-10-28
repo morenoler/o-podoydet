@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { amenityIds } from "./amenities";
 export const featureSchema = z.enum([
   "beach_walk",
   "step_free_route",
@@ -8,6 +9,7 @@ export const featureSchema = z.enum([
   "area_safety",
   "clean_air",
   "low_noise",
+  ...amenityIds,
 ]);
 const date = z
   .string()
@@ -16,8 +18,16 @@ const date = z
     const d = new Date(s + "T12:00:00Z");
     return !isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s;
   }, "Некорректная дата");
+const locationWishSchema = z.object({
+  query: z.string().trim().min(1).max(160),
+  relation: z.enum(["near", "far"]),
+  radiusMeters: z.number().int().min(50).max(50000),
+  required: z.boolean(),
+});
 export const tripSchema = z
   .object({
+    locationWishes: z.array(locationWishSchema).max(8).optional(),
+    pendingLocationQuery: locationWishSchema.nullable().optional(),
     admissionMode: z.enum(["explore", "verified"]).optional(),
     region: z.literal("Пусан"),
     checkIn: date,
@@ -30,7 +40,7 @@ export const tripSchema = z
       .refine((s) => new Set(s).size === s.length, "Сценарии повторяются"),
     preferences: z
       .array(z.object({ feature: featureSchema, required: z.boolean() }))
-      .max(8)
+      .max(featureSchema.options.length)
       .refine(
         (p) => new Set(p.map((x) => x.feature)).size === p.length,
         "Пожелания повторяются",
@@ -40,7 +50,7 @@ export const tripSchema = z
       feature: featureSchema,
       required: z.boolean(),
       enabled: z.boolean(),
-    })).max(8).refine((values) => new Set(values.map((v) => v.feature)).size === values.length).optional(),
+    })).max(featureSchema.options.length).refine((values) => new Set(values.map((v) => v.feature)).size === values.length).optional(),
   })
   .refine((t) => t.checkOut > t.checkIn, {
     message: "Дата выезда должна быть позже даты заезда",

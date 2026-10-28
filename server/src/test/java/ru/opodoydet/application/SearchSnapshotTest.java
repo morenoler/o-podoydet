@@ -269,7 +269,7 @@ class SearchSnapshotTest {
                   new Agents.Config(
                       "test-key",
                       "test-model",
-                      "http://127.0.0.1:" + provider.getAddress().getPort())),
+                      "http://127.0.0.1:" + provider.getAddress().getPort(), Agents.Protocol.RESPONSES)),
               environment());
       ObjectNode input = trip().put("text", "Условия для маленького путешественника обязательны");
       ObjectNode result = service.search(input);

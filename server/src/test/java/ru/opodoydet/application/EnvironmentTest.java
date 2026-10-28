@@ -905,7 +905,7 @@ class EnvironmentTest {
   }
 
   @Test
-  void detailEndpointUsesInterpretedPreferencesAndAllEightCriteriaWithoutHostQuestions()
+  void detailEndpointUsesInterpretedPreferencesAndCatalogCriteriaWithoutHostQuestions()
       throws Exception {
     ObjectNode seed =
         Json.obj(
@@ -919,7 +919,7 @@ class EnvironmentTest {
       String base = "http://127.0.0.1:" + api.port();
       ObjectNode query = trip().put("text", "Обязательно чистый воздух");
       JsonNode result = post(base, "/api/hotels/test/evaluate", query);
-      assertEquals(8, result.path("best").path("criteria").size());
+      assertEquals(ru.opodoydet.domain.Features.ids().size(), result.path("best").path("criteria").size());
       assertTrue(List.of("fits", "excluded").contains(Json.str(result.path("best"), "status")));
       for (JsonNode criterion : result.path("best").path("criteria")) {
         assertTrue(List.of("match", "mismatch").contains(Json.str(criterion, "status")));

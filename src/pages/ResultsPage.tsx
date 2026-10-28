@@ -4,6 +4,10 @@ import {
   GitCompareArrows,
   Search,
   SlidersHorizontal,
+  RotateCcw,
+  List,
+  Map,
+  MessageCircle,
   X,
 } from "lucide-react";
 import type { FeatureId, Hotel, SearchResult, Trip } from "../../shared/types";
@@ -16,17 +20,22 @@ import { HotelCard } from "../features/hotels/components/HotelCard";
 import { CompareDialog } from "../features/hotels/components/CompareDialog";
 import { AdvisorDrawer } from "../features/advisor/AdvisorDrawer";
 import { SearchConversation } from "../features/advisor/SearchConversation";
-import { editPreferences } from "../features/search/preferences";
+import { editPreferences, resetSearchFilters } from "../features/search/preferences";
 import { features } from "../../shared/features";
 import { SearchBar } from "../features/search/SearchBar";
 import { SearchDiagnostics } from "../features/search/SearchDiagnostics";
 import { SearchMapPanel } from "../features/search/SearchMapPanel";
 import { SearchFilters } from "../features/search/SearchFilters";
 import { canSearch } from "../features/search/searchTrip";
-import { catalogRooms, recommendationItem, recommendationMatch, roomHotels } from "../features/search/roomResults";
+import { catalogRooms, recommendationItem, roomHotels } from "../features/search/roomResults";
+import { useRoomComparison } from "../features/search/useRoomComparison";
+import { groupRoomAlternatives } from "../features/search/resultGroups";
 import { AdmissionModePicker } from "../features/search/AdmissionModePicker";
 import { listLimitForSelection, uiAdmissionMode } from "../features/search/searchPolicy";
+import { locationWishLabel } from "../features/places/locationPresentation";
+import "../features/places/places.css";
 import "../features/search/search.css";
+import "../features/search/search-experience.css";
 
 export function ResultsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -40,45 +49,41 @@ export function ResultsPage() {
     refresh,
     effectivePreferences,
   } = useApp();
-  const [data, setData] = useState<SearchResult | null>(null);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [compare, setCompare] = useState<string[]>([]);
+  const scope = user?.id || "guest";
+  const searchKey = JSON.stringify([trip, revision, scope]);
+  const [response, setResponse] = useState<{ key: string; data: SearchResult | null; error: string } | null>(null);
+  const data = !authLoading && response?.key === searchKey ? response.data : null;
+  const error = !authLoading && response?.key === searchKey ? response.error : "";
   const [showCompare, setShowCompare] = useState(false);
   const [filters, setFilters] = useState(false);
   const [advisor, setAdvisor] = useState(false);
   const [mapView, setMapView] = useState(false);
+  const [mobileView, setMobileView] = useState<"list" | "map" | "assistant">("list");
   const [selectedId, setSelectedId] = useState("");
   const [limit, setLimit] = useState(8);
   const [alternativeLimit, setAlternativeLimit] = useState(4);
   const [alternativesOpen, setAlternativesOpen] = useState(false);
   const [sort, setSort] = useState("recommended");
   const validTrip = canSearch(trip);
+  const loading = validTrip && (authLoading || response?.key !== searchKey);
+  const comparison = useRoomComparison(authLoading ? "auth-pending" : scope, trip, searchKey, data, error);
+  const compare = comparison.selections.map((selection) => selection.id);
+  useEffect(() => { setShowCompare(false); }, [scope]);
   useEffect(() => {
     let active = true;
-    setData(null);
-    setError("");
     setLimit(8);
     setAlternativeLimit(4);
-    setCompare([]);
-    setShowCompare(false);
-    if (!validTrip || authLoading) {
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
+    if (!validTrip || authLoading) return;
     api<SearchResult>("/search", trip)
       .then((result) => {
         if (!active) return;
-        setData(result);
+        setResponse({ key: searchKey, data: result, error: "" });
         setAlternativesOpen(!result.roomRecommendations.length);
         rememberSearch(trip, result.preferences);
-        setLoading(false);
       })
       .catch((cause) => {
         if (active) {
-          setError(cause.message);
-          setLoading(false);
+          setResponse({ key: searchKey, data: null, error: cause.message });
         }
       });
     return () => {
@@ -107,6 +112,7 @@ export function ResultsPage() {
   }, [data, catalog, sort, validTrip]);
   const visible = rooms.slice(0, limit);
   const alternatives = data?.roomAlternatives || [];
+  const alternativeGroups = groupRoomAlternatives(alternatives);
   const selectable = [...rooms, ...alternatives.map(recommendationItem)];
   const selected =
     selectable.find((item) => item.id === selectedId) || selectable[0];
@@ -115,14 +121,10 @@ export function ResultsPage() {
     if (JSON.stringify(nextTrip) === JSON.stringify(trip)) refresh();
     else setTrip(nextTrip);
   }
-  function toggleCompare(id: string) {
-    setCompare((previous) =>
-      previous.includes(id)
-        ? previous.filter((value) => value !== id)
-        : previous.length < 3
-          ? [...previous, id]
-          : previous,
-    );
+  function showPanel(view: "map" | "assistant") {
+    setMobileView(view);
+    setMapView(view === "map");
+    requestAnimationFrame(() => document.getElementById("search-side-panel")?.scrollIntoView({ block: "nearest" }));
   }
   function quickFilter(feature: FeatureId) {
     const preferences = effectivePreferences.some(
@@ -140,15 +142,21 @@ export function ResultsPage() {
       setLimit((current) => listLimitForSelection(rooms, current, item.id));
     else {
       setAlternativesOpen(true);
-      setAlternativeLimit((current) => listLimitForSelection(alternatives, current, item.id));
+      const group = alternativeGroups.find((group) => group.items.some((value) => value.id === item.id));
+      setAlternativeLimit((current) => listLimitForSelection(group?.items || alternatives, current, item.id));
     }
   }
   const provisionalCount = alternatives.filter((item) => item.room.provisional).length;
   const sea = (data?.preferences || trip.preferences).some(
     (value) => value.feature === "beach_walk",
   );
+  const ResultsHeading = validTrip ? "h1" : "h2";
   return (
-    <div className="search-page search-page-conversation">
+    <div className={`search-page search-page-conversation search-experience mobile-view-${mobileView}${compare.length ? " has-comparison" : ""}`}>
+      {!validTrip && <div className="search-introduction">
+        <h1>Номер, в котором совпадёт важное для вас</h1>
+        <p>Начнём с Пусана, район Хэундэ. Сравните условия одной категории номера и узнайте, что уточнить до поездки.</p>
+      </div>}
       <div className="search-layout">
         <div className="search-primary">
       <SearchBar trip={trip} onSearch={submit} busy={loading} />
@@ -165,6 +173,19 @@ export function ResultsPage() {
               {effectivePreferences.length}
             </span>
           )}
+        </button>
+        <button
+          type="button"
+          className="search-chip search-reset-filters"
+          disabled={!effectivePreferences.length && !trip.locationWishes?.length && !trip.pendingLocationQuery && !trip.scenarios.length && !trip.text.trim() && !trip.preferenceOverrides?.length && uiAdmissionMode(trip.admissionMode) === "explore" && sort === "recommended"}
+          onClick={() => {
+            setSort("recommended");
+            setTrip(resetSearchFilters(trip));
+          }}
+          title="Сбросить условия, пожелания и порядок выдачи. Даты и гости сохранятся."
+        >
+          <RotateCcw size={19} aria-hidden="true" />
+          Сбросить все
         </button>
         {(
           [
@@ -189,8 +210,12 @@ export function ResultsPage() {
           </button>
         ))}
       </div>
-      <AdmissionModePicker value={trip.admissionMode}
-        onChange={(admissionMode) => setTrip({ ...trip, admissionMode })} />
+      <div className="search-inline-admission"><AdmissionModePicker value={trip.admissionMode}
+        onChange={(admissionMode) => setTrip({ ...trip, admissionMode })} /></div>
+      <button className="search-mobile-admission" type="button" aria-haspopup="dialog" onClick={() => setFilters(true)}>
+        <span><small>Режим подбора</small><strong>{uiAdmissionMode(trip.admissionMode) === "verified" ? "Только подтверждённые" : "Без известных препятствий"}</strong></span>
+        <SlidersHorizontal size={18} aria-hidden="true" />
+      </button>
       {!!effectivePreferences.length && (
         <div className="search-active-preferences" aria-label="Активные условия подбора">
           {effectivePreferences.map((preference) => (
@@ -202,6 +227,22 @@ export function ResultsPage() {
           ))}
         </div>
       )}
+      {!!trip.locationWishes?.length && (
+        <div className="search-location-wishes">
+          <p>Пожелания о расположении из диалога</p>
+          <div className="search-active-preferences" aria-label="Пожелания о расположении">
+            {trip.locationWishes.map((wish, index) => (
+              <button key={`${wish.query}-${index}`} type="button"
+                onClick={() => setTrip({ ...trip, locationWishes: trip.locationWishes?.filter((_, itemIndex) => itemIndex !== index) })}
+                aria-label={`Убрать пожелание: ${locationWishLabel(wish)}`}>
+                <span>{locationWishLabel(wish)}{wish.required && <strong>Обязательно</strong>}</span>
+                <X size={15} aria-hidden="true" />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      {trip.pendingLocationQuery && <p className="search-location-pending" role="status"><strong>Нужно уточнить: {trip.pendingLocationQuery.query}.</strong> Ответьте помощнику в чате. Это пожелание ещё не участвует в подборе.</p>}
       {(error || catalogError) && (
         <div className="search-error">
           <ErrorMessage text={error || catalogError} />
@@ -214,35 +255,28 @@ export function ResultsPage() {
         </div>
       )}
         </div>
-        <SearchConversation
-          key={user?.id || "guest"}
-          scope={user?.id || "guest"}
-          trip={trip}
-          onApply={setTrip}
-          result={data}
-          searching={loading}
-          searchError={error}
-          onAnalyze={() => setAdvisor(true)}
-          mapView={mapView}
-          onMapViewChange={setMapView}
-          map={<SearchMapPanel catalog={catalog} selected={selected?.hotel} selectedRoom={selected?.room} plotted={plotted} onSelect={selectHotel} />}
-        />
-        <section className="search-list-section" aria-label="Список номеров">
+        <nav className="search-mobile-navigation" aria-label="Способ просмотра подборки">
+          {([{ id: "list", label: "Варианты", icon: List }, { id: "map", label: "Карта", icon: Map }, { id: "assistant", label: "Помощник", icon: MessageCircle }] as const).map(({ id, label, icon: Icon }) =>
+            <button key={id} type="button" aria-pressed={mobileView === id} aria-controls={id === "list" ? "search-room-results" : "search-side-panel"} onClick={() => { setMobileView(id); if (id !== "list") setMapView(id === "map"); }}><Icon size={18} aria-hidden="true" />{label}</button>)}
+        </nav>
+        <section id="search-room-results" className="search-list-section" aria-label="Список номеров">
           <div className="search-results-heading">
             <div>
-              <h1>
+              <ResultsHeading>
                 {sea && validTrip ? "Номера у моря в Пусане" : "Номера в Пусане"}
-              </h1>
+              </ResultsHeading>
               <p role="status" aria-live="polite">
                 {loading
                   ? "Подбираем номера…"
-                  : validTrip
-                    ? `${rooms.length} категорий номеров соответствуют всем критериям`
-                    : `${rooms.length} категорий номеров в каталоге Хэундэ`}
+                  : error ? "Подборку не удалось обновить. Ваши условия сохранены."
+                  : validTrip && data
+                    ? `Соответствуют всем критериям: ${rooms.length}`
+                    : validTrip ? "Подготовим подборку по вашим условиям."
+                    : `Категорий номеров в каталоге Хэундэ: ${rooms.length}`}
               </p>
               {validTrip && !loading && provisionalCount > 0 && (
                 <p className="search-provisional-count">
-                  В {provisionalCount} вариантах нужно уточнить вместимость или обязательные условия.
+                  Нужно уточнить вместимость или обязательные условия: {provisionalCount}.
                 </p>
               )}
             </div>
@@ -281,7 +315,7 @@ export function ResultsPage() {
                   Исправить пожелания
                 </button>
               )}
-              {!rooms.length && !error && validTrip && (
+              {!rooms.length && data && !error && validTrip && (
                 <div className="search-empty">
                   <Search size={30} aria-hidden="true" />
                   <h2>Номер под все критерии пока не найден</h2>
@@ -322,11 +356,10 @@ export function ResultsPage() {
                     onSelect={() => setSelectedId(item.id)}
                     onShowMap={() => {
                       setSelectedId(item.id);
-                      setMapView(true);
-                      document.getElementById("search-side-panel")?.scrollIntoView({ block: "nearest" });
+                      showPanel("map");
                     }}
                     compared={compare.includes(item.id)}
-                    onCompare={data ? () => toggleCompare(item.id) : undefined}
+                    onCompare={data ? () => comparison.toggle(item) : undefined}
                     compareDisabled={
                       compare.length >= 3 && !compare.includes(item.id)
                     }
@@ -343,21 +376,27 @@ export function ResultsPage() {
               )}
               {!!alternatives.length && (
                 <details className="search-room-alternatives" open={alternativesOpen} onToggle={(event) => setAlternativesOpen(event.currentTarget.open)}>
-                  <summary>Номера с несовпадениями или неполными данными ({alternatives.length})</summary>
-                  <p>По этим категориям совпадение со всеми критериями не подтверждено. Ниже видно, что не совпало или требует уточнения.</p>
+                  <summary>Другие варианты для решения ({alternatives.length})</summary>
+                  <p>Посмотрите, где не хватает сведений, а где есть известный компромисс.</p>
+                  {alternativeGroups.map((group) => <section key={group.id} className="search-alternative-group" aria-labelledby={`alternatives-${group.id}`}>
+                  <h3 id={`alternatives-${group.id}`}>{group.title} <span>{group.items.length}</span></h3>
+                  <p>{group.description}</p>
                   <div className="search-hotel-list">
-                    {alternatives.slice(0, alternativeLimit).map((item) => <HotelCard
+                    {group.items.slice(0, alternativeLimit).map((item) => <HotelCard
                       key={item.id} roomRecommendation={item} alternative
                       selected={item.id === selected?.id}
                       onSelect={() => setSelectedId(item.id)}
                       onShowMap={() => {
                         setSelectedId(item.id);
-                        setMapView(true);
-                        document.getElementById("search-side-panel")?.scrollIntoView({ block: "nearest" });
+                        showPanel("map");
                       }}
+                      compared={compare.includes(item.id)}
+                      onCompare={() => comparison.toggle(recommendationItem(item))}
+                      compareDisabled={compare.length >= 3 && !compare.includes(item.id)}
                     />)}
                   </div>
-                  {alternatives.length > alternativeLimit && <button type="button" className="button secondary search-load-more" onClick={() => setAlternativeLimit((value) => value + 4)}>Показать ещё {Math.min(4, alternatives.length - alternativeLimit)} категорий</button>}
+                  {group.items.length > alternativeLimit && <button type="button" className="button secondary search-load-more" onClick={() => setAlternativeLimit((value) => value + 4)}>Показать ещё {Math.min(4, group.items.length - alternativeLimit)} категорий</button>}
+                  </section>)}
                 </details>
               )}
               <p className="search-data-note">
@@ -372,6 +411,20 @@ export function ResultsPage() {
             </>
           )}
         </section>
+        {authLoading ? <aside className="search-conversation" aria-label="Проверка аккаунта"><Loading /></aside> : <SearchConversation
+          key={scope}
+          scope={scope}
+          trip={trip}
+          contextHotelId={selected?.hotel.id}
+          onApply={setTrip}
+          result={data}
+          searching={loading}
+          searchError={error}
+          onAnalyze={() => setAdvisor(true)}
+          mapView={mapView}
+          onMapViewChange={(value) => { setMapView(value); setMobileView(value ? "map" : "assistant"); }}
+          map={<SearchMapPanel catalog={catalog} selected={selected?.hotel} selectedRoom={selected?.room} plotted={plotted} onSelect={selectHotel} />}
+        />}
       </div>
       {filters && (
         <SearchFilters
@@ -389,9 +442,10 @@ export function ResultsPage() {
         onRefresh={refresh}
       />
       {compare.length > 0 && (
-        <div className="compare-tray search-compare-tray" role="status">
+        <div className="compare-tray search-compare-tray" aria-label="Выбранные номера для сравнения">
           <span>
             <strong>{compare.length} из 3</strong> номеров для сравнения
+            {comparison.entries.some((entry) => !entry.match) && <small>Оценки обновятся по условиям поездки</small>}
           </span>
           <button
             className="button primary"
@@ -403,16 +457,17 @@ export function ResultsPage() {
           <button
             className="icon-button"
             aria-label="Очистить сравнение"
-            onClick={() => setCompare([])}
+            onClick={() => { comparison.clear(); setShowCompare(false); }}
           >
             <X size={20} />
           </button>
         </div>
       )}
-      {showCompare && data && (
+      {showCompare && compare.length > 0 && (
         <CompareDialog
           trip={trip}
-          matches={data.roomRecommendations.filter((item) => compare.includes(item.id)).map(recommendationMatch)}
+          entries={comparison.entries}
+          onRemove={(id) => { comparison.remove(id); if (compare.length < 2) setShowCompare(false); }}
           onClose={() => setShowCompare(false)}
         />
       )}

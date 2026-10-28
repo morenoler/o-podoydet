@@ -21,7 +21,7 @@ function run(script, args, env = process.env) {
 try {
   if (process.argv[2] === "build") {
     await run("node_modules/typescript/bin/tsc", ["--noEmit"]);
-    await run("node_modules/vite/bin/vite.js", ["build", "--outDir", "dist-lab"], {
+    await run("node_modules/vite/bin/vite.js", ["build", "--outDir", process.env.LAB_DIST_PATH || "dist-lab"], {
       ...process.env,
       VITE_LAB_MODE: "true",
     });
@@ -44,7 +44,7 @@ try {
       labDataPath,
     );
     process.env.DATA_PATH = labDataPath;
-    process.env.DIST_PATH = "dist-lab";
+    process.env.DIST_PATH = process.env.LAB_DIST_PATH || "dist-lab";
     // Lab experiments must never invoke the optional paid search text parser.
     process.env.LLM_API_KEY = "";
     const { startBackend } = await import("./backend.mjs");

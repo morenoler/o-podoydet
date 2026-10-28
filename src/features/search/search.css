@@ -80,6 +80,10 @@
   padding: 20px 0;
   border-bottom: 1px solid #dce5ef;
 }
+.search-reset-filters:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
 .search-chip {
   min-height: 40px;
   display: inline-flex;
@@ -842,6 +846,10 @@
 }
 .search-filters-modal .search-wish-field {
   margin-top: 24px;
+}
+@media (min-width: 701px) {
+  .v2-modal.search-filters-modal { width: min(800px, calc(100vw - 48px)); }
+  .search-filters-modal .preference-list { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
 }
 .search-filters-modal textarea {
   width: 100%;

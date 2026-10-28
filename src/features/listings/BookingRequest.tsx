@@ -1,11 +1,13 @@
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
 import type { Listing } from "../../../shared/account";
 import { useAuth } from "../auth/AuthProvider";
 import { useApp } from "../../app/providers/TripProvider";
-import { bookingLatestDate, bookingToday, price } from "../account/format";
+import { bookingLatestDate, bookingToday, price, dateRange } from "../account/format";
 import { listingsApi } from "./api";
+import { availabilityQuestion } from "../clarifications/decisionSteps";
+import "../clarifications/decision-steps.css";
 
 function addDay(date: string, count = 1) {
   const value = new Date(`${date}T12:00:00`);
@@ -13,8 +15,13 @@ function addDay(date: string, count = 1) {
   return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, "0")}-${String(value.getDate()).padStart(2, "0")}`;
 }
 export function BookingRequest({ listing }: { listing: Listing }) {
+  const { user } = useAuth();
+  return <BookingRequestForm key={`${listing.id}:${user?.id || "guest"}`} listing={listing} />;
+}
+
+function BookingRequestForm({ listing }: { listing: Listing }) {
   const { user, loading } = useAuth();
-  const { trip } = useApp();
+  const { trip, effectivePreferences } = useApp();
   const location = useLocation();
   const [form, setForm] = useState({
     checkIn: trip.checkIn >= bookingToday() ? trip.checkIn : "",
@@ -23,9 +30,19 @@ export function BookingRequest({ listing }: { listing: Listing }) {
     note: "",
   });
   const [busy, setBusy] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [sent, setSent] = useState<{ checkIn: string; checkOut: string; guests: number } | null>(null);
   const [error, setError] = useState("");
+  useEffect(() => {
+    setForm((previous) => ({ ...previous,
+      checkIn: trip.checkIn >= bookingToday() ? trip.checkIn : "",
+      checkOut: trip.checkIn >= bookingToday() ? trip.checkOut : "",
+      guests: Math.max(1, trip.adults + trip.children),
+    }));
+    setSent(null);
+    setError("");
+  }, [trip.checkIn, trip.checkOut, trip.adults, trip.children]);
   const errorRef = useRef<HTMLDivElement>(null);
+  const submitting = useRef(false);
   const nights =
     form.checkIn && form.checkOut
       ? Math.round(
@@ -35,6 +52,7 @@ export function BookingRequest({ listing }: { listing: Listing }) {
   const overCapacity = form.guests > listing.capacity;
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submitting.current) return;
     if (overCapacity) {
       setError(
         `В этом жилье могут разместиться максимум ${listing.capacity} гостей. Выберите другое объявление или измените состав поездки.`,
@@ -49,32 +67,39 @@ export function BookingRequest({ listing }: { listing: Listing }) {
       requestAnimationFrame(() => errorRef.current?.focus());
       return;
     }
+    submitting.current = true;
     setBusy(true);
     setError("");
     try {
       await listingsApi.book(listing.id, { ...form, note: form.note.trim() });
-      setSent(true);
+      setSent({ checkIn: form.checkIn, checkOut: form.checkOut, guests: form.guests });
     } catch (error) {
       setError((error as Error).message);
       requestAnimationFrame(() => errorRef.current?.focus());
     } finally {
+      submitting.current = false;
       setBusy(false);
     }
   }
   return (
     <section
+      id="listing-booking"
       className="listing-booking account-panel"
       aria-labelledby="booking-title"
     >
-      <h2 id="booking-title">Заявка на проживание</h2>
+      <h2 id="booking-title">Уточнить наличие и стоимость</h2>
       <p className="listing-night-price">
         <strong>{price(listing.pricePerNight)}</strong>
         <span>за ночь</span>
       </p>
-      {sent ? (
+      <p className="listing-booking-note">Цена из объявления. Наличие, обязательные сборы и условия отмены подтвердит отельер в ответ на заявку.</p>
+      {loading ? (
+        <p role="status">Проверяем вход…</p>
+      ) : sent ? (
         <div className="listing-request-success" role="status">
           <CheckCircle2 size={30} aria-hidden="true" />
           <h3>Заявка отправлена</h3>
+          <p>{dateRange(sent.checkIn, sent.checkOut)} · гостей: {sent.guests}</p>
           <p>
             Отельер проверит даты и подтвердит возможность проживания. Статус
             заявки доступен в личном кабинете.
@@ -83,8 +108,6 @@ export function BookingRequest({ listing }: { listing: Listing }) {
             Перейти к моим поездкам
           </Link>
         </div>
-      ) : loading ? (
-        <p role="status">Проверяем вход…</p>
       ) : !user ? (
         <div className="account-stack">
           <p>
@@ -103,7 +126,7 @@ export function BookingRequest({ listing }: { listing: Listing }) {
           путешественника.
         </p>
       ) : (
-        <form className="account-form" onSubmit={submit}>
+        <form className="account-form" onSubmit={submit} aria-busy={busy}>
           {error && (
             <div
               className="account-form-error"
@@ -114,6 +137,7 @@ export function BookingRequest({ listing }: { listing: Listing }) {
               {error}
             </div>
           )}
+          <fieldset className="booking-fields" disabled={busy}>
           <div className="field-row">
             <label className="field">
               <span>Заезд</span>
@@ -180,7 +204,7 @@ export function BookingRequest({ listing }: { listing: Listing }) {
           </label>
           <label className="field">
             <span>
-              Пожелания к заселению{" "}
+              Вопросы и пожелания отельеру{" "}
               <span className="account-optional">(необязательно)</span>
             </span>
             <textarea
@@ -190,12 +214,21 @@ export function BookingRequest({ listing }: { listing: Listing }) {
               onChange={(event) =>
                 setForm({ ...form, note: event.target.value })
               }
-              placeholder="Например, время прибытия"
+              placeholder="Уточните полную стоимость, условия отмены и важные вам удобства"
             />
           </label>
+          <div className="booking-request-context">
+            <p>Можно добавить запрос о наличии, полной стоимости и выбранных удобствах. Текст будет виден вам и отельеру.</p>
+            <button type="button" className="text-link" onClick={() => {
+              const question = availabilityQuestion(listing.title, { ...trip, preferences: effectivePreferences, checkIn: form.checkIn, checkOut: form.checkOut }, undefined, undefined, form.guests, false);
+              const next = [form.note.trim(), question].filter(Boolean).join("\n\n");
+              if (next.length > 1500) { setError("В сообщении недостаточно места для всего запроса. Сократите текст до добавления пожеланий."); requestAnimationFrame(() => errorRef.current?.focus()); return; }
+              setForm({ ...form, note: next }); setError("");
+            }}>Добавить вопросы из моей поездки</button>
+          </div>
           {nights > 0 && nights <= 90 && (
             <div className="listing-total">
-              <span>Всего за {nights} ноч.</span>
+              <span>По цене объявления за {nights} ноч.</span>
               <strong>{price(nights * listing.pricePerNight)}</strong>
             </div>
           )}
@@ -203,12 +236,13 @@ export function BookingRequest({ listing }: { listing: Listing }) {
             className="button primary wide"
             disabled={busy || overCapacity}
           >
-            {busy ? "Отправляем заявку…" : "Отправить заявку"}
+            {busy ? "Отправляем заявку…" : "Отправить запрос отельеру"}
           </button>
           <p className="listing-booking-note">
             Даты по времени Пусана, до 90 ночей. Без списаний. Наличие номера
             подтверждает отельер.
           </p>
+          </fieldset>
         </form>
       )}
     </section>

@@ -10,7 +10,8 @@ import { AdmissionModePicker } from "../src/features/search/AdmissionModePicker"
 import { SearchFilters } from "../src/features/search/SearchFilters";
 import { advisorTripKey } from "../src/features/advisor/useAdvisor";
 import { AdvisorReportView } from "../src/features/advisor/AdvisorReportView";
-import { FavoritesProvider } from "../src/features/favorites/FavoritesProvider";
+import { FavoritesTestProvider as FavoritesProvider } from "./helpers/favoritesTestProvider";
+import { featureIds } from "../shared/features";
 import { HotelCard } from "../src/features/hotels/components/HotelCard";
 import { MatchBadge } from "../src/features/hotels/components/MatchBadge";
 import { WishMatches } from "../src/features/hotels/components/WishMatches";
@@ -48,10 +49,10 @@ test("mode choice has a labelled radio group and distinguishes missing evidence 
   assert.match(html,/противоречия в обязательных условиях исключаем/);
 });
 
-test("filters explain optional priority and expose every criterion in three named groups", () => {
+test("filters explain optional priority and expose amenities and evidence criteria in named groups", () => {
   const html=renderToStaticMarkup(createElement(MemoryRouter,null,createElement(SearchFilters,{trip:{...trip,preferences:[{feature:"family",required:false}]},onApply:()=>{},onClose:()=>{}})));
-  for (const label of ["Пляж и дорога","Номер и размещение","Окружение","Желательно · влияет на порядок","Применить","Сбросить"]) assert.ok(html.includes(label),label);
-  assert.equal((html.match(/class="preference-button"/g)||[]).length,8);
+  for (const label of ["В номере", "В отеле", "С питомцем", "Пляж и дорога","Номер и размещение","Окружение","Желательно · влияет на порядок","Применить","Сбросить"]) assert.ok(html.includes(label),label);
+  assert.equal((html.match(/class="preference-button"/g)||[]).length,featureIds.length);
   assert.match(html,/«Желательно» влияет на порядок/);
 });
 

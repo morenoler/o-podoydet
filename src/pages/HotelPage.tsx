@@ -2,16 +2,22 @@ import { canSearch } from "../features/search/searchTrip";
 import { SearchBar } from "../features/search/SearchBar";
 import { HotelCatalogPreview } from "../features/hotels/components/HotelCatalogPreview";
 import { HotelPhotoGallery } from "../features/hotels/components/HotelPhotoGallery";
+import { CatalogRoomDescription } from "../features/hotels/components/CatalogRoomDescription";
+import { LocationCriteria } from "../features/places/LocationCriteria";
+import { locationState } from "../features/places/locationPresentation";
+import { NearbyPlaces } from "../features/places/NearbyPlaces";
 import { FavoriteButton } from "../features/favorites/FavoriteButton";
 import { roomDetailsLabel } from "../features/account/format";
 import "../features/search/search.css";
 import "../features/hotels/hotel-details.css";
+import "../features/places/places.css";
 import { CapacitySummary } from "../features/hotels/components/CapacitySummary";
 import { PersonalWishesSummary } from "../features/hotels/components/PersonalWishesSummary";
 import { MatchBadge } from "../features/hotels/components/MatchBadge";
 import { matchForSelectedPreferences } from "../shared/lib/matchPresentation";
-import { useParams, useSearchParams, Link } from "react-router-dom";
+import { useParams, useSearchParams, Link, useLocation } from "react-router-dom";
 import { useApp } from "../app/providers/TripProvider";
+import { useAuth } from "../features/auth/AuthProvider";
 import { useState, useEffect } from "react";
 import type { HotelMatch, Hotel, Fact, Question } from "../../shared/types";
 import { api } from "../shared/api/client";
@@ -29,38 +35,43 @@ import { AreaPanel } from "../features/area/components/AreaPanel";
 import { FactEvidence } from "../features/hotels/components/FactEvidence";
 import { accommodationPath } from "../shared/lib/accommodation";
 import { CatalogClarificationPlan } from "../features/clarifications/CatalogClarificationPlan";
+import { CatalogAvailability, DecisionNextSteps } from "../features/clarifications/DecisionNextSteps";
+import { hasUncheckedPersonalWishes } from "../features/clarifications/decisionSteps";
 import "../features/clarifications/clarifications.css";
 
 export function HotelPage() {
   const { id } = useParams();
+  const { user, loading: authLoading } = useAuth();
   const { trip, setTrip, catalog, catalogError, revision, refresh } = useApp();
   const validTrip = canSearch(trip);
   const [params] = useSearchParams();
   const requestedRoom = params.get("room");
+  const { hash } = useLocation();
   const tripKey = JSON.stringify(trip);
-  const [ranked, setRanked] = useState<HotelMatch | null>(null);
-  const [data, setData] = useState<{
+  const requestKey = JSON.stringify([id, requestedRoom, tripKey, revision, user?.id || "guest"]);
+  type DetailData = {
       hotel: Hotel;
       facts: Fact[];
       questions: Question[];
-    } | null>(null),
-    [roomId, setRoomId] = useState(""),
-    [error, setError] = useState("");
+  };
+  const [response, setResponse] = useState<{ key: string; data: DetailData | null; ranked: HotelMatch | null; error: string } | null>(null);
+  const current = !authLoading && response?.key === requestKey ? response : null;
+  const data = current?.data || null;
+  const ranked = current?.ranked || null;
+  const error = current?.error || "";
+  const [roomId, setRoomId] = useState("");
   useEffect(() => {
+    if (authLoading) return;
     let active = true;
-    setData(null);
-    setRanked(null);
-    setError("");
     Promise.all([
-      api<typeof data>(`/hotels/${id}`),
+      api<DetailData>(`/hotels/${id}`),
       validTrip
         ? api<HotelMatch>(`/hotels/${id}/evaluate`, trip)
         : Promise.resolve(null),
     ])
       .then(([d, evaluation]) => {
         if (active) {
-          setData(d);
-          setRanked(evaluation);
+          setResponse({ key: requestKey, data: d, ranked: evaluation, error: "" });
           if (d)
             setRoomId(
               d.hotel.rooms.some((r) => r.id === requestedRoom)
@@ -70,12 +81,17 @@ export function HotelPage() {
         }
       })
       .catch((e) => {
-        if (active) setError(e.message);
+        if (active) setResponse({ key: requestKey, data: null, ranked: null, error: e.message });
       });
     return () => {
       active = false;
     };
-  }, [id, revision, requestedRoom, tripKey]);
+  }, [id, revision, requestedRoom, tripKey, user?.id, authLoading]);
+  useEffect(() => {
+    if (!data || (validTrip && !ranked) || !["#decision-next-steps", "#availability-request"].includes(hash)) return;
+    const frame = requestAnimationFrame(() => document.getElementById(hash.slice(1))?.scrollIntoView({ block: "start" }));
+    return () => cancelAnimationFrame(frame);
+  }, [hash, data, ranked, validTrip]);
   if (catalogError)
     return (
       <div className="page">
@@ -115,8 +131,9 @@ export function HotelPage() {
     ),
   );
   const hasOwnerCriteria = !!ranked.ownerCriteria?.length;
-  const allConditionsMatch = room.status === "fits" && room.capacityEvidenceStatus === "match"
+  const allConditionsMatch = !trip.pendingLocationQuery && !hasUncheckedPersonalWishes(trip, ranked) && room.status === "fits" && room.capacityEvidenceStatus === "match"
     && !room.capacityAssumed && room.room.evidenceStatus === "verified"
+    && (ranked.locationCriteria || []).every((criterion) => locationState(criterion) === "match")
     && [...selectedCriteria, ...(ranked.ownerCriteria || [])].every((criterion) =>
       criterion.status === "match" && criterion.evidenceStatus === "match" && !criterion.assumed);
   return (
@@ -169,6 +186,10 @@ export function HotelPage() {
         </div>
       </div>
       <HotelPhotoGallery hotel={hotel} />
+      <CatalogRoomDescription hotel={hotel} room={room.room} />
+      <DecisionNextSteps match={ranked} room={room} trip={trip} />
+      {!hotel.synthetic && <CatalogAvailability key={room.room.id} hotel={hotel} room={room.room} trip={trip} match={ranked} roomMatch={room} />}
+      <NearbyPlaces hotelId={hotel.id} />
       {requestedRoom && !ranked.rooms.some((entry) => entry.room.id === requestedRoom) && (
         <Notice>Сведения о запрошенной категории больше не доступны. Ниже показана другая категория; проверьте её условия заново.</Notice>
       )}
@@ -319,6 +340,7 @@ export function HotelPage() {
             )}
           />
           <CapacitySummary match={room} />
+          <LocationCriteria criteria={ranked.locationCriteria} detailed />
           {(selectedCriteria.length > 0 || !hasOwnerCriteria) && (
             <WishMatches criteria={selectedCriteria} />
           )}

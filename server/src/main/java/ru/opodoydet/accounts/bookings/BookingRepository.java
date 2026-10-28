@@ -14,7 +14,8 @@ public final class BookingRepository {
           + " guestEmail,l.host_id AS hostId,b.check_in AS checkIn,b.check_out AS"
           + " checkOut,b.guests,b.nights,b.price_per_night AS pricePerNight,b.total_price AS"
           + " totalPrice,'KRW' AS currency,l.photos,l.room_type AS"
-          + " roomType,b.status,b.note,b.created_at AS createdAt,b.updated_at AS updatedAt FROM"
+          + " roomType,b.status,b.note,b.host_reply AS hostReply,b.replied_at AS repliedAt,"
+          + " b.created_at AS createdAt,b.updated_at AS updatedAt FROM"
           + " account_bookings b JOIN account_listings l ON l.id=b.listing_id JOIN account_users u"
           + " ON u.id=b.user_id ";
 
@@ -89,9 +90,15 @@ public final class BookingRepository {
     db.execute("UPDATE account_bookings SET status=?,updated_at=? WHERE id=?", status, now, id);
   }
 
+  public void reply(String id, String message, String now) throws SQLException {
+    db.execute("UPDATE account_bookings SET host_reply=?,replied_at=?,updated_at=? WHERE id=?",
+        message, now, now, id);
+  }
+
   private static ObjectNode decode(ObjectNode row) {
     if (row == null) return null;
     row.set("photos", Json.read(Json.str(row, "photos")));
+    if (Json.str(row, "hostReply").isBlank()) row.remove(List.of("hostReply", "repliedAt"));
     return row;
   }
 }

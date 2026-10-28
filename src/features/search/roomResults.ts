@@ -13,7 +13,7 @@ export function recommendationItem(recommendation: RoomRecommendation): RoomSear
 }
 
 export function recommendationMatch(recommendation: RoomRecommendation): HotelMatch {
-  return { hotel: recommendation.hotel, best: recommendation.room, rooms: [recommendation.room], ownerCriteria: recommendation.ownerCriteria, personalWishes: recommendation.personalWishes };
+  return { hotel: recommendation.hotel, best: recommendation.room, rooms: [recommendation.room], ownerCriteria: recommendation.ownerCriteria, personalWishes: recommendation.personalWishes, locationCriteria: recommendation.locationCriteria };
 }
 
 /** Before dates are chosen these are catalog categories, never matching claims. */

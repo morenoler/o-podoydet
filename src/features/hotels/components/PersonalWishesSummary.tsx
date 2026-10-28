@@ -36,7 +36,7 @@ export function PersonalWishesSummary({ match }: { match: HotelMatch }) {
         </ul>
       )}
       <p className="personal-wishes-note">{summary.note}</p>
-      {match.personalWishes?.status === "unrecognized" && (
+      {match.personalWishes?.status === "unrecognized" && !match.locationCriteria?.length && (
         <Link to="/wishes" className="personal-wishes-edit">Уточнить пожелание</Link>
       )}
     </footer>

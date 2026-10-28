@@ -1,4 +1,5 @@
 import type { FeatureId } from "./types";
+import { amenityFeatures } from "./amenities";
 
 // Adding a characteristic reuses the existing evaluators and collection tools.
 export const features: Record<
@@ -9,12 +10,13 @@ export const features: Record<
     scope: "hotel" | "room";
     evaluator: "max" | "true";
     threshold?: number;
-    tool: "route" | "host" | "area";
+    tool: "route" | "host" | "area" | "amenity";
     question: string;
     positive: string;
     negative: string;
   }
 > = {
+  ...amenityFeatures,
   beach_walk: {
     label: "До пляжа пешком",
     detail: "Не больше 1 км по рассчитанному пути",

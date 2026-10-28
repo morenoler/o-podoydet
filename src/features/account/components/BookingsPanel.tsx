@@ -24,6 +24,7 @@ import {
   ResourceError,
 } from "./AccountFeedback";
 import { AccommodationPhoto } from "../../../shared/ui/AccommodationPhoto";
+import { BookingReply } from "./BookingReply";
 
 type Filter = "active" | "history";
 function isCurrent(booking: Booking, host: boolean) {
@@ -157,7 +158,9 @@ function BookingCard({
   host: boolean;
   onSaved: () => void;
 }) {
-  const [busy, setBusy] = useState(false);
+  const [statusBusy, setBusy] = useState(false);
+  const [replyBusy, setReplyBusy] = useState(false);
+  const busy = statusBusy || replyBusy;
   const [error, setError] = useState("");
   const [confirmCancel, setConfirmCancel] = useState(false);
   const active = ["pending", "confirmed"].includes(booking.status);
@@ -216,7 +219,7 @@ function BookingCard({
         <div className="booking-price">
           <strong>{price(booking.totalPrice)}</strong>
           <span>
-            за {countLabel(booking.nights, ["ночь", "ночи", "ночей"])}
+            за {countLabel(booking.nights, ["ночь", "ночи", "ночей"])} · по цене объявления
           </span>
         </div>
         {host && (
@@ -329,18 +332,13 @@ function BookingCard({
             )}
           </div>
         )}
+        <BookingReply booking={booking} host={host} disabled={statusBusy} onBusyChange={setReplyBusy} />
         <details className="booking-extra-details">
           <summary>Детали заявки</summary>
           <p className="booking-address">
             <MapPin size={18} aria-hidden="true" />
             <span>{booking.address}</span>
           </p>
-          {booking.note && (
-            <div className="booking-note">
-              <strong>Пожелания к заселению</strong>
-              <p>{booking.note}</p>
-            </div>
-          )}
           <p className="account-record-date">
             Заявка от {calendarDate(booking.createdAt)}
           </p>

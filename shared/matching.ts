@@ -65,11 +65,14 @@ export function evaluate(
       !f.supersededBy &&
       (definition.scope === "hotel" ? !f.roomId : f.roomId === room.id),
   );
-  const relevant = scoped.filter(
-    (f) =>
-      (!f.validFrom || f.validFrom <= trip.checkIn) &&
-      (!f.validTo || f.validTo >= trip.checkOut),
-  );
+  const relevant = scoped.filter((f) => {
+    const negative = definition.evaluator === "max"
+      ? typeof f.value === "number" && f.value > definition.threshold!
+      : f.value === false;
+    return negative
+      ? (!f.validFrom || f.validFrom <= trip.checkOut) && (!f.validTo || f.validTo >= trip.checkIn)
+      : (!f.validFrom || f.validFrom <= trip.checkIn) && (!f.validTo || f.validTo >= trip.checkOut);
+  });
   const active = relevant.filter((f) => new Date(f.expiresAt) > now);
   const base = {
     feature: preference.feature,

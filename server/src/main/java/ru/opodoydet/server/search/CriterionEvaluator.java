@@ -85,10 +85,13 @@ final class CriterionEvaluator {
         continue;
       if (hotelScope ? e.getRoomId() != null : !roomId.equals(e.getRoomId())) continue;
       JsonNode raw = raw(e);
+      boolean negative = definition.getThreshold() == null
+          ? e.getValue() != null && e.getValue().isBoolean() && !e.getValue().asBoolean()
+          : e.getValue() != null && e.getValue().isNumber() && e.getValue().asDouble() > definition.getThreshold();
       if (raw.hasNonNull("validFrom")
-          && raw.path("validFrom").asText().compareTo(trip.path("checkIn").asText()) > 0) continue;
+          && raw.path("validFrom").asText().compareTo(trip.path(negative ? "checkOut" : "checkIn").asText()) > 0) continue;
       if (raw.hasNonNull("validTo")
-          && raw.path("validTo").asText().compareTo(trip.path("checkOut").asText()) < 0) continue;
+          && raw.path("validTo").asText().compareTo(trip.path(negative ? "checkIn" : "checkOut").asText()) < 0) continue;
       relevant.add(e);
     }
     List<Evidence> active =

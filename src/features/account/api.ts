@@ -105,6 +105,8 @@ export const accountApi = {
     api<ListingQuestion>(`/host/questions/${id}/answer`, { answer }),
   setBookingStatus: (id: string, status: BookingStatus) =>
     api<Booking>(`/host/bookings/${id}/status`, { status }),
+  replyToBooking: (id: string, message: string) =>
+    api<Booking>(`/host/bookings/${encodeURIComponent(id)}/reply`, { message }),
   cancelBooking: (id: string) =>
     api<Booking>(`/account/bookings/${id}/cancel`, {}),
 };

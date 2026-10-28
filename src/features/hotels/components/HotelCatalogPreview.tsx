@@ -6,9 +6,12 @@ import { SearchBar } from "../../search/SearchBar";
 import { GeoMap } from "../../map/components/GeoMap";
 import { FavoriteButton } from "../../favorites/FavoriteButton";
 import { HotelPhotoGallery } from "./HotelPhotoGallery";
+import { CatalogRoomDescription } from "./CatalogRoomDescription";
+import { NearbyPlaces } from "../../places/NearbyPlaces";
 import { FactEvidence } from "./FactEvidence";
 import { roomDetailsLabel } from "../../account/format";
 import { accommodationPath } from "../../../shared/lib/accommodation";
+import { CatalogAvailability } from "../../clarifications/DecisionNextSteps";
 
 export function HotelCatalogPreview({
   hotel,
@@ -58,6 +61,11 @@ export function HotelCatalogPreview({
         />
       </div>
       <HotelPhotoGallery hotel={hotel} />
+      {(selectedRoom || hotel.rooms.length === 1) && (
+        <CatalogRoomDescription hotel={hotel} room={selectedRoom || hotel.rooms[0]} />
+      )}
+      {!hotel.synthetic && (selectedRoom || hotel.rooms.length === 1) && <CatalogAvailability key={(selectedRoom || hotel.rooms[0]).id} hotel={hotel} room={selectedRoom || hotel.rooms[0]} trip={trip} />}
+      <NearbyPlaces hotelId={hotel.id} />
       {selectedRoomId && !selectedRoom && <p className="notice">Запрошенная категория больше не доступна в каталоге. Ниже показаны сведения об отеле; выберите другую категорию.</p>}
       <div className="hotel-preview-prompt">
         <h2>{selectedRoom ? "Подойдёт ли вам этот номер?" : "Какой номер вам подойдёт?"}</h2>

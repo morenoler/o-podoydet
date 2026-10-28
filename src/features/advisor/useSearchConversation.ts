@@ -4,26 +4,29 @@ import { featureIds } from "../../../shared/features";
 import { api } from "../../shared/api/client";
 import { currentChatFilters, legacyChatFilters, readChatFilters, recordChatFilters, resetChatFilters, type ChatFilterChange } from "./conversationFilters";
 
+import { currentChatLocations, emptyLocationChanges, readChatLocations, recordChatLocations, resetChatLocations, type ChatLocationChanges } from "./conversationLocations";
+
 interface Message {
   id: string;
   role: "user" | "assistant";
   text: string;
-  mode?: "rules" | "llm";
+  mode?: "rules" | "llm" | "local_model";
 }
 interface Conversation {
   messages: Message[];
   focusFeatures: FeatureId[];
   filterChanges: ChatFilterChange[];
+  locationChanges: ChatLocationChanges;
 }
 interface Reply {
   trip: Trip;
   message: string;
   warnings: string[];
-  mode: "rules" | "llm";
+  mode: "rules" | "llm" | "local_model";
   focusFeatures: FeatureId[];
   changed: boolean;
 }
-const empty: Conversation = { messages: [], focusFeatures: [], filterChanges: [] };
+const empty: Conversation = { messages: [], focusFeatures: [], filterChanges: [], locationChanges: emptyLocationChanges };
 
 function readConversation(key: string, trip: Trip): Conversation & { draft?: string } {
   try {
@@ -33,20 +36,24 @@ function readConversation(key: string, trip: Trip): Conversation & { draft?: str
     if (!saved.focusFeatures.every((f: FeatureId) => featureIds.includes(f))) return empty;
     return { messages: saved.messages.slice(-60), focusFeatures: saved.focusFeatures,
       filterChanges: saved.filterChanges ? readChatFilters(saved.filterChanges) : legacyChatFilters(saved.messages, trip),
+      locationChanges: readChatLocations(saved.locationChanges),
       draft: typeof saved.draft === "string" ? saved.draft.slice(0, 1500) : "" };
   } catch { return empty; }
 }
 
-export function useSearchConversation(trip: Trip, onApply: (trip: Trip) => void, scope: string) {
+export function useSearchConversation(trip: Trip, onApply: (trip: Trip) => void, scope: string, contextHotelId?: string) {
   const storageKey = `o-search-conversation-busan:${scope}`;
   const filterStorageKey = `o-search-chat-filters-busan:${scope}`;
+  const locationStorageKey = `o-search-chat-locations-busan:${scope}`;
   const [initial] = useState(() => {
     const saved = { ...readConversation(storageKey, trip) };
     try {
       const filters = localStorage.getItem(filterStorageKey);
       if (filters !== null) saved.filterChanges = readChatFilters(JSON.parse(filters));
+      const locations = localStorage.getItem(locationStorageKey);
+      if (locations !== null) saved.locationChanges = readChatLocations(JSON.parse(locations));
     } catch { /* Session history remains usable when local storage is unavailable. */ }
-    return { ...saved, filterChanges: currentChatFilters(saved.filterChanges, trip) };
+    return { ...saved, filterChanges: currentChatFilters(saved.filterChanges, trip), locationChanges: currentChatLocations(saved.locationChanges, trip) };
   });
   const [conversation, setConversation] = useState<Conversation>(initial);
   const [draft, setDraft] = useState(initial.draft || "");
@@ -60,35 +67,40 @@ export function useSearchConversation(trip: Trip, onApply: (trip: Trip) => void,
   useEffect(() => {
     setConversation((previous) => {
       const filterChanges = currentChatFilters(previous.filterChanges, trip);
-      return filterChanges.length === previous.filterChanges.length ? previous : { ...previous, filterChanges };
+      const locationChanges = currentChatLocations(previous.locationChanges, trip);
+      return filterChanges.length === previous.filterChanges.length && JSON.stringify(locationChanges) === JSON.stringify(previous.locationChanges) ? previous : { ...previous, filterChanges, locationChanges };
     });
   }, [trip]);
   useEffect(() => {
     const filterChanges = currentChatFilters(conversation.filterChanges, trip);
+    const locationChanges = currentChatLocations(conversation.locationChanges, trip);
+    try { localStorage.setItem(locationStorageKey, JSON.stringify(locationChanges)); } catch { /* optional persistence */ }
     try { localStorage.setItem(filterStorageKey, JSON.stringify(filterChanges)); } catch { /* optional persistence */ }
     try {
       sessionStorage.setItem(storageKey, JSON.stringify({
         ...conversation,
         filterChanges,
+        locationChanges,
         // Interrupted requests come back as retryable drafts, not unanswered history.
         messages: conversation.messages.filter((message) => message.id !== pendingTurn.current?.id),
         draft: pendingTurn.current?.text || draft,
         tripKey: JSON.stringify(trip),
       }));
     } catch { /* The conversation still works when browser storage is unavailable. */ }
-  }, [storageKey, filterStorageKey, conversation, trip, draft, busy]);
+  }, [storageKey, filterStorageKey, locationStorageKey, conversation, trip, draft, busy]);
 
   function reset() {
     // Invalidate an in-flight reply before clearing state, so it cannot restore old wishes.
     request.current = null;
     pendingTurn.current = null;
-    const nextTrip = resetChatFilters(latestTrip.current, conversation.filterChanges);
+    const nextTrip = resetChatLocations(resetChatFilters(latestTrip.current, conversation.filterChanges), conversation.locationChanges);
     setConversation(empty);
     setDraft("");
     setError("");
     setBusy(false);
     try { sessionStorage.removeItem(storageKey); } catch { /* optional persistence */ }
     try { localStorage.removeItem(filterStorageKey); } catch { /* optional persistence */ }
+    try { localStorage.removeItem(locationStorageKey); } catch { /* optional persistence */ }
     if (nextTrip !== latestTrip.current) onApply(nextTrip);
   }
 
@@ -105,7 +117,7 @@ export function useSearchConversation(trip: Trip, onApply: (trip: Trip) => void,
     setDraft("");
     setConversation((previous) => ({ ...previous, messages: [...previous.messages, { id, role: "user", text: message }].slice(-60) as Message[] }));
     try {
-      const reply = await api<Reply>("/search/conversation", { trip, message, focusFeatures: conversation.focusFeatures });
+      const reply = await api<Reply>("/search/conversation", { trip, message, focusFeatures: conversation.focusFeatures, ...(contextHotelId ? { contextHotelId } : {}) });
       if (request.current !== token) return;
       if (JSON.stringify(latestTrip.current) !== snapshot)
         throw new Error("Условия поиска изменились, пока готовился ответ. Отправьте пожелание ещё раз для текущей подборки.");
@@ -113,6 +125,7 @@ export function useSearchConversation(trip: Trip, onApply: (trip: Trip) => void,
       setConversation((previous) => ({
         focusFeatures: reply.focusFeatures,
         filterChanges: recordChatFilters(previous.filterChanges, trip, reply.trip, reply.focusFeatures),
+        locationChanges: recordChatLocations(previous.locationChanges, trip, reply.trip),
         messages: [...previous.messages, {
           id: crypto.randomUUID(), role: "assistant", mode: reply.mode,
           text: [reply.message, ...reply.warnings].join("\n\n"),
@@ -132,6 +145,7 @@ export function useSearchConversation(trip: Trip, onApply: (trip: Trip) => void,
     }
   }
 
-  const canReset = !!(conversation.messages.length || currentChatFilters(conversation.filterChanges, trip).length || draft || error || busy);
+  const activeLocations = currentChatLocations(conversation.locationChanges, trip);
+  const canReset = !!(conversation.messages.length || currentChatFilters(conversation.filterChanges, trip).length || activeLocations.wishes.length || activeLocations.pending || draft || error || busy);
   return { ...conversation, draft, setDraft, busy, error, send, reset, canReset };
 }

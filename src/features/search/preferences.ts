@@ -1,5 +1,12 @@
 import type { Preference, Trip } from "../../../shared/types";
 
+/** Clear every source of filtering while keeping the destination, dates and guests. */
+export function resetSearchFilters(trip: Trip): Trip {
+  return { ...trip, preferences: [], scenarios: [], text: "", preferenceOverrides: undefined, admissionMode: "explore",
+    ...(trip.locationWishes ? { locationWishes: [] } : {}),
+    ...(trip.pendingLocationQuery ? { pendingLocationQuery: null } : {}) };
+}
+
 /** Keep explicit edits authoritative even when the old free text mentions the same wish. */
 export function editPreferences(trip: Trip, next: Preference[], current = trip.preferences): Trip {
   const overrides = new Map((trip.preferenceOverrides || []).map((p) => [p.feature, p]));
@@ -16,7 +23,9 @@ export function editPreferences(trip: Trip, next: Preference[], current = trip.p
 /** Rebase a modal's own edits if a chat reply arrived while the modal was open. */
 export function applyFilterDraft(trip: Trip, current: Preference[], initial: Trip, draft: Trip, reset = false): Trip {
   const admissionMode = initial.admissionMode === draft.admissionMode ? trip.admissionMode : draft.admissionMode;
-  if (reset) return { ...trip, admissionMode, preferences: draft.preferences, text: draft.text, scenarios: draft.scenarios, preferenceOverrides: undefined };
+  if (reset) return { ...trip, admissionMode: draft.admissionMode, preferences: draft.preferences, text: draft.text, scenarios: draft.scenarios, preferenceOverrides: undefined,
+    ...(trip.locationWishes || draft.locationWishes ? { locationWishes: draft.locationWishes || [] } : {}),
+    ...(trip.pendingLocationQuery || draft.pendingLocationQuery ? { pendingLocationQuery: draft.pendingLocationQuery || null } : {}) };
   const next = new Map(current.map((p) => [p.feature, p]));
   for (const feature of new Set([...initial.preferences, ...draft.preferences].map((p) => p.feature))) {
     const before = initial.preferences.find((p) => p.feature === feature);

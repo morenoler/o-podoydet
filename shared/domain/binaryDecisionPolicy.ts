@@ -1,4 +1,5 @@
 import type { Criterion, CriterionDecision, Hotel, OccupancyRule, Room, RoomMatch, Trip } from "../types";
+import { amenityIds, amenityFeatures } from "../amenities";
 
 /** Admission stays binary; missing evidence never becomes a positive hotel fact. */
 export function decideCriterion(raw: Criterion, _hotel: Hotel): CriterionDecision {
@@ -6,6 +7,7 @@ export function decideCriterion(raw: Criterion, _hotel: Hotel): CriterionDecisio
   if (raw.status === "match" || raw.status === "mismatch")
     return { ...result, status: raw.status, assumed: false, decisionBasis: "evidence" };
   const reasons: Record<Criterion["feature"], string> = {
+    ...Object.fromEntries(amenityIds.map(id => [id, `${amenityFeatures[id].label}: нет достаточных сведений для выбранного варианта размещения.`])) as Record<typeof amenityIds[number], string>,
     beach_walk: "Нет пригодного подтверждения расстояния до пляжа. Сохранённый маршрут не заменяет недостающие, устаревшие или противоречивые сведения.",
     step_free_route: "Отсутствие лестниц на карте и рассчитанный обход не подтверждают доступность всего пути без ступеней.",
     courtyard: "Направление окон выбранного номера не подтверждено.",

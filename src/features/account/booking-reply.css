@@ -1,0 +1,16 @@
+.booking-correspondence { display: grid; gap: 12px; margin-top: 20px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; }
+.booking-correspondence h3 { display: flex; align-items: center; gap: 8px; font-size: 16px; line-height: 1.4; margin: 0; }
+.booking-correspondence h3 svg { flex-shrink: 0; }
+.booking-private-message { padding: 12px; border-radius: 8px; background: var(--bg); }
+.booking-private-message.is-host { background: var(--soft-blue); }
+.booking-private-message > strong { font-size: 13px; }
+.booking-private-message p { margin: 5px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; line-height: 1.6; }
+.booking-private-message time { display: block; margin-top: 9px; color: var(--muted); font-size: 12px; }
+.booking-correspondence .text-link { justify-self: start; min-height: 44px; }
+.booking-reply-form { display: grid; gap: 12px; }
+.booking-reply-form textarea { width: 100%; resize: vertical; }
+.booking-reply-form > button { justify-self: start; }
+.booking-reply-help, .booking-reply-pending { color: var(--muted); font-size: 12px; line-height: 1.6; margin: 0; }
+.booking-reply-error { color: #973a34; font-size: 13px; line-height: 1.5; margin: 0; }
+.booking-reply-saved { color: #246651; font-size: 13px; margin: 0; }
+@media (max-width: 600px) { .booking-correspondence { padding: 12px; } .booking-reply-form > button { width: 100%; } }

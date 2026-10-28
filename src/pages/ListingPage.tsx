@@ -2,11 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import {
   ArrowLeft,
-  Check,
-  Compass,
   MapPin,
-  UsersRound,
-  ListOrdered,
 } from "lucide-react";
 import type { Listing } from "../../shared/account";
 import { useResource } from "../features/account/useResource";
@@ -16,6 +12,10 @@ import {
 } from "../features/account/components/AccountFeedback";
 import { BookingRequest } from "../features/listings/BookingRequest";
 import { ListingQuestions } from "../features/listings/ListingQuestions";
+import { RoomDescription } from "../features/listings/RoomDescription";
+import { ListingAmenities } from "../features/listings/ListingAmenities";
+import { additionalAmenityLabels, isAmenityId } from "../../shared/amenities";
+import { useApp } from "../app/providers/TripProvider";
 import { ListingGallery } from "../features/listings/ListingGallery";
 import { ListingClarificationPanel } from "../features/clarifications/ListingClarificationPanel";
 import { FavoriteButton } from "../features/favorites/FavoriteButton";
@@ -26,8 +26,10 @@ import "../features/account/account.css";
 import "../features/listings/listings-v2.css";
 import "../features/search/search.css";
 import "../features/clarifications/clarifications.css";
+import "../features/places/places.css";
 
 export function ListingPage() {
+  const { effectivePreferences } = useApp();
   const { id = "" } = useParams();
   const resource = useResource<Listing>(`/listings/${encodeURIComponent(id)}`);
   const listing = resource.data;
@@ -42,6 +44,8 @@ export function ListingPage() {
         "#listing-questions-title",
         "#listing-fit",
         "#listing-fit-question",
+        "#decision-next-steps",
+        "#listing-booking",
       ].includes(hash)
     )
       return;
@@ -54,6 +58,9 @@ export function ListingPage() {
   }, [hash, listing]);
   const mobile = useMediaQuery("(max-width: 700px)");
   const [bookingOpen, setBookingOpen] = useState(false);
+  useEffect(() => {
+    if (hash === "#listing-booking" && mobile && listing) setBookingOpen(true);
+  }, [hash, mobile, listing]);
   return (
     <div className="page account-page listing-page listing-v2">
       <Link className="listing-back" to="/stays">
@@ -91,72 +98,21 @@ export function ListingPage() {
             <ListingGallery name={listing.title} photos={listing.photos} />
             <div className="listing-detail-layout">
               <div className="listing-main">
-                <nav
-                  className="listing-detail-tabs"
-                  aria-label="Разделы объявления"
-                >
-                  <a href="#listing-about">О жилье</a>
-                  <a href="#listing-amenities">Удобства</a>
-                  <a href="#listing-fit">Подойдёт ли вам</a>
-                  <a href="#listing-questions">Вопросы отельеру</a>
-                </nav>
-                <section className="listing-overview" id="listing-about">
-                  <h2>{listing.roomType}</h2>
-                  <dl className="listing-room-details">
-                    <div>
-                      <dt>
-                        <UsersRound size={20} aria-hidden="true" />
-                        Гостей
-                      </dt>
-                      <dd>До {listing.capacity}</dd>
-                    </div>
-                    <div>
-                      <dt>
-                        <ListOrdered size={20} aria-hidden="true" />
-                        Этаж номера
-                      </dt>
-                      <dd>
-                        {listing.floor == null ? "Не указано" : listing.floor}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>
-                        <Compass size={20} aria-hidden="true" />
-                        Куда выходят окна
-                      </dt>
-                      <dd>
-                        {listing.windowDirections?.length
-                          ? listing.windowDirections
-                              .map((value) => directionLabels[value])
-                              .join(", ")
-                          : "Не указано"}
-                      </dd>
-                    </div>
-                  </dl>
-                  <p className="listing-owner-source">
-                    Сведения отельера · независимая проверка не проведена
-                  </p>
-                  <p className="listing-description">{listing.description}</p>
-                  <section
-                    className="listing-amenity-section"
-                    id="listing-amenities"
-                  >
-                    <h2>Удобства по объявлению</h2>
-                    {listing.amenities.length ? (
-                      <ul className="listing-amenities">
-                        {listing.amenities.map((amenity) => (
-                          <li key={amenity}>
-                            <Check size={20} aria-hidden="true" />
-                            <span>{amenity}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="account-muted">
-                        Удобства пока не указаны. Уточните их у отельера.
-                      </p>
-                    )}
-                  </section>
+                <section className="listing-overview">
+                  <RoomDescription
+                    id="listing-about"
+                    title={listing.roomType}
+                    description={listing.description}
+                    pricePerNight={listing.pricePerNight}
+                    amenities={additionalAmenityLabels(listing.amenities)}
+                    descriptiveAmenities
+                    details={[
+                      { label: "Гостей", value: `До ${listing.capacity}` },
+                      { label: "Этаж номера", value: listing.floor == null ? "Не указано" : String(listing.floor) },
+                      { label: "Куда выходят окна", value: listing.windowDirections?.length ? listing.windowDirections.map((value) => directionLabels[value]).join(", ") : "Не указано" },
+                    ]}
+                    source="Сведения и цена отельера. Независимая проверка не проведена."
+                  />
                   <div className="listing-host">
                     <span className="account-avatar" aria-hidden="true">
                       {listing.hostName
@@ -169,6 +125,7 @@ export function ListingPage() {
                       <p>Автор объявления · детали можно уточнить до заявки</p>
                     </div>
                   </div>
+                  <ListingAmenities id="listing-amenities" evidence={listing.amenityEvidence} requested={effectivePreferences.map((item) => item.feature).filter(isAmenityId)} />
                 </section>
                 <ListingClarificationPanel key={listing.id} listing={listing} />
                 <div id="listing-questions">
@@ -195,7 +152,7 @@ export function ListingPage() {
                     className="button primary"
                     onClick={() => setBookingOpen(true)}
                   >
-                    Выбрать даты
+                    Уточнить наличие
                   </button>
                 </div>
                 <Modal

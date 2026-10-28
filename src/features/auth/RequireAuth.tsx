@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import type { AccountRole } from "../../../shared/account";
 import { accountPath, useAuth } from "./AuthProvider";
@@ -49,5 +49,7 @@ export function RequireAuth({
         </Link>
       </div>
     );
-  return children;
+  // Focus revalidation may change accounts without a loading screen.
+  // Remount private resources even when the next account has the same role.
+  return <Fragment key={user.id}>{children}</Fragment>;
 }

@@ -174,8 +174,8 @@ test("mandatory mismatches and capacity shortages are excluded without relaxatio
   );
 });
 
-test("all eight selectable features validate once while unknown and duplicate features fail", () => {
-  assert.equal(featureIds.length, 8);
+test("all selectable features validate once while unknown and duplicate features fail", () => {
+  assert.equal(featureIds.length, 18);
   const preferences = featureIds.map((feature) => pref(feature));
   const parsed = tripSchema.safeParse({ ...trip, preferences });
   assert.equal(parsed.success, true);

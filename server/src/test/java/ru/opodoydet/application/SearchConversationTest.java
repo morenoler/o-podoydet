@@ -86,7 +86,8 @@ class SearchConversationTest {
   void unsupportedAndMixedRequestsAreNotSilentlyClaimedAsApplied() {
     ObjectNode response = say(trip(), "Рядом с морем, и нужен бассейн");
     assertNotNull(preference(response.path("trip"), "beach_walk"));
-    assertTrue(response.path("message").asText().contains("Не применено"));
+    assertNotNull(preference(response.path("trip"), "pool"));
+    assertFalse(response.path("message").asText().contains("Не применено"));
     for (String message :
         List.of(
             "Вид на море", "Бюджет до 5000", "До моря 100 метров", "Грязный воздух", "Без детей")) {
@@ -143,7 +144,7 @@ class SearchConversationTest {
     assertEquals("", response.path("trip").path("checkIn").asText());
     draft.set(
         "preferenceOverrides",
-        Json.array(List.of(Json.obj("feature", "pool", "enabled", true, "required", false))));
+        Json.array(List.of(Json.obj("feature", "unknown_feature", "enabled", true, "required", false))));
     assertThrows(IllegalArgumentException.class, () -> Validation.tripDraft(draft, "Пусан"));
   }
 
@@ -170,7 +171,7 @@ class SearchConversationTest {
 
   @Test
   void removingTheLastRecognizedConditionKeepsUnrecognizedPersonalTextDisclosed() {
-    String text = "Окна во двор. Нужен бассейн. PERSONAL_CANARY_override";
+    String text = "Окна во двор. Нужен батут. PERSONAL_CANARY_override";
     ObjectNode initial = trip().put("text", text);
     JsonNode removed = say(initial, "Убери условие про двор").path("trip");
     JsonNode interpreted = agents.interpret(removed);
@@ -185,7 +186,7 @@ class SearchConversationTest {
     assertNull(preference(interpreted, "courtyard"));
 
     JsonNode unsupported =
-        say(trip().put("text", "Бассейн"), "Убери условие про двор").path("trip");
+        say(trip().put("text", "Батут"), "Убери условие про двор").path("trip");
     assertEquals(
         "unrecognized",
         agents.interpret(unsupported).path("personalWishes").path("status").asText());

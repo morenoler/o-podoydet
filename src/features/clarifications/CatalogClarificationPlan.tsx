@@ -2,6 +2,7 @@ import { useId, useRef, useState } from "react";
 import { Check, Copy, MessageCircle, SearchCheck } from "lucide-react";
 import type { HotelMatch, RoomMatch } from "../../../shared/types";
 import { features } from "../../../shared/features";
+import { isAmenityId } from "../../../shared/amenities";
 import {
   catalogQuestion,
   clarificationItems,
@@ -48,7 +49,7 @@ export function CatalogClarificationPlan({
                 другой вариант или измените пожелание, если это допустимо для
                 вашей поездки.
               </p>
-            ) : ownerCanClarify(criterion.feature) ? (
+            ) : ownerCanClarify(criterion.feature) || isAmenityId(criterion.feature) ? (
               <CatalogDraft
                 key={`${room.room.id}:${criterion.feature}`}
                 question={catalogQuestion(match.hotel, room.room, criterion)}

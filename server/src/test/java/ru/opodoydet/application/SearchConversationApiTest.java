@@ -204,7 +204,7 @@ class SearchConversationApiTest {
                       "message",
                       "Это обязательно",
                       "focusFeatures",
-                      List.of("pool")))
+                      List.of("unknown_feature")))
               .statusCode());
       draft.set(
           "preferenceOverrides",
@@ -287,7 +287,7 @@ class SearchConversationApiTest {
       Agents configured =
           new Agents(
               new Agents.Config(
-                  "test-key", "test-model", "http://127.0.0.1:" + model.getAddress().getPort()));
+                  "test-key", "test-model", "http://127.0.0.1:" + model.getAddress().getPort(), Agents.Protocol.RESPONSES));
       ObjectNode initial = trip();
       initial.set(
           "preferences", Json.array(List.of(Json.obj("feature", "family", "required", true))));
@@ -334,14 +334,14 @@ class SearchConversationApiTest {
                   new Agents.Config(
                       "test-key",
                       "test-model",
-                      "http://127.0.0.1:" + model.getAddress().getPort())));
+                      "http://127.0.0.1:" + model.getAddress().getPort(), Agents.Protocol.RESPONSES)));
       List<String> badOutputs =
           List.of(
               "broken-json",
               Json.write(
                   Json.obj(
                       "updates",
-                      List.of(Json.obj("feature", "pool", "action", "add")),
+                      List.of(Json.obj("feature", "unknown_feature", "action", "add")),
                       "unhandled",
                       List.of())),
               Json.write(

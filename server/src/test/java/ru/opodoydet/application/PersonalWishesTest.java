@@ -24,7 +24,7 @@ class PersonalWishesTest {
     JsonNode blank = Agents.parseRules("  ", selected());
     assertEquals("not_requested", blank.path("personalWishes").path("status").asText());
     assertTrue(blank.path("personalWishes").path("features").isEmpty());
-    JsonNode unknown = Agents.parseRules("Нужен бассейн с горками", selected());
+    JsonNode unknown = Agents.parseRules("Нужен батут с горками", selected());
     assertEquals("unrecognized", unknown.path("personalWishes").path("status").asText());
     assertTrue(unknown.path("personalWishes").path("features").isEmpty());
     assertEquals("family", unknown.path("preferences").path(0).path("feature").asText());
@@ -32,14 +32,14 @@ class PersonalWishesTest {
 
   @Test
   void knownWishAlongsideUnsupportedWishNeverClaimsCompleteRecognitionOrCopiesText() {
-    String text = "Тихо и бассейн. PERSONAL_CANARY_e88";
+    String text = "Тихо и батут. PERSONAL_CANARY_e88";
     JsonNode wishes = Agents.parseRules(text, selected()).path("personalWishes");
     assertEquals("recognized", wishes.path("status").asText());
     assertEquals("unverified", wishes.path("completeness").asText());
     assertEquals(Set.of("courtyard", "low_noise"),
         Set.copyOf(Json.list(wishes.path("features")).stream().map(JsonNode::asText).toList()));
     assertFalse(wishes.toString().contains("family"));
-    assertFalse(wishes.toString().contains("бассейн"));
+    assertFalse(wishes.toString().contains("батут"));
     assertFalse(wishes.toString().contains("PERSONAL_CANARY_e88"));
   }
 
@@ -61,7 +61,7 @@ class PersonalWishesTest {
         "facts", List.of());
     ObjectNode trip = Json.obj("region", "Пусан", "checkIn", "2027-06-10", "checkOut", "2027-06-15",
         "adults", 2, "children", 0, "scenarios", List.of("family"), "preferences", selected(),
-        "text", "Тихо и бассейн. PERSONAL_CANARY_e88", "admissionMode", "explore");
+        "text", "Тихо и батут. PERSONAL_CANARY_e88", "admissionMode", "explore");
     try (var database = TestDatabases.create(seed)) {
       Store store = database.store();
       SearchService service = new SearchService(store, new Agents(Agents.Config.from(Map.of())),

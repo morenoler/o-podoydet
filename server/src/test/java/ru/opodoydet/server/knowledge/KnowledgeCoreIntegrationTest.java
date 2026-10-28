@@ -72,7 +72,7 @@ class KnowledgeCoreIntegrationTest {
         .list().forEach(entry -> actual.put(entry.getKey(), entry.getValue()));
     // An equal count alone would miss reassigning an existing ID to another hotel/room/feature.
     assertThat(actual).containsExactlyInAnyOrderEntriesOf(expected);
-    assertThat(count("SELECT count(*) FROM characteristic")).isEqualTo(8);
+    assertThat(count("SELECT count(*) FROM characteristic")).isEqualTo(ru.opodoydet.domain.Features.ids().size());
     // Каждому предмету (отель/номер × характеристика) — ровно один факт.
     assertThat(jdbc.sql("SELECT hotel_id, room_id, characteristic FROM fact")
         .query((rs, n) -> new Scope(rs.getString(1), rs.getString(2), rs.getString(3))).list())

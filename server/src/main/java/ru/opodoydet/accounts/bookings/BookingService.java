@@ -146,6 +146,26 @@ public final class BookingService {
         });
   }
 
+  /** Private message to this request's guest. Never changes status, prices, or search evidence. */
+  public ObjectNode reply(String host, String id, JsonNode input) throws SQLException {
+    String message = Inputs.text(input, "message", "Ответ гостю", 1, 3000);
+    return db.transaction(() -> {
+      ObjectNode booking = ownedBooking(host, id);
+      // Share the same PostgreSQL lock as status/cancel so neither update can lose the other.
+      db.lockListing(Json.str(booking, "listingId"));
+      ownedBooking(host, id);
+      repository.reply(id, message, Instant.now().toString());
+      return repository.find(id);
+    });
+  }
+
+  private ObjectNode ownedBooking(String host, String id) throws SQLException {
+    ObjectNode booking = repository.find(id);
+    if (booking == null || !Json.str(booking, "hostId").equals(host))
+      throw new AccountProblem(404, "Заявка на ваше объявление не найдена.");
+    return booking;
+  }
+
   // Rental calendar follows the territory of the catalogue, independently of server timezone.
   private static LocalDate today() {
     return LocalDate.now(ZoneId.of("Asia/Seoul"));

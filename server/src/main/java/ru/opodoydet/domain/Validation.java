@@ -77,6 +77,10 @@ public final class Validation {
           || !unique.add(scenario.asText()))
         throw new IllegalArgumentException("Некорректные или повторяющиеся сценарии");
     preferences(input.path("preferences"), true);
+    if (input.has("locationWishes"))
+      ru.opodoydet.application.places.PlaceSearch.validateWishes(input.path("locationWishes"));
+    if (input.hasNonNull("pendingLocationQuery"))
+      ru.opodoydet.application.places.PlaceSearch.validatePending(input.path("pendingLocationQuery"));
     if (input.has("preferenceOverrides")) {
       preferences(input.path("preferenceOverrides"), true);
       for (JsonNode override : input.path("preferenceOverrides")) bool(override, "enabled");

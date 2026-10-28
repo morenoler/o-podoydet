@@ -1,0 +1,10 @@
+.editor-structured-amenities { min-width: 0; border: 0; padding: 0; margin: 24px 0; }
+.editor-structured-amenities > legend { font-size: 22px; font-weight: 700; }
+.editor-structured-amenities > p { color: var(--muted); line-height: 1.6; max-width: 65ch; }
+.editor-amenity-group + .editor-amenity-group { margin-top: 24px; }
+.editor-amenity-group h3 { font-size: 17px; margin: 0 0 8px; }
+.editor-amenity-row { display: grid; grid-template-columns: minmax(0, 1fr) 180px; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--border, #dde3df); }
+.editor-amenity-row > span { display: grid; gap: 4px; }
+.editor-amenity-row small { font-size: 13px; font-weight: 400; color: var(--muted); line-height: 1.5; }
+.editor-amenity-row select { min-height: 44px; width: 100%; }
+@media (max-width: 560px) { .editor-amenity-row { grid-template-columns: 1fr; gap: 8px; } }

@@ -41,7 +41,7 @@ export function CriterionLine({
         {unconfirmed && (
           <span className="assumption-label">Требует уточнения</span>
         )}
-        {!!criterion.reportedEvidence?.length && (
+        {(!!criterion.reportedEvidence?.length || !!criterion.ownerAmenityEvidence) && (
           <small className="criterion-reported-source">
             Со слов отельера · без независимой проверки
           </small>
@@ -54,7 +54,8 @@ export function CriterionLine({
           (criterion.sourceExplanation !== criterion.explanation ||
             (criterion.details?.length || 0) > 0 ||
             (criterion.environmentalEvidence?.length || 0) > 0 ||
-            (criterion.reportedEvidence?.length || 0) > 0) && (
+            (criterion.reportedEvidence?.length || 0) > 0 ||
+            !!criterion.ownerAmenityEvidence) && (
             <details className="criterion-evidence">
               <summary>
                 {criterion.decisionBasis === "estimate"
@@ -70,6 +71,11 @@ export function CriterionLine({
               {criterion.sourceExplanation !== criterion.explanation && (
                 <p>{criterion.sourceExplanation}</p>
               )}
+              {criterion.ownerAmenityEvidence && <p>
+                Анкета владельца от {dateFull(criterion.ownerAmenityEvidence.obtainedAt)}.
+                {criterion.ownerAmenityEvidence.scope === "room" ? " Для выбранного номера или квартиры." : " Для территории объекта."}
+                {" "}{criterion.assumption}
+              </p>}
               {criterion.details?.map((detail, i) => (
                 <p key={i}>{detail}</p>
               ))}

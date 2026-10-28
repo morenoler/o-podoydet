@@ -15,6 +15,7 @@ import ru.opodoydet.accounts.clarifications.ClarificationService;
 import ru.opodoydet.accounts.clarifications.ReportedEvidence;
 import ru.opodoydet.application.SearchExtension;
 import ru.opodoydet.domain.Features;
+import ru.opodoydet.domain.Amenities;
 import ru.opodoydet.domain.AdmissionPolicy;
 import ru.opodoydet.shared.Json;
 
@@ -143,6 +144,8 @@ public final class OwnerListingSearchProvider implements SearchExtension {
             hotelId,
             "accountListingId",
             listingId,
+            "amenityEvidence",
+            listing.path("amenityEvidence"),
             "name",
             Json.str(listing, "title"),
             "address",
@@ -201,6 +204,7 @@ public final class OwnerListingSearchProvider implements SearchExtension {
 
   private static JsonNode criterion(JsonNode preference, Source source, JsonNode trip) {
     String feature = Json.str(preference, "feature");
+    if (Amenities.contains(feature)) return amenityCriterion(preference, source.listing());
     boolean area = Features.get(feature).tool().equals("area");
     Boolean value = area ? null : source.assertions().get(feature);
     ReportedEvidence.Assessment reported = ReportedEvidence.assess(source.statements(), feature, trip);
@@ -251,6 +255,24 @@ public final class OwnerListingSearchProvider implements SearchExtension {
         "assumption",
         OwnerRequirements.SOURCE);
     if (!reported.evidence().isEmpty()) result.set("reportedEvidence", Json.array(reported.evidence()));
+    return result;
+  }
+
+  private static JsonNode amenityCriterion(JsonNode preference, JsonNode listing) {
+    String feature = Json.str(preference, "feature");
+    JsonNode evidence = listing.path("amenityEvidence").path(feature);
+    JsonNode value = evidence.path("value");
+    boolean known = value.isBoolean();
+    String status = known ? value.asBoolean() ? "match" : "mismatch" : "unknown";
+    String explanation = !known ? "Владелец ещё не указал это удобство для данного варианта размещения."
+        : (value.asBoolean() ? Features.get(feature).positive() : Features.get(feature).negative())
+            + ". Указано владельцем в анкете объявления; независимой проверки нет.";
+    ObjectNode result = Json.obj("feature", feature, "required", preference.path("required"),
+        "status", status.equals("match") ? "match" : "mismatch", "evidenceStatus", status,
+        "assumed", true, "decisionBasis", "estimate", "facts", List.of(),
+        "explanation", explanation, "sourceExplanation", explanation,
+        "assumption", "Сведения владельца относятся к выбранному варианту размещения. Работу услуг, ограничения и доплаты на даты поездки нужно уточнить.");
+    if (evidence.isObject()) result.set("ownerAmenityEvidence", evidence.deepCopy());
     return result;
   }
 

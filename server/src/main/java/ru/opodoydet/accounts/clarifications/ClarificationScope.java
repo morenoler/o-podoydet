@@ -17,7 +17,8 @@ public final class ClarificationScope {
     return hash(Json.write(Json.obj(
         "city", listing.path("city"), "address", listing.path("address"),
         "roomType", listing.path("roomType"), "capacity", listing.path("capacity"),
-        "floor", listing.path("floor"), "windowDirections", listing.path("windowDirections"))));
+        "floor", listing.path("floor"), "windowDirections", listing.path("windowDirections"),
+        "amenityStates", listing.path("amenityStates"))));
   }
 
   public static String fingerprint(JsonNode listing, AccountDatabase db) throws SQLException {

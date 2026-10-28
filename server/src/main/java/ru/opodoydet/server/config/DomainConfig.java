@@ -22,12 +22,14 @@ import ru.opodoydet.accounts.listings.ListingService;
 import ru.opodoydet.accounts.persistence.AccountDatabase;
 import ru.opodoydet.accounts.photos.PhotoService;
 import ru.opodoydet.accounts.questions.QuestionService;
+import ru.opodoydet.accounts.shortlists.ShortlistService;
 import ru.opodoydet.accounts.search.OwnerListingSearchProvider;
 import ru.opodoydet.advisor.AdvisorService;
 import ru.opodoydet.application.Agents;
 import ru.opodoydet.application.Environment;
 import ru.opodoydet.application.SearchService;
 import ru.opodoydet.application.WindowViewClient;
+import ru.opodoydet.application.places.PlaceSearch;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.server.catalog.CatalogService;
 import ru.opodoydet.server.search.SearchOverlay;
@@ -116,6 +118,11 @@ public class DomainConfig {
   }
 
   @Bean
+  ShortlistService shortlistService(AccountDatabase db, Clock clock) {
+    return new ShortlistService(db, clock);
+  }
+
+  @Bean
   ClarificationService clarificationService(AccountDatabase db, ListingService listings) {
     return new ClarificationService(db, listings);
   }
@@ -146,16 +153,22 @@ public class DomainConfig {
   }
 
   @Bean
+  PlaceSearch placeSearch(RuntimeEnv env) {
+    return new PlaceSearch(Path.of(env.get("PLACES_DATA_PATH", "data/places/busan-places.json")), env.values());
+  }
+
+  @Bean
   SearchService searchService(
       Store store, Agents agents, Environment environment, AccountDatabase db, RuntimeEnv env,
-      Clock clock, SearchOverlay overlay) {
+      Clock clock, SearchOverlay overlay, PlaceSearch places) {
     return new SearchService(
         store,
         agents,
         environment,
         clock,
         env.accountsEnabled() ? new OwnerListingSearchProvider(db) : null,
-        overlay);
+        overlay,
+        places);
   }
 
   @Bean(destroyMethod = "close")

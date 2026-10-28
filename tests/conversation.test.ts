@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { applyFilterDraft, editPreferences } from "../src/features/search/preferences";
+import { applyFilterDraft, editPreferences, resetSearchFilters } from "../src/features/search/preferences";
 import { tripSchema } from "../shared/validation";
 import type { Trip } from "../shared/types";
 import { currentChatFilters, legacyChatFilters, readChatFilters, recordChatFilters, resetChatFilters } from "../src/features/advisor/conversationFilters";
@@ -9,6 +9,25 @@ const trip: Trip = {
   region: "Пусан", checkIn: "2027-06-10", checkOut: "2027-06-17",
   adults: 2, children: 0, scenarios: [], preferences: [], text: "Обязательно рядом с пляжем",
 };
+test("reset all clears manual, inferred and chat filters while retaining the trip", () => {
+  const before: Trip = { ...trip, adults: 3, children: 1, scenarios: ["family"], admissionMode: "verified",
+    preferences: [{ feature: "family", required: true }] };
+  const reply = editPreferences(before, [...before.preferences, { feature: "courtyard", required: true }]);
+  const changes = recordChatFilters([], before, reply, ["courtyard"]);
+  const reset = resetSearchFilters(reply);
+  assert.deepEqual(reset, { ...before, preferences: [], scenarios: [], text: "", preferenceOverrides: undefined, admissionMode: "explore" });
+  assert.deepEqual(currentChatFilters(changes, reset), []);
+  assert.deepEqual(resetChatFilters(reset, changes), reset);
+  assert.equal(reply.text, trip.text);
+  assert.equal(tripSchema.parse(reset).preferences.length, 0);
+});
+test("reset in an open modal also resets a mode changed outside it", () => {
+  const initial: Trip = { ...trip, admissionMode: "explore" };
+  const newer: Trip = { ...initial, admissionMode: "verified" };
+  const result = applyFilterDraft(newer, [], initial, resetSearchFilters(initial), true);
+  assert.equal(result.admissionMode, "explore");
+  assert.equal(result.text, "");
+});
 test("filter mode changes survive rebasing onto a newer chat reply", () => {
   const initial: Trip = { ...trip, admissionMode: "explore" };
   const newer = editPreferences(initial, [{ feature: "family", required: true }]);

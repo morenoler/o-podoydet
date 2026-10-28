@@ -9,7 +9,7 @@ export function FavoriteButton({
   className?: string;
   label?: boolean;
 }) {
-  const { isFavorite, toggle, error } = useFavorites();
+  const { isFavorite, toggle, error, loading, saving, ready } = useFavorites();
   const active = isFavorite(item.id);
   return (
     <>
@@ -17,6 +17,7 @@ export function FavoriteButton({
         type="button"
         className={`${label ? "button secondary" : "icon-button"} favorite-button ${active ? "is-favorite" : ""} ${className}`}
         aria-pressed={active}
+        disabled={loading || saving || !ready}
         aria-label={`${active ? "Удалить из избранного" : "В избранное"}: ${item.name}`}
         onClick={(event) => {
           event.stopPropagation();

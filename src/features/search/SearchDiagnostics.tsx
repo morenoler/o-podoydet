@@ -30,7 +30,7 @@ export function SearchDiagnostics({ data }: { data: SearchResult }) {
       {!!data.excluded.length && (
         <details>
           <summary>
-            {data.excluded.length} вариантов не прошли обязательные условия{" "}
+            Не прошли обязательные условия: {data.excluded.length}{" "}
             <ChevronDown size={18} aria-hidden="true" />
           </summary>
           {data.excluded.map((match) => (

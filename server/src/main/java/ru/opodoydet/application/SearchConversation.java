@@ -10,14 +10,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import ru.opodoydet.domain.Features;
+import ru.opodoydet.domain.Amenities;
 import ru.opodoydet.domain.Validation;
 import ru.opodoydet.shared.Json;
+import ru.opodoydet.application.places.PlaceSearch;
 
 /** Conversation edits only catalog criteria. Matching still uses the regular search pipeline. */
 public final class SearchConversation {
   private final Agents agents;
+  private final PlaceSearch places;
   private static final Map<String, String> TOPICS =
-      Map.of(
+      new LinkedHashMap<>(Map.of(
           "beach_walk", "пляж|мор[еяю]|морем|побереж",
           "step_free_route",
               "(?:дорог|маршрут|путь|пути).{0,30}(?:лестниц|ступен)|без"
@@ -29,11 +32,17 @@ public final class SearchConversation {
           "family", "семейн|семь[яеию]|детьми|ребенк",
           "area_safety", "безопасн|преступност|спокойный район",
           "clean_air", "воздух|смог|экологич",
-          "low_noise", "шум|тишин|тих|выспаться|спит днем");
+          "low_noise", "шум|тишин|тих|выспаться|спит днем"));
+  static { TOPICS.putAll(Amenities.patterns()); }
   private static final Set<String> ACTIONS = Set.of("add", "required", "optional", "remove");
 
   public SearchConversation(Agents agents) {
+    this(agents, null);
+  }
+
+  public SearchConversation(Agents agents, PlaceSearch places) {
     this.agents = agents;
+    this.places = places;
   }
 
   private static boolean has(String pattern, String text) {
@@ -55,11 +64,12 @@ public final class SearchConversation {
     String text = message.toLowerCase(Locale.ROOT).replace('ё', 'е');
     Map<String, JsonNode> updates = new LinkedHashMap<>();
     List<String> unhandled = new ArrayList<>();
-    for (String clause : text.split("[,.!?;\\n]|\\s+(?:но|а также|и еще|а|и)\\s+")) {
+    for (var part : WishClauses.parse(text)) {
+      String clause = part.text();
       if (clause.isBlank()) continue;
       List<String> matched =
           Features.ids().stream().filter(f -> has(TOPICS.get(f), clause)).toList();
-      String action = action(clause);
+      String action = part.action();
       // These require facts outside the catalog, or have the opposite meaning. Never
       // silently turn a sea view into walking distance, or dirty air into clean air.
       boolean rejectsNoise =
@@ -71,10 +81,12 @@ public final class SearchConversation {
           has("(?:не хочу|не хотим|не нужны|не должно быть).{0,16}(?:ступен|лестниц)", clause);
       boolean unsupported =
           has(
-                  "бассейн|завтрак|бюджет|дешев|дороже|рубл|тысяч|\\d+|парков|звезд|(?<![а-я])спа(?![а-я])|этаж|восток|запад|север|юг|вид.{0,12}мор|перв.{0,8}лини|далеко"
+                  "бюджет|дешев|дороже|рубл|тысяч|\\d+|звезд|(?<![а-я])спа(?![а-я])|этаж|восток|запад|север|юг|вид.{0,12}мор|перв.{0,8}лини|далеко"
                       + " от|грязный|грязн.{0,8}воздух|(?<![а-я])опасный район|без детей",
                   clause)
-              || (has("шумный", clause) && !rejectsNoise);
+              || (has("шумный", clause) && !rejectsNoise)
+              || WishClauses.unsupportedAmenityAbsence(clause)
+              || WishClauses.unsupportedAmenityDetail(clause);
       if (matched.isEmpty()
           && !action.equals("add")
           && has("это|этот|обязател|убери|смягчи|желательн", clause)) {
@@ -101,10 +113,46 @@ public final class SearchConversation {
   }
 
   public ObjectNode refine(JsonNode trip, String message, JsonNode focusInput) {
+    if (places == null) return refineStandard(trip, message, focusInput);
+    if (!focusInput.isMissingNode()) {
+      Validation.strings(focusInput);
+      if (focusInput.size() > Features.ids().size()) throw new IllegalArgumentException("Слишком много условий контекста");
+      for (JsonNode focus : focusInput) Features.get(focus.asText());
+    }
+    ObjectNode location = places.refine(trip, message);
+    if (!location.path("handled").asBoolean())
+      return refineStandard(trip, message, focusInput);
+    String remaining = Json.str(location, "remainingText");
+    ObjectNode result = remaining.isBlank()
+        ? Json.obj("trip", trip.deepCopy(), "message", "", "warnings", List.of(),
+            "mode", "rules", "focusFeatures", focusInput.isMissingNode() ? Json.array(List.of()) : focusInput,
+            "changed", false)
+        : refineStandard(trip, remaining, focusInput);
+    ObjectNode next = (ObjectNode) result.path("trip");
+    next.set("locationWishes", location.path("locationWishes").deepCopy());
+    if (location.hasNonNull("pendingLocationQuery"))
+      next.set("pendingLocationQuery", location.path("pendingLocationQuery").deepCopy());
+    else next.remove("pendingLocationQuery");
+    Validation.tripDraft(next, Json.str(trip, "region"));
+    List<String> messages = new ArrayList<>();
+    location.path("messages").forEach(value -> messages.add(value.asText()));
+    if (!Json.str(result, "message").isBlank()) messages.add(Json.str(result, "message"));
+    if (!next.equals(trip) && Json.str(trip, "checkIn").isBlank())
+      messages.add("Пожелания сохранены. Выберите даты и гостей, чтобы обновить подборку.");
+    result.put("message", String.join(" ", messages));
+    List<JsonNode> warnings = new ArrayList<>(Json.list(result.path("warnings")));
+    warnings.addAll(Json.list(location.path("warnings")));
+    result.set("warnings", Json.array(warnings));
+    result.put("changed", !next.equals(trip));
+    if (Json.str(location, "mode").equals("local_model")) result.put("mode", "local_model");
+    return result;
+  }
+
+  private ObjectNode refineStandard(JsonNode trip, String message, JsonNode focusInput) {
     List<String> focus = new ArrayList<>();
     if (!focusInput.isMissingNode()) {
       Validation.strings(focusInput);
-      if (focusInput.size() > 8)
+      if (focusInput.size() > Features.ids().size())
         throw new IllegalArgumentException("Слишком много условий контекста");
       for (JsonNode value : focusInput) {
         Features.get(value.asText());
@@ -117,7 +165,7 @@ public final class SearchConversation {
     JsonNode edits = rules(message, focus);
     String mode = "rules";
     List<String> warnings = new ArrayList<>();
-    if (agents.enabled()) {
+    if (agents.enabled() && !WishClauses.unsupportedAmenityAbsence(message) && !WishClauses.unsupportedAmenityDetail(message)) {
       try {
         ObjectNode update =
             Json.obj(
@@ -174,14 +222,15 @@ public final class SearchConversation {
                     "focusFeatures",
                     focus,
                     "features",
-                    Features.catalog()));
+                    agents.featureCatalog()));
         validateEdits(candidate);
+        validateKnownEdits(edits, candidate, current.path("preferences"));
         edits = candidate;
-        mode = "llm";
+        mode = agents.mode();
       } catch (Exception error) {
         if (error instanceof InterruptedException) Thread.currentThread().interrupt();
         warnings.add(
-            "Модель недоступна. Пожелание разобрано по правилам; проверьте применённые условия.");
+            "Модель недоступна или её ответ не прошёл проверку. Пожелание разобрано по правилам; проверьте применённые условия.");
       }
     }
     validateEdits(edits);
@@ -244,7 +293,7 @@ public final class SearchConversation {
 
   private static void validateEdits(JsonNode edits) {
     JsonNode updates = edits.path("updates");
-    if (!updates.isArray() || updates.size() > 8)
+    if (!updates.isArray() || updates.size() > Features.ids().size())
       throw new IllegalArgumentException("Некорректные изменения");
     Set<String> seen = new java.util.HashSet<>();
     for (JsonNode update : updates) {
@@ -253,5 +302,32 @@ public final class SearchConversation {
         throw new IllegalArgumentException("Некорректное действие");
     }
     Validation.strings(edits.path("unhandled"));
+  }
+
+  private static void validateKnownEdits(JsonNode known, JsonNode candidate, JsonNode current) {
+    Map<String, String> expected = new LinkedHashMap<>(), proposed = new LinkedHashMap<>();
+    known.path("updates").forEach(edit -> expected.put(Json.str(edit,"feature"),Json.str(edit,"action")));
+    candidate.path("updates").forEach(edit -> proposed.put(Json.str(edit,"feature"),Json.str(edit,"action")));
+    for (var edit : expected.entrySet()) {
+      String action = proposed.get(edit.getKey());
+      if (action == null || (!edit.getValue().equals("add") && !edit.getValue().equals(action))
+          || (edit.getValue().equals("add") && action.equals("remove")))
+        throw new IllegalArgumentException("Model contradicts an explicit edit");
+      if (edit.getValue().equals("add")) {
+        boolean alreadyRequired = Json.list(current).stream().anyMatch(preference ->
+            Json.str(preference,"feature").equals(edit.getKey()) && preference.path("required").asBoolean());
+        if (!(alreadyRequired ? Set.of("add","required") : Set.of("add","optional")).contains(action))
+          throw new IllegalArgumentException("Model changed the importance of a wish");
+      }
+    }
+    if (known.path("unhandled").isEmpty() && !expected.keySet().containsAll(proposed.keySet()))
+      throw new IllegalArgumentException("Model added an unrelated condition");
+    for (JsonNode preference : current) {
+      String feature = Json.str(preference,"feature");
+      if (!preference.path("required").asBoolean() || !proposed.containsKey(feature)) continue;
+      if (!expected.containsKey(feature)
+          || (expected.get(feature).equals("add") && !Set.of("add","required").contains(proposed.get(feature))))
+        throw new IllegalArgumentException("Model changed an unrelated mandatory condition");
+    }
   }
 }

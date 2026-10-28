@@ -4,11 +4,14 @@ import { Modal } from "../../shared/ui/Modal";
 import { PreferencePicker } from "../preferences/PreferencePicker";
 import { Link } from "react-router-dom";
 import { canSearch } from "./searchTrip";
-import { applyFilterDraft, editPreferences } from "./preferences";
+import { applyFilterDraft, editPreferences, resetSearchFilters } from "./preferences";
 import { AdmissionModePicker } from "./AdmissionModePicker";
 import type { FeatureId } from "../../../shared/types";
 
-const groups: { title: string; ids: FeatureId[] }[] = [
+const groups: { title: string; description?: string; ids: FeatureId[] }[] = [
+  { title: "В номере", description: "Проверяем удобства именно выбранной категории.", ids: ["kitchen", "dishwasher", "washing_machine", "wifi", "air_conditioning", "balcony"] },
+  { title: "В отеле", description: "Наличие и условия доступа зависят от сведений источника.", ids: ["pool", "parking", "breakfast"] },
+  { title: "С питомцем", ids: ["pets_allowed"] },
   { title: "Пляж и дорога", ids: ["beach_walk", "step_free_route"] },
   { title: "Номер и размещение", ids: ["family", "step_free_access", "courtyard"] },
   { title: "Окружение", ids: ["area_safety", "clean_air", "low_noise"] },
@@ -46,6 +49,7 @@ export function SearchFilters({
         {groups.map((group) => (
           <section className="search-filter-group" key={group.title}>
             <h3>{group.title}</h3>
+            {group.description && <p className="search-filter-description">{group.description}</p>}
             <PreferencePicker preferences={draft.preferences} ids={group.ids}
               onChange={(preferences) => setDraft(editPreferences(draft, preferences))} />
           </section>
@@ -87,7 +91,7 @@ export function SearchFilters({
           type="button"
           onClick={() => {
             setReset(true);
-            setDraft({ ...draft, preferences: [], scenarios: [], text: "", preferenceOverrides: undefined });
+            setDraft(resetSearchFilters(draft));
           }}
         >
           Сбросить

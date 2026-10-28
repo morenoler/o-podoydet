@@ -1,7 +1,9 @@
 import type { WindowDirection } from "./account";
 import type { ReportedEvidence } from "./clarifications";
+import type { AmenityId, AmenityEvidenceMap } from "./amenities";
 export type Point = [number, number]; // longitude, latitude
 export type FeatureId =
+  | AmenityId
   | "beach_walk"
   | "step_free_route"
   | "courtyard"
@@ -51,6 +53,11 @@ export interface Room {
   sourceUrl?: string;
   obtainedAt?: string;
   quote?: string;
+  /** Public details for this category, from the same sourceUrl/obtainedAt. */
+  description?: string;
+  amenities?: string[];
+  pricePerNight?: number;
+  currency?: "KRW";
   capacityMayVary?: boolean;
   occupancyRules?: OccupancyRule[];
 }
@@ -73,6 +80,7 @@ export interface NoiseSource {
   coordinates: Point;
 }
 export interface Hotel {
+  amenityEvidence?: AmenityEvidenceMap;
   /** Published owner listing; has no fabricated OpenStreetMap geometry. */
   accountListingId?: string;
   floor?: number | null;
@@ -126,6 +134,9 @@ export interface PersonalWishes {
   ownerCriteria: Pick<OwnerCriterion, "id" | "feature" | "label" | "required">[];
 }
 export interface Trip {
+  /** Free-form location wishes resolved against sourced places, not the manual feature catalog. */
+  locationWishes?: LocationWish[];
+  pendingLocationQuery?: LocationWish | null;
   /** Omission keeps the legacy verified admission contract. */
   admissionMode?: "explore" | "verified";
   region: string;
@@ -138,6 +149,26 @@ export interface Trip {
   preferenceOverrides?: PreferenceOverride[];
   text: string;
 }
+export interface LocationWish {
+  query: string;
+  relation: "near" | "far";
+  radiusMeters: number;
+  required: boolean;
+}
+export interface LocationCriterion {
+  id: string;
+  query: string;
+  label: string;
+  required: boolean;
+  status: "match" | "mismatch" | "unknown";
+  evidenceStatus: "match" | "mismatch" | "unknown";
+  explanation: string;
+  places: { id: string; name: string; meters: number; sourceUrl: string }[];
+  obtainedAt?: string;
+  sourceDate?: string | null;
+  method: string;
+  assumptions: string[];
+}
 export type MatchStatus =
   | "match"
   | "mismatch"
@@ -145,6 +176,7 @@ export type MatchStatus =
   | "conflict"
   | "stale";
 export interface Criterion {
+  ownerAmenityEvidence?: import("./amenities").AmenityEvidence;
   /** Sanitized owner statements; private dialogue never appears in search results. */
   reportedEvidence?: ReportedEvidence[];
   feature: FeatureId;
@@ -195,6 +227,7 @@ export interface RoomMatch {
   status: "fits" | "excluded";
 }
 export interface HotelMatch {
+  locationCriteria?: LocationCriterion[];
   personalWishes?: PersonalWishes;
   hotel: Hotel;
   best: RoomMatch;
@@ -202,11 +235,12 @@ export interface HotelMatch {
   preferences?: Preference[];
   warnings?: string[];
   conflicts?: string[];
-  mode?: "rules" | "llm";
+  mode?: "rules" | "llm" | "local_model";
   ownerCriteria?: OwnerCriterion[];
 }
 /** One named category; every criterion is evaluated against this same room. */
 export interface RoomRecommendation {
+  locationCriteria?: LocationCriterion[];
   personalWishes?: PersonalWishes;
   id: string;
   hotel: Hotel;
@@ -231,6 +265,7 @@ export interface Trace {
   tool?: string;
 }
 export interface SearchResult {
+  locationWishes?: LocationWish[];
   personalWishes?: PersonalWishes;
   admissionMode?: "explore" | "verified";
   searchId: string;
@@ -243,7 +278,7 @@ export interface SearchResult {
   warnings: string[];
   conflicts: string[];
   trace: Trace[];
-  mode: "rules" | "llm";
+  mode: "rules" | "llm" | "local_model";
 }
 export interface Question {
   id: string;
@@ -267,5 +302,5 @@ export interface Draft {
   text: string;
   extractions: Extraction[];
   warnings: string[];
-  mode: "rules" | "llm";
+  mode: "rules" | "llm" | "local_model";
 }

@@ -1,0 +1,14 @@
+{
+  "id": "seomyeon-tourism",
+  "url": "https://www.visitbusan.net/en/index.do?menuCd=DOM_000000301003001000&uc_seq=460",
+  "request": {
+    "method": "web_search",
+    "query": "site.visitbusan.net Seomyeon downtown center Busan station"
+  },
+  "obtainedAt": "2026-10-27T10:16:19.247Z",
+  "sourceDate": null,
+  "evidenceKind": "search_excerpt",
+  "directFetchStatus": "TLS certificate could not be verified; verification was not disabled.",
+  "sha256": "6b581e9022d6b59f6da9130cdda62e7b8981ca02e5df015f15e52a0e769d5eb2",
+  "body": "The largest downtown in Busan is no doubt Seomyeon."
+}

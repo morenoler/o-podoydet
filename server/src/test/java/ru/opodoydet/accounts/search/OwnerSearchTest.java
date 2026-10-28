@@ -257,7 +257,8 @@ class OwnerSearchTest {
       }
       for (JsonNode criterion : owner(result, "excluded", reported).path("best").path("criteria")) {
         assertTrue(criterion.path("assumed").asBoolean());
-        if (Features.get(Json.str(criterion, "feature")).tool().equals("area")) {
+        if (Features.get(Json.str(criterion, "feature")).tool().equals("area")
+            || ru.opodoydet.domain.Amenities.contains(Json.str(criterion, "feature"))) {
           assertEquals("unknown", Json.str(criterion, "evidenceStatus"));
           assertEquals("mismatch", Json.str(criterion, "status"));
         } else {
