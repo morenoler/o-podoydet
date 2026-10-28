@@ -136,10 +136,10 @@ h3 {
 }
 input[type="checkbox"],
 input[type="radio"] {
-  accent-color: var(--blue);
+  accent-color: #171717;
 }
 :where(button, a, input, select, textarea, summary, [tabindex]):focus-visible {
-  outline: 3px solid #4476c8;
+  outline: 2px solid #555;
   outline-offset: 3px;
 }
 .sr-only {

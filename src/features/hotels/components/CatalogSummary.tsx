@@ -1,17 +1,15 @@
 import type { Hotel, Room } from "../../../../shared/types";
-import { catalogPhotos } from "../../../shared/lib/hotelPhotos";
+import { HotelRating } from "./HotelReputation";
 export function CatalogSummary({ hotel, room }: { hotel: Hotel; room?: Room }) {
-  const source = hotel.photos?.length ? undefined : catalogPhotos[hotel.id]?.source;
-  return <div className="figcraft-detail-summary">
-    <section><h2>Мнения гостей</h2><p className="muted">Отзывы этого объекта пока не загружены.</p>
-      <details className="hotel-detail-disclosure"><summary>О фотографиях</summary>
-        <p>Фотографии объекта не подтверждают условия выбранной категории или вид из конкретного номера.</p>
-        {source && <a href={source} target="_blank" rel="noreferrer">Источник фотографий</a>}
-      </details>
+  return <div className="figcraft-detail-summary is-catalog-summary">
+    <section className="detail-reviews-summary"><h2>Мнения гостей</h2>
+      <HotelRating hotelId={hotel.id} />
+      <a className="hotel-reviews-link" href="#hotel-reviews">К отзывам</a>
     </section>
-    <section><h2>Удобства</h2>{room?.amenities?.length ? <>
-      <ul className="figcraft-detail-chips">{room.amenities.map((label, index) => <li key={`${index}-${label}`}>{label}</li>)}</ul>
-      <p className="muted">Из описания категории. Наличие в конкретном номере нужно уточнить.</p>
-    </> : <p className="muted">Перечень удобств для категории пока не указан. Сведения по вашим условиям показаны ниже.</p>}</section>
+    <section className="detail-amenities-summary"><h2>Удобства</h2>{room?.amenities?.length ? <>
+      <ul className="figcraft-detail-chips">{room.amenities.slice(0, 6).map((label, index) => <li key={`${index}-${label}`}>{label}</li>)}</ul>
+      <p className="detail-source-caption">Из описания категории</p>
+      <details className="detail-text-disclosure"><summary><span>Показать всё</span></summary><p>{room.amenities.join(", ")}</p><p>Наличие в конкретном номере и условия использования нужно уточнить.</p></details>
+    </> : <p className="detail-empty-note">Перечень удобств пока не указан.</p>}</section>
   </div>;
 }

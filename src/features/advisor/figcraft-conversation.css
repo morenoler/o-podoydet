@@ -1,67 +1,89 @@
-.search-conversation { top: 16px; height: calc(100dvh - 80px); min-height: 560px; border: 0; border-radius: 24px; background: #fff; color: #171717; --chat-ink: #171717; --chat-muted: #777; --chat-green: #97f171; }
-.conversation-tabs { grid-template-columns: 1fr 1fr; height: 64px; margin: 0 24px; border-radius: 0; border-bottom: 1px solid #ededed; }
-.conversation-tabs button { position: relative; min-height: 64px; border-radius: 0; padding: 18px 10px; font-size: 14px; color: #777; }
-.conversation-tabs button + button::before { content: ""; position: absolute; left: 0; top: 20px; width: 1px; height: 24px; background: #d8d8d8; }
+/* FigCraft: a 412 × 752 panel beside the results at a 1280 × 832 viewport. */
+.search-conversation { position: sticky; top: 64px; width: 100%; height: calc(100dvh - 80px); min-height: 560px; max-height: none; border: 0; border-radius: 24px; background: #fff; color: #171717; --chat-ink: #171717; --chat-muted: #777; --chat-green: #a1f27f; }
+.conversation-tabs { position: relative; display: grid; grid-template-columns: 1fr 1fr; flex: 0 0 64px; height: 64px; margin: 0; border-radius: 0; border: 0; }
+.conversation-tabs button { position: relative; display: flex; align-items: center; justify-content: center; min-height: 64px; border: 0; border-radius: 0; padding: 0; font-size: 16px; font-weight: 400; line-height: 20px; color: #777; background: transparent; }
+.conversation-tabs button:first-child { padding-right: 22px; }
+.conversation-tabs button + button { padding-left: 8px; }
+.conversation-tabs button + button::before { content: ""; position: absolute; left: 0; top: 14px; width: 1px; height: 36px; background: #d8d8d8; }
+.conversation-tabs button span { position: relative; }
 .conversation-tabs button[aria-pressed="true"] { background: transparent; color: #000; }
-.conversation-tabs button[aria-pressed="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: #777; border-radius: 2px; }
-.conversation-actions { padding: 4px 20px 0; }
-.conversation-actions button { min-height: 32px; padding: 6px 2px; font-size: 10px; }
-.conversation-log { min-height: 120px; padding: 16px 24px; }
-.conversation-log.is-empty { display: flex; align-items: center; justify-content: center; }
-.conversation-welcome { padding: 24px 0; max-width: 28ch; text-align: center; }
-.conversation-welcome img { display: block; width: 131px; height: 120px; margin: 0 auto 24px; object-fit: contain; filter: drop-shadow(0 20px 8px #3b523b13); }
-.conversation-welcome h3 { font-size: 14px; line-height: 1.5; font-weight: 400; color: #777; margin: 0; letter-spacing: 0; }
-.conversation-welcome p { font-size: 13px; line-height: 1.5; color: #777; margin: 5px 0 0; }
-.conversation-message { max-width: 95%; padding: 14px 16px; margin-top: 16px; }
-.conversation-author { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-.conversation-message p { font-size: 14px; line-height: 1.6; }
-.conversation-message.is-user { border-radius: 24px 24px 4px 24px; background: #a1f47e; }
-.conversation-message.is-assistant { padding: 8px 0; background: transparent; }
-.conversation-bottom { padding: 8px 20px 18px; }
-.conversation-search-state { margin: 0 4px 8px; font-size: 10px; line-height: 1.5; }
-.conversation-search-state svg { flex-shrink: 0; width: 12px; height: 15px; }
-.conversation-suggestions { gap: 5px; margin-bottom: 12px; }
-.conversation-suggestions button { min-height: 32px; padding: 7px 10px; border: 1px solid #ededed; border-radius: 999px; color: #535353; background: #fff; font-size: 10px; }
-.conversation-suggestions button:hover { border-color: #97f171; background: #f3fdec; }
-.conversation-form label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-.conversation-composer textarea { min-height: 56px; max-height: 132px; padding: 18px 82px 15px 18px; border: 1px solid #ededed; border-radius: 28px; font-size: 13px; box-shadow: 0 2px 12px #0000000a; }
-.conversation-composer button { right: 10px; top: 10px; bottom: auto; width: 58px; height: 36px; border-radius: 999px; color: #324d26; background: #97f171; }
-.conversation-composer button:not(:disabled):hover { background: #85e85a; }
+.conversation-tabs button[aria-pressed="true"] span::after { content: ""; position: absolute; left: -2px; right: -2px; bottom: -5px; height: 1px; background: #777; }
+.conversation-chat { position: relative; }
+.conversation-log { min-height: 0; padding: 9px 20px 22px 27px; }
+.conversation-log.is-empty { position: relative; display: block; padding: 0; overflow: hidden; }
+.conversation-welcome { position: absolute; top: calc(50% - 145px); left: 0; right: 0; padding: 0; max-width: none; height: 214px; text-align: center; }
+.conversation-welcome img { display: block; width: 131px; height: 120px; margin: 0 auto; object-fit: contain; transform: translateX(4px); filter: none; }
+.conversation-orb-shadow { position: absolute; top: 136px; left: calc(50% - 35px); width: 70px; height: 12px; border-radius: 50%; background: #69696980; filter: blur(10px); }
+.conversation-welcome p { position: absolute; top: 166px; left: 50%; width: 260px; max-width: calc(100% - 40px); transform: translateX(-50%); margin: 0; color: #777; font-size: 14px; font-weight: 400; line-height: 17px; }
+.conversation-tools { position: absolute; top: 0; left: 10px; z-index: 5; }
+.conversation-tools > summary { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; list-style: none; cursor: pointer; color: #777; background: #ffffffed; }
+.conversation-tools > summary::-webkit-details-marker { display: none; }
+.conversation-tools[open] > summary, .conversation-tools > summary:hover { background: #f1f1f1; color: #171717; }
+.conversation-tools-menu { position: absolute; top: 36px; left: 0; width: 266px; max-width: calc(100vw - 64px); padding: 10px; border: 1px solid #e5e5e5; border-radius: 16px; background: #fff; box-shadow: 0 8px 28px #00000012; }
+.conversation-tools-menu button { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 40px; padding: 8px; border: 0; border-radius: 10px; background: transparent; text-align: left; color: #171717; font: inherit; font-size: 12px; cursor: pointer; }
+.conversation-tools-menu button:hover { background: #f3f3f3; }
+.conversation-tools-menu p { margin: 8px; color: #777; font-size: 11px; line-height: 1.4; }
+.conversation-message { width: fit-content; max-width: 100%; padding: 0; margin: 0 0 20px; }
+.conversation-message:first-child { margin-top: 0; }
+.conversation-author, .conversation-form label, .conversation-hint { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.conversation-message p { margin: 0; font-size: 14px; font-weight: 400; line-height: 17px; }
+.conversation-message.is-user { max-width: 215px; padding: 16px; border-radius: 20px; color: #324d26; background: #a1f27f; }
+.conversation-message.is-assistant { width: 100%; padding: 0; border-radius: 0; background: transparent; }
+.conversation-pending { margin: 0 0 20px; color: #777; font-size: 14px; line-height: 17px; }
+.conversation-suggestions { display: block; margin: 0; }
+.conversation-suggestions > p { margin: 0 0 20px; font-size: 14px; line-height: 17px; }
+.conversation-suggestion-cards { display: flex; gap: 28px; overflow-x: auto; margin-right: -20px; padding: 0 20px 10px 0; scrollbar-width: none; }
+.conversation-suggestion-cards::-webkit-scrollbar { display: none; }
+.conversation-suggestion-cards button { flex: 0 0 112px; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0; min-height: 152px; border: 0; border-radius: 0; background: transparent; color: #000; text-align: center; font-size: 14px; font-weight: 400; line-height: 17px; }
+.conversation-suggestion-cards button > span:first-child { display: grid; place-items: center; width: 112px; height: 112px; border: 1px solid #d8d8d8; border-radius: 32px; background: #fff; }
+.conversation-suggestion-cards button > span:last-child { width: 106px; }
+.conversation-suggestion-cards img { width: 64px; height: 64px; object-fit: contain; }
+.conversation-suggestion-cards button:first-child img { width: 70px; }
+.conversation-suggestion-cards button:hover { background: transparent; }
+.conversation-suggestion-cards button:hover > span:first-child { border-color: #a1d88b; background: #f8fdf5; }
+.conversation-room-recommendation { margin: 18px 0 0; border-top: 1px solid #eee; padding: 12px 0 0; background: transparent; }
+.conversation-room-recommendation > summary { cursor: pointer; font-size: 12px; color: #777; }
+.conversation-room-recommendation > p, .conversation-room-recommendation > span, .conversation-room-recommendation > small { display: block; margin: 8px 0; font-size: 12px; line-height: 1.45; color: #777; }
+.conversation-room-recommendation > a { display: block; margin: 8px 0; color: #171717; font-size: 14px; text-underline-offset: 3px; }
+.conversation-search-state { margin: 16px 0 0; font-size: 12px; line-height: 1.45; }
+.conversation-search-state.has-error { color: #9c3b3b; }
+.conversation-bottom { padding: 0 22px 22px; }
+.conversation-form { margin: 0; }
+.conversation-composer textarea { display: block; width: 100%; height: 56px; min-height: 56px; max-height: 132px; padding: 17px 86px 17px 20px; border: 1px solid #e5e5e5; border-radius: 40px; background: #fff; color: #171717; box-shadow: 0 3px 5px #0000000b; font-size: 14px; line-height: 20px; resize: none; }
+.conversation-composer textarea::placeholder { color: #777; }
+.conversation-composer button { right: 10px; top: 10px; bottom: auto; width: 64px; height: 36px; border-radius: 100px; color: #4f813a; background: #97f171; }
+.conversation-composer button:not(:disabled):hover { background: #86e95b; }
+.conversation-composer button svg { width: 20px; height: 20px; stroke-width: 1.5; }
 .search-conversation button:disabled { opacity: .55; }
-.conversation-hint { margin: 8px 4px 0; font-size: 10px; }
-.conversation-analyze { min-height: 30px; padding: 8px 4px 0; color: #535353; font-size: 10px; }
-.search-conversation :is(button, textarea):focus-visible { outline: 2px solid #0042da; outline-offset: 2px; }
-.conversation-map { padding: 0; }
-.conversation-map .search-map-section { height: 100%; }
-.conversation-map .search-map-shell { height: calc(100% - 70px); min-height: 340px; border: 0; border-radius: 0; }
-.conversation-map .geo-map-view { height: 100%; }
+.conversation-composer button:disabled { opacity: 1; color: #aaa; background: #ededed; }
+.conversation-error { margin: 8px 4px 0; font-size: 12px; line-height: 1.4; }
+.search-conversation :is(button, textarea, summary, a):focus-visible { outline: 2px solid #555; outline-offset: 3px; }
+.conversation-map { position: relative; padding: 0; overflow: hidden; border-radius: 0 0 24px 24px; }
+.conversation-map .search-map-section, .conversation-map .hotel-location { position: relative; top: 0; margin: 0; display: flex; flex-direction: column; height: 100%; min-height: 0; }
+.conversation-map .hotel-location > h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.conversation-map .search-map-shell { position: relative; flex: 1; height: auto; min-height: 240px; border: 0; border-radius: 0; }
+.conversation-map .geo-map-view { position: relative; display: flex; flex-direction: column; flex: 1; height: 100%; min-height: 0; }
+.conversation-map .geo-map-view .v2-map, .conversation-map .geo-map-view .interactive-map { flex: 1; height: 100%; min-height: 0; max-height: none; border-radius: 0; }
 .conversation-map .geo-map-mode { position: absolute; z-index: 500; right: 10px; top: 10px; margin: 0; }
 .conversation-map .geo-map-mode-label { display: none; }
-.conversation-map .geo-map-mode button { background: #fff; box-shadow: 0 2px 8px #0001; border: 0; border-radius: 999px; padding: 8px 12px; }
-.conversation-map .search-map-shell .v2-map, .conversation-map .search-map-shell .interactive-map { height: 100%; min-height: 340px; max-height: none; border-radius: 0; }
-.conversation-map .geo-map-legend { position: absolute; z-index: 400; bottom: 6px; left: 12px; right: 12px; padding: 5px; background: #ffffffdf; border-radius: 8px; font-size: 9px; }
-.conversation-map .search-map-note { margin: 0; padding: 10px 16px; font-size: 9px; line-height: 1.5; color: #777; }
-.conversation-map .search-map-selection { left: 12px; right: 12px; bottom: 54px; gap: 8px; padding: 14px; border: 0; border-radius: 20px; box-shadow: 0 5px 24px #0002; }
-.conversation-map .search-map-selection strong { font-size: 13px; font-weight: 500; }
-.conversation-map .search-map-selection p { font-size: 10px; }
-.conversation-room-recommendation { background: #f3f3f3; border-radius: 20px; padding: 16px; margin: 16px 0 0; }
-.conversation-room-recommendation > p, .conversation-room-recommendation > small, .conversation-room-recommendation > span { display: block; font-size: 11px; line-height: 1.5; color: #777; }
-.conversation-room-recommendation > a { display: block; color: #0042da; font-size: 14px; margin: 6px 0; }
-.search-conversation .conversation-map .search-map-section { display: flex; flex-direction: column; min-height: 0; }
-.search-conversation .conversation-map .search-map-shell { position: relative; flex: 1; height: auto; min-height: 300px; }
-.search-conversation .conversation-map .search-map-shell .geo-map-view { display: flex; flex-direction: column; position: relative; min-height: 0; }
-.search-conversation .conversation-map .search-map-shell .v2-map { flex: 1; min-height: 0; height: auto; max-height: none; border-radius: 0; }
-.search-conversation .conversation-map .search-map-selection { position: absolute; left: 12px; right: 12px; bottom: 38px; margin: 0; z-index: 450; }
-.search-conversation .conversation-map .search-map-note { flex: 0 0 auto; }
-.search-conversation .conversation-map .geo-map-status { flex-shrink: 0; font-size: 10px; margin: 0; padding: 8px 16px; }
-.search-conversation .conversation-map .geo-map-legend { bottom: 0; font-size: 8px; gap: 6px; }
+.conversation-map .geo-map-mode button { min-height: 36px; background: #fff; box-shadow: 0 2px 8px #0001; border: 0; border-radius: 999px; padding: 8px 12px; color: #333; font-size: 11px; font-weight: 400; }
+.conversation-map .geo-map-legend { position: absolute; z-index: 400; bottom: 28px; left: 12px; right: 12px; padding: 6px 8px; background: #fffffff0; border-radius: 8px; font-size: 10px; gap: 6px; }
+.conversation-map .geo-map-status { flex-shrink: 0; margin: 0; padding: 8px 12px; font-size: 11px; line-height: 1.4; }
+.conversation-map .search-map-note { position: absolute; z-index: 400; bottom: 8px; left: 10px; margin: 0; max-width: calc(100% - 20px); border-radius: 8px; background: #fffffff2; color: #666; font-size: 10px; line-height: 1.4; }
+.conversation-map .search-map-note summary { padding: 5px 8px; cursor: pointer; }
+.conversation-map .search-map-note p { margin: 0; padding: 0 8px 8px; max-width: 320px; }
+.conversation-map .map-caveat { margin: 0; padding: 7px 14px; color: #777; font-size: 10px; line-height: 1.4; }
+.conversation-map .hotel-location > .text-link { padding: 0 14px 8px; font-size: 11px; }
+.figcraft-detail-sidebar .search-conversation { position: relative; top: 0; height: 100%; min-height: 0; }
 @media (max-width: 900px) {
-  .search-conversation { height: 640px; min-height: 0; border-radius: 24px; }
-  .conversation-tabs { height: 56px; margin: 0 18px; }
-  .conversation-tabs button { min-height: 56px; }
-  .conversation-log { min-height: 100px; padding: 16px 18px; }
-  .conversation-bottom { padding: 10px 16px 16px; }
-  .conversation-composer textarea { font-size: 16px; padding-top: 15px; min-height: 56px; }
-  .conversation-suggestions button { min-height: 40px; font-size: 11px; }
-  .conversation-map .search-map-shell { height: calc(100% - 80px); }
+  .search-conversation { position: relative; top: 0; height: 640px; min-height: 0; }
+  .conversation-log { padding-left: 22px; }
+  .conversation-message.is-user { max-width: 85%; }
+  .conversation-composer textarea { font-size: 16px; }
+  .conversation-suggestion-cards { gap: 18px; }
+  .conversation-map .search-map-shell { min-height: 220px; }
 }
+@media (max-height: 680px) and (min-width: 901px) { .search-conversation { min-height: 480px; } }
+.conversation-map .listing-location-map { display: flex; flex-direction: column; flex: 1; height: 100%; min-height: 0; }
+.conversation-map .listing-location-canvas { flex: 1; height: 100%; min-height: 220px; border: 0; border-radius: 0; }
+.conversation-map .listing-location-caption, .conversation-map .listing-location-demo { padding: 8px 14px; margin: 0; color: #777; font-size: 11px; line-height: 1.4; }

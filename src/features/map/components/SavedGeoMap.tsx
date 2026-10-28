@@ -16,10 +16,13 @@ import {
   Minus,
   Plus,
 } from "lucide-react";
-import type { Dataset, Hotel, Point } from "../../../../shared/types";
+import type { Point } from "../../../../shared/types";
+import type { GeoMapProps } from "./GeoMap";
 import "../map.css";
 import { MapGeometry } from "./MapGeometry";
-import { selectedMapPoints, validPath, visibleMapHotels } from "../mapData";
+import { detailMapPoints, validPath, visibleMapHotels } from "../mapData";
+import { PlaceIcon, placePresentation, validMapPlaces } from "../../places/placePresentation";
+import { locationDistance } from "../../places/locationPresentation";
 
 const WIDTH = 600,
   HEIGHT = 700;
@@ -27,15 +30,11 @@ export function SavedGeoMap({
   dataset,
   hotel,
   hotels,
+  places,
+  showRoute = true,
   compact = false,
   onSelect,
-}: {
-  dataset: Dataset;
-  hotel?: Hotel;
-  hotels?: Hotel[];
-  compact?: boolean;
-  onSelect?: (hotel: Hotel) => void;
-}) {
+}: GeoMapProps) {
   const [zoom, setZoom] = useState(1);
   const [hoveredId, setHoveredId] = useState("");
   const [focusedId, setFocusedId] = useState("");
@@ -46,8 +45,8 @@ export function SavedGeoMap({
   const overview = !!hotels;
   const projection = useMemo(() => {
     let [minX, minY, maxX, maxY] = dataset.bbox;
-    if (!overview && hotel?.coordinates) {
-      const points = [hotel.coordinates, ...(hotel.route?.coordinates || [])];
+    const points = detailMapPoints(hotel, places, showRoute);
+    if (!overview && points.length) {
       minX = Math.min(...points.map((p) => p[0])) - 0.0025;
       maxX = Math.max(...points.map((p) => p[0])) + 0.0025;
       minY = Math.min(...points.map((p) => p[1])) - 0.002;
@@ -64,9 +63,9 @@ export function SavedGeoMap({
       WIDTH / 2 + (p[0] - middleX) * cos * scale,
       HEIGHT / 2 - (p[1] - middleY) * scale,
     ];
-  }, [dataset, overview, overview ? undefined : hotel]);
+  }, [dataset, overview, overview ? undefined : hotel, places, showRoute]);
   function focusSelected() {
-    fitPoints(selectedMapPoints(hotel));
+    fitPoints(detailMapPoints(hotel, places, showRoute));
   }
   function fitPoints(points: Point[]) {
     if (!points.length) { setCenter([WIDTH / 2, HEIGHT / 2]); setZoom(1); return; }
@@ -79,7 +78,8 @@ export function SavedGeoMap({
   const markers = visibleMapHotels(dataset, hotel, hotels);
   const markerKey = markers.map((item) => `${item.id}:${item.coordinates}`).join("|");
   useEffect(() => {
-    if (!initialized.current || previousSelection.current === hotel?.id) {
+    if (!overview && hotel) focusSelected();
+    else if (!initialized.current || previousSelection.current === hotel?.id) {
       fitPoints(markers.map((item) => item.coordinates!));
     } else focusSelected();
     initialized.current = true;
@@ -95,7 +95,7 @@ export function SavedGeoMap({
       )
       .join(" ");
   const route =
-    !hotel?.synthetic && validPath(hotel?.route?.coordinates).length ? hotel!.route : null;
+    showRoute && !hotel?.synthetic && validPath(hotel?.route?.coordinates).length ? hotel!.route : null;
   const move = (dx: number, dy: number) =>
     setCenter((previous) => [
       Math.max(0, Math.min(WIDTH, previous[0] + dx / zoom)),
@@ -153,7 +153,7 @@ export function SavedGeoMap({
         aria-label={
           hotel
             ? `Карта ${hotel.name}${route ? `, маршрут к пляжу ${route.meters} метров` : ""}. Стрелки перемещают карту, плюс и минус меняют масштаб.`
-            : "Карта отелей Хэундэ. Стрелки перемещают карту, плюс и минус меняют масштаб."
+            : `Карта отелей: ${dataset.region || "выбранный регион"}. Стрелки перемещают карту, плюс и минус меняют масштаб.`
         }
         onKeyDown={keyboard}
         onPointerDown={pointerDown}
@@ -210,6 +210,21 @@ export function SavedGeoMap({
             />
           </>
         )}
+        {validMapPlaces(places || []).map(place => {
+          const [x, y] = projection(place.coordinates), presentation = placePresentation(place.categories);
+          const label = presentation.label === "Место" ? place.name.slice(0, 24) : presentation.label;
+          const width = Math.max(96, label.length * 7 + 44);
+          return <a key={place.id} href={place.sourceUrl} target="_blank" rel="noreferrer" data-marker="true"
+            className={`saved-place-marker is-${presentation.tone}`} aria-label={`${place.name} · ${locationDistance(place.meters)} по прямой`}>
+            <g transform={`translate(${x},${y}) scale(${1 / zoom})`}>
+              <title>{place.name} · {locationDistance(place.meters)} по прямой</title>
+              <rect x={-width / 2} y="-22" width={width} height="44" fill="transparent" />
+              <rect className="saved-place-pill" x={-width / 2} y="-17" width={width} height="34" rx="17" />
+              <g transform={`translate(${-width / 2 + 10},-9)`}><PlaceIcon categories={place.categories} /></g>
+              <text x={-width / 2 + 35} y="4" fontSize="12" fill="#222">{label}</text>
+            </g>
+          </a>;
+        })}
         {[
           ...markers.filter((item) => item.id !== hotel?.id),
           ...markers.filter((item) => item.id === hotel?.id),
@@ -245,7 +260,7 @@ export function SavedGeoMap({
             >
               <title>{item.name}</title>
               <circle r="22" fill="transparent" />
-              <circle r="5" fill="#163e8e" stroke="#fff" strokeWidth="2" />
+              <circle r="5" fill="#444" stroke="#fff" strokeWidth="2" />
               {!compact && showLabel && (
                 <>
                   <rect
@@ -254,16 +269,16 @@ export function SavedGeoMap({
                     width={width}
                     height="36"
                     rx="18"
-                    fill={selected ? "#163e8e" : "#fff"}
-                    stroke={selected ? "#163e8e" : "#c8d5e6"}
+                    fill={selected && overview ? "#a1f27f" : "#fff"}
+                    stroke="#ddd"
                   />
                   <text
                     x="0"
                     y="-26"
                     textAnchor="middle"
                     fontSize="12"
-                    fontWeight="800"
-                    fill={selected ? "#fff" : "#172c4c"}
+                    fontWeight="400"
+                    fill="#222"
                   >
                     {label}
                   </text>

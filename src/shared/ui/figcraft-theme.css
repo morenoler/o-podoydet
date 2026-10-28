@@ -13,6 +13,8 @@
   --fig-green: #97f171;
 }
 body { background: var(--bg); font-family: "Inter Variable", Inter, sans-serif; color: var(--ink); }
+html:has(.figcraft-detail-page) { scrollbar-width: none; }
+html:has(.figcraft-detail-page)::-webkit-scrollbar { display: none; }
 button, input, select, textarea { font-family: inherit; }
 h1, h2, h3 { font-weight: 600; letter-spacing: -.025em; }
 .button { border-radius: 999px; font-weight: 500; }
@@ -22,20 +24,21 @@ h1, h2, h3 { font-weight: 600; letter-spacing: -.025em; }
 .button.secondary:hover { background: #ededed; border-color: #c9c9c9; }
 .site-header { height: 64px; border: 0; background: var(--bg); }
 .site-header-inner { max-width: 1600px; padding: 0 24px; gap: 20px; }
-.site-brand { gap: 0; color: #0042da; letter-spacing: -1.1px; }
-.site-brand > span { width: auto; height: auto; border-radius: 0; background: transparent; color: inherit; font-size: 27px; font-weight: 750; }
-.site-brand strong { font-size: 25px; font-weight: 750; }
+.site-brand { gap: 0; color: #0042da; letter-spacing: -.6px; }
+.site-brand > span { width: auto; height: auto; border-radius: 0; background: transparent; color: inherit; font-size: 21px; font-weight: 600; }
+.site-brand strong { font-size: 21px; font-weight: 600; }
 .site-navigation { display: none; }
 .site-header .site-menu-toggle { display: inline-flex; background: transparent; }
 .site-header-actions { gap: 20px; }
-.site-favorites { font-size: 13px; }
+.site-header-actions:has(.site-account-button) .site-menu-toggle { display: none; }
+.site-favorites { display: none; }
 .site-favorites > span { display: none; }
 .site-login { min-width: 76px; min-height: 36px; padding: 8px 18px; font-size: 13px; }
-.site-account-button { font-size: 14px; font-weight: 400; gap: 9px; }
+.site-header .site-account-button { display: flex; font-size: 14px; font-weight: 400; gap: 12px; }
 .site-avatar { width: 32px; height: 32px; background: #dde5f8; font-size: 15px; font-weight: 500; }
 .site-mobile-context strong { font-size: 17px; font-weight: 500; }
 .v2-modal { border-radius: 28px; }
-:is(a, button, input, textarea, select, summary):focus-visible { outline: 2px solid #0042da; outline-offset: 3px; }
+:is(a, button, input, textarea, select, summary):focus-visible { outline: 2px solid #555; outline-offset: 3px; }
 @media (max-width: 700px) {
   .site-header-inner { padding: 0 16px; }
   .site-header-actions { gap: 8px; }

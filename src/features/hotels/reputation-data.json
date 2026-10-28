@@ -1,0 +1,314 @@
+{
+  "schemaVersion": 1,
+  "attribution": "© OpenStreetMap contributors · ODbL-1.0",
+  "hotels": {
+    "node-7866732468": {
+      "stars": {
+        "value": 5,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/node/7866732468",
+        "obtainedAt": "2026-10-27T12:00:18.991Z",
+        "sourceDate": null,
+        "snapshotDate": "2026-10-27T11:57:58Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/busan/raw/lodgings-2152c66c7c088c9e.json",
+        "sha256": "2152c66c7c088c9e99df0fcef77484c399c4b056fc8c1504092ebfb86b5a9f13"
+      }
+    },
+    "node-11981169397": {
+      "stars": {
+        "value": 3,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/node/11981169397",
+        "obtainedAt": "2026-10-27T12:00:18.991Z",
+        "sourceDate": null,
+        "snapshotDate": "2026-10-27T11:57:58Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/busan/raw/lodgings-2152c66c7c088c9e.json",
+        "sha256": "2152c66c7c088c9e99df0fcef77484c399c4b056fc8c1504092ebfb86b5a9f13"
+      }
+    },
+    "node-11982706703": {
+      "stars": {
+        "value": 3,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/node/11982706703",
+        "obtainedAt": "2026-10-27T12:00:18.991Z",
+        "sourceDate": null,
+        "snapshotDate": "2026-10-27T11:57:58Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/busan/raw/lodgings-2152c66c7c088c9e.json",
+        "sha256": "2152c66c7c088c9e99df0fcef77484c399c4b056fc8c1504092ebfb86b5a9f13"
+      }
+    },
+    "way-627153064": {
+      "stars": {
+        "value": 5,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/way/627153064",
+        "obtainedAt": "2026-10-27T12:00:18.991Z",
+        "sourceDate": null,
+        "snapshotDate": "2026-10-27T11:57:58Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/busan/raw/lodgings-2152c66c7c088c9e.json",
+        "sha256": "2152c66c7c088c9e99df0fcef77484c399c4b056fc8c1504092ebfb86b5a9f13"
+      }
+    },
+    "node-736694948": {
+      "stars": {
+        "value": 3,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/node/736694948",
+        "obtainedAt": "2026-10-24T09:07:10.313929+00:00",
+        "sourceDate": "2024-08-24T04:43:57Z",
+        "snapshotDate": "2026-10-24T09:06:06Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/sochi/raw/preserved-central-d68ad307ba1c2ef7.json",
+        "sha256": "d68ad307ba1c2ef78bd8cc36ee028c8975cd7a478ca5f76e46847b179648dac4"
+      }
+    },
+    "node-736761646": {
+      "stars": {
+        "value": 4,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/node/736761646",
+        "obtainedAt": "2026-10-24T09:07:10.313929+00:00",
+        "sourceDate": "2022-04-11T12:55:07Z",
+        "snapshotDate": "2026-10-24T09:06:06Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/sochi/raw/preserved-central-d68ad307ba1c2ef7.json",
+        "sha256": "d68ad307ba1c2ef78bd8cc36ee028c8975cd7a478ca5f76e46847b179648dac4"
+      }
+    },
+    "node-1323204199": {
+      "stars": {
+        "value": 3,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/node/1323204199",
+        "obtainedAt": "2026-10-24T09:07:10.313929+00:00",
+        "sourceDate": "2020-08-31T15:20:05Z",
+        "snapshotDate": "2026-10-24T09:06:06Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/sochi/raw/preserved-central-d68ad307ba1c2ef7.json",
+        "sha256": "d68ad307ba1c2ef78bd8cc36ee028c8975cd7a478ca5f76e46847b179648dac4"
+      }
+    },
+    "way-51277929": {
+      "stars": {
+        "value": 4,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/way/51277929",
+        "obtainedAt": "2026-10-24T09:07:10.313929+00:00",
+        "sourceDate": "2025-07-14T20:10:07Z",
+        "snapshotDate": "2026-10-24T09:06:06Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/sochi/raw/preserved-central-d68ad307ba1c2ef7.json",
+        "sha256": "d68ad307ba1c2ef78bd8cc36ee028c8975cd7a478ca5f76e46847b179648dac4"
+      }
+    },
+    "way-51570675": {
+      "stars": {
+        "value": 4,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/way/51570675",
+        "obtainedAt": "2026-10-24T09:07:10.313929+00:00",
+        "sourceDate": "2026-06-07T06:00:38Z",
+        "snapshotDate": "2026-10-24T09:06:06Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/sochi/raw/preserved-central-d68ad307ba1c2ef7.json",
+        "sha256": "d68ad307ba1c2ef78bd8cc36ee028c8975cd7a478ca5f76e46847b179648dac4"
+      }
+    },
+    "way-51847420": {
+      "stars": {
+        "value": 4,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/way/51847420",
+        "obtainedAt": "2026-10-24T09:07:10.313929+00:00",
+        "sourceDate": "2026-06-07T06:00:35Z",
+        "snapshotDate": "2026-10-24T09:06:06Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/sochi/raw/preserved-central-d68ad307ba1c2ef7.json",
+        "sha256": "d68ad307ba1c2ef78bd8cc36ee028c8975cd7a478ca5f76e46847b179648dac4"
+      }
+    },
+    "way-51847429": {
+      "stars": {
+        "value": 4,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/way/51847429",
+        "obtainedAt": "2026-10-24T09:07:10.313929+00:00",
+        "sourceDate": "2026-01-30T18:01:56Z",
+        "snapshotDate": "2026-10-24T09:06:06Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/sochi/raw/preserved-central-d68ad307ba1c2ef7.json",
+        "sha256": "d68ad307ba1c2ef78bd8cc36ee028c8975cd7a478ca5f76e46847b179648dac4"
+      }
+    },
+    "way-51874466": {
+      "stars": {
+        "value": 3,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/way/51874466",
+        "obtainedAt": "2026-10-24T09:07:10.313929+00:00",
+        "sourceDate": "2013-08-01T06:50:11Z",
+        "snapshotDate": "2026-10-24T09:06:06Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/sochi/raw/preserved-central-d68ad307ba1c2ef7.json",
+        "sha256": "d68ad307ba1c2ef78bd8cc36ee028c8975cd7a478ca5f76e46847b179648dac4"
+      }
+    },
+    "way-53065036": {
+      "stars": {
+        "value": 4,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/way/53065036",
+        "obtainedAt": "2026-10-24T09:07:10.313929+00:00",
+        "sourceDate": "2026-06-07T06:00:35Z",
+        "snapshotDate": "2026-10-24T09:06:06Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/sochi/raw/preserved-central-d68ad307ba1c2ef7.json",
+        "sha256": "d68ad307ba1c2ef78bd8cc36ee028c8975cd7a478ca5f76e46847b179648dac4"
+      }
+    },
+    "way-67540441": {
+      "stars": {
+        "value": 4,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/way/67540441",
+        "obtainedAt": "2026-10-24T09:07:10.313929+00:00",
+        "sourceDate": "2026-06-07T06:00:38Z",
+        "snapshotDate": "2026-10-24T09:06:06Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/sochi/raw/preserved-central-d68ad307ba1c2ef7.json",
+        "sha256": "d68ad307ba1c2ef78bd8cc36ee028c8975cd7a478ca5f76e46847b179648dac4"
+      }
+    },
+    "way-99991540": {
+      "stars": {
+        "value": 4,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/way/99991540",
+        "obtainedAt": "2026-10-24T09:07:10.313929+00:00",
+        "sourceDate": "2022-04-29T08:49:19Z",
+        "snapshotDate": "2026-10-24T09:06:06Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/sochi/raw/preserved-central-d68ad307ba1c2ef7.json",
+        "sha256": "d68ad307ba1c2ef78bd8cc36ee028c8975cd7a478ca5f76e46847b179648dac4"
+      }
+    },
+    "way-201474330": {
+      "stars": {
+        "value": 3,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/way/201474330",
+        "obtainedAt": "2026-10-24T09:07:10.313929+00:00",
+        "sourceDate": "2025-07-13T09:40:54Z",
+        "snapshotDate": "2026-10-24T09:06:06Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/sochi/raw/preserved-central-d68ad307ba1c2ef7.json",
+        "sha256": "d68ad307ba1c2ef78bd8cc36ee028c8975cd7a478ca5f76e46847b179648dac4"
+      }
+    },
+    "way-201474331": {
+      "stars": {
+        "value": 4,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/way/201474331",
+        "obtainedAt": "2026-10-24T09:07:10.313929+00:00",
+        "sourceDate": "2026-06-02T18:32:29Z",
+        "snapshotDate": "2026-10-24T09:06:06Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/sochi/raw/preserved-central-d68ad307ba1c2ef7.json",
+        "sha256": "d68ad307ba1c2ef78bd8cc36ee028c8975cd7a478ca5f76e46847b179648dac4"
+      }
+    },
+    "relation-1949407": {
+      "stars": {
+        "value": 4,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/relation/1949407",
+        "obtainedAt": "2026-10-24T09:07:10.313929+00:00",
+        "sourceDate": "2026-10-15T16:40:21Z",
+        "snapshotDate": "2026-10-24T09:06:06Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/sochi/raw/preserved-central-d68ad307ba1c2ef7.json",
+        "sha256": "d68ad307ba1c2ef78bd8cc36ee028c8975cd7a478ca5f76e46847b179648dac4"
+      }
+    },
+    "relation-3076648": {
+      "stars": {
+        "value": 5,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/relation/3076648",
+        "obtainedAt": "2026-10-24T09:07:10.313929+00:00",
+        "sourceDate": "2023-08-25T09:36:08Z",
+        "snapshotDate": "2026-10-24T09:06:06Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/sochi/raw/preserved-central-d68ad307ba1c2ef7.json",
+        "sha256": "d68ad307ba1c2ef78bd8cc36ee028c8975cd7a478ca5f76e46847b179648dac4"
+      }
+    },
+    "relation-3076649": {
+      "stars": {
+        "value": 4,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/relation/3076649",
+        "obtainedAt": "2026-10-24T09:07:10.313929+00:00",
+        "sourceDate": "2023-08-25T09:36:08Z",
+        "snapshotDate": "2026-10-24T09:06:06Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/sochi/raw/preserved-central-d68ad307ba1c2ef7.json",
+        "sha256": "d68ad307ba1c2ef78bd8cc36ee028c8975cd7a478ca5f76e46847b179648dac4"
+      }
+    },
+    "relation-3113674": {
+      "stars": {
+        "value": 4,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/relation/3113674",
+        "obtainedAt": "2026-10-24T09:07:10.313929+00:00",
+        "sourceDate": "2023-08-25T09:36:08Z",
+        "snapshotDate": "2026-10-24T09:06:06Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/sochi/raw/preserved-central-d68ad307ba1c2ef7.json",
+        "sha256": "d68ad307ba1c2ef78bd8cc36ee028c8975cd7a478ca5f76e46847b179648dac4"
+      }
+    },
+    "relation-3113676": {
+      "stars": {
+        "value": 4,
+        "sourceName": "OpenStreetMap",
+        "sourceUrl": "https://www.openstreetmap.org/relation/3113676",
+        "obtainedAt": "2026-10-24T09:07:10.313929+00:00",
+        "sourceDate": "2023-08-25T09:36:08Z",
+        "snapshotDate": "2026-10-24T09:06:06Z",
+        "method": "osm-stars-tag",
+        "status": "reported",
+        "sourcePath": "data/sochi/raw/preserved-central-d68ad307ba1c2ef7.json",
+        "sha256": "d68ad307ba1c2ef78bd8cc36ee028c8975cd7a478ca5f76e46847b179648dac4"
+      }
+    }
+  }
+}

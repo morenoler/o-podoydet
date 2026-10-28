@@ -1,107 +1,127 @@
-.search-page.search-experience { max-width: 1600px; padding: 0 16px 48px; color: #171717; --search-accent: #0042da; --search-soft: #edf1ff; }
-.search-experience .search-layout { grid-template-columns: minmax(0, 2fr) minmax(340px, 1fr); gap: 16px; }
-.search-experience .search-toolbar { gap: 8px; flex-wrap: nowrap; padding-top: 16px; }
-.search-experience .search-chip { border: 0; background: #fff; color: #171717; border-radius: 999px; padding: 10px 16px; min-height: 44px; font-size: 14px; font-weight: 400; white-space: nowrap; }
-.search-experience .search-chip.is-active { background: #0042da; color: #fff; border: 0; }
-.search-experience .search-filter-count { background: #ededed; color: #171717; }
-.search-experience .search-reset-filters { padding: 10px; font-size: 0; margin-left: auto; order: 10; }
-.search-experience .search-reset-filters:disabled { display: none; }
-.search-catalog-disclosure { position: relative; order: 8; flex-shrink: 0; }
-.search-catalog-disclosure > summary { display: flex; align-items: center; justify-content: center; gap: 7px; padding: 10px 14px; min-height: 44px; background: white; border-radius: 999px; font-size: 13px; cursor: pointer; list-style: none; }
-.search-catalog-disclosure > summary::-webkit-details-marker { display: none; }
-.search-catalog-disclosure .search-catalog-query { position: absolute; z-index: 40; right: 0; top: 52px; width: min(360px, calc(100vw - 48px)); border-radius: 20px; border: 1px solid #ededed; box-shadow: 0 12px 36px #00000016; background: white; padding: 8px; margin: 0; }
-.search-experience .search-mobile-admission { display: flex; width: auto; min-height: 24px; margin: 6px 0 -4px; gap: 8px; border: 0; padding: 0 6px; background: none; color: #6f6f6f; font-size: 11px; text-align: left; }
-.search-experience .search-mobile-admission > span { display: block; }
-.search-experience .search-mobile-admission strong { font-size: inherit; font-weight: 400; }
-.search-experience .search-mobile-admission svg { width: 12px; }
-.search-experience .search-active-preferences { padding: 10px 0 0; gap: 6px; }
-.search-experience .search-active-preferences button { border: 0; border-radius: 999px; background: #e8edfc; color: #0042da; font-size: 12px; }
-.search-experience .search-list-section { background: white; border-radius: 24px; padding: 24px; min-width: 0; }
-.search-experience .search-results-heading { align-items: flex-start; gap: 12px; margin: 0 0 18px; padding: 0 0 18px; border-bottom: 1px solid #ededed; }
-.search-experience .search-results-heading :is(h1,h2) { font-size: 16px; font-weight: 500; margin: 0 0 5px; letter-spacing: -.02em; }
-.search-experience .search-results-heading p { font-size: 11px; line-height: 1.5; margin: 3px 0 0; max-width: 60ch; }
-.search-experience .search-sort { font-size: 11px; min-width: 0; }
-.search-experience .search-sort select { font-size: 11px; padding: 4px 20px 4px 0; width: 140px; max-width: 100%; background: transparent; }
-.search-experience .search-hotel-list { gap: 0; }
-.search-experience .search-hotel-card { border: 0; border-radius: 0; padding: 20px 0; grid-template-columns: 172px minmax(0, 1fr); gap: 16px; background: white; box-shadow: none; }
-.search-experience .search-hotel-card:first-child { padding-top: 0; }
-.search-experience .search-hotel-card + .search-hotel-card { border-top: 1px solid #d8d8d8; }
+/* FigCraft frames 3 / 813 / 1798, measured at 1280 × 832. */
+.search-page.search-experience { max-width: 1600px; padding: 0 16px 0; color: #000; --search-accent: #0042da; --search-soft: #edf1ff; }
+.search-experience .search-layout { grid-template-columns: minmax(0, 820fr) minmax(0, 412fr); gap: 27px 16px; grid-template-rows: auto minmax(0, 1fr); }
+.search-experience .search-primary { min-width: 0; }
+.search-experience .search-toolbar { position: relative; display: flex; flex-wrap: nowrap; gap: 16px; height: 48px; padding: 0; margin-top: 16px; border: 0; }
+.search-experience .search-chip { display: inline-flex; align-items: center; justify-content: center; gap: 10px; flex: 0 0 auto; height: 48px; min-height: 48px; padding: 0 17px; border: 0; border-radius: 100px; background: #fff; color: #000; font-size: 14px; font-weight: 400; line-height: 20px; white-space: nowrap; }
+.search-experience .search-chip:hover { background: #e8e8e8; }
+.search-experience .search-chip.is-active { background: #0042da; color: #fff; }
+.search-experience .search-all-filters { position: relative; width: 122px; padding: 0 16px; }
+.search-filter-dot { position: absolute; top: 5px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.search-chip-with-reset { display: inline-flex; align-items: center; flex: 0 0 auto; border-radius: 100px; overflow: hidden; }
+.search-chip-with-reset.is-active, .search-chip-with-reset.search-selection-summary { background: #0042da; color: #fff; }
+.search-experience .search-chip-with-reset:has(.search-chip-reset) > .search-chip { border-radius: 100px 0 0 100px; padding-right: 6px; }
+.search-chip-reset { align-self: stretch; display: grid; place-items: center; flex: 0 0 30px; width: 30px; border: 0; padding: 0 8px 0 2px; background: transparent; color: inherit; cursor: pointer; }
+.search-chip-reset:hover { background: #0002; }
+.search-chip-with-reset:focus-within { outline: 2px solid #555; outline-offset: 2px; }
+.search-experience .search-chip-with-reset :is(button):focus-visible { outline: 0; }
+.search-toolbar-divider { position: relative; width: 0; height: 24px; flex: 0 0 0; }
+.search-toolbar-divider::before { content: ''; position: absolute; width: 1px; height: 24px; background: #d8d8d8; }
+.search-filter-scroll { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; overflow-x: auto; padding-right: 64px; scrollbar-width: none; scroll-padding-right: 64px; }
+.search-filter-scroll::-webkit-scrollbar { display: none; }
+.search-filter-scroll:focus-within { scroll-behavior: auto; }
+.search-selection-summary { max-width: 238px; }
+.search-selection-summary > .search-chip { display: block !important; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1 1 auto; }
+.search-feed-trigger { min-height: 1px; }
+.search-filter-next { position: absolute; right: 0; top: 0; width: 48px; height: 48px; display: grid; place-items: center; border: 0; border-radius: 50%; background: #fff; color: #000; box-shadow: -18px 0 20px 12px #f3f3f3; }
+.search-experience .search-reset-filters { order: initial; font-size: 14px; }
+.search-experience .search-list-section { min-width: 0; padding: 0 24px 24px; border-radius: 24px 24px 0 0; background: #fff; }
+.search-experience .search-hotel-list { display: grid; gap: 0; }
+.search-experience .search-hotel-card { position: relative; display: grid; grid-template-columns: 173px minmax(0, 1fr); align-items: start; gap: 16px; min-height: 188px; padding: 24px 0 26px; border: 0; border-radius: 0; background: #fff; box-shadow: none; }
+.search-experience .search-hotel-card + .search-hotel-card { border-top: 0; }
+.search-experience .search-hotel-card:not(:last-child)::after { content: ''; position: absolute; left: 6px; right: 6px; bottom: 1px; height: 1px; background: #d8d8d8; }
 .search-experience .search-hotel-card.is-selected { border-color: #d8d8d8; }
-.search-experience .search-hotel-card:focus-within { outline: 2px solid #0042da; outline-offset: 8px; }
-.search-experience .search-hotel-photo { min-height: 136px; height: 156px; max-height: 156px; border-radius: 20px; }
-.search-experience .search-hotel-photo .favorite-button { width: 36px; min-height: 36px; height: 36px; border: 0; right: 8px; top: 8px; }
-.search-experience .search-room-photo-note { font-size: 9px; padding: 3px 6px; left: 8px; bottom: 8px; }
-.search-experience .search-hotel-heading { gap: 6px; }
-.search-experience .search-hotel-heading h2 { font-size: 16px; line-height: 1.35; font-weight: 500; color: #000; }
-.search-experience .search-compare-toggle { width: 32px; height: 32px; flex-basis: 32px; margin-top: -5px; background: transparent; }
-.search-experience .search-room-hotel { font-size: 13px; line-height: 1.4; color: #535353; margin: 4px 0; font-weight: 400; }
-.search-experience :is(.search-room-capacity,.search-hotel-meta,.search-hotel-room) { font-size: 11px; line-height: 1.5; color: #777; margin: 3px 0; }
-.search-experience .search-hotel-evidence { margin: 5px 0; font-size: 11px; line-height: 1.45; color: #6f6f6f; }
-.search-experience .search-hotel-evidence svg { width: 13px; height: 16px; }
-.search-card-information { margin: 6px 0; }
-.search-card-information > summary { width: fit-content; min-height: 24px; color: #535353; font-size: 11px; cursor: pointer; }
-.search-card-information[open] { padding-bottom: 8px; }
-.search-experience .search-hotel-bottom { margin-top: 8px; padding-top: 0; border: 0; gap: 12px; align-items: flex-end; }
+.search-experience .search-hotel-card:focus-within { outline: 0; }
+.search-experience .search-hotel-photo { min-height: 136px; height: 136px; max-height: 136px; border-radius: 20px; }
+.search-experience .search-hotel-photo .favorite-button { width: 32px; height: 32px; min-height: 32px; top: 8px; right: 8px; background: #ffffffeb; }
+.search-experience .search-hotel-photo .favorite-button svg { width: 18px; height: 18px; }
+.search-experience .search-room-photo-note { bottom: 6px; left: 6px; right: 6px; width: fit-content; margin: auto; padding: 2px 6px; font-size: 10px; line-height: 14px; background: #ffffffeb; }
+.search-experience .search-hotel-content { position: relative; display: flex; flex-direction: column; min-height: 136px; padding: 0; }
+.search-card-type { height: 18px; margin: 0 0 5px; color: #777; font-size: 12px; line-height: 18px; }
+.search-experience .search-hotel-heading { display: flex; gap: 8px; padding-right: 84px; }
+.search-card-stars { min-height: 17px; margin: 0 0 4px; }
+.search-card-rating { position: absolute; right: -24px; top: 0; text-align: right; }
+.search-card-rating .hotel-rating-unknown { margin-right: 12px; }
+.search-card-admission { margin: 5px 0 0; font-size: 12px; line-height: 17px; color: #777; }
+.search-card-admission.is-mismatch { color: #9c3b3b; }
+.search-experience .search-hotel-heading h2 { margin: 0; color: #000; font-size: 16px; font-weight: 400; line-height: 20px; letter-spacing: 0; }
+.search-experience .search-compare-toggle { position: absolute; right: -4px; top: 0; width: 32px; height: 32px; flex-basis: 32px; margin: 0; border: 0; color: #777; background: transparent; }
+.search-experience .search-compare-toggle.is-selected { color: #0042da; background: #edf1ff; }
+.search-experience .search-room-hotel { margin: 2px 0 0; color: #777; font-size: 14px; font-weight: 400; line-height: 20px; }
+.search-experience .search-hotel-meta { margin: 0; color: #777; font-size: 14px; line-height: 20px; }
+.search-experience .search-room-capacity, .search-experience .search-hotel-room { color: #777; font-size: 13px; line-height: 19px; margin: 4px 0; }
+.search-card-information { margin: 0; }
+.search-card-information > summary { width: fit-content; color: #777; font-size: 12px; line-height: 20px; cursor: pointer; min-height: 20px; }
+.search-card-information[open] { margin-bottom: 12px; }
+.search-experience .search-hotel-evidence { font-size: 13px; line-height: 20px; }
+.search-experience .search-hotel-bottom { margin-top: auto; padding-top: 8px; display: flex; align-items: end; justify-content: space-between; gap: 12px; border: 0; }
 .search-experience .search-hotel-bottom > div { min-width: 0; }
-.search-experience .search-hotel-price { font-size: 20px; color: #000; font-weight: 500; }
-.search-experience .search-hotel-price small { font-size: 11px; color: #777; font-weight: 400; }
-.search-experience .search-hotel-price-note { font-size: 10px; line-height: 1.5; color: #777; margin-top: 3px; }
-.search-experience .search-hotel-result { font-size: 12px; font-weight: 500; line-height: 1.45; }
-.search-experience .search-card-actions .button { min-height: 36px; padding: 8px 14px; font-size: 11px; background: #ededed; color: #171717; border: 0; }
-.search-experience .search-card-actions .button:hover { background: #97f171; }
-.search-experience .search-card-next-step { min-height: 26px; font-size: 11px; }
-.search-experience .search-data-note { font-size: 11px; margin: 16px 0 0; }
-.search-experience .mapped-hotel-section { margin-top: 20px; padding-top: 18px; border-top: 1px solid #d8d8d8; }
-.search-experience .mapped-hotel-section > h2 { font-size: 16px; font-weight: 500; }
-.search-experience .mapped-hotel-section > p { font-size: 11px; line-height: 1.6; }
-.search-experience .mapped-hotel-card { display: grid; grid-template-columns: 172px minmax(0, 1fr); align-items: start; gap: 16px; border: 0; border-radius: 0; padding: 20px 0; background: white; }
+.search-experience .search-hotel-price { font-size: 20px; font-weight: 400; line-height: 24px; color: #000; }
+.search-experience .search-hotel-price small { font-size: 12px; font-weight: 400; color: #777; }
+.search-experience .search-hotel-price-note { display: block; margin: 2px 0 0; font-size: 12px; line-height: 17px; color: #777; }
+.search-experience .search-hotel-result { font-size: 14px; line-height: 20px; font-weight: 400; }
+.search-experience .search-card-actions { flex-direction: row; align-items: center; gap: 12px; }
+.search-experience .search-card-actions .button { min-height: 36px; padding: 8px 16px; font-size: 13px; font-weight: 400; line-height: 20px; border: 0; color: #000; background: #97f171; }
+.search-experience .search-card-actions .button:hover { background: #86e360; }
+.search-card-next-step { font-size: 12px; min-height: 32px; color: #777; }
+.search-experience .search-hotel-quick-criteria { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 4px; }
+.search-hotel-quick-criteria li { display: flex; align-items: baseline; gap: 5px; color: #000; font-size: 14px; line-height: 18px; }
+.search-hotel-quick-criteria svg { flex: 0 0 12px; position: relative; top: 1px; }
+.search-hotel-quick-criteria .is-match svg { color: #55b548; }
+.search-hotel-quick-criteria .is-mismatch svg { color: #ed6868; }
+.search-hotel-quick-criteria .is-uncertain svg { color: #777; }
+.search-experience .search-data-note { margin-top: 20px; font-size: 12px; line-height: 18px; }
+.search-experience .search-preview-prompt { margin: 0; padding-top: 24px; font-size: 13px; line-height: 20px; }
+.search-experience .mapped-hotel-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid #d8d8d8; }
+.search-experience .mapped-hotel-section > h2 { font-size: 16px; font-weight: 400; }
+.search-experience .mapped-hotel-section > p { font-size: 14px; line-height: 20px; }
+.search-experience .mapped-hotel-card { display: grid; grid-template-columns: 173px minmax(0, 1fr); align-items: start; gap: 16px; padding: 24px 0; border: 0; border-radius: 0; background: #fff; }
 .search-experience .mapped-hotel-card + .mapped-hotel-card { border-top: 1px solid #d8d8d8; }
-.mapped-hotel-photo { width: 172px; height: 136px; object-fit: cover; border-radius: 20px; }
-.search-experience .mapped-hotel-heading h3 { font-size: 16px; font-weight: 500; }
-.search-experience .mapped-hotel-heading p, .search-experience .mapped-hotel-limits, .search-experience .mapped-hotel-sources { font-size: 11px; }
-.search-experience .mapped-hotel-provisional { color: #805d19; font-size: 11px; line-height: 1.5; margin: 8px 0; }
-.search-experience .mapped-hotel-heading .button { font-size: 0; padding: 8px; min-width: 32px; min-height: 32px; border: 0; }
-.search-experience .search-mobile-navigation { background: #fff; border: 0; border-radius: 999px; }
-.search-experience .search-mobile-navigation button { border-radius: 999px; }
-.search-experience .search-mobile-navigation button[aria-pressed=true] { background: #97f171; color: #000; font-weight: 500; }
-@media (min-width: 901px) and (max-width: 1199px) {
+.mapped-hotel-photo { width: 173px; height: 136px; object-fit: cover; border-radius: 20px; }
+.search-experience .mapped-hotel-heading h3 { color: #000; font-size: 16px; font-weight: 400; line-height: 20px; }
+.search-experience .mapped-hotel-heading p, .search-experience .mapped-hotel-limits { color: #777; font-size: 14px; line-height: 20px; }
+.search-experience .mapped-hotel-sources { font-size: 12px; line-height: 18px; }
+.search-experience .mapped-hotel-provisional { color: #805d19; font-size: 13px; line-height: 20px; }
+.search-experience .mapped-hotel-heading .button { padding: 8px; min-width: 32px; min-height: 32px; font-size: 0; border: 0; }
+.mapped-hotel-actions { margin-top: 12px; display: flex; justify-content: end; }
+.mapped-hotel-actions .button { background: #ededed; color: #000; font-size: 13px; font-weight: 400; border: 0; min-height: 36px; }
+.search-experience .search-mobile-navigation { border: 0; border-radius: 100px; background: #fff; }
+.search-experience .search-mobile-navigation button { border-radius: 100px; }
+.search-experience .search-mobile-navigation button[aria-pressed=true] { color: #000; background: #97f171; font-weight: 400; }
+@media (min-width: 901px) {
+  .search-experience .search-primary > .figcraft-search-controls { width: calc(100% + 2px); }
+  .search-experience .search-filter-next { right: -2px; }
+  body:has(.search-experience) { overflow: hidden; }
+  body:has(.search-experience) .v2-footer { display: none; }
+  .search-experience .search-layout { height: calc(100dvh - 64px); }
+  .search-experience .search-list-section { height: 100%; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
+  .search-experience .search-list-section::-webkit-scrollbar { display: none; }
+  .search-experience .search-layout > .search-conversation { width: 100%; height: calc(100dvh - 80px); min-height: 0; max-height: none; top: 0; }
+  .search-experience.has-comparison .search-list-section { padding-bottom: 100px; }
+}
+@media (min-width: 901px) and (max-width: 1100px) {
   .search-experience .search-layout { grid-template-columns: minmax(0, 1fr) 340px; }
-  .search-experience .search-list-section { padding: 18px; }
-  .search-experience .search-hotel-card, .search-experience .mapped-hotel-card { grid-template-columns: 124px minmax(0, 1fr); gap: 12px; }
+  .search-experience .search-hotel-card, .search-experience .mapped-hotel-card { grid-template-columns: 124px minmax(0, 1fr); }
   .mapped-hotel-photo { width: 124px; }
-  .search-experience .search-hotel-bottom { flex-direction: column; align-items: stretch; }
-  .search-experience .search-chip { padding: 10px 12px; font-size: 12px; }
-  .search-catalog-disclosure > summary > span { display: none; }
+  .search-experience .search-hotel-bottom { align-items: start; flex-direction: column; }
 }
 @media (max-width: 900px) {
   .search-page.search-experience { padding: 0 12px 32px; }
-  .search-experience .search-layout { display: flex; gap: 12px; }
-  .search-experience .search-toolbar { flex-wrap: wrap; padding-top: 12px; gap: 6px; }
-  .search-experience .search-chip { font-size: 12px; min-height: 40px; padding: 9px 13px; }
-  .search-catalog-disclosure > summary { min-height: 40px; padding: 9px 13px; }
-  .search-experience .search-results-heading { flex-direction: row; padding-bottom: 12px; margin-bottom: 16px; }
-  .search-experience .search-results-heading :is(h1,h2) { font-size: 16px; }
-  .search-experience .search-sort > span { display: none; }
-  .search-experience .search-sort select { width: 104px; font-size: 10px; }
-  .search-experience .search-sort { margin-top: 8px; }
-  .search-experience .search-sort select { min-height: 28px; font-weight: 400; color: #535353; }
-  .search-experience .search-list-section { padding: 18px 16px; border-radius: 24px; }
+  .search-experience .search-layout { display: flex; gap: 16px; }
+  .search-experience .search-toolbar { gap: 10px; }
+  .search-experience .search-all-filters { width: 108px; }
+  .search-experience .search-list-section { padding: 0 20px 24px; border-radius: 24px; }
   .search-experience .search-hotel-card { grid-template-columns: 140px minmax(0, 1fr); }
-  .search-experience .search-hotel-photo { min-height: 140px; height: 140px; }
-  .search-experience .search-hotel-heading h2 { font-size: 15px; }
-  .search-experience .search-hotel-bottom { flex-direction: column; align-items: stretch; }
-  .search-experience .search-card-actions { align-items: start; flex-direction: row; }
+  .search-experience .search-hotel-photo { min-height: 136px; height: 136px; }
+  .search-experience .search-card-actions { width: auto; }
 }
 @media (max-width: 540px) {
-  .search-experience .search-hotel-card { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .search-experience .search-list-section { padding: 0 16px 20px; }
+  .search-experience .search-hotel-card { grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 20px 0; }
   .search-experience .search-hotel-photo { height: 188px; min-height: 188px; max-height: 188px; }
-  .search-experience .search-hotel-content { padding: 0; }
-  .search-experience .search-hotel-heading h2 { font-size: 17px; }
-  .search-experience .search-hotel-bottom { flex-direction: row; align-items: flex-end; }
-  .search-experience .search-card-actions { flex-direction: column; align-items: stretch; }
+  .search-experience .search-hotel-heading h2 { font-size: 17px; line-height: 23px; }
+  .search-experience .search-hotel-bottom { flex-direction: row; align-items: end; }
+  .search-experience .search-card-actions { flex-direction: column; align-items: end; }
   .search-experience .mapped-hotel-card { grid-template-columns: 84px minmax(0, 1fr); gap: 12px; }
-  .mapped-hotel-photo { width: 84px; height: 100px; border-radius: 14px; }
-  .search-experience .mapped-hotel-heading h3 { font-size: 14px; }
-  .search-experience .search-chip-extra { display: inline-flex; }
-  .search-experience .search-catalog-disclosure { order: 8; }
+  .mapped-hotel-photo { width: 84px; height: 100px; border-radius: 16px; }
 }

@@ -420,6 +420,7 @@ public final class PlaceSearch {
     for (JsonNode place : places) {
       JsonNode source = sources.get(Json.str(place, "sourceId"));
       ObjectNode item = Json.obj("id", place.path("id"), "name", place.path("name"), "categories", place.path("categories"),
+          "coordinates", place.path("coordinates"),
           "meters", Math.round(distance(hotel.path("coordinates"), place.path("coordinates"))),
           "distanceMeters", distance(hotel.path("coordinates"), place.path("coordinates")),
           "sourceUrl", place.hasNonNull("sourceUrl") ? place.path("sourceUrl") : source.path("url"),

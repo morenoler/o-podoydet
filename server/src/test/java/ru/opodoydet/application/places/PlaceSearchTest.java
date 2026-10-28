@@ -111,6 +111,10 @@ class PlaceSearchTest {
     assertEquals(1, nearby.path("places").size());
     assertEquals(2, nearby.path("centers").size());
     assertEquals("Учебная кофейня", nearby.path("places").get(0).path("name").asText());
+    assertEquals(Json.array(List.of(129.0, 35.001)), nearby.path("places").get(0).path("coordinates"));
+    assertEquals("https://example.test/cafe-a", nearby.path("places").get(0).path("sourceUrl").asText());
+    assertEquals("osm_node", nearby.path("places").get(0).path("coordinateMethod").asText());
+    assertEquals(Json.array(List.of(129.0, 35.002)), nearby.path("centers").get(0).path("coordinates"));
   }
 
   @Test void parsesMultipleIndependentLocationConditionsAndPreservesOrdinaryClauses() {

@@ -1,67 +1,73 @@
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { MapPin, ArrowRight } from "lucide-react";
+import { X } from "lucide-react";
 import type { Dataset, Hotel, Room } from "../../../shared/types";
 import { GeoMap } from "../map/components/GeoMap";
 import { accommodationPath } from "../../shared/lib/accommodation";
+import { AccommodationPhoto } from "../../shared/ui/AccommodationPhoto";
+import { price } from "../account/format";
+import "./search-map-panel.css";
 
 export function SearchMapPanel({
   catalog,
   selected,
   selectedRoom,
   plotted,
+  focusHotels,
   onSelect,
 }: {
   catalog: Dataset | null;
   selected?: Hotel;
   selectedRoom?: Room;
   plotted: Hotel[];
+  focusHotels?: Hotel[];
   onSelect: (hotel: Hotel) => void;
 }) {
   const selectedMap =
     selected?.coordinates && !selected.synthetic ? selected : undefined;
+  const [dismissedId, setDismissedId] = useState<string | null>(null);
+  const panel = useRef<HTMLElement>(null);
+  const amount = selectedRoom?.pricePerNight ?? selected?.pricePerNight;
+  const currency = selectedRoom?.currency ?? selected?.currency;
+  const hasPrice = typeof amount === "number" && Number.isFinite(amount) && amount > 0 && !!currency;
+  const detailsPath = selected ? accommodationPath(selected, selectedRoom?.id) : null;
   return (
-    <aside className="search-map-section" aria-label="Расположение найденных номеров">
+    <aside className="search-map-section" aria-label="Расположение найденных номеров" ref={panel}>
       {catalog && (
         <div className="search-map-shell">
           <GeoMap
             dataset={catalog}
             hotels={plotted}
+            focusHotels={focusHotels}
             hotel={selectedMap}
-            onSelect={onSelect}
+            showRoute={false}
+            onSelect={(hotel) => { setDismissedId(null); onSelect(hotel); }}
           />
-          {selected && (
-            <div className="search-map-selection map-selection-summary">
-              <span className="search-map-selection-icon">
-                <MapPin size={24} aria-hidden="true" />
-              </span>
-              <div>
-                <strong>{selectedRoom?.name || selected.name}</strong>
-                {selectedRoom && <p>{selected.name}</p>}
-                <p>
-                  {selected.synthetic
-                    ? "Вымышленный пример · координаты условные"
-                    : selected.coordinates
-                      ? selected.route
-                        ? `По пешеходной сети до пляжа: ${selected.route.meters} м`
-                        : "Маршрут до пляжа не рассчитан"
-                      : "Координаты отельер пока не указал"}
-                </p>
+          {selected && dismissedId !== selected.id && (
+            <div className="search-map-selection map-selection-card" aria-label={`На карте: ${selected.name}`}>
+              <header>
+                <strong>{detailsPath ? <Link to={detailsPath}>{selected.synthetic ? "Демо: " : ""}{selected.name}</Link> : selected.name}</strong>
+                <button type="button" className="map-selection-close" aria-label="Закрыть карточку на карте" onClick={() => {
+                  setDismissedId(selected.id);
+                  panel.current?.querySelector<HTMLElement>('.geo-hotel-marker[aria-pressed="true"], .interactive-map-canvas, .v2-map-marker')?.focus();
+                }}><X size={16} aria-hidden="true" /></button>
+              </header>
+              <AccommodationPhoto name={selected.name} hotelId={selected.id} photos={selected.photos} />
+              <div className="map-selection-description">
+                <p>{selected.address || "Адрес пока не указан"}</p>
               </div>
-              {!selectedRoom && !selected.accountListingId ? <a href={selected.osmUrl} target="_blank" rel="noreferrer" aria-label={`Объект в OSM: ${selected.name}`}><ArrowRight size={24} aria-hidden="true" /></a> : <Link
-                to={accommodationPath(selected, selectedRoom?.id)}
-                aria-label={`Подробнее: ${selectedRoom ? `${selectedRoom.name}, ` : ""}${selected.name}`}
-              >
-                <ArrowRight size={24} aria-hidden="true" />
-              </Link>}
+              <footer>
+                <strong>{hasPrice ? price(amount!, currency!) : "Цена по запросу"}</strong>{hasPrice && <span className="sr-only">за ночь · наличие уточняйте</span>}
+              </footer>
             </div>
           )}
         </div>
       )}
-      <p className="search-map-note">
-        Карта OpenStreetMap. Вход и подходы к сети не проверены и не включены в длину маршрута. На карте — отели
-        из выдачи с известными координатами. При недоступности
-        картографического сервиса покажем сохранённую схему.
-      </p>
+      <details className="search-map-note"><summary>О карте и данных</summary><p>
+        Спутниковый фон — EOX Sentinel-2 за 2016 год, около 10 м на пиксель. Это обзор территории, а не актуальная съёмка отеля.
+        Улицы, координаты и маршруты — OpenStreetMap. Вход и подходы к сети не проверены и не включены в длину маршрута. На карте — отели
+        из выдачи с известными координатами. Если снимки недоступны, покажем улицы; без сети — сохранённую схему.
+      </p></details>
     </aside>
   );
 }

@@ -3,21 +3,30 @@ import type { Hotel, Room, RoomMatch } from "../../../../shared/types";
 import { price, roomDetailsLabel } from "../../account/format";
 import { CapacitySummary } from "./CapacitySummary";
 import { SleepingArrangement } from "../../listings/SleepingArrangement";
+import { DetailRoomCard } from "./DetailRoomCard";
+import { accountListingId } from "../../../shared/lib/accommodation";
 
-export function CatalogRoomDetails({ hotel, room, match }: {
+export function CatalogRoomDetails({ hotel, room, match, selected, onInspect }: {
   hotel: Hotel;
   room: Room;
   match?: RoomMatch;
+  selected?: boolean;
+  onInspect?: () => void;
 }) {
-  return <div className="catalog-room-details">
+  const ownUnit = accountListingId(hotel) && hotel.rooms.length === 1;
+  const pricePerNight = room.pricePerNight ?? (ownUnit ? hotel.pricePerNight : undefined);
+  const currency = room.currency ?? (ownUnit ? hotel.currency : undefined);
+  return <DetailRoomCard name={room.name} description={room.description || room.quote} amenities={room.amenities}
+    pricePerNight={pricePerNight} currency={currency} selected={selected} onInspect={onInspect}>
+    <div className="catalog-room-details">
     {match ? <CapacitySummary match={match} /> : <p className="catalog-room-capacity">
       {room.capacity == null ? "Вместимость нужно уточнить" : `До ${room.capacity} гостей`}
       {room.capacityMayVary && " · зависит от конфигурации номера"}
     </p>}
     <dl className="catalog-room-basics">
       <div><dt>Цена за ночь</dt><dd>
-        {hotel.pricePerNight != null && (hotel.currency === "KRW" || hotel.currency === "RUB")
-          ? <>{price(hotel.pricePerNight, hotel.currency)} <small>по объявлению</small></>
+        {pricePerNight != null && Number.isFinite(pricePerNight) && pricePerNight > 0 && (currency === "KRW" || currency === "RUB")
+          ? <>{price(pricePerNight, currency)} <small>по объявлению</small></>
           : "Нужно уточнить"}
       </dd></div>
       <div><dt>Этаж и окна</dt><dd>{roomDetailsLabel(hotel.floor, hotel.windowDirections)}</dd></div>
@@ -33,5 +42,6 @@ export function CatalogRoomDetails({ hotel, room, match }: {
     {room.sourceUrl && <a className="text-link" href={room.sourceUrl} target="_blank" rel="noreferrer">
       Описание на сайте отеля <ExternalLink size={14} aria-hidden="true" />
     </a>}
-  </div>;
+    </div>
+  </DetailRoomCard>;
 }

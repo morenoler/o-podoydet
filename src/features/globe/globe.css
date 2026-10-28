@@ -1,0 +1,38 @@
+.earth-globe { position: relative; width: 100%; height: 100%; min-height: 360px; overflow: hidden; isolation: isolate; color: white; background: #040509; }
+.earth-globe-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; touch-action: pan-y; cursor: grab; }
+.earth-globe-canvas:active { cursor: grabbing; }
+.earth-globe-canvas:focus-visible { outline: 2px solid #97f171; outline-offset: -4px; }
+.earth-globe-markers { position: absolute; inset: 0; pointer-events: none; }
+.earth-globe-marker { position: absolute; transform: translate(-50%,-50%); pointer-events: auto; display: flex; align-items: center; gap: 7px; min-height: 34px; padding: 8px 12px; border: 1px solid #ffffff45; border-radius: 999px; color: #fff; background: #000b; font-size: 12px; line-height: 16px; cursor: pointer; backdrop-filter: blur(8px); }
+.earth-globe-marker[hidden] { display: none; }
+.earth-globe-marker > .earth-globe-pin { width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%; background: #97f171; box-shadow: 0 0 14px #97f17185; }
+.earth-globe-marker.is-selected { width: 196px; min-height: 70px; padding: 10px 16px; border: 0; border-radius: 24px; color: #000; background: #ffffffed; backdrop-filter: blur(12px); transform: translate(-50%,calc(-100% - 12px)); text-align: left; }
+.earth-globe-marker.is-selected::after { content: ''; position: absolute; left: calc(50% - 8px); bottom: -8px; width: 16px; height: 16px; background: #ffffffed; transform: rotate(45deg); border-radius: 2px; }
+.earth-globe-marker.is-selected .earth-globe-pin { display: none; }
+.earth-globe-marker.is-selected .earth-globe-marker-label { font-size: 16px; line-height: 18px; font-weight: 400; }
+.earth-globe-marker-label small { display: block; margin-top: 3px; color: #777; font-size: 14px; line-height: 14px; }
+.earth-globe-picked-marker { position: absolute; z-index: 2; display: flex; align-items: center; gap: 7px; transform: translate(-50%,-50%); padding: 8px 12px; border: 1px solid #97f171; border-radius: 20px; background: #101010dc; color: #fff; font-size: 11px; pointer-events: none; }
+.earth-globe-picked-marker > span { width: 7px; height: 7px; border-radius: 50%; background: #97f171; }
+.earth-globe-picked-marker[hidden] { display: none; }
+.earth-globe-toolbar { position: absolute; z-index: 2; bottom: 48px; left: 24px; right: 24px; display: flex; justify-content: flex-end; align-items: center; gap: 12px; pointer-events: none; }
+.earth-globe-toolbar > div { display: flex; gap: 8px; pointer-events: auto; }
+.earth-globe-toolbar button { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; min-width: 40px; border: 1px solid #ffffff38; border-radius: 24px; padding: 8px 14px; color: #eee; background: #101010b8; font: inherit; font-size: 12px; cursor: pointer; backdrop-filter: blur(8px); }
+.earth-globe-toolbar .earth-globe-rotation button { padding: 8px; }
+.earth-globe button:focus-visible, .earth-globe summary:focus-visible, .earth-globe a:focus-visible { outline: 2px solid #97f171; outline-offset: 3px; }
+.earth-globe button:hover { border-color: #fff; }
+.earth-globe-caption { position: absolute; z-index: 3; bottom: 18px; left: 24px; right: 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; color: #999; font-size: 10px; line-height: 14px; }
+.earth-globe-caption details { position: relative; margin-left: auto; }
+.earth-globe-caption summary { cursor: pointer; }
+.earth-globe-caption details > div { position: absolute; right: 0; bottom: 24px; width: min(300px,calc(100vw - 48px)); padding: 16px; border: 1px solid #ffffff33; border-radius: 16px; color: #ccc; background: #111; font-size: 11px; line-height: 1.6; box-shadow: 0 8px 30px #0008; }
+.earth-globe-caption a { color: #c4e8ff; }
+.earth-globe-fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #040509; }
+.earth-globe-fallback img { width: min(90%,700px); height: auto; border-radius: 16px; }
+.earth-globe-fallback p { position: absolute; left: 24px; right: 24px; bottom: 95px; margin: 0; color: #ccc; font-size: 12px; text-align: center; }
+.earth-globe-error { position: absolute; left: 24px; right: 24px; bottom: 98px; color: #bbb; font-size: 12px; }
+@media (max-width: 700px) {
+  .earth-globe { min-height: 390px; }
+  .earth-globe-toolbar { left: 16px; right: 16px; bottom: 44px; }
+  .earth-globe-toolbar button { min-height: 44px; min-width: 44px; }
+  .earth-globe-marker { min-height: 40px; }
+  .earth-globe-caption { left: 16px; right: 16px; bottom: 16px; }
+}

@@ -270,7 +270,7 @@ test("unknown, stale and conflicting conditions stay distinct from a known misma
     const criterion = decision({ evidenceStatus, assumed: false });
     const match = evaluated({ criteria: [criterion] });
     assert.match(diagnostics(match), /требует уточнения/);
-    assert.match(markup(match), /требует уточнения/);
+    assert.match(markup(match), /нужно уточнить/);
     assert.doesNotMatch(markup(match), /не совпадает/);
     const line = renderToStaticMarkup(createElement(CriterionLine, { criterion }));
     assert.match(line, /criterion unknown/);

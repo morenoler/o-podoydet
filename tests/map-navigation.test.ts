@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import type { Dataset, Hotel, Point } from "../shared/types";
-import { groupMapHotels, isMapPoint, latLng, MAP_MARKER_GAP, MAP_MARKER_SIZE, selectedMapPoints, validPath, visibleMapHotels } from "../src/features/map/mapData";
+import { groupMapHotels, hotelCountLabel, isMapPoint, latLng, MAP_MARKER_GAP, MAP_MARKER_SIZE, resultMapPoints, selectedMapPoints, validPath, visibleMapHotels } from "../src/features/map/mapData";
 import { tileLoadMonitor } from "../src/features/map/tileLoadMonitor";
 
 function hotel(id: string, longitude = 129.16): Hotel {
@@ -19,6 +19,41 @@ test("map includes all 96 results without turning unknown or synthetic coordinat
   assert.deepEqual(visibleMapHotels(dataset, undefined, [...points, ...bad]), points);
   assert.deepEqual(visibleMapHotels(dataset, undefined, []), []);
   assert.equal(isMapPoint([35, 129]), false);
+});
+
+test("initial focus uses actual visible result coordinates while retaining the entire map catalogue", () => {
+  const original = structuredClone(dataset);
+  const points = resultMapPoints(dataset, dataset.hotels, [hotel("not-in-results"),
+    { ...dataset.hotels[5], coordinates: [0, 0] }, dataset.hotels[5], dataset.hotels[8]]);
+  assert.deepEqual(points, [dataset.hotels[5].coordinates, dataset.hotels[8].coordinates]);
+  assert.equal(visibleMapHotels(dataset).length, 96);
+  assert.deepEqual(dataset, original);
+  assert.deepEqual(resultMapPoints(dataset, dataset.hotels, []), dataset.hotels.map((item) => item.coordinates));
+});
+
+test("large regional catalogues open at city scale without applying a geographic filter", () => {
+  for (const region of ["Пусан", "Сочи"] as const) {
+    const center: Point = region === "Сочи" ? [39.72, 43.58] : [129.0756, 35.1796];
+    const regional = { ...dataset, region, hotels: dataset.hotels.map((hotel) => ({ ...hotel,
+      coordinates: [center[0] + Number(hotel.id) / 100_000, center[1]] as Point })) };
+    const bounds = resultMapPoints(regional, regional.hotels);
+    assert.equal(bounds.length, 2);
+    assert.ok(bounds[1][0] - bounds[0][0] < 0.08);
+    assert.ok(bounds[1][1] - bounds[0][1] < 0.06);
+    assert.equal(visibleMapHotels(regional).length, 96);
+    assert.ok(region === "Сочи" ? bounds[0][0] > 39 && bounds[1][0] < 40 : bounds[0][0] > 129);
+  }
+});
+
+test("a beach-only catalogue opens at its real results instead of the empty administrative centre", () => {
+  const saved = JSON.parse(readFileSync(new URL("../data/verified-hotels.json", import.meta.url), "utf8")) as Dataset;
+  const points = resultMapPoints(saved, visibleMapHotels(saved));
+  assert.deepEqual(points, visibleMapHotels(saved).map((hotel) => hotel.coordinates));
+});
+
+test("hotel count labels use Russian number forms", () => {
+  assert.deepEqual([1, 2, 3, 4, 5, 11, 12, 14, 21, 22, 101, 112].map(hotelCountLabel),
+    ["1 отель", "2 отеля", "3 отеля", "4 отеля", "5 отелей", "11 отелей", "12 отелей", "14 отелей", "21 отель", "22 отеля", "101 отель", "112 отелей"]);
 });
 
 test("coincident hotels remain separately selectable without shifting their physical coordinates", () => {

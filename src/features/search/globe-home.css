@@ -1,0 +1,66 @@
+/* Supplied landing reference: 1280 × 832, form x66/y284/w400. */
+body:has(.globe-home) { background: #040509; }
+.app-shell:has(.globe-home) .site-header { position: relative; z-index: 5; background: #040509; color: #fff; }
+.app-shell:has(.globe-home) .site-brand { color: #fff; }
+.app-shell:has(.globe-home) .site-account-button, .app-shell:has(.globe-home) .site-menu-toggle { color: #fff; }
+.app-shell:has(.globe-home) .site-avatar { background: #292c32; color: #fff; border: 1px solid #ffffff5c; }
+.app-shell:has(.globe-home) > .v2-footer { display: none; }
+.globe-home { position: relative; isolation: isolate; min-height: calc(100dvh - 64px); margin: 0 auto; overflow: clip; color: #fff; background: #040509; }
+.globe-home-search { position: relative; z-index: 2; width: 480px; padding-top: clamp(96px, calc(24dvh - 64px), 180px); margin-left: clamp(32px, 5.15625vw, 82px); padding-bottom: 100px; pointer-events: none; }
+.globe-home-search > * { pointer-events: auto; }
+.globe-home-search h1 { width: 450px; max-width: 100%; margin: 0 0 16px; font-size: 40px; font-weight: 400; line-height: .85; letter-spacing: -.5px; }
+.globe-home .figcraft-search-controls { width: 400px; max-width: 100%; }
+.globe-home .search-bar.figcraft-search-bar { display: flex; flex-direction: column; width: 100%; height: 242px; min-height: 0; padding: 0; overflow: hidden; border-radius: 24px; background: #f3f3f3; box-shadow: none; }
+.globe-home .figcraft-search-bar > .search-bar-mobile { display: none; }
+.globe-home .figcraft-search-bar > :is(.search-bar-destination, .search-bar-field) { display: flex; flex: 0 0 64px; width: calc(100% - 48px); height: 64px; min-height: 64px; padding: 0 4px; margin: 0 24px; gap: 20px; border: 0; border-radius: 0; background: transparent; color: #101114; }
+.globe-home .figcraft-search-bar > .search-bar-field { border-top: 1px solid #d3d3d3; }
+.globe-home .figcraft-search-bar > .search-bar-field::before { display: none; }
+.globe-home .figcraft-search-bar > :is(.search-bar-destination, .search-bar-field):hover { background: #e8e8e8; }
+.globe-home .figcraft-search-bar :is(.search-bar-field, .search-bar-destination) > svg:first-child { display: block; width: 18px; height: 18px; flex: 0 0 18px; }
+.globe-home .figcraft-search-bar strong { font-size: 16px; font-weight: 400; line-height: 20px; }
+.globe-home .figcraft-search-bar > .search-bar-submit { display: flex; flex-direction: row-reverse; align-items: center; justify-content: center; gap: 8px; flex: 1; width: 100%; height: 50px; min-height: 50px; padding: 0; border: 0; border-radius: 0; background: #a1f27f; color: #2f4925; font-size: 16px; font-weight: 400; }
+.globe-home .figcraft-search-bar > .search-bar-submit:hover { background: #91e96e; }
+.globe-home .figcraft-search-bar > .search-bar-submit:disabled { opacity: .55; cursor: not-allowed; }
+.globe-home .figcraft-search-bar > .search-bar-submit svg { width: 18px; height: 18px; }
+.globe-home .figcraft-search-bar button:focus-visible { outline: 2px solid #555; outline-offset: -4px; }
+.globe-home-note { width: 400px; max-width: 100%; margin: 16px 0 0; font-size: 14px; line-height: 21px; color: #c7c9ce; }
+.globe-home-note p { margin: 0 0 6px; }
+.globe-home-note button { padding: 0; border: 0; background: transparent; color: #a1f27f; font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.home-globe-stage { position: absolute; z-index: 1; left: 42.7%; right: 16px; top: 0; height: calc(100dvh - 80px); min-height: 360px; view-transition-name: destination-map; }
+.home-globe-stage > * { width: 100%; height: 100%; }
+.landing-destination-search { display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-bottom: 1px solid #dedede; color: #777; }
+.landing-destination-search input { width: 100%; min-width: 0; min-height: 40px; border: 0; padding: 0; background: transparent; color: #111; font: inherit; font-size: 16px; outline-offset: 2px; }
+.landing-destination-empty { padding: 8px 18px 16px; font-size: 14px; line-height: 20px; color: #777; }
+dialog.v2-modal.figcraft-trip-modal.is-landing-popover.is-region { max-height: min(400px, calc(100dvh - 32px)); overflow: auto; }
+.search-layout > .search-conversation { view-transition-name: destination-map; }
+::view-transition-group(destination-map) { animation-duration: 650ms; animation-timing-function: cubic-bezier(.2,.7,.2,1); }
+::view-transition-old(destination-map) { animation: globe-depart 650ms ease-in both; }
+::view-transition-new(destination-map) { animation: globe-arrive 650ms ease-out both; }
+@keyframes globe-depart { to { opacity: 0; transform: scale(1.35); } }
+@keyframes globe-arrive { from { opacity: 0; } to { opacity: 1; } }
+@media (min-width: 901px) { body:has(.globe-home) { overflow-x: hidden; } }
+@media (max-width: 1100px) and (min-width: 901px) {
+  .globe-home-search { width: 420px; margin-left: 32px; }
+  .globe-home-search h1 { font-size: 36px; }
+  .globe-home .figcraft-search-controls { width: 360px; }
+  .home-globe-stage { left: 40%; }
+}
+@media (max-width: 900px) {
+  .globe-home { min-height: calc(100dvh - 64px); display: flex; flex-direction: column; overflow: hidden; }
+  .globe-home-search { width: auto; margin: 0 24px; padding: 40px 0 0; }
+  .globe-home-search h1 { width: 100%; margin-bottom: 24px; font-size: clamp(27px, 7.2vw, 38px); line-height: 1.02; letter-spacing: -.4px; }
+  .globe-home .figcraft-search-controls { width: 100%; max-width: 400px; }
+  .globe-home .figcraft-search-bar > :is(.search-bar-destination, .search-bar-field) { display: flex; }
+  .home-globe-stage { position: relative; flex: 0 0 420px; left: auto; right: auto; top: auto; height: 420px; min-height: 420px; margin-top: 8px; }
+  .globe-home-note { width: 100%; }
+  dialog.v2-modal.figcraft-trip-modal.is-landing-popover { max-width: calc(100vw - 24px); }
+}
+@media (min-width: 701px) and (max-width: 900px) {
+  .globe-home-search { width: 440px; margin: 0 auto; }
+  .globe-home-search h1 { font-size: 38px; }
+  .globe-home .figcraft-search-controls { width: 400px; }
+  .home-globe-stage { flex-basis: 520px; height: 520px; min-height: 520px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(destination-map), ::view-transition-old(destination-map), ::view-transition-new(destination-map) { animation: none; }
+}

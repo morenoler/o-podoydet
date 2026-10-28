@@ -940,7 +940,7 @@
 .search-page :is(button, a, select):focus-visible,
 .search-trip-modal :is(button, input, select):focus-visible,
 .search-filters-modal :is(button, input, textarea):focus-visible {
-  outline: 3px solid #7094cf;
+  outline: 2px solid #555;
   outline-offset: 3px;
 }
 @media (max-width: 1199px) {

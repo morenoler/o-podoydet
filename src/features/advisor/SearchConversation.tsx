@@ -1,12 +1,9 @@
 import { useEffect, useRef, type ReactNode } from "react";
-import { ArrowUp, Check, CircleHelp, LoaderCircle, RotateCcw } from "lucide-react";
+import { ArrowUp, LoaderCircle } from "lucide-react";
 import type { SearchResult, Trip } from "../../../shared/types";
 import { canSearch } from "../search/searchTrip";
 import { useSearchConversation } from "./useSearchConversation";
-import { Link } from "react-router-dom";
-import { accommodationPath } from "../../shared/lib/accommodation";
-import { LocationCriteria } from "../places/LocationCriteria";
-import { locationState } from "../places/locationPresentation";
+import { ConversationRecommendation } from "./ConversationRecommendation";
 import "./conversation.css";
 import "./figcraft-conversation.css";
 
@@ -25,8 +22,6 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
 }) {
   const chat = useSearchConversation(trip, onApply, scope, contextHotelId);
   const recommendation = !searching && !searchError ? result?.roomRecommendations[0] : undefined;
-  const locationNeedsClarification = recommendation?.locationCriteria?.some((criterion) => locationState(criterion) !== "match");
-  const recommendedCapacity = recommendation?.room.capacityRule?.maxGuests ?? recommendation?.room.room.capacity;
   const log = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (log.current) log.current.scrollTop = chat.messages.length || chat.busy ? log.current.scrollHeight : 0;
@@ -45,31 +40,25 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
     node.addEventListener("scroll", trackScroll);
     return () => { resize.disconnect(); node.removeEventListener("scroll", trackScroll); };
   }, [chat.messages.length]);
-  const suggestions = chat.messages.length
-    ? [contextHotelId ? "Что рядом с этим номером?" : "Рядом с кафе", "Кафе не дальше 500 м", "Убери условия рядом"]
-    : ["Обязательно стиралка и кухня", "Хочу бассейн и посудомойку", trip.region === "Сочи" ? "Рядом с пляжем" : "Рядом с метро"];
-  const lastAssistant = [...chat.messages].reverse().find((message) => message.role === "assistant");
+  const suggestions = [
+    { image: "beach", label: "Близость к пляжу", message: "Хочу пляж в пешей доступности" },
+    { image: "stroller", label: "Доступность с коляской", message: "Нужен доступ к номеру без ступеней с коляской" },
+    { image: "breakfast", label: "Завтраки", message: "Хочу завтрак" },
+  ];
   return (
     <aside id="search-side-panel" className="search-conversation" aria-label="Карта и поиск в чате">
       <div className="conversation-tabs" role="group" aria-label="Содержимое боковой панели">
-        <button type="button" aria-pressed={mapView} aria-controls="conversation-map" onClick={() => onMapViewChange(true)}>Карта</button>
-        <button type="button" aria-pressed={!mapView} aria-controls="conversation-chat" onClick={() => onMapViewChange(false)}>ИИ-ассистент</button>
+        <button type="button" aria-pressed={mapView} aria-controls="conversation-map" onClick={() => onMapViewChange(true)}><span>Карта</span></button>
+        <button type="button" aria-pressed={!mapView} aria-controls="conversation-chat" onClick={() => onMapViewChange(false)}><span>ИИ-Ассистент</span></button>
       </div>
       <div id="conversation-map" className="conversation-map" hidden={!mapView}>{map}</div>
       <div id="conversation-chat" className="conversation-chat" hidden={mapView}>
-      {chat.canReset && <div className="conversation-actions">
-        <button type="button" onClick={chat.reset} disabled={!chat.canReset}
-          title="Очистить диалог и отменить его изменения фильтров. Даты, гости и ручные условия сохранятся.">
-          <RotateCcw size={15} aria-hidden="true" />Отменить изменения чата
-        </button>
-      </div>}
       <div className={`conversation-log${!chat.messages.length ? " is-empty" : ""}`} ref={log} role="log" aria-label="Диалог о подборе номеров" aria-live="polite" aria-relevant="additions text">
         {!chat.messages.length && (
         <div className="conversation-welcome">
           <img src="/images/design/assistant-orb.png" width="131" height="120" alt="" />
-          <h3>Расскажите, что для вас важно</h3>
-          <p>Помогу подобрать жильё и добавлю ваши пожелания в фильтры.</p>
-          {!!trip.preferences.length && <p>Уже выбранные условия сохранены.</p>}
+          <span className="conversation-orb-shadow" aria-hidden="true" />
+          <p>{contextHotelId ? <>Отвечу на ваши вопросы об отеле.<br />Если данных не хватит, помогу<br />составить вопрос отельеру.</> : <>Помогу подобрать идеальный отель<br />по одному текстовому запросу</>}</p>
         </div>
         )}
         {chat.messages.map((message) => (
@@ -79,24 +68,23 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
           </div>
         ))}
         {chat.busy && <p className="conversation-pending">Уточняю условия…</p>}
-        {recommendation && !!chat.messages.length && (
-          <div className="conversation-room-recommendation">
-            <p>{trip.pendingLocationQuery ? "По ранее выбранным условиям; новое пожелание нужно уточнить" : locationNeedsClarification ? "Вариант с условиями для уточнения" : "Под выбранные условия"}</p>
-            <Link to={accommodationPath(recommendation.hotel, recommendation.room.room.id)}>{recommendation.room.room.name}</Link>
-            <span>{recommendation.hotel.name}{recommendedCapacity != null && ` · до ${recommendedCapacity} гостей${recommendation.room.capacityRule ? " по правилу размещения" : ""}`}</span>
-            <small>{recommendation.source === "owner" ? "По сведениям отельера" : recommendation.source === "demo" ? "Вымышленный тестовый номер" : "По проверенным данным категории"}. Наличие на даты нужно уточнить.</small>
-            <LocationCriteria criteria={recommendation.locationCriteria} />
+        {!!chat.messages.length && !chat.busy && <div className="conversation-suggestions">
+          <p>Можно добавить к пожеланиям:</p>
+          <div className="conversation-suggestion-cards" aria-label="Дополнительные пожелания">
+            {suggestions.map((item) => <button key={item.image} type="button" onClick={() => void chat.send(item.message)}>
+              <span><img src={`/images/design/figcraft-${item.image}.png`} alt="" width="70" height="64" /></span>
+              <span>{item.label}</span>
+            </button>)}
           </div>
+        </div>}
+        {recommendation && !!chat.messages.length && (
+          <ConversationRecommendation recommendation={recommendation} pendingLocationQuery={trip.pendingLocationQuery} />
         )}
+        {(searching || searchError) && <p className={`conversation-search-state${searchError ? " has-error" : ""}`} role="status">
+          {searching && <LoaderCircle size={15} aria-hidden="true" />}{searchError ? "Подборка не обновилась. Повторите поиск." : "Обновляем подборку…"}
+        </p>}
       </div>
       <div className="conversation-bottom">
-        <div className="conversation-search-state" role="status" aria-atomic="true">
-          {searching ? <LoaderCircle size={15} aria-hidden="true" /> : searchError || !canSearch(trip) || !result?.roomRecommendations.length ? <CircleHelp size={15} aria-hidden="true" /> : <Check size={15} aria-hidden="true" />}
-          <span>{searchError ? "Подборка не обновилась. Повторите поиск." : searching ? "Обновляем подборку…" : !canSearch(trip) ? "Пожелания можно добавить до выбора дат" : result ? `Категории: ${result.roomRecommendations.length}. Отели без собранных категорий: ${result.hotelCandidates?.length || 0}.` : "Готовы уточнять ваши пожелания"}</span>
-        </div>
-        <div className="conversation-suggestions" aria-label="Примеры пожеланий">
-          {suggestions.map((text) => <button key={text} type="button" disabled={chat.busy} onClick={() => void chat.send(text)}>{text}</button>)}
-        </div>
         <form className="conversation-form" onSubmit={(event) => { event.preventDefault(); void chat.send(); }}>
           <label htmlFor="hotel-chat-message">Что ещё учесть?</label>
           <div className="conversation-composer">
@@ -110,9 +98,8 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
             <button type="submit" aria-label="Отправить пожелание" disabled={chat.busy || !chat.draft.trim()}><ArrowUp size={23} aria-hidden="true" /></button>
           </div>
           {chat.error && <p className="conversation-error" id="conversation-error" role="alert">{chat.error}</p>}
-          <p id="conversation-hint" className="conversation-hint">{lastAssistant?.mode === "rules" ? "Разбор по правилам. Расположение проверяем по сохранённым данным карты." : lastAssistant?.mode === "local_model" ? "Запрос разбирает локальная модель. Расстояния считаются по карте." : "Добавляйте, уточняйте или убирайте пожелания."}</p>
+          <p id="conversation-hint" className="conversation-hint">{!canSearch(trip) ? "Пожелания можно добавить до выбора дат." : "Enter — отправить; Shift + Enter — новая строка."}</p>
         </form>
-        {result && <button className="conversation-analyze" type="button" onClick={onAnalyze}>Разобрать найденные варианты</button>}
       </div>
       </div>
     </aside>

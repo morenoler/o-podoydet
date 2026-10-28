@@ -1,9 +1,8 @@
 import { CatalogAvailability } from "../../clarifications/DecisionNextSteps";
 import { NearbyPlaces } from "../../places/NearbyPlaces";
-import { Link, useNavigate } from "react-router-dom";
 import type { Dataset, Fact, Hotel } from "../../../../shared/types";
 import { useApp } from "../../../app/providers/TripProvider";
-import { SearchBar } from "../../search/SearchBar";
+import { DetailTripControls } from "./DetailTripControls";
 import { FavoriteButton } from "../../favorites/FavoriteButton";
 import { DetailLayout } from "./DetailLayout";
 import { DetailGallery } from "./DetailGallery";
@@ -15,7 +14,7 @@ import { CatalogRoomDetails } from "./CatalogRoomDetails";
 import { HotelLocation } from "./HotelLocation";
 import { accommodationPath } from "../../../shared/lib/accommodation";
 import { dateFull } from "../../../shared/lib/date";
-import { lodgingLabel } from "../../../shared/lib/presentation";
+import { HotelReviews } from "./HotelReputation";
 
 export function HotelCatalogPreview({ hotel, facts, catalog, selectedRoomId, embedded = false }: {
   hotel: Hotel;
@@ -24,47 +23,27 @@ export function HotelCatalogPreview({ hotel, facts, catalog, selectedRoomId, emb
   selectedRoomId?: string | null;
   embedded?: boolean;
 }) {
-  const { trip, setTrip, regions } = useApp();
-  const navigate = useNavigate();
+  const { trip, setTrip } = useApp();
   const categories = hotel.rooms.filter((room) => room.evidenceStatus === "verified" || room.demo);
   const selectedRoom = categories.find((room) => room.id === selectedRoomId);
-  const displayedRooms = selectedRoom ? [selectedRoom] : categories;
+  const displayedRooms = selectedRoom ? [selectedRoom, ...categories.filter((room) => room.id !== selectedRoom.id)] : categories;
   const displayedFacts = selectedRoom
     ? facts.filter((fact) => !fact.roomId || fact.roomId === selectedRoom.id)
     : facts;
   const content = <>
-      <DetailHeading title={hotel.name} address={`${lodgingLabel(hotel)} · ${hotel.address}`} pricePerNight={hotel.pricePerNight} currency={hotel.currency} demo={hotel.synthetic} />
+      <DetailHeading hotelId={hotel.id} title={hotel.name} address={hotel.address} pricePerNight={hotel.pricePerNight} currency={hotel.currency} demo={hotel.synthetic} />
       <CatalogSummary hotel={hotel} room={selectedRoom || (categories.length === 1 ? categories[0] : undefined)} />
       {hotel.synthetic && <p className="notice">Вымышленное тестовое объявление.</p>}
       {selectedRoomId && !selectedRoom && <p className="notice">Запрошенная категория больше не доступна. Показаны сведения об отеле; выберите другую категорию.</p>}
-      <div className="figcraft-detail-section">
-        <section className="hotel-room-overview" aria-labelledby="hotel-about-title">
-          <h2 id="hotel-about-title">Категории номеров</h2>
-          {!displayedRooms.length && <p className="muted">Категории номеров, вместимость и цена пока неизвестны.</p>}
-          {displayedRooms.map((room) => <div className="hotel-preview-room" key={room.id}>
-            {!selectedRoom && <h3>{room.name}</h3>}
-            <CatalogRoomDetails hotel={hotel} room={room} />
-          </div>)}
-          {selectedRoom && categories.length > 1 && <details className="hotel-detail-disclosure">
-            <summary>Другие категории в этом отеле</summary>
-            <ul className="hotel-other-rooms">
-              {categories.filter((room) => room.id !== selectedRoom.id).map((room) =>
-                <li key={room.id}><Link to={accommodationPath(hotel, room.id)}>{room.name}</Link></li>)}
-            </ul>
-          </details>}
-        </section>
-
-      </div>
-      <section className="figcraft-detail-section hotel-trip-fit" aria-labelledby="hotel-trip-title">
-        <h2 id="hotel-trip-title">Для вашей поездки</h2>
-        <p>Укажите даты и гостей, чтобы проверить вместимость и пожелания.</p>
-        <SearchBar trip={trip} regions={regions} onSearch={(next) => {
-          setTrip(next);
-          if (next.region !== trip.region) navigate("/results");
-        }} />
+      <DetailTripControls trip={trip} onChange={setTrip} />
+      <section className="figcraft-detail-section" aria-labelledby="hotel-about-title">
+        <h2 id="hotel-about-title">Категории номеров</h2>
+        {!displayedRooms.length && <div className="detail-empty-room"><h3>Категории пока не собраны</h3><p>Уточните доступные номера и их стоимость на сайте объекта.</p></div>}
+        <div className="detail-room-list">{displayedRooms.map((room) => <CatalogRoomDetails key={room.id} hotel={hotel} room={room} />)}</div>
       </section>
       {!hotel.synthetic && (selectedRoom || categories.length === 1) && <CatalogAvailability key={(selectedRoom || categories[0]).id} hotel={hotel} room={selectedRoom || categories[0]} trip={trip} />}
       <NearbyPlaces hotelId={hotel.id} />
+      <HotelReviews hotelId={hotel.id} />
       {(displayedFacts.length > 0 || hotel.sourceEvidence) && <section className="figcraft-detail-section hotel-additional" aria-labelledby="hotel-additional-title">
         <h2 id="hotel-additional-title">Дополнительно</h2>
         <details className="hotel-detail-disclosure" key={selectedRoom?.id || hotel.id}>

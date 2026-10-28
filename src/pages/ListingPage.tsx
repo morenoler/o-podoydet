@@ -7,10 +7,12 @@ import {
   ResourceError,
 } from "../features/account/components/AccountFeedback";
 import { BookingRequest } from "../features/listings/BookingRequest";
+import { DetailTripControls } from "../features/hotels/components/DetailTripControls";
+import { DetailRoomCard } from "../features/hotels/components/DetailRoomCard";
+import { DetailAmenities } from "../features/hotels/components/DetailAmenities";
 import { ListingQuestions } from "../features/listings/ListingQuestions";
 import { ReviewHighlights } from "../features/listings/ReviewHighlights";
 import { RoomDescription } from "../features/listings/RoomDescription";
-import { ListingAmenities } from "../features/listings/ListingAmenities";
 import { additionalAmenityLabels, isAmenityId } from "../../shared/amenities";
 import { useApp } from "../app/providers/TripProvider";
 import { DetailLayout } from "../features/hotels/components/DetailLayout";
@@ -93,18 +95,21 @@ export function ListingPage() {
       <DetailHeading title={listing.title} address={`${listing.city}, ${listing.address}`} pricePerNight={listing.pricePerNight} currency={listing.currency} demo={listing.demo} />
       <div className="figcraft-detail-summary">
         <ReviewHighlights listing={listing} />
-        <ListingAmenities id="listing-amenities" evidence={listing.amenityEvidence} requested={effectivePreferences.map((item) => item.feature).filter(isAmenityId)} />
+        <DetailAmenities evidence={listing.amenityEvidence} requested={effectivePreferences.map((item) => item.feature).filter(isAmenityId)} />
       </div>
+      <DetailTripControls trip={trip} onChange={setTrip} />
       <section className="figcraft-detail-section" id="listing-about">
-        <RoomDescription title={listing.roomType} description={listing.description}
-          pricePerNight={listing.pricePerNight} currency={listing.currency}
-          amenities={additionalAmenityLabels(listing.amenities)} descriptiveAmenities
-          details={[
-            { label: "Гостей", value: `До ${listing.capacity}` },
-            { label: "Этаж номера", value: listing.floor == null ? "Не указано" : String(listing.floor) },
-            { label: "Куда выходят окна", value: listing.windowDirections?.length ? listing.windowDirections.map((value) => directionLabels[value]).join(", ") : "Не указано" },
-          ]} source="Сведения отельера. Независимая проверка не проведена." />
-        <SleepingArrangement beds={listing.beds} sleepingPlaces={listing.sleepingPlaces} />
+        <h2>Вариант размещения</h2>
+        <DetailRoomCard name={listing.roomType} description={listing.description} photos={listing.photos}
+          amenities={additionalAmenityLabels(listing.amenities)} pricePerNight={listing.pricePerNight} currency={listing.currency}>
+          <RoomDescription title={listing.roomType} description={listing.description} amenities={additionalAmenityLabels(listing.amenities)} descriptiveAmenities
+            details={[
+              { label: "Гостей", value: `До ${listing.capacity}` },
+              { label: "Этаж номера", value: listing.floor == null ? "Не указано" : String(listing.floor) },
+              { label: "Куда выходят окна", value: listing.windowDirections?.length ? listing.windowDirections.map((value) => directionLabels[value]).join(", ") : "Не указано" },
+            ]} source="Сведения отельера. Независимая проверка не проведена." />
+          <SleepingArrangement beds={listing.beds} sleepingPlaces={listing.sleepingPlaces} />
+        </DetailRoomCard>
       </section>
       <ListingClarificationPanel key={listing.id} listing={listing} />
       {!mobile && <section className="figcraft-detail-section"><BookingRequest key={listing.id} listing={listing} /></section>}

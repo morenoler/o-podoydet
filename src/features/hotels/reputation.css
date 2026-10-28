@@ -1,0 +1,25 @@
+.hotel-star-classification { display: inline-flex; align-items: center; gap: 3px; color: #111; text-decoration: none; }
+.hotel-star-classification:focus-visible { outline: 2px solid #444; outline-offset: 4px; border-radius: 3px; }
+.hotel-rating { display: inline-flex; align-items: center; gap: 14px; flex: 0 0 auto; }
+.hotel-rating-ribbon { display: inline-grid; place-items: center; width: 58px; height: 72px; padding-bottom: 8px; background: #dfdfdf; color: #6c6c6c; font-size: 20px; font-weight: 400; border-radius: 4px 4px 0 0; clip-path: polygon(0 0,100% 0,100% 100%,50% 84%,0 100%); }
+.hotel-rating-ribbon.is-gold, .hotel-review-score.is-gold { background: #f5cb7e; color: #877343; }
+.hotel-rating-count { color: #999; font-size: 12px; line-height: 16px; }
+.hotel-rating.is-compact { flex-direction: column; align-items: flex-end; gap: 4px; }
+.hotel-rating.is-compact .hotel-rating-ribbon { width: 70px; height: 32px; padding: 0 0 0 8px; border-radius: 0; font-size: 14px; clip-path: polygon(0 0,100% 0,100% 100%,0 100%,14% 50%); }
+.hotel-rating-unknown { color: #999; font-size: 13px; line-height: 18px; }
+.hotel-rating-unknown.is-compact { display: block; font-size: 11px; white-space: nowrap; }
+.hotel-reviews-overview { display: flex; align-items: center; gap: 24px; margin: 24px 0; }
+.hotel-reviews-overview strong { display: block; font-size: 18px; font-weight: 400; }
+.hotel-reviews-overview p { margin: 6px 0 0; color: #999; font-size: 14px; }
+.hotel-review-cards { display: flex; gap: 24px; overflow-x: auto; padding: 0 0 12px; scroll-snap-type: x proximity; }
+.hotel-review-card { position: relative; flex: 0 0 min(340px,85%); scroll-snap-align: start; padding: 24px; border-radius: 30px; background: #eee; }
+.hotel-review-card header { display: flex; align-items: center; gap: 12px; padding-right: 35px; }
+.hotel-review-avatar { display: grid; place-items: center; width: 40px; height: 40px; flex: 0 0 40px; border-radius: 50%; background: #fff; color: #777; }
+.hotel-review-card h3 { margin: 0; font-size: 16px; font-weight: 400; }
+.hotel-review-card time { display: block; margin-top: 4px; font-size: 13px; color: #999; }
+.hotel-review-score { position: absolute; right: 24px; top: 0; display: grid; place-items: center; width: 40px; height: 58px; padding-bottom: 8px; background: #fff; color: #999; clip-path: polygon(0 0,100% 0,100% 100%,50% 84%,0 100%); }
+.hotel-review-card p { margin: 18px 0 0; font-size: 15px; line-height: 1.45; overflow-wrap: anywhere; }
+.hotel-review-card p strong { display: block; font-weight: 400; margin-bottom: 3px; }
+.hotel-review-source, .hotel-reviews-link { display: inline-block; margin-top: 18px; color: #888; text-decoration: underline; text-underline-offset: 4px; }
+.hotel-reviews-empty { margin: 12px 0 0; color: #888; font-size: 14px; line-height: 20px; }
+.hotel-guest-reviews { scroll-margin-top: 24px; }

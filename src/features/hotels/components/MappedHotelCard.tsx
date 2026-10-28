@@ -6,6 +6,8 @@ import { dateFull } from "../../../shared/lib/date";
 import { AccommodationPhoto } from "../../../shared/ui/AccommodationPhoto";
 import { LocationCriteria } from "../../places/LocationCriteria";
 import { CriterionLine } from "./CriterionLine";
+import { Link } from "react-router-dom";
+import { accommodationPath } from "../../../shared/lib/accommodation";
 
 export function MappedHotelCard({ candidate, selected, onSelect, onShowMap }: {
   candidate: HotelCandidate; selected: boolean; onSelect: () => void; onShowMap: () => void;
@@ -15,7 +17,7 @@ export function MappedHotelCard({ candidate, selected, onSelect, onShowMap }: {
     <AccommodationPhoto name={hotel.name} hotelId={hotel.id} photos={hotel.photos} className="mapped-hotel-photo" />
     <div>
     <div className="mapped-hotel-heading">
-      <div><h3>{hotel.name}</h3><p>{hotel.lodgingType && `${lodgingLabels[hotel.lodgingType]} · `}{hotel.address}</p></div>
+      <div><h3><Link to={accommodationPath(hotel)}>{hotel.name}</Link></h3><p>{hotel.lodgingType && `${lodgingLabels[hotel.lodgingType]} · `}{hotel.address}</p></div>
       <button type="button" className="button secondary" onClick={onShowMap} aria-label={`На карте: ${hotel.name}`}><MapPin size={17} aria-hidden="true" />На карте</button>
     </div>
     <NearbySummary matches={nearbyMatches} region={hotel.region} />
@@ -31,6 +33,7 @@ export function MappedHotelCard({ candidate, selected, onSelect, onShowMap }: {
         {` Перепроверить до ${dateFull(hotel.sourceEvidence.expiresAt)}.`}</p>}
       {limitations.map((limitation) => <p key={limitation}>{limitation}</p>)}
     </details>
+    <div className="mapped-hotel-actions"><Link className="button secondary" to={accommodationPath(hotel)}>Подробнее</Link></div>
     </div>
   </article>;
 }

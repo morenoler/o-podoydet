@@ -1,0 +1,48 @@
+{
+  "retrievedAt": "2026-10-28",
+  "usageGuidelines": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+  "rights": "NASA-produced texture imagery; used factually with attribution under NASA Images and Media Usage Guidelines. No NASA insignia, identifiable persons, or implied endorsement. See each official source for credits.",
+  "processing": "Unmodified source bytes cached locally. Shader performs spherical projection, illustrative lighting, exposure/ocean color enhancement, atmospheric tint, and local contrast/brightness thresholds to retain point sources from the catalogue star-map image while suppressing diffuse Milky Way light. It does not represent current weather, current night lights, or astronomically current illumination.",
+  "assets": [
+    {
+      "file": "earth-day-clouds-2048.jpg",
+      "sourcePage": "https://science.nasa.gov/earth/earth-observatory/the-blue-marble-true-color-global-imagery-at-1km-resolution/",
+      "originalSourcePage": "https://visibleearth.nasa.gov/images/57735/the-blue-marble-land-surface-ocean-color-sea-ice-and-clouds",
+      "request": "https://eoimages.gsfc.nasa.gov/images/imagerecords/57000/57735/land_ocean_ice_cloud_2048.jpg",
+      "sourcePublished": "2002-02-08",
+      "sourceObservationDate": null,
+      "sourceDateNote": "Historical composite: months of land/ocean observations and several days of cloud imagery, not one observation or current weather. Collection release 2002-02-08; explanatory NASA article 2002-05-26.",
+      "credit": "NASA Goddard Space Flight Center. Image by Reto Stöckli (land surface, shallow water, clouds); enhancements by Robert Simmon (ocean color, compositing). MODIS teams; USGS EROS and Terrestrial Remote Sensing Flagstaff data.",
+      "width": 2048,
+      "height": 1024,
+      "bytes": 593729,
+      "sha256": "fb67ac030214c1891994c8f976e7f6c9cd5b0f21586aba8567250781a4fe708e"
+    },
+    {
+      "file": "earth-night-2048.png",
+      "sourcePage": "https://svs.gsfc.nasa.gov/2916/",
+      "request": "https://svs.gsfc.nasa.gov/vis/a000000/a002900/a002916/earthatnight-2048.png",
+      "sourcePublished": "2004-02-16",
+      "sourceObservationDate": null,
+      "sourceDateNote": "Historical DMSP/OLS composite; the source page does not identify one observation date.",
+      "credit": "Data courtesy Marc Imhoff (NASA/GSFC) and Christopher Elvidge (NOAA/NGDC). Image by Craig Mayhew and Robert Simmon (NASA/GSFC).",
+      "width": 2048,
+      "height": 1024,
+      "bytes": 1097832,
+      "sha256": "28407a1a802868852b3c232dbeaf16b5165e8200898cc7df6a2fec70708556cd"
+    },
+    {
+      "file": "stars-2020-1024.jpg",
+      "sourcePage": "https://svs.gsfc.nasa.gov/4851/",
+      "request": "https://svs.gsfc.nasa.gov/vis/a000000/a004800/a004851/starmap_2020_4k_print.jpg",
+      "sourcePublished": "2020-09-09",
+      "sourceObservationDate": null,
+      "sourceDateNote": "ICRF/J2000 celestial star-map composite from Hipparcos-2, Tycho-2, Gaia DR2, Yale, UCAC3 and XHIP catalogues. Print JPEG, no synthetic random star positions.",
+      "credit": "NASA/Goddard Space Flight Center Scientific Visualization Studio; Ernie Wright. Catalogue sources credited on SVS 4851.",
+      "width": 1024,
+      "height": 512,
+      "bytes": 42786,
+      "sha256": "8d2e7e8d515e238deaf90e2b7fb11b2838b6e8db64f933a57540d894468148aa"
+    }
+  ]
+}

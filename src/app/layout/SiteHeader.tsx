@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { ArrowLeft, ChevronDown, Heart, LogOut, Menu } from "lucide-react";
+import { ArrowLeft, ChevronDown, Heart, LogOut, Menu, UserRound } from "lucide-react";
 import type { AccountUser } from "../../../shared/account";
 import { Modal } from "../../shared/ui/Modal";
 import "./SiteHeader.css";
@@ -146,9 +146,11 @@ export function SiteHeader({
                   <ChevronDown size={18} aria-hidden="true" />
                 </button>
               ) : (
-                <Link className="button secondary site-login" to="/login">
-                  Войти
-                </Link>
+                <button className="site-account-button" onClick={() => setMenu(true)} aria-label="Войти или открыть меню" aria-haspopup="dialog">
+                  <span className="site-avatar"><UserRound size={20} aria-hidden="true" /></span>
+                  <span className="site-user-name">Войти</span>
+                  <ChevronDown size={16} aria-hidden="true" />
+                </button>
               )
             ) : null}
             <button

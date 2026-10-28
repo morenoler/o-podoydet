@@ -41,7 +41,7 @@
 .geo-map-mode > button:hover { background: var(--bg); }
 .geo-map-mode > button:active { background: var(--sea); }
 .geo-map-mode > button:focus-visible {
-  outline: 3px solid var(--blue);
+  outline: 3px solid #555;
   outline-offset: 2px;
 }
 .geo-map-view .v2-map:not(.is-compact) { border-radius: 16px; }
@@ -53,8 +53,9 @@
 }
 /* Only the base tiles are softened; controls, attribution and evidence overlays stay unfiltered. */
 .interactive-map .leaflet-tile-pane { filter: saturate(0.55) contrast(0.96) brightness(1.03); }
+.geo-map-view.is-satellite .leaflet-tile-pane { filter: none; }
 .interactive-map-canvas:focus-visible {
-  outline: 3px solid var(--blue);
+  outline: 3px solid #555;
   outline-offset: -3px;
 }
 .interactive-map .leaflet-control-zoom {
@@ -84,7 +85,7 @@
 }
 .interactive-map .leaflet-control-zoom a:focus-visible,
 .interactive-map .leaflet-popup-close-button:focus-visible {
-  outline: 3px solid var(--blue);
+  outline: 3px solid #555;
   outline-offset: -3px;
 }
 .interactive-map .leaflet-right .leaflet-control { margin-right: 12px; }
@@ -183,7 +184,7 @@
   color: var(--ink);
 }
 .geo-hotel-marker:focus-visible {
-  outline: 3px solid var(--blue);
+  outline: 3px solid #555;
   outline-offset: -2px;
   background: #ffffff99;
 }
@@ -329,3 +330,56 @@
 @media (prefers-reduced-motion: reduce) {
   .interactive-map .leaflet-zoom-animated { transition: none !important; }
 }
+/* Price/name pills retain the actual map coordinates and full accessible names. */
+.geo-hotel-marker.is-pill { border-radius: 22px; cursor: pointer; }
+.geo-hotel-marker-pill { display: block; min-width: 52px; max-width: 128px; height: 28px; padding: 6px 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border: 0; border-radius: 20px; background: #fffffff5; color: #171717; box-shadow: 0 2px 5px #00000020; font-size: 12px; font-weight: 400; line-height: 16px; text-align: center; }
+.geo-hotel-marker.is-selected .geo-hotel-marker-pill { background: #97f171; color: #213319; box-shadow: 0 2px 8px #00000030; }
+.geo-hotel-marker:hover .geo-hotel-marker-pill { box-shadow: 0 3px 10px #00000030; }
+.geo-hotel-popup .leaflet-popup-content-wrapper { border-radius: 24px; }
+.conversation-map .interactive-map-actions { gap: 6px; }
+.conversation-map .interactive-map-actions button { min-height: 34px; font-size: 11px; font-weight: 400; color: #333; border-radius: 16px; }
+.conversation-map .interactive-map .leaflet-control-zoom a { width: 32px; height: 32px; line-height: 32px; font-size: 18px; color: #555; }
+.conversation-map .interactive-map .leaflet-control-attribution { font-size: 8px; line-height: 1.3; padding: 3px 5px; }
+.conversation-map .geo-map-view :is(.interactive-map-actions, .interactive-map-north, .v2-map-heading) { display: none; }
+.geo-map-saved-label { display: block; color: #666; font-size: 11px; line-height: 1.4; }
+.conversation-map .geo-map-saved-label { position: absolute; z-index: 400; top: 12px; left: 12px; padding: 6px 9px; border-radius: 12px; background: #fffffff2; font-size: 10px; }
+
+/* Basemap choice stays available without obscuring the actual map or its credits. */
+.geo-map-view { position: relative; }
+.geo-map-basemaps { display: inline-flex; align-items: center; gap: 2px; padding: 3px; border-radius: 999px; background: #fffffff5; box-shadow: 0 2px 10px #0002; }
+.geo-map-basemaps button { min-height: 36px; padding: 8px 13px; border: 0; border-radius: 999px; font: inherit; font-size: 12px; font-weight: 500; line-height: 20px; background: transparent; color: #444; cursor: pointer; }
+.geo-map-basemaps button[aria-pressed="true"] { color: #213319; background: #a1f27f; }
+.geo-map-basemaps button:focus-visible { outline: 2px solid #555; outline-offset: 2px; }
+.conversation-map .geo-map-view .geo-map-mode { top: 12px; left: 12px; right: 12px; gap: 8px; flex-wrap: nowrap; pointer-events: none; }
+.conversation-map .geo-map-mode > * { pointer-events: auto; }
+.conversation-map .geo-map-mode .geo-map-basemaps button { padding: 8px 12px; background: transparent; box-shadow: none; font-size: 12px; font-weight: 500; }
+.conversation-map .geo-map-mode .geo-map-basemaps button[aria-pressed="true"] { background: #a1f27f; color: #213319; }
+.geo-map-imagery-date { position: absolute; z-index: 400; left: 12px; top: 62px; padding: 5px 8px; border-radius: 8px; color: #333; background: #fffffff0; font-size: 10px; line-height: 14px; pointer-events: auto; }
+.conversation-map .geo-map-view.is-satellite .leaflet-control-attribution { max-width: 100%; font-size: 9px; line-height: 1.35; background: #fffffff0; }
+.conversation-map .geo-map-view.is-satellite .geo-map-legend { bottom: 85px; }
+.geo-map-view.is-satellite .leaflet-bottom.leaflet-left { bottom: 46px; }
+.geo-map-view.is-satellite .interactive-map-north { bottom: 78px; }
+.conversation-map .geo-map-view.is-saved .geo-map-saved-label { top: 62px; }
+.geo-map-view .interactive-map-actions { top: 66px; }
+.conversation-map .leaflet-top .leaflet-control-zoom { margin-top: 66px; }
+.geo-hotel-marker.is-detail .geo-hotel-marker-pill { background: #fff; color: #171717; }
+.geo-place-marker { display: grid; place-items: center; border: 0; background: transparent; border-radius: 24px; }
+.geo-place-pill { display: flex; align-items: center; gap: 7px; max-width: 140px; min-height: 34px; border-radius: 20px; padding: 7px 12px; color: #222; background: #fff; font-size: 12px; line-height: 20px; box-shadow: 0 2px 5px #0002; }
+.geo-place-pill svg { flex: 0 0 18px; }
+.geo-place-pill span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.geo-place-pill.is-green { background: #9eeab7; }
+.geo-place-pill.is-purple { background: #d6aceb; }
+.geo-place-pill.is-yellow { background: #f1d789; }
+.geo-place-pill.is-pink { background: #f2c5d1; }
+.geo-place-marker:focus-visible { outline: 2px solid #555; outline-offset: 2px; }
+.geo-place-popup-content { line-height: 1.45; font-size: 13px; }
+.geo-place-popup-content p { margin: 6px 0 10px; color: #666; }
+.geo-place-popup-content a { color: #555; text-underline-offset: 3px; }
+.saved-place-marker { color: #222; }
+.saved-place-marker .saved-place-pill { fill: #fff; }
+.saved-place-marker.is-green .saved-place-pill { fill: #9eeab7; }
+.saved-place-marker.is-purple .saved-place-pill { fill: #d6aceb; }
+.saved-place-marker.is-yellow .saved-place-pill { fill: #f1d789; }
+.saved-place-marker.is-pink .saved-place-pill { fill: #f2c5d1; }
+.saved-place-marker:focus-visible { outline: none; }
+.saved-place-marker:focus-visible .saved-place-pill { stroke: #555; stroke-width: 2; }

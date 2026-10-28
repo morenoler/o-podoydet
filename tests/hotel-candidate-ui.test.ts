@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { MemoryRouter } from "react-router-dom";
 import type { HotelCandidate } from "../shared/types";
 import { MappedHotelCard } from "../src/features/hotels/components/MappedHotelCard";
 
@@ -11,7 +12,7 @@ const candidate: HotelCandidate = {
   locationCriteria: [{ id: "cafe", query: "cafe", label: "Кафе до 500 м", required: true, status: "unknown", evidenceStatus: "unknown", explanation: "Картографических данных недостаточно", places: [], method: "saved-map", assumptions: ["Неполное покрытие карты"] }],
 };
 function render(value: HotelCandidate) {
-  return renderToStaticMarkup(createElement(MappedHotelCard, { candidate: value, selected: false, onSelect() {}, onShowMap() {} }));
+  return renderToStaticMarkup(createElement(MemoryRouter, {}, createElement(MappedHotelCard, { candidate: value, selected: false, onSelect() {}, onShowMap() {} })));
 }
 test("a provisional mapped hotel exposes unknown required location instead of a confirmed match", () => {
   const html = render(candidate);

@@ -1,5 +1,5 @@
 import { canSearch } from "../features/search/searchTrip";
-import { SearchBar } from "../features/search/SearchBar";
+import { DetailTripControls } from "../features/hotels/components/DetailTripControls";
 import { HotelCatalogPreview } from "../features/hotels/components/HotelCatalogPreview";
 import { DetailLayout } from "../features/hotels/components/DetailLayout";
 import { DetailGallery } from "../features/hotels/components/DetailGallery";
@@ -9,16 +9,11 @@ import { CatalogSummary } from "../features/hotels/components/CatalogSummary";
 import { FavoriteButton } from "../features/favorites/FavoriteButton";
 import "../features/search/search.css";
 import "../features/hotels/hotel-details.css";
-import { NearbySummary } from "../features/hotels/components/NearbySummary";
 import "../features/search/catalog-filters.css";
-import { PersonalWishesSummary } from "../features/hotels/components/PersonalWishesSummary";
-import { MatchBadge } from "../features/hotels/components/MatchBadge";
-import { matchForSelectedPreferences } from "../shared/lib/matchPresentation";
-import { useParams, useSearchParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useSearchParams, useLocation } from "react-router-dom";
 import { useAuth } from "../features/auth/AuthProvider";
-import { LocationCriteria } from "../features/places/LocationCriteria";
 import { NearbyPlaces } from "../features/places/NearbyPlaces";
-import { DecisionNextSteps, CatalogAvailability } from "../features/clarifications/DecisionNextSteps";
+import { CatalogAvailability } from "../features/clarifications/DecisionNextSteps";
 import "../features/places/places.css";
 import { useApp } from "../app/providers/TripProvider";
 import { useState, useEffect } from "react";
@@ -26,9 +21,7 @@ import type { HotelMatch, Hotel, Fact, Question } from "../../shared/types";
 import { api } from "../shared/api/client";
 import { ErrorMessage, Loading, Notice } from "../shared/ui/Feedback";
 import { ExternalLink } from "lucide-react";
-import { lodgingLabel } from "../shared/lib/presentation";
-import { WishMatches } from "../features/hotels/components/WishMatches";
-import { OwnerCriteriaSummary } from "../features/hotels/components/OwnerCriteriaSummary";
+import { HotelReviews } from "../features/hotels/components/HotelReputation";
 import { CriterionLine } from "../features/hotels/components/CriterionLine";
 import { dateFull } from "../shared/lib/date";
 import { AreaPanel } from "../features/area/components/AreaPanel";
@@ -45,10 +38,9 @@ import { clarificationItems } from "../features/clarifications/clarificationPres
 
 export function HotelPage() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const { hash } = useLocation();
   const { user, loading: authLoading } = useAuth();
-  const { trip, setTrip, catalog, catalogError, revision, refresh, regions } = useApp();
+  const { trip, setTrip, catalog, catalogError, revision, refresh } = useApp();
   const validTrip = canSearch(trip);
   const [params] = useSearchParams();
   const requestedRoom = params.get("room");
@@ -97,7 +89,7 @@ export function HotelPage() {
     };
   }, [id, revision, requestedRoom, tripKey, user?.id, authLoading]);
   useEffect(() => {
-    if (!data || !["#decision-next-steps", "#availability-request"].includes(hash)) return;
+    if (!data || !["#hotel-reviews", "#availability-request"].includes(hash)) return;
     const frame = requestAnimationFrame(() => document.getElementById(hash.slice(1))?.scrollIntoView({ block: "start" }));
     return () => cancelAnimationFrame(frame);
   }, [hash, data, ranked]);
@@ -138,12 +130,6 @@ export function HotelPage() {
     import.meta.env.VITE_LAB_MODE === "true" &&
     hotel.id.startsWith("lab-demo-");
   const room = ranked.rooms.find((r) => r.room.id === roomId) || ranked.best;
-  const selectedCriteria = room.criteria.filter((criterion) =>
-    (ranked.preferences || trip.preferences).some(
-      (preference) => preference.feature === criterion.feature,
-    ),
-  );
-  const hasOwnerCriteria = !!ranked.ownerCriteria?.length;
   const preferences = ranked.preferences || trip.preferences;
   const otherCriteria = room.criteria.filter((criterion) =>
     !preferences.some((preference) => preference.feature === criterion.feature));
@@ -152,47 +138,32 @@ export function HotelPage() {
     <DetailLayout backTo="/results" gallery={<DetailGallery name={hotel.name} hotelId={hotel.id} photos={hotel.photos} />}
       saved={<FavoriteButton label item={{ id: `${hotel.id}::${room.room.id}`, name: `${room.room.name} · ${hotel.name}`, path: accommodationPath(hotel, room.room.id), hotelId: hotel.id, photos: hotel.photos, address: hotel.address }} />}
       sidebar={<DetailSidebar hotelId={hotel.id} region={hotel.region || trip.region} map={<HotelLocation hotel={hotel} catalog={catalog} />} />}>
-      <DetailHeading title={hotel.name} address={`${lodgingLabel(hotel)} · ${hotel.address}`} pricePerNight={hotel.pricePerNight} currency={hotel.currency} demo={hotel.synthetic} />
+      <DetailHeading hotelId={hotel.id} title={hotel.name} address={hotel.address} pricePerNight={hotel.pricePerNight} currency={hotel.currency} demo={hotel.synthetic} />
       <CatalogSummary hotel={hotel} room={room.room} />
       {requestedRoom && !ranked.rooms.some((entry) => entry.room.id === requestedRoom) && (
         <Notice>Запрошенная категория больше не доступна. Показана другая категория; проверьте её условия.</Notice>
       )}
       {labFixture && <Notice><strong>Вымышленное тестовое объявление.</strong> {hotel.dataNotes?.join(" ")}</Notice>}
-      <section className="figcraft-detail-section hotel-trip-fit" aria-labelledby="hotel-trip-title">
-        <h2 id="hotel-trip-title">Даты и гости</h2>
-        <SearchBar trip={trip} regions={regions} onSearch={(next) => {
-          if (next.region !== trip.region) { setTrip(next); navigate("/results"); }
-          else if (JSON.stringify(next) === JSON.stringify(trip)) refresh();
-          else setTrip(next);
-        }} />
+      <DetailTripControls trip={trip} onChange={(next) => {
+        if (JSON.stringify(next) === JSON.stringify(trip)) refresh(); else setTrip(next);
+      }} />
+      <section className="figcraft-detail-section" aria-labelledby="hotel-about-title">
+        <h2 id="hotel-about-title">Категории номеров</h2>
+        <div className="detail-room-list">{ranked.rooms.map((entry) => <CatalogRoomDetails key={entry.room.id} hotel={hotel} room={entry.room} match={entry}
+          selected={room.room.id === entry.room.id}
+          />)}</div>
       </section>
-      <div className="figcraft-detail-section">
-        <section className="hotel-room-overview" aria-labelledby="hotel-about-title">
-          <h2 id="hotel-about-title">Категории номеров</h2>
-          {ranked.rooms.length > 1 && <label className="field">
-            <span>Категория номера</span>
-            <select value={roomId} onChange={(event) => setRoomId(event.target.value)}>
-              {ranked.rooms.map((entry) => <option key={entry.room.id} value={entry.room.id}>{entry.room.name}</option>)}
-            </select>
-          </label>}
-          <CatalogRoomDetails hotel={hotel} room={room.room} match={room} />
-        </section>
-
-      </div>
-      <section className="figcraft-detail-section" aria-label="Проверка условий">
-        <MatchBadge match={matchForSelectedPreferences(ranked, preferences, room)} />
-        <NearbySummary matches={room.nearbyMatches || []} region={trip.region} />
-        {selectedCriteria.length > 0 && <WishMatches criteria={selectedCriteria} />}
-        {hasOwnerCriteria && <OwnerCriteriaSummary criteria={ranked.ownerCriteria} />}
-        <LocationCriteria criteria={ranked.locationCriteria} detailed />
-        <PersonalWishesSummary match={{ ...ranked, best: room }} />
-        <DecisionNextSteps match={ranked} room={room} trip={trip} />
-        {ranked.warnings?.map((text, index) => <Notice key={`warning-${index}`}>{text}</Notice>)}
-        {ranked.conflicts?.map((text, index) => <Notice key={`conflict-${index}`}>{text}</Notice>)}
-        {error && <ErrorMessage text={error} />}
-      </section>
-      {!hotel.synthetic && <CatalogAvailability key={room.room.id} hotel={hotel} room={room.room} trip={trip} match={ranked} roomMatch={room} />}
+      {error && <ErrorMessage text={error} />}
+      {!hotel.synthetic && <>
+        {ranked.rooms.length > 1 && <label className="field detail-request-category"><span>Категория для уточнения наличия</span>
+          <select value={room.room.id} onChange={event => setRoomId(event.target.value)}>
+            {ranked.rooms.map(entry => <option key={entry.room.id} value={entry.room.id}>{entry.room.name}</option>)}
+          </select>
+        </label>}
+        <CatalogAvailability key={room.room.id} hotel={hotel} room={room.room} trip={trip} match={ranked} roomMatch={room} />
+      </>}
       <NearbyPlaces hotelId={hotel.id} />
+      <HotelReviews hotelId={hotel.id} />
       <section className="figcraft-detail-section hotel-additional" aria-labelledby="hotel-additional-title">
         <h2 id="hotel-additional-title">Дополнительно</h2>
         <details className="hotel-detail-disclosure" key={`additional-${room.room.id}`}>
@@ -235,6 +206,6 @@ export function HotelPage() {
           </div>
         </details>
       </section>
-    </DetailLayout>
+      </DetailLayout>
   );
 }

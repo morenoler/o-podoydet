@@ -4,6 +4,8 @@ import { RequireAuth } from "../features/auth/RequireAuth";
 import { useApp } from "./providers/TripProvider";
 import { ErrorMessage } from "../shared/ui/Feedback";
 
+const HomePage = lazy(() => import("../pages/HomePage").then((m) => ({ default: m.HomePage })));
+
 const TripPage = lazy(() =>
   import("../pages/TripPage").then((m) => ({ default: m.TripPage })),
 );
@@ -90,11 +92,7 @@ export function AppRouter() {
       <Routes>
         <Route
           path="/"
-          element={
-            <SearchScreen tripRequired={false}>
-              <ResultsPage />
-            </SearchScreen>
-          }
+          element={<HomePage />}
         />
         <Route
           path="/trip"

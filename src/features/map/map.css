@@ -19,7 +19,7 @@
   cursor: grabbing;
 }
 .v2-map > svg:focus-visible {
-  outline: 3px solid #163e8e;
+  outline: 3px solid #555;
   outline-offset: -4px;
 }
 .v2-map-marker {
@@ -83,7 +83,7 @@
   cursor: default;
 }
 .v2-map button:focus-visible {
-  outline: 3px solid #163e8e;
+  outline: 3px solid #555;
   outline-offset: -3px;
 }
 .v2-map-credit {

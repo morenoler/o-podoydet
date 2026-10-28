@@ -5,13 +5,14 @@ import {
   ChevronLeft,
   ChevronRight,
   Check,
+  Minus,
+  Plus,
   MapPin,
   Search,
   UserRound,
 } from "lucide-react";
 import type { Trip } from "../../../shared/types";
 import { Modal } from "../../shared/ui/Modal";
-import { dateLabel } from "../../shared/lib/date";
 import { canSearch, hasSearchDates, nextSearchDate, readSearchForm, searchToday, searchTripIssues } from "./searchTrip";
 import { regionDetails } from "../../../shared/regions";
 import { changeTripRegion } from "./searchPolicy";
@@ -23,11 +24,20 @@ export function SearchBar({
   onSearch,
   busy = false,
   regions = [trip.region],
+  onChange,
+  variant = "inline",
+  destinationLabel,
+  searchDisabled = false,
 }: {
   trip: Trip;
   onSearch: (trip: Trip) => void;
   busy?: boolean;
   regions?: string[];
+  /** The landing screen edits the trip without navigating until Find is pressed. */
+  onChange?: (trip: Trip, field: SearchPanel) => void;
+  variant?: "inline" | "landing";
+  destinationLabel?: string;
+  searchDisabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [panel, setPanel] = useState<SearchPanel>("trip");
@@ -35,6 +45,7 @@ export function SearchBar({
   const [month, setMonth] = useState(() => (hasSearchDates(trip) ? trip.checkIn : searchToday(trip.region)).slice(0, 7));
   const [draft, setDraft] = useState(trip);
   const [submitted, setSubmitted] = useState(false);
+  const [regionQuery, setRegionQuery] = useState("");
   const issues = submitted ? searchTripIssues(draft) : [];
   useEffect(() => {
     setDraft(trip);
@@ -43,10 +54,11 @@ export function SearchBar({
     setDraft(trip);
     setSubmitted(false);
     setPanel(nextPanel);
+    setRegionQuery("");
     setMonth((hasSearchDates(trip) ? trip.checkIn : searchToday(trip.region)).slice(0, 7));
     if (event) {
       const bounds = event.currentTarget.getBoundingClientRect();
-      setAnchor({ left: bounds.left, top: bounds.bottom + 16 });
+      setAnchor({ left: bounds.left - (nextPanel === "dates" ? 23 : 0), top: bounds.bottom + 15 });
     }
     setOpen(true);
   }
@@ -64,15 +76,23 @@ export function SearchBar({
     onSearch(current);
     setOpen(false);
   }
-  const dates = hasSearchDates(trip)
-    ? `${dateLabel(trip.checkIn)} — ${dateLabel(trip.checkOut)}`
-    : "Выберите даты";
+  const dates = searchDatesLabel(trip);
   const guests = `${trip.adults} ${trip.adults === 1 ? "взрослый" : "взрослых"}${trip.children ? `, ${trip.children} дет.` : ""}`;
   const allFields = panel === "trip";
   const titles: Record<SearchPanel, string> = { trip: "Ваша поездка", region: "Куда едем", dates: "Даты поездки", guests: "Гости" };
   const availableRegions = regions.length ? regions : [trip.region];
+  const matchingRegions = availableRegions.filter((region) => {
+    const aliases = region === "Пусан" ? "пусан busan pusan южная корея korea" : region === "Сочи" ? "сочи sochi россия russia" : region;
+    return aliases.toLocaleLowerCase("ru-RU").includes(regionQuery.trim().toLocaleLowerCase("ru-RU"));
+  });
+  function change(next: Trip, field: SearchPanel) { if (onChange) onChange(next, field); else onSearch(next); }
+  function selectDate(day: string) {
+    const next = selectSearchDate(draft, day);
+    setDraft(next);
+    if (next.checkOut) { change(next, "dates"); setOpen(false); }
+  }
   return (
-    <div className="figcraft-search-controls" style={{ "--trip-popover-left": `${anchor.left}px`, "--trip-popover-top": `${anchor.top}px` } as CSSProperties}>
+    <div className={`figcraft-search-controls${variant === "landing" ? " is-landing" : ""}`} style={{ "--trip-popover-left": `${anchor.left}px`, "--trip-popover-top": `${anchor.top}px` } as CSSProperties}>
       <div className="search-bar figcraft-search-bar" aria-label="Параметры поиска">
         <button
           className="search-bar-mobile"
@@ -93,7 +113,7 @@ export function SearchBar({
           <MapPin size={23} aria-hidden="true" />
           <span>
             <small className="sr-only">Куда едем</small>
-            <strong>{trip.region}</strong>
+            <strong>{destinationLabel || trip.region}</strong>
           </span>
           <ChevronDown size={21} aria-hidden="true" />
         </button>
@@ -112,7 +132,7 @@ export function SearchBar({
           <ChevronDown size={21} aria-hidden="true" />
         </button>
         <button
-          className="search-bar-field"
+          className="search-bar-field search-bar-guests"
           type="button"
           onClick={(event) => edit("guests", event)}
           aria-haspopup="dialog"
@@ -128,32 +148,49 @@ export function SearchBar({
         <button
           type="button"
           className="button primary search-bar-submit"
-          disabled={busy}
+          disabled={busy || searchDisabled}
           aria-label={busy ? "Ищем варианты" : "Найти"}
+          aria-describedby={variant === "landing" && searchDisabled ? "landing-coverage-note" : undefined}
           onClick={() => (canSearch(trip) ? onSearch(trip) : edit())}
         >
           <Search size={22} aria-hidden="true" />
-          <span className="sr-only">{busy ? "Ищем…" : "Найти"}</span>
+          <span className={variant === "landing" ? "search-bar-submit-label" : "sr-only"}>{busy ? "Ищем…" : "Найти"}</span>
         </button>
       </div>
       <Modal
         open={open}
         onClose={() => setOpen(false)}
         title={titles[panel]}
-        className={`search-trip-modal figcraft-trip-modal is-${panel}`}
+        className={`search-trip-modal figcraft-trip-modal is-${panel}${variant === "landing" ? " is-landing-popover" : ""}`}
       >
         {panel === "region" ? <div className="figcraft-region-list">
-          {availableRegions.map((region) => <button key={region} type="button" aria-pressed={trip.region === region}
-            onClick={() => { onSearch(changeTripRegion(trip, region)); setOpen(false); }}>
+          {variant === "landing" && <label className="landing-destination-search"><span className="sr-only">Найти город</span><Search size={18} aria-hidden="true" /><input type="search" value={regionQuery} onChange={(event) => setRegionQuery(event.target.value)} placeholder="Найти город" autoComplete="off" /></label>}
+          {matchingRegions.map((region) => <button key={region} type="button" aria-pressed={!destinationLabel && trip.region === region}
+            onClick={() => { change(changeTripRegion(trip, region), "region"); setOpen(false); }}>
             <span><strong>{region}</strong><small>{regionDetails(region)?.country || "Доступное направление"}</small></span>
-            {trip.region === region && <Check size={19} aria-hidden="true" />}
+            {!destinationLabel && trip.region === region && <Check size={19} aria-hidden="true" />}
           </button>)}
+          {!matchingRegions.length && <p className="landing-destination-empty" role="status">Такого города пока нет в каталоге. Доступны {availableRegions.join(" и ")}.</p>}
+        </div> : panel === "dates" ? <>
+          <p className="sr-only" aria-live="polite">{draft.checkIn && !draft.checkOut ? "Выберите день выезда." : "Выберите день заезда, затем день выезда. Даты применятся автоматически."}</p>
+          <SearchMonthCalendar month={month} onMonth={setMonth} start={draft.checkIn} end={draft.checkOut}
+            today={searchToday(draft.region)} onSelect={selectDate} onEdit={() => setPanel("trip")} />
+        </> : panel === "guests" ? <div className="figcraft-guests">
+          {([{ key: "adults", label: "Взрослые", hint: "От 18 лет", min: 1, max: 6 },
+            { key: "children", label: "Дети", hint: "До 18 лет", min: 0, max: 4 }] as const).map(({ key, label, hint, min, max }) =>
+            <div className="figcraft-guest-row" key={key}>
+              <span><strong>{label}</strong><small>{hint}</small></span>
+              <div><button type="button" aria-label={`Уменьшить: ${label.toLowerCase()}`} disabled={draft[key] <= min}
+                onClick={() => setDraft({ ...draft, [key]: draft[key] - 1 })}><Minus size={16} /></button>
+                <output aria-live="polite" aria-label={label}>{draft[key]}</output>
+                <button type="button" aria-label={`Увеличить: ${label.toLowerCase()}`} disabled={draft[key] >= max}
+                  onClick={() => setDraft({ ...draft, [key]: draft[key] + 1 })}><Plus size={16} /></button></div>
+            </div>)}
+          <div className="search-dialog-footer"><button className="button primary" type="button" disabled={busy}
+            onClick={() => { change(draft, "guests"); setOpen(false); }}>Применить</button></div>
         </div> : <>
         {allFields && <p className="search-dialog-intro">Один номер · наличие на даты уточняйте у отельера</p>}
         <form onSubmit={submit}>
-          {panel === "dates" && <SearchMonthCalendar month={month} onMonth={setMonth} start={draft.checkIn} end={draft.checkOut} today={searchToday(draft.region)}
-            onSelect={(day) => setDraft(!draft.checkIn || draft.checkOut || day <= draft.checkIn
-              ? { ...draft, checkIn: day, checkOut: "" } : { ...draft, checkOut: day })} />}
           <div className="search-trip-fields">
             {allFields ?
             <label className="field">
@@ -164,7 +201,7 @@ export function SearchBar({
                 {availableRegions.map((region) => <option key={region} value={region}>{regionDetails(region)?.label || region}</option>)}
               </select>
             </label> : <input type="hidden" name="region" value={draft.region} />}
-            {allFields || panel === "dates" ? <>
+            {allFields ? <>
             <label className="field">
               <span>Заезд</span>
               <input
@@ -196,7 +233,7 @@ export function SearchBar({
               />
             </label>
             </> : <><input type="hidden" name="checkIn" value={draft.checkIn} /><input type="hidden" name="checkOut" value={draft.checkOut} /></>}
-            {allFields || panel === "guests" ? <>
+            {allFields ? <>
             <label className="field">
               <span>Взрослые</span>
               <select
@@ -240,7 +277,7 @@ export function SearchBar({
               {issues.map((issue) => <p key={issue.field}>{issue.message}</p>)}
             </div>
           )}
-          <p className="search-dialog-intro">{panel === "dates" ? "Выберите день заезда и день выезда." : "Один номер. Наличие на даты уточняйте у отельера."}</p>
+          <p className="search-dialog-intro">Один номер. Наличие на даты уточняйте у отельера.</p>
           <div className="search-dialog-footer">
             {!hasSearchDates(draft) && <button className="button secondary" type="button" aria-label="Показать каталог без дат" onClick={() => {
               onSearch({ ...draft, checkIn: "", checkOut: "" });
@@ -257,13 +294,29 @@ export function SearchBar({
   );
 }
 
-export function SearchMonthCalendar({ month, onMonth, start, end, today, onSelect }: {
+export function selectSearchDate(trip: Trip, day: string): Trip {
+  return !trip.checkIn || trip.checkOut || day <= trip.checkIn
+    ? { ...trip, checkIn: day, checkOut: "" } : { ...trip, checkOut: day };
+}
+
+export function searchDatesLabel(trip: Pick<Trip, "checkIn" | "checkOut">) {
+  if (!hasSearchDates(trip)) return "Выберите даты";
+  const sameMonth = trip.checkIn.slice(0, 7) === trip.checkOut.slice(0, 7);
+  const sameYear = trip.checkIn.slice(0, 4) === trip.checkOut.slice(0, 4);
+  const format = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", ...(sameYear ? {} : { year: "numeric" }), timeZone: "UTC" });
+  const start = sameMonth ? String(Number(trip.checkIn.slice(8))) : format.format(new Date(`${trip.checkIn}T12:00:00Z`));
+  return `${start} — ${format.format(new Date(`${trip.checkOut}T12:00:00Z`))}`;
+}
+
+export function SearchMonthCalendar({ month, onMonth, start, end, today, onSelect, onEdit }: {
   month: string; onMonth: (month: string) => void; start: string; end: string; today: string; onSelect: (day: string) => void;
+  onEdit?: () => void;
 }) {
   const first = new Date(`${month}-01T12:00:00Z`);
   const year = first.getUTCFullYear(), index = first.getUTCMonth();
   const offset = (first.getUTCDay() + 6) % 7;
   const count = new Date(Date.UTC(year, index + 1, 0)).getUTCDate();
+  const monthLabel = new Intl.DateTimeFormat("ru-RU", { month: "long", year: "numeric", timeZone: "UTC" }).format(first).replace(/\s*г\.$/, "");
   const changeMonth = (direction: number) => {
     const next = new Date(Date.UTC(year, index + direction, 1, 12));
     onMonth(next.toISOString().slice(0, 7));
@@ -271,7 +324,9 @@ export function SearchMonthCalendar({ month, onMonth, start, end, today, onSelec
   return <div className="figcraft-calendar">
     <div className="figcraft-calendar-heading">
       <button type="button" aria-label="Предыдущий месяц" onClick={() => changeMonth(-1)}><ChevronLeft size={18} aria-hidden="true" /></button>
-      <strong aria-live="polite">{new Intl.DateTimeFormat("ru-RU", { month: "long", year: "numeric", timeZone: "UTC" }).format(first)}</strong>
+      {onEdit ? <button type="button" className="figcraft-calendar-edit" onClick={onEdit}
+        aria-label={`${monthLabel}. Ввести или сбросить даты`} title="Ввести или сбросить даты"><strong aria-live="polite">{monthLabel}</strong></button>
+        : <strong aria-live="polite">{monthLabel}</strong>}
       <button type="button" aria-label="Следующий месяц" onClick={() => changeMonth(1)}><ChevronRight size={18} aria-hidden="true" /></button>
     </div>
     <div className="figcraft-calendar-days" aria-label="Выбор дат">
@@ -282,7 +337,7 @@ export function SearchMonthCalendar({ month, onMonth, start, end, today, onSelec
         const selected = day === start || day === end;
         return <button type="button" key={day} disabled={day < today} aria-pressed={selected}
           aria-label={`${new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${day}T12:00:00Z`))}${day === start ? ", заезд" : day === end ? ", выезд" : ""}`}
-          className={`${selected ? "is-selected" : ""} ${start && end && day > start && day < end ? "is-range" : ""}`}
+          className={`${selected ? "is-selected" : ""} ${day === start ? "is-start" : ""} ${day === end ? "is-end" : ""} ${start && end && day >= start && day <= end ? "is-range" : ""}`}
           onClick={() => onSelect(day)}>{i + 1}</button>;
       })}
     </div>

@@ -1,4 +1,6 @@
 import type { Dataset, Hotel, Point } from "../../../shared/types";
+import { isRegionName, listingMapCenter } from "../../../shared/regions";
+import type { SurroundingPlace } from "../places/placePresentation";
 
 /** Source points are [longitude, latitude]; Leaflet takes the opposite order. */
 export function isMapPoint(point: unknown): point is Point {
@@ -27,19 +29,50 @@ export function selectedMapPoints(hotel?: Hotel): Point[] {
     ...validPath(hotel.route?.noStepsAlternative?.coordinates)];
 }
 
+export function detailMapPoints(hotel?: Hotel, places: SurroundingPlace[] = [], showRoute = true): Point[] {
+  if (!hotel || hotel.synthetic || !isMapPoint(hotel.coordinates)) return [];
+  return [hotel.coordinates, ...places.filter(place => isMapPoint(place.coordinates)).map(place => place.coordinates!),
+    ...(showRoute ? selectedMapPoints(hotel).slice(1) : [])];
+}
+
 export const MAP_MARKER_SIZE = 44;
 export const MAP_MARKER_GAP = 4;
 
-export function groupMapHotels(hotels: Hotel[], project?: (point: Point) => Point): Hotel[][] {
+export function hotelCountLabel(count: number): string {
+  const mod10 = count % 10, mod100 = count % 100;
+  return `${count} ${mod10 === 1 && mod100 !== 11 ? "отель" : mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14) ? "отеля" : "отелей"}`;
+}
+
+/** A smaller initial viewport never filters the map's full set of markers. */
+export function resultMapPoints(dataset: Dataset, hotels: Hotel[], focusHotels?: Hotel[]): Point[] {
+  const visible = visibleMapHotels(dataset, undefined, hotels);
+  const byId = new Map(visible.map((hotel) => [hotel.id, hotel]));
+  const focus = [...new Set((focusHotels ?? []).map((hotel) => hotel.id))]
+    .flatMap((id) => byId.has(id) ? [byId.get(id)!] : []).slice(0, 12);
+  if (focus.length) return focus.map((hotel) => hotel.coordinates!);
+  if (visible.length > 40 && isRegionName(dataset.region)) {
+    // Start large catalogues at city scale rather than one region-wide cluster.
+    // This is viewport context, never a hotel's position or a location filter.
+    const [longitude, latitude] = listingMapCenter(dataset.region);
+    const cityHotels = visible.filter(({ coordinates }) =>
+      Math.abs(coordinates![0] - longitude) <= 0.035 && Math.abs(coordinates![1] - latitude) <= 0.025);
+    // A beach-only or filtered catalogue must not open on an empty city centre.
+    if (cityHotels.length >= 3) return [[longitude - 0.035, latitude - 0.025], [longitude + 0.035, latitude + 0.025]];
+  }
+  return visible.length ? visible.map((hotel) => hotel.coordinates!) : datasetMapPoints(dataset);
+}
+
+export function groupMapHotels(hotels: Hotel[], project?: (point: Point) => Point, markerWidth = MAP_MARKER_SIZE): Hotel[][] {
   if (project) {
-    // Anchors never move: every pair of rendered 44px touch boxes stays disjoint.
+    // Anchors never move: the configured visual/touch boxes stay disjoint.
     // Recompute with the map's current pixel projection after every zoom.
     const groups: { anchor: Point; hotels: Hotel[] }[] = [];
     for (const hotel of hotels) {
       if (hotel.synthetic || !isMapPoint(hotel.coordinates)) continue;
       const position = project(hotel.coordinates);
       const nearby = groups.find(({ anchor }) =>
-        Math.max(Math.abs(position[0] - anchor[0]), Math.abs(position[1] - anchor[1])) < MAP_MARKER_SIZE + MAP_MARKER_GAP);
+        Math.abs(position[0] - anchor[0]) < markerWidth + MAP_MARKER_GAP
+        && Math.abs(position[1] - anchor[1]) < MAP_MARKER_SIZE + MAP_MARKER_GAP);
       if (nearby) nearby.hotels.push(hotel);
       else groups.push({ anchor: position, hotels: [hotel] });
     }
