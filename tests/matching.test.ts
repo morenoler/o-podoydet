@@ -105,6 +105,31 @@ test("unknown, expired, invalid and out-of-period evidence never becomes a match
     "excluded",
   );
 });
+
+test("overlapping failures include checkout while positive evidence must cover the full trip", () => {
+  for (const day of [trip.checkIn, "2027-06-12", trip.checkOut]) {
+    const negative = fact({ id: "closure", value: false, validFrom: day, validTo: day });
+    assert.equal(evaluate([negative], pref("courtyard"), hotel.rooms[0], trip, now).status, "mismatch");
+    const conflicting = evaluate([fact(), negative], pref("courtyard"), hotel.rooms[0], trip, now);
+    assert.equal(conflicting.status, "conflict");
+    assert.equal(conflicting.facts.length, 2);
+  }
+  for (const day of ["2027-06-09", "2027-06-18"])
+    assert.equal(evaluate([fact(), fact({ id: "outside", value: false, validFrom: day, validTo: day })],
+      pref("courtyard"), hotel.rooms[0], trip, now).status, "match");
+  assert.equal(evaluate([fact({ validFrom: "2027-06-12", validTo: "2027-06-13" })],
+    pref("courtyard"), hotel.rooms[0], trip, now).status, "unknown");
+});
+
+test("dated distance failures use the feature threshold and malformed bounds are not unbounded", () => {
+  const detour = fact({ feature: "beach_walk", roomId: undefined, value: 1500,
+    validFrom: trip.checkOut, validTo: trip.checkOut });
+  assert.equal(evaluate([detour], pref("beach_walk"), hotel.rooms[0], trip, now).status, "mismatch");
+  assert.equal(evaluate([detour, fact({ id: "usual-route", feature: "beach_walk", roomId: undefined, value: 300 })],
+    pref("beach_walk"), hotel.rooms[0], trip, now).status, "conflict");
+  for (const [validFrom, validTo] of [["", trip.checkOut], ["2027-06-31", "2027-07-01"], ["2027-06-13", "2027-06-12"]])
+    assert.equal(evaluate([fact({ validFrom, validTo })], pref("courtyard"), hotel.rooms[0], trip, now).status, "unknown");
+});
 test("room advantages cannot combine across categories or leak between hotels", () => {
   const facts = [
     fact(),

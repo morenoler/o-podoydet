@@ -81,3 +81,29 @@ test("catalog draft explains excluded free text without revealing it in the prev
   assert.doesNotMatch(html, /private free text/);
   assert.doesNotMatch(availabilityQuestion(room.room.name, trip, match, room), /private free text/);
 });
+
+test("decision budget requires the selected region currency and preserves known over-budget mismatch", () => {
+  const sochi = { ...trip, region: "Сочи", text: "", hotelFilters: { maxPricePerNight: 7000 } };
+  const actual = (currency: "RUB" | "KRW", pricePerNight: number) => decisionSteps({ ...match, hotel: { ...match.hotel, currency, pricePerNight } }, room, sochi).find((step) => step.id === "catalog:budget");
+  assert.equal(actual("RUB", 6000)?.state, "match");
+  assert.equal(actual("RUB", 8000)?.state, "mismatch");
+  assert.equal(actual("KRW", 6000)?.state, "unknown");
+  assert.match(actual("KRW", 6000)!.explanation, /Конвертация валют не выполнялась/);
+});
+
+test("catalog query, missing vicinity data and rejected admission cannot become an all-conditions match", () => {
+  const knownRoom: RoomMatch = { ...room, status: "excluded", criteria: [], capacityAssumed: false, capacityEvidenceStatus: "match" };
+  const filteredTrip: Trip = { ...trip, text: "", preferences: [], hotelFilters: { query: "бассейн", maxBeachMeters: 500, nearby: [{ kind: "subway", maxMeters: 500 }] } };
+  const items = decisionSteps(match, knownRoom, filteredTrip);
+  for (const id of ["catalog:query", "catalog:beach", "catalog:nearby:subway"]) assert.equal(items.find((step) => step.id === id)?.state, "unknown");
+  assert.equal(items.find((step) => step.id === "admission")?.state, "mismatch");
+  const html = renderToStaticMarkup(createElement(MemoryRouter, null, createElement(DecisionNextSteps, { match, room: knownRoom, trip: filteredTrip })));
+  assert.match(html, /Есть препятствие для вашей поездки/);
+  assert.doesNotMatch(html, /Осталось уточнить наличие и цену/);
+});
+
+test("catalog lodging mismatch remains required even when room amenity conditions are satisfied", () => {
+  const items = decisionSteps({ ...match, hotel: { ...match.hotel, lodgingType: "hotel" } }, room, { ...trip, hotelFilters: { lodgingTypes: ["apartment"] } });
+  assert.deepEqual(items.find((step) => step.id === "catalog:lodging")?.state, "mismatch");
+  assert.equal(items.find((step) => step.id === "catalog:lodging")?.required, true);
+});

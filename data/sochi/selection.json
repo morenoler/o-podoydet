@@ -1,0 +1,14 @@
+{
+  "source": "preserved-manifest.json",
+  "pilotSize": 5,
+  "excludedIdentityConflicts": [
+    {
+      "id": "relation-9273776",
+      "reason": "OSM names Hyatt Regency Sochi and explicitly rejects Grand karat Sochi in not:name, while the official Grand Karat site reports the same street address. Current identity is unresolved; both source versions are preserved.",
+      "sourcePaths": ["raw/preserved-central-d68ad307ba1c2ef7.json", "official-review.json"],
+      "officialSourceUrl": "https://grandkarat.com/",
+      "reviewedAt": "2026-10-27",
+      "status": "conflict"
+    }
+  ]
+}

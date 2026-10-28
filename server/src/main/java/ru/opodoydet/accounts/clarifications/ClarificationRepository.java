@@ -8,7 +8,7 @@ import ru.opodoydet.accounts.persistence.AccountDatabase;
 /** Private dialogues are deliberately unrelated to public account_questions. */
 public final class ClarificationRepository {
   private final AccountDatabase db;
-  private static final String QUESTIONS = "SELECT q.*,l.title AS listingTitle,l.host_id AS hostId FROM account_clarifications q JOIN account_listings l ON l.id=q.listing_id ";
+  private static final String QUESTIONS = "SELECT q.*,l.title AS listingTitle,l.city AS listingCity,l.host_id AS hostId FROM account_clarifications q JOIN account_listings l ON l.id=q.listing_id ";
   private static final String ANSWERS = "SELECT a.*,q.listing_id,q.feature,q.version AS current_version FROM account_clarification_answers a JOIN account_clarifications q ON q.id=a.clarification_id ";
 
   public ClarificationRepository(AccountDatabase db) { this.db = db; }

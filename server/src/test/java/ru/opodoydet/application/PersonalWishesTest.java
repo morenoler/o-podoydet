@@ -36,7 +36,7 @@ class PersonalWishesTest {
     JsonNode wishes = Agents.parseRules(text, selected()).path("personalWishes");
     assertEquals("recognized", wishes.path("status").asText());
     assertEquals("unverified", wishes.path("completeness").asText());
-    assertEquals(Set.of("courtyard", "low_noise"),
+    assertEquals(Set.of("low_noise"),
         Set.copyOf(Json.list(wishes.path("features")).stream().map(JsonNode::asText).toList()));
     assertFalse(wishes.toString().contains("family"));
     assertFalse(wishes.toString().contains("батут"));

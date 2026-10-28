@@ -33,7 +33,8 @@ spring:
     default-schema: ${DB_SCHEMA:public}
 
 catalog:
-  data-path: ${DATA_PATH:data/verified-hotels.json}
+  # An explicit DATA_PATH keeps the isolated single-dataset lab/demo contract.
+  data-path: ${DATA_PATH:}
   import-on-startup: ${CATALOG_IMPORT:true}
 
 knowledge:

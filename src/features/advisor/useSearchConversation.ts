@@ -42,9 +42,10 @@ function readConversation(key: string, trip: Trip): Conversation & { draft?: str
 }
 
 export function useSearchConversation(trip: Trip, onApply: (trip: Trip) => void, scope: string, contextHotelId?: string) {
-  const storageKey = `o-search-conversation-busan:${scope}`;
-  const filterStorageKey = `o-search-chat-filters-busan:${scope}`;
-  const locationStorageKey = `o-search-chat-locations-busan:${scope}`;
+  const regionKey = trip.region === "Пусан" ? "busan" : encodeURIComponent(trip.region);
+  const storageKey = `o-search-conversation-${regionKey}:${scope}`;
+  const filterStorageKey = `o-search-chat-filters-${regionKey}:${scope}`;
+  const locationStorageKey = `o-search-chat-locations-${regionKey}:${scope}`;
   const [initial] = useState(() => {
     const saved = { ...readConversation(storageKey, trip) };
     try {
@@ -121,16 +122,21 @@ export function useSearchConversation(trip: Trip, onApply: (trip: Trip) => void,
       if (request.current !== token) return;
       if (JSON.stringify(latestTrip.current) !== snapshot)
         throw new Error("Условия поиска изменились, пока готовился ответ. Отправьте пожелание ещё раз для текущей подборки.");
-      if (reply.changed) onApply(reply.trip);
-      setConversation((previous) => ({
+      const nextConversation: Conversation = {
         focusFeatures: reply.focusFeatures,
-        filterChanges: recordChatFilters(previous.filterChanges, trip, reply.trip, reply.focusFeatures),
-        locationChanges: recordChatLocations(previous.locationChanges, trip, reply.trip),
-        messages: [...previous.messages, {
+        filterChanges: recordChatFilters(conversation.filterChanges, trip, reply.trip, reply.focusFeatures),
+        locationChanges: recordChatLocations(conversation.locationChanges, trip, reply.trip),
+        messages: [...conversation.messages, { id, role: "user", text: message }, {
           id: crypto.randomUUID(), role: "assistant", mode: reply.mode,
           text: [reply.message, ...reply.warnings].join("\n\n"),
         }].slice(-60) as Message[],
-      }));
+      };
+      // Applying a new trip may remount a detail page. Persist the completed turn first.
+      try { sessionStorage.setItem(storageKey, JSON.stringify({ ...nextConversation, draft: "", tripKey: JSON.stringify(reply.changed ? reply.trip : trip) })); } catch { /* optional persistence */ }
+      try { localStorage.setItem(filterStorageKey, JSON.stringify(nextConversation.filterChanges)); } catch { /* optional persistence */ }
+      try { localStorage.setItem(locationStorageKey, JSON.stringify(nextConversation.locationChanges)); } catch { /* optional persistence */ }
+      setConversation(nextConversation);
+      if (reply.changed) onApply(reply.trip);
     } catch (cause) {
       if (request.current !== token) return;
       setConversation((previous) => ({ ...previous, messages: previous.messages.filter((m) => m.id !== id) }));

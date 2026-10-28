@@ -22,7 +22,11 @@ import ru.opodoydet.shared.Json;
 
 /** Derived criteria are evaluated on the trip, never imported as permanent hotel facts. */
 public final class Environment {
+  // Existing dated source formatting belongs to the Korean datasets.
   private static final ZoneId SEOUL = ZoneId.of("Asia/Seoul");
+  private static ZoneId timezone(JsonNode trip) {
+    return ru.opodoydet.domain.RegionSettings.of(Json.str(trip, "region")).timezone();
+  }
   private final Path areaPath;
   private final Path noisePath;
   private final Path trafficPath;
@@ -215,11 +219,11 @@ public final class Environment {
   }
 
   private static Instant start(JsonNode trip) {
-    return LocalDate.parse(Json.str(trip, "checkIn")).atStartOfDay(SEOUL).toInstant();
+    return LocalDate.parse(Json.str(trip, "checkIn")).atStartOfDay(timezone(trip)).toInstant();
   }
 
   private static Instant end(JsonNode trip) {
-    return LocalDate.parse(Json.str(trip, "checkOut")).atStartOfDay(SEOUL).toInstant();
+    return LocalDate.parse(Json.str(trip, "checkOut")).atStartOfDay(timezone(trip)).toInstant();
   }
 
   private static boolean url(String value) {
@@ -254,7 +258,7 @@ public final class Environment {
         new ArrayList<>(
             List.of(
                 "Проверяем US AQI ≤ 50 в каждом часу пребывания: от 00:00 дня заезда до 00:00 дня"
-                    + " выезда по Asia/Seoul.",
+                    + " выезда по " + timezone(trip).getId() + ".",
                 "CAMS Global — модель с разрешением около 45 км, не измерение у отеля. Прогноз"
                     + " может измениться."));
     List<JsonNode> evidence =
@@ -264,7 +268,7 @@ public final class Environment {
       return unknown(
           "clean_air", "Нет свежего почасового прогноза на даты поездки", details, evidence);
     if (!Json.str(forecast, "timezone").equals("UTC")
-        || !Json.str(forecast, "tripTimezone").equals("Asia/Seoul")
+        || !Json.str(forecast, "tripTimezone").equals(timezone(trip).getId())
         || !forecast.path("intervalSeconds").isNumber()
         || forecast.path("intervalSeconds").asDouble() != 3600
         || !Json.str(forecast, "model").equals("CAMS Global")
@@ -482,7 +486,7 @@ public final class Environment {
                     + " трафике не подтверждает тишину."));
     List<JsonNode> sources = new ArrayList<>();
     if (!Json.str(context, "region").equals(Json.str(trip, "region"))
-        || !Json.str(context, "timeZone").equals("Asia/Seoul"))
+        || !Json.str(context, "timeZone").equals(timezone(trip).getId()))
       return noiseResult("unknown", 0, details, sources);
     JsonNode ambient = context.path("ambientMeasurements");
     if (Json.str(ambient, "kind").equals("annual_station_measurements")
@@ -673,14 +677,14 @@ public final class Environment {
     if (!Json.str(dated, "status").equals("unknown")) return dated;
     if (!Json.str(history, "region").equals(Json.str(trip, "region"))
         || !Json.str(history, "kind").equals("historical_observed_profile")
-        || !Json.str(history, "timeZone").equals("Asia/Seoul")
+        || !Json.str(history, "timeZone").equals(timezone(trip).getId())
         || !Json.str(history, "dayType").equals("weekday")
         || !history.path("referenceYear").isIntegralNumber()
         || !datedSource(history.path("source"), now)
         || !history.path("historicalTrafficProfiles").isArray()
         || !point(hotel.path("coordinates"))) return dated;
-    LocalDate checkIn = start(trip).atZone(SEOUL).toLocalDate(),
-        checkOut = end(trip).atZone(SEOUL).toLocalDate();
+    LocalDate checkIn = start(trip).atZone(timezone(trip)).toLocalDate(),
+        checkOut = end(trip).atZone(timezone(trip)).toLocalDate();
     int year = history.path("referenceYear").asInt();
     boolean weekday = false;
     for (LocalDate day = checkIn;

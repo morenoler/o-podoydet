@@ -9,7 +9,7 @@ import { features } from "../../../shared/features";
 import { useApp } from "../../app/providers/TripProvider";
 import { useResource } from "../account/useResource";
 import {
-  clarificationDate as calendarDate,
+  clarificationDate,
   clarificationNeedsAttention,
   clarificationStatusLabel,
 } from "./clarificationDates";
@@ -19,6 +19,7 @@ import {
 } from "../account/components/AccountFeedback";
 import { ClarificationAnswerForm } from "./ClarificationAnswerForm";
 import { clarificationApi } from "./api";
+import { propertyTimeZone, timeZoneLabel } from "../../../shared/regions";
 
 export function ClarificationsPanel({ host = false }: { host?: boolean }) {
   const resource = useResource<ListingClarification[]>(
@@ -144,6 +145,8 @@ function ClarificationConversation({
   onSaved: () => void;
 }) {
   const [editing, setEditing] = useState(!question.answer);
+  const timeZone = question.timeZone || propertyTimeZone(question.region || question.trip?.region || "Пусан");
+  const calendarDate = (date: string) => clarificationDate(date, timeZone);
   const { setTrip, refresh } = useApp();
   const navigate = useNavigate();
   const scopeChanged =
@@ -200,7 +203,7 @@ function ClarificationConversation({
           <p>{question.note}</p>
         </div>
       )}
-      {question.answer && <ClarificationAnswerView answer={question.answer} />}
+      {question.answer && <ClarificationAnswerView answer={question.answer} timeZone={timeZone} />}
       {scopeChanged ? (
         <div className="clarification-recalculate">
           <p>
@@ -256,7 +259,7 @@ function ClarificationConversation({
         <details className="clarification-history">
           <summary>История ответов ({question.history.length})</summary>
           {question.history.map((answer) => (
-            <ClarificationAnswerView key={answer.id} answer={answer} compact />
+            <ClarificationAnswerView key={answer.id} answer={answer} timeZone={timeZone} compact />
           ))}
         </details>
       )}
@@ -267,10 +270,13 @@ function ClarificationConversation({
 export function ClarificationAnswerView({
   answer,
   compact = false,
+  timeZone = answer.timeZone || "Asia/Seoul",
 }: {
   answer: ClarificationAnswer;
   compact?: boolean;
+  timeZone?: string;
 }) {
+  const calendarDate = (date: string) => clarificationDate(date, answer.timeZone || timeZone);
   const state =
     answer.state === "stale"
       ? "Срок перепроверки прошёл"
@@ -295,7 +301,7 @@ export function ClarificationAnswerView({
         {answer.observedOn
           ? `Проверено отельером ${calendarDate(answer.observedOn)}`
           : "Когда отельер проверял условие — неизвестно"}
-        . Перепроверить до {calendarDate(answer.recheckAt)}.
+        . Перепроверить до {calendarDate(answer.recheckAt)} ({timeZoneLabel(answer.timeZone || timeZone)}).
       </p>
       {answer.validFrom && answer.validTo && (
         <p className="clarification-context">

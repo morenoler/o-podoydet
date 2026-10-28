@@ -129,6 +129,8 @@ class PhotoApiTest {
         "Стандарт",
         "capacity",
         3,
+        "sleepingPlaces", 3,
+        "beds", List.of(Json.obj("type", "single", "count", 3, "placesPerUnit", 1)),
         "pricePerNight",
         90000,
         "amenities",

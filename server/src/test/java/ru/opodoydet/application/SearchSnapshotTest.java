@@ -225,7 +225,7 @@ class SearchSnapshotTest {
   }
 
   @Test
-  void advisorUsesActualModelInterpretationAndEvidenceSnapshotWithoutAnotherModelCall()
+  void advisorReusesModelInterpretationAndEvidenceSnapshotWithoutRepeatedModelCalls()
       throws Exception {
     AtomicInteger calls = new AtomicInteger();
     HttpServer provider = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
@@ -260,7 +260,11 @@ class SearchSnapshotTest {
           exchange.close();
         });
     provider.start();
-    try (var database = TestDatabases.create(seed(4))) {
+    ObjectNode originalSeed = seed(4);
+    ((ObjectNode) originalSeed.path("facts").get(0))
+        .put("sourceUrl", "https://example.org/synthetic-family-source")
+        .put("source", "Synthetic test source");
+    try (var database = TestDatabases.create(originalSeed)) {
       Store store = database.store();
       SearchService service =
           new SearchService(
@@ -271,16 +275,28 @@ class SearchSnapshotTest {
                       "test-model",
                       "http://127.0.0.1:" + provider.getAddress().getPort(), Agents.Protocol.RESPONSES)),
               environment());
-      ObjectNode input = trip().put("text", "Условия для маленького путешественника обязательны");
+      ObjectNode unknown = service.search(trip().put("text", "Обязательно Wi-Fi 100 мбит"));
+      assertEquals("unrecognized", unknown.path("personalWishes").path("status").asText());
+      assertTrue(unknown.path("preferences").isEmpty(), "Unsupported prose must not acquire model-inferred criteria");
+      assertEquals(0, calls.get());
+      ObjectNode input = trip().put("text", "Семейный номер обязателен");
       ObjectNode result = service.search(input);
       assertEquals("llm", Json.str(result, "mode"));
       assertEquals("recognized", result.path("personalWishes").path("status").asText());
       assertEquals("family", result.path("personalWishes").path("features").path(0).asText());
       assertEquals("unverified", result.path("personalWishes").path("completeness").asText());
-      assertEquals(1, calls.get());
-      assertTrue(
-          Agents.parseRules(Json.str(input, "text"), List.of()).path("preferences").isEmpty());
+      assertEquals(1, calls.get(), "A supported new search may use its configured model exactly once");
+      assertEquals(
+          Agents.parseRules(Json.str(input, "text"), List.of()).path("preferences"),
+          result.path("preferences"));
       String id = Json.str(result, "searchId");
+      ObjectNode originalContext = service.advisorContext(input, id);
+      JsonNode originalCandidates = originalContext.path("candidates").deepCopy();
+      JsonNode familyEvidence = Json.list(originalCandidates.get(0).path("criteria")).stream()
+          .filter(criterion -> "family".equals(Json.str(criterion, "feature")))
+          .findFirst().orElseThrow();
+      assertEquals("match", familyEvidence.path("evidenceStatus").asText());
+      assertEquals("https://example.org/synthetic-family-source", familyEvidence.path("sources").get(0).path("url").asText());
       database.importSeed(seed(1));
       ((ObjectNode) result.path("preferences").get(0)).put("required", false);
       ObjectNode context = service.advisorContext(input, id);
@@ -290,9 +306,14 @@ class SearchSnapshotTest {
       assertEquals(
           1, context.path("fitCount").asInt(), "Cached capacity must survive catalog change");
       assertEquals("fits", context.path("candidates").get(0).path("status").asText());
+      assertEquals(originalCandidates, context.path("candidates"), "Snapshot retains criterion evidence and source links after catalog replacement");
       assertEquals(id, context.path("searchId").asText());
-      service.advisorContext(input, id);
-      assertEquals(1, calls.get(), "Advice must not call the interpretation model again");
+      ((ObjectNode) context.path("candidates").get(0)).put("status", "excluded");
+      assertEquals(originalCandidates, service.advisorContext(input, id).path("candidates"), "Caller mutations must not change the stored snapshot");
+      assertEquals(1, calls.get(), "Snapshot reads must not invoke the model again");
+      assertTrue(service.search(input).path("roomRecommendations").isEmpty(), "Fresh search sees the changed capacity");
+      assertEquals(originalCandidates, service.advisorContext(input, id).path("candidates"));
+      assertEquals(2, calls.get(), "Only the fresh search invokes the model; snapshot reuse remains immutable");
     } finally {
       provider.stop(0);
     }

@@ -40,7 +40,7 @@ try {
     const { writeLabDataset } = await import("./lab-data.ts");
     const labDataPath = resolve(root, ".local/lab-hotels.json");
     await writeLabDataset(
-      resolve(root, process.env.DATA_PATH || "data/verified-hotels.json"),
+      resolve(root, process.env.DATA_PATH || "data/busan/verified-hotels.json"),
       labDataPath,
     );
     process.env.DATA_PATH = labDataPath;

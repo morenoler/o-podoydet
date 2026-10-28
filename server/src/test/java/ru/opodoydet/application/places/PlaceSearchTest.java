@@ -12,6 +12,19 @@ import org.junit.jupiter.api.Test;
 import ru.opodoydet.shared.Json;
 
 class PlaceSearchTest {
+  @Test void busanSnapshotNeverAnswersSochiQueriesOrConfirmsIntercityDistance() {
+    var places = new PlaceSearch(snapshot());
+    var trip = trip(wish("center:haeundae", "far", 500, true)).put("region", "Сочи");
+    assertFalse(places.refine(trip, "в центре города").path("handled").asBoolean());
+    var hotel = hotel().put("region", "Сочи");
+    hotel.set("coordinates", Json.array(List.of(39.73, 43.58)));
+    var evaluated = places.evaluate(hotel, trip, NOW).getFirst();
+    assertEquals("unknown", evaluated.path("evidenceStatus").asText());
+    assertTrue(evaluated.path("places").isEmpty());
+    var surroundings = places.surroundings(hotel, 1000, NOW);
+    assertEquals("unknown", surroundings.path("status").asText());
+    assertTrue(surroundings.path("centers").isEmpty());
+  }
   private static final Instant NOW = Instant.parse("2026-10-27T10:00:00Z");
   private ObjectNode source() {
     return Json.obj("id", "fixture-source", "url", "https://example.test/map", "sha256", "a".repeat(64),

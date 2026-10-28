@@ -1,5 +1,6 @@
 import type { Trip } from "../../../shared/types";
 import type { LocationWish } from "../places/locationPresentation";
+import { locationWishSchema } from "../../../shared/validation";
 
 interface WishChange { query: string; before: LocationWish | null; after: LocationWish | null }
 interface PendingChange {
@@ -8,7 +9,7 @@ interface PendingChange {
 }
 export interface ChatLocationChanges { wishes: WishChange[]; pending?: PendingChange }
 export const emptyLocationChanges: ChatLocationChanges = { wishes: [] };
-const key = (query: string) => query.trim().toLocaleLowerCase("ru-RU");
+const key = (query: string) => query.trim().toLocaleLowerCase("ru-RU").replaceAll("ё", "е");
 const equal = (a: LocationWish | null | undefined, b: LocationWish | null | undefined) =>
   (!a && !b) || (!!a && !!b && key(a.query) === key(b.query) && a.relation === b.relation && a.radiusMeters === b.radiusMeters && a.required === b.required);
 const current = (trip: Trip, query: string) => trip.locationWishes?.find((wish) => key(wish.query) === query) || null;
@@ -53,11 +54,7 @@ export function resetChatLocations(trip: Trip, changes: ChatLocationChanges): Tr
 
 function validWish(value: unknown): value is LocationWish | null {
   if (value == null) return true;
-  if (typeof value !== "object") return false;
-  const wish = value as LocationWish;
-  return typeof wish.query === "string" && wish.query.trim().length > 0 && wish.query.length <= 120
-    && ["near", "far"].includes(wish.relation) && typeof wish.required === "boolean"
-    && Number.isInteger(wish.radiusMeters) && wish.radiusMeters >= 50 && wish.radiusMeters <= 20000;
+  return locationWishSchema.safeParse(value).success;
 }
 
 export function readChatLocations(value: unknown): ChatLocationChanges {
@@ -68,5 +65,6 @@ export function readChatLocations(value: unknown): ChatLocationChanges {
     && validWish(change.before) && validWish(change.after)
     && (!change.before || key(change.before.query) === change.query)
     && (!change.after || key(change.after.query) === change.query));
-  return { wishes, ...(candidate.pending && validWish(candidate.pending.before) && validWish(candidate.pending.after) ? { pending: candidate.pending } : {}) };
+  const validPending = (wish: unknown) => validWish(wish) && (!wish || wish.query === "center");
+  return { wishes, ...(candidate.pending && validPending(candidate.pending.before) && validPending(candidate.pending.after) ? { pending: candidate.pending } : {}) };
 }

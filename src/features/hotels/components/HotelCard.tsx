@@ -1,4 +1,8 @@
-import type { Dataset, Hotel, HotelMatch, Room, RoomRecommendation } from "../../../../shared/types";
+import type { Dataset, Hotel, HotelFilters, HotelMatch, Room, RoomRecommendation } from "../../../../shared/types";
+import { nearbyMatches } from "../../../../shared/nearby";
+import { validListingCoordinates } from "../../../../shared/listingDetails";
+import { ReviewHighlights } from "../../listings/ReviewHighlights";
+import { NearbySummary } from "./NearbySummary";
 import { Link } from "react-router-dom";
 import {
   Check,
@@ -20,6 +24,7 @@ import { CriterionLine } from "./CriterionLine";
 import { locationState } from "../../places/locationPresentation";
 import { features } from "../../../../shared/features";
 import { directionLabels } from "../../account/format";
+import { dateFull } from "../../../shared/lib/date";
 import { recommendationMatch } from "../../search/roomResults";
 import {
   capacityNeedsClarification,
@@ -30,6 +35,7 @@ import {
 } from "../../../shared/lib/matchPresentation";
 
 export function HotelCard({
+  hotelFilters,
   match: hotelMatch,
   roomRecommendation,
   previewRoom,
@@ -42,6 +48,7 @@ export function HotelCard({
   onSelect,
   onShowMap,
 }: {
+  hotelFilters?: HotelFilters;
   match?: HotelMatch;
   roomRecommendation?: RoomRecommendation;
   previewRoom?: Room;
@@ -80,7 +87,9 @@ export function HotelCard({
   const publishedCategoryCount = hotel.rooms.filter(
     (room) => room.scope === "room_category" && room.evidenceStatus === "verified",
   ).length;
-  const sourceHint = ownerId
+  const sourceHint = hotel.synthetic || room?.demo
+    ? "Демонстрационные данные · вымышленное объявление"
+    : ownerId
     ? "Сведения отельера · без независимой проверки"
     : match?.best.room.evidenceStatus === "verified" && match.best.room.scope === "room_category"
       ? "Категория по сведениям официального сайта"
@@ -96,8 +105,9 @@ export function HotelCard({
   const hasPrice =
     typeof hotel.pricePerNight === "number" &&
     hotel.pricePerNight > 0 &&
-    hotel.currency === "KRW";
+    (hotel.currency === "KRW" || hotel.currency === "RUB");
   const resultLabel = match ? matchLabel(match) : "Условия и источники";
+  const hasConditions = !!(match?.best.criteria.length || match?.ownerCriteria?.length);
   const presentationState = match ? matchPresentationState(match) : "unknown";
   const conditionCount = (match?.best.criteria.length || 0) + (match?.ownerCriteria?.length || 0) + (match?.locationCriteria?.length || 0);
   return (
@@ -131,7 +141,7 @@ export function HotelCard({
         <div className="search-hotel-heading">
           <Link to={detailsPath}>
             <h2>
-              {title}
+              {hotel.name}
               {hotel.synthetic && (
                 <span className="search-demo-label">ДЕМО</span>
               )}
@@ -158,11 +168,22 @@ export function HotelCard({
             </button>
           )}
         </div>
-        {room && <p className="search-room-hotel">{hotel.name}</p>}
+        {room && <p className="search-room-hotel">{title}</p>}
         {room && <p className="search-room-capacity">{capacityUnknown || capacity == null ? "Вместимость нужно уточнить" : `Вместимость: до ${capacity} гостей${match?.best.capacityRule ? " по правилу размещения" : ""}`}</p>}
-        <p className="search-hotel-meta">{hotel.address || "Пусан, Хэундэ"}</p>
-        {!room && category && <p className="search-hotel-room">Категория: {category.name}{!capacityUnknown && !match?.best.capacityRule && category.capacity !== null && !category.capacityMayVary ? ` · до ${category.capacity} гостей` : ""}</p>}
+        <p className="search-hotel-meta">{hotel.address || "Адрес не указан"}</p>
+        <details className="search-card-information">
+        <summary>Условия и источники</summary>
+        {room?.sleepingPlaces != null && <p className="search-hotel-room">Спальных мест: {room.sleepingPlaces} · расстановка кроватей в подробностях</p>}
+        {category && !room && (
+          <p className="search-hotel-room">
+            Категория: {category.name}
+            {!capacityUnknown && !match?.best.capacityRule && category.capacity !== null && !category.capacityMayVary
+              ? ` · до ${category.capacity} гостей` : ""}
+          </p>
+        )}
         {roomDetails && <p className="search-hotel-room">{roomDetails}</p>}
+        <NearbySummary matches={match?.best.nearbyMatches || nearbyMatches(hotel, hotelFilters)} region={hotel.region} />
+        {ownerId && <ReviewHighlights listing={{ id: ownerId, demo: hotel.synthetic }} compact />}
         {hotel.route && !hotel.synthetic ? (
           <button
             type="button"
@@ -174,25 +195,27 @@ export function HotelCard({
             disabled={!onSelect && !onShowMap}
           >
             <Waves size={20} aria-hidden="true" />
-            {hotel.route.meters} м пешком до пляжа
+            {hotel.route.meters} м по пешеходной сети до пляжа
           </button>
         ) : (
           <p className="search-hotel-unknown">
             <MapPin size={18} aria-hidden="true" />
             {ownerId
-              ? "Расположение на карте не добавлено"
+              ? validListingCoordinates(hotel.coordinates)
+                ? hotel.synthetic ? "Учебная точка на карте · вымышленный объект" : "Точка на карте указана отельером"
+                : "Расположение на карте не добавлено"
               : "Маршрут до пляжа не рассчитан"}
           </p>
         )}
         <p className="search-hotel-evidence">
           <CircleHelp size={18} aria-hidden="true" />
           <span>
-            {roomRecommendation && !alternative && !match?.best.provisional && presentationState === "match"
+            {roomRecommendation && hasConditions && !alternative && !match?.best.provisional && presentationState === "match"
               ? roomRecommendation.source === "owner"
                 ? "Все критерии совпали по сведениям отельера"
                 : roomRecommendation.source === "demo"
                   ? "Совпадение в демонстрационных данных"
-                  : "Условия проверены для этой категории номера"
+                  : "Условия сопоставлены с источниками категории"
               : capacityUnknown
               ? "Вместимость требует уточнения"
               : missingOwner
@@ -230,6 +253,8 @@ export function HotelCard({
         </ul>}
         <LocationCriteria criteria={match?.locationCriteria} detailed />
         </details>}
+        {!!hotel.route?.connectionMeters && !hotel.synthetic && <p className="search-route-caveat">Подходы к сети: ещё ≈{Math.round(hotel.route.connectionMeters)} м, не проверены.</p>}
+        </details>
         {hasPrice && match && (
           <p className={`search-hotel-result${presentationState === "mismatch" ? " is-mismatch" : estimated ? " is-estimate" : ""}`}>
             {presentationState === "match"
@@ -244,7 +269,7 @@ export function HotelCard({
               <>
                 <strong className="search-hotel-price">
                   {new Intl.NumberFormat("ru-RU").format(hotel.pricePerNight!)}{" "}
-                  ₩ <small>/ ночь</small>
+                  {hotel.currency === "RUB" ? "₽" : "₩"} <small>/ ночь</small>
                 </strong>
                 <span className="search-hotel-price-note">
                   Цена отельера · наличие уточняйте
@@ -257,7 +282,7 @@ export function HotelCard({
                 >
                   {roomRecommendation ? (
                     <>{alternative || match?.best.provisional || presentationState !== "match" ? <CircleHelp size={17} aria-hidden="true" /> : <Check size={17} aria-hidden="true" />}
-                      {match?.best.provisional || needsClarification ? "Вариант для уточнения" : alternative || presentationState === "mismatch" ? "Не все условия подтверждены" : "Совпали все критерии"}
+                      {match?.best.provisional || needsClarification ? "Вариант для уточнения" : alternative || presentationState === "mismatch" ? "Не все условия подтверждены" : hasConditions ? "Совпали выбранные условия" : "Подходит по вместимости"}
                     </>
                   ) : match ? (
                     <>
@@ -287,6 +312,17 @@ export function HotelCard({
           </div>
         </div>
       </div>
+      {!!match?.best.catalogMatches?.length && <details className="search-source-matches">
+        <summary>Совпадения в тексте источников</summary>
+        <p>Упоминание не подтверждает наличие удобства в конкретном номере.</p>
+        {match.best.catalogMatches.map((snippet, index) => <blockquote key={index}>
+          {snippet.text}
+          {snippet.sourceUrl && <a href={snippet.sourceUrl} target="_blank" rel="noreferrer">Источник</a>}
+          <small>{snippet.sourceDate ? `Дата источника: ${dateFull(snippet.sourceDate)}.` : "Дата источника неизвестна."}
+            {snippet.obtainedAt && ` Получено: ${dateFull(snippet.obtainedAt)}.`}
+            {snippet.expiresAt && ` Перепроверить до: ${dateFull(snippet.expiresAt)}.`}</small>
+        </blockquote>)}
+      </details>}
       {match && <PersonalWishesSummary match={match} />}
     </article>
   );

@@ -8,6 +8,7 @@ export function RoomDescription({
   title,
   description,
   pricePerNight,
+  currency,
   amenities = [],
   details,
   source,
@@ -18,6 +19,7 @@ export function RoomDescription({
   title: string;
   description?: string;
   pricePerNight?: number;
+  currency?: "KRW" | "RUB";
   amenities?: string[];
   details: { label: string; value: string }[];
   source: ReactNode;
@@ -34,8 +36,8 @@ export function RoomDescription({
         {description?.trim() || "Описание номера пока не указано."}
       </p>
       <div className="room-description-price">
-        {typeof pricePerNight === "number" && pricePerNight > 0 ? (
-          <><strong>{price(pricePerNight)}</strong><span>за ночь за весь номер</span></>
+        {typeof pricePerNight === "number" && pricePerNight > 0 && currency ? (
+          <><strong>{price(pricePerNight, currency)}</strong><span>за ночь за весь номер</span></>
         ) : (
           <><strong>Цена не указана</strong><span>Уточните стоимость на ваши даты у отельера</span></>
         )}

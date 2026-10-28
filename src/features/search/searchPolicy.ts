@@ -11,6 +11,15 @@ export function normalizeSearchTrip(trip: Trip): Trip {
   return { ...trip, admissionMode: uiAdmissionMode(trip.admissionMode) };
 }
 
+/** A numeric budget cannot be carried into a different currency without conversion. */
+export function changeTripRegion(trip: Trip, region: string): Trip {
+  if (trip.region === region) return trip;
+  const hotelFilters = trip.hotelFilters ? { ...trip.hotelFilters, maxPricePerNight: undefined } : undefined;
+  return { ...trip, region, hotelFilters,
+    ...(trip.locationWishes ? { locationWishes: [] } : {}),
+    ...(trip.pendingLocationQuery ? { pendingLocationQuery: null } : {}) };
+}
+
 export function restoreSearchTrip(saved: unknown, initial: Trip): Trip {
   if (!saved || typeof saved !== "object" || Array.isArray(saved))
     return normalizeSearchTrip(initial);

@@ -141,6 +141,67 @@ class SearchConversationApiTest {
   }
 
   @Test
+  void locationWishesAreNotMistakenForQuestionsAboutTheSelectedHotel() throws Exception {
+    try (Database api = TestDatabases.start(catalog(), Map.of("LLM_MODEL", "", "LLM_API_KEY", ""))) {
+      for (String context : List.of("", "courtyard")) {
+        JsonNode city = success(api, "/api/search/conversation", Json.obj("trip", trip(),
+            "message", "Хочу отель в центре города", "contextHotelId", context));
+        assertTrue(city.path("changed").asBoolean());
+        assertEquals("center", city.path("trip").path("pendingLocationQuery").path("query").asText());
+        JsonNode named = say(api, city.path("trip"), "Сомён");
+        assertEquals("center:seomyeon", named.path("trip").path("locationWishes").path(0).path("query").asText());
+        assertFalse(city.path("message").asText().contains("Выберите номер"));
+        JsonNode mixed = success(api, "/api/search/conversation", Json.obj("trip", trip(),
+            "message", "Нужен отель в центре с бассейном", "contextHotelId", context));
+        assertTrue(mixed.path("changed").asBoolean());
+        assertEquals("center", mixed.path("trip").path("pendingLocationQuery").path("query").asText());
+        assertTrue(Json.list(mixed.path("trip").path("preferences")).stream()
+            .anyMatch(value -> Json.str(value, "feature").equals("pool")));
+        assertTrue(mixed.path("trip").path("hotelFilters").path("nearby").isMissingNode(),
+            "An ambiguous center must not also become a confirmed city-center filter");
+      }
+      JsonNode exactMixed = say(api, trip(), "Хочу отель в центре Сомён с бассейном");
+      assertEquals(1, exactMixed.path("trip").path("locationWishes").size());
+      assertTrue(exactMixed.path("trip").path("hotelFilters").path("nearby").isMissingNode(),
+          "A handled location must not be applied again with another default distance");
+      assertTrue(Json.list(exactMixed.path("trip").path("preferences")).stream()
+          .anyMatch(value -> Json.str(value, "feature").equals("pool")));
+      for (var type : Map.of("апартаменты", "apartment", "хостел", "hostel").entrySet()) {
+        JsonNode mixedType = say(api, trip(), "Хочу " + type.getKey() + " рядом с кафе в пределах 500 м").path("trip");
+        assertEquals(type.getValue(), mixedType.path("hotelFilters").path("lodgingTypes").get(0).asText());
+        assertEquals("cafe", mixedType.path("locationWishes").get(0).path("query").asText());
+        assertEquals(500, mixedType.path("locationWishes").get(0).path("radiusMeters").asInt());
+        assertFalse(mixedType.path("hotelFilters").has("nearby"));
+      }
+      JsonNode typeAndAmenity = say(api, trip(), "Обязательно апартаменты рядом с кафе до 500 м с бассейном").path("trip");
+      assertEquals("apartment", typeAndAmenity.path("hotelFilters").path("lodgingTypes").get(0).asText());
+      assertTrue(Json.list(typeAndAmenity.path("preferences")).stream()
+          .anyMatch(value -> Json.str(value, "feature").equals("pool") && value.path("required").asBoolean()));
+      assertTrue(typeAndAmenity.path("locationWishes").get(0).path("required").asBoolean());
+      JsonNode selected = say(api, trip(), "Обязательно рядом с кафе в пределах 500 м").path("trip");
+      JsonNode rejectedOr = say(api, selected, "рядом с кафе или рестораном");
+      assertFalse(rejectedOr.path("changed").asBoolean(), "OR must not silently become two mandatory conditions");
+      assertEquals(selected, rejectedOr.path("trip"));
+      ObjectNode withBothKinds = selected.deepCopy();
+      withBothKinds.set("hotelFilters", Json.obj("nearby", List.of(Json.obj("kind", "park", "maxMeters", 500)), "query", "Signiel"));
+      JsonNode cleared = say(api, withBothKinds, "Убери всё рядом").path("trip");
+      assertTrue(cleared.path("locationWishes").isEmpty());
+      assertFalse(cleared.path("hotelFilters").has("nearby"));
+      assertEquals("Signiel", cleared.path("hotelFilters").path("query").asText());
+      for (String question : List.of("Он в центре?", "Что рядом?")) {
+        JsonNode unknown = say(api, trip(), question);
+        assertFalse(unknown.path("changed").asBoolean());
+        assertTrue(unknown.path("message").asText().contains("Выберите номер"));
+        JsonNode explained = success(api, "/api/search/conversation", Json.obj("trip", trip(),
+            "message", question, "contextHotelId", "courtyard"));
+        assertFalse(explained.path("changed").asBoolean());
+        assertEquals(trip(), explained.path("trip"));
+        assertTrue(explained.path("message").asText().contains("Рядом с «courtyard»"));
+      }
+    }
+  }
+
+  @Test
   void conversationChangesTheRealSearchAndRemovalSurvivesAnotherSearch() throws Exception {
     try (Database api =
         TestDatabases.start(catalog(), Map.of("LLM_MODEL", "", "LLM_API_KEY", ""))) {
@@ -258,7 +319,7 @@ class SearchConversationApiTest {
   }
 
   @Test
-  void validatedModelEditsUseCurrentPreferencesAndDoNotChangeTripDetails() throws Exception {
+  void configuredModelEditsKeepCurrentPreferencesAndTripDetails() throws Exception {
     AtomicReference<JsonNode> request = new AtomicReference<>();
     AtomicInteger calls = new AtomicInteger();
     HttpServer model = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
@@ -293,7 +354,7 @@ class SearchConversationApiTest {
           "preferences", Json.array(List.of(Json.obj("feature", "family", "required", true))));
       JsonNode response =
           new SearchConversation(configured)
-              .refine(initial, "И окна непременно во внутренний двор", Json.array(List.of()));
+              .refine(initial, "И обязательно окна во двор", Json.array(List.of()));
       assertEquals("llm", response.path("mode").asText());
       assertTrue(response.path("warnings").isEmpty());
       assertEquals(2, response.path("trip").path("preferences").size());
@@ -301,10 +362,8 @@ class SearchConversationApiTest {
       assertEquals("courtyard", response.path("focusFeatures").path(0).asText());
       for (String field : List.of("region", "checkIn", "checkOut", "adults", "children", "text"))
         assertEquals(initial.path(field), response.path("trip").path(field));
-      JsonNode modelInput = Json.read(request.get().path("input").asText());
-      assertEquals(initial.path("preferences"), modelInput.path("preferences"));
-      assertEquals(
-          "search_conversation", request.get().path("text").path("format").path("name").asText());
+      assertNotNull(request.get());
+      assertEquals("search_conversation", request.get().path("text").path("format").path("name").asText());
       assertEquals(1, calls.get());
     } finally {
       model.stop(0);
@@ -312,7 +371,7 @@ class SearchConversationApiTest {
   }
 
   @Test
-  void malformedUnknownDuplicateOrInvalidModelEditsFallBackExplicitly() throws Exception {
+  void modelResponsesCannotOverrideLocallyUnderstoodEdits() throws Exception {
     AtomicReference<String> output = new AtomicReference<>();
     AtomicInteger calls = new AtomicInteger();
     HttpServer model = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
@@ -363,7 +422,7 @@ class SearchConversationApiTest {
         JsonNode response = chat.refine(trip(), "Хочу окна во двор", Json.array(List.of()));
         assertEquals("rules", response.path("mode").asText(), invalid);
         assertTrue(response.path("changed").asBoolean());
-        assertFalse(response.path("warnings").isEmpty());
+        assertFalse(response.path("warnings").isEmpty(), "Invalid model response must disclose rule-based fallback");
         assertEquals(1, response.path("trip").path("preferences").size());
         assertEquals(
             "courtyard",

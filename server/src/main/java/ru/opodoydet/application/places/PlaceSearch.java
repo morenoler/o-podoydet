@@ -101,7 +101,14 @@ public final class PlaceSearch {
   }
 
   /** Extracts location edits, leaving ordinary filter clauses to the existing conversation. */
+  public boolean supportsRegion(String region) {
+    String sourceRegion = Json.str(snapshot, "region");
+    return region.isBlank() || region.equals(sourceRegion.isBlank() ? "Пусан" : sourceRegion);
+  }
+
   public ObjectNode refine(JsonNode trip, String message) {
+    if (!supportsRegion(Json.str(trip, "region")) && !clearsLocations(message))
+      return Json.obj("handled", false, "remainingText", message);
     validateWishes(trip.path("locationWishes"));
     validatePending(trip.path("pendingLocationQuery"));
     Map<String, JsonNode> wishes = new LinkedHashMap<>();
@@ -113,15 +120,29 @@ public final class PlaceSearch {
     for (String original : message.split("[!?;\\n]|(?<!\\d)[,.]|[,](?!\\d)|\\s+(?:а также|и еще|и ещё|но|а|и)\\s+")) {
       String clause = normalize(original);
       if (clause.isBlank()) continue;
+      if (clearsLocations(clause)) {
+        wishes.clear(); pending = null; handled = true;
+        messages.add("Условия расположения убраны.");
+        // The same explicit command also clears the legacy structured nearby filters.
+        remaining.add(original.strip());
+        continue;
+      }
       List<String> queries = pending != null && centerQuery(clause) != null
           ? List.of(centerQuery(clause)) : queries(clause);
       boolean center = has("центр|central|downtown", clause);
+      if ((!queries.isEmpty() || center) && has("(?U)\\b(?:или|либо|or)\\b", clause)) {
+        handled = true;
+        warnings.add("Условия расположения с «или» пока не применены. Выберите одно место или объедините условия через «и».");
+        if (ordinaryWish(clause)) remaining.add(original.strip());
+        continue;
+      }
       if (pending != null && queries.isEmpty()) {
         String resolved = centerQuery(clause);
         if (resolved != null) queries = List.of(resolved);
       }
       if (queries.isEmpty() && center) {
         handled = true;
+        if (ordinaryWish(clause)) remaining.add(original.strip());
         if (action(clause).equals("remove")) {
           wishes.entrySet().removeIf(e -> e.getKey().startsWith("center:"));
           pending = null;
@@ -171,8 +192,7 @@ public final class PlaceSearch {
         if (query.startsWith("center:")) pending = null;
       }
       // Preserve a non-location condition in a mixed clause rather than silently swallowing it.
-      if (has("тих|шум|двор|коляск|ребен|детьми|безопасн|воздух|пляж|мор[еяю]", clause)
-          || Amenities.patterns().values().stream().anyMatch(pattern -> has(pattern,clause))) remaining.add(original.strip());
+      if (ordinaryWish(clause)) remaining.add(original.strip());
     }
     if (!handled && planner != null && !message.isBlank() && !ordinaryOnly(message)) {
       try {
@@ -194,8 +214,11 @@ public final class PlaceSearch {
               && !relation(quoted).equals(Json.str(edit,"relation")))
             throw new IllegalArgumentException("Модель изменила близость на противоположную");
           if (has("центр|center|downtown", normalize(query))) {
-            String resolved = centerQuery(normalize(query));
+            String resolved = centerQuery(quoted);
             if (resolved == null) throw new IllegalArgumentException("Неоднозначный центр");
+            String proposedCenter = centerQuery(normalize(query));
+            if (proposedCenter != null && !proposedCenter.equals(resolved))
+              throw new IllegalArgumentException("Модель изменила выбранный центр");
             query = resolved;
           }
           String key = normalize(query);
@@ -228,6 +251,15 @@ public final class PlaceSearch {
         "remainingText", String.join("; ", remaining), "mode", mode);
   }
 
+  private static boolean ordinaryWish(String clause) {
+    return has("тих|шум|двор|коляск|ребен|детьми|безопасн|воздух|пляж|мор[еяю]|апартамент|квартир|хостел|мотел|гостев[а-я]* дом", clause)
+        || Amenities.patterns().values().stream().anyMatch(pattern -> has(pattern, clause));
+  }
+
+  public static boolean clearsLocations(String message) {
+    return normalize(message).matches("(?:убери|убрать|сбрось|очисти|удали) (?:все )?(?:условия рядом|условия близости|окружение|близость к местам|места рядом|рядом)");
+  }
+
   private List<String> queries(String text) {
     String center = centerQuery(text);
     if (center != null && (has("центр|сом[её]н|seomyeon", text))) return List.of(center);
@@ -253,7 +285,7 @@ public final class PlaceSearch {
   }
 
   private static String centerQuery(String text) {
-    if (has("сом[её]н|сом[её]он|seomyeon|центр.{0,12}(?:города|пусана)|городск.{0,8}центр", text)) return "center:seomyeon";
+    if (has("сом[её]н|сом[её]он|seomyeon", text)) return "center:seomyeon";
     if (has("хэундэ|хэунде|хеундэ|haeundae", text)) return "center:haeundae";
     return null;
   }
@@ -310,11 +342,11 @@ public final class PlaceSearch {
   public List<JsonNode> evaluate(JsonNode hotel, JsonNode trip, Instant now) {
     validateWishes(trip.path("locationWishes"));
     List<JsonNode> result = new ArrayList<>();
-    for (JsonNode wish : trip.path("locationWishes")) result.add(evaluateWish(hotel, wish, now));
+    for (JsonNode wish : trip.path("locationWishes")) result.add(evaluateWish(hotel, wish, now, supportsRegion(Json.str(trip, "region")) && supportsRegion(Json.str(hotel, "region"))));
     return result;
   }
 
-  private ObjectNode evaluateWish(JsonNode hotel, JsonNode wish, Instant now) {
+  private ObjectNode evaluateWish(JsonNode hotel, JsonNode wish, Instant now, boolean supportedRegion) {
     String query = Json.str(wish, "query");
     String relation = Json.str(wish, "relation");
     int radius = wish.path("radiusMeters").asInt();
@@ -324,6 +356,7 @@ public final class PlaceSearch {
         "status", "unknown", "evidenceStatus", "unknown", "places", List.of(),
         "source", "OpenStreetMap", "obtainedAt", snapshot.path("retrievedAt"), "sourceDate", snapshot.path("sourceDate"),
         "method", DISTANCE_METHOD, "assumptions", DISTANCE_ASSUMPTIONS);
+    if (!supportedRegion) return criterion.put("explanation", "Для выбранного региона нет подходящего снимка мест. Расположение не проверено.");
     if (!validHotel(hotel)) return criterion.put("explanation", "У объявления нет пригодных координат здания. Расположение и расстояние до мест неизвестны.");
     if (!snapshot.path("places").isArray() || snapshot.path("places").isEmpty()) return criterion.put("explanation", "Снимок мест недоступен. Условие расположения не проверено.");
     List<JsonNode> matches = matchedPlaces(query).stream().filter(place -> usable(place, now)).toList();
@@ -346,6 +379,7 @@ public final class PlaceSearch {
     int radius = Math.max(50, Math.min(20000, radiusMeters));
     ObjectNode result = Json.obj("status", "unknown", "radiusMeters", radius, "places", List.of(), "centers", List.of(),
         "method", DISTANCE_METHOD, "assumptions", DISTANCE_ASSUMPTIONS, "obtainedAt", snapshot.path("retrievedAt"), "sourceDate", snapshot.path("sourceDate"));
+    if (!supportsRegion(Json.str(hotel, "region"))) return result.put("explanation", "Для выбранного региона нет подходящего снимка мест.");
     if (!validHotel(hotel)) return result.put("explanation", "Нет координат здания; определить места рядом с номером невозможно.");
     List<JsonNode> usable = Json.list(snapshot.path("places")).stream().filter(place -> usable(place, now)).toList();
     if (usable.isEmpty()) return result.put("explanation", "Актуальный снимок мест недоступен.");

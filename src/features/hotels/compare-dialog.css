@@ -1,0 +1,165 @@
+.compare-dialog.comparison-dialog {
+  width: min(1140px, calc(100vw - 32px));
+  max-width: 1140px;
+  max-height: 90dvh;
+  padding: 24px;
+  overflow: hidden;
+  background: var(--paper);
+}
+.compare-dialog.comparison-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+.comparison-dialog .dialog-head {
+  flex: 0 0 auto;
+  margin-bottom: 16px;
+}
+.comparison-dialog .dialog-head p {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--ink);
+}
+.comparison-dialog .dialog-head .icon-button {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+}
+.comparison-table-scroll {
+  min-height: 0;
+  container-type: inline-size;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overscroll-behavior: contain;
+}
+.comparison-table-scroll:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 3px;
+}
+.comparison-table {
+  width: 100%;
+  min-width: calc(160px + var(--comparison-count) * 240px);
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+.comparison-table th,
+.comparison-table td {
+  vertical-align: top;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  overflow-wrap: anywhere;
+}
+.comparison-table th:first-child {
+  width: 160px;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--bg);
+}
+.comparison-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--paper);
+}
+.comparison-table thead th:first-child {
+  z-index: 3;
+}
+.comparison-table tr > :last-child {
+  border-right: 0;
+}
+.comparison-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+.comparison-table h3 {
+  margin: 10px 0 4px;
+  font-size: 18px;
+  line-height: 1.3;
+}
+.comparison-table p {
+  margin: 6px 0;
+}
+.comparison-table small,
+.comparison-unknown {
+  color: var(--ink);
+  font-weight: 400;
+}
+.comparison-table small {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.comparison-table .match-badge {
+  white-space: normal;
+}
+.comparison-table .criterion {
+  margin: 0;
+}
+.comparison-table .criterion-body {
+  min-width: 0;
+}
+.comparison-list {
+  margin: 0;
+  padding-left: 18px;
+}
+.comparison-list li + li {
+  margin-top: 6px;
+}
+.comparison-table .button {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+.comparison-caption,
+.comparison-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.comparison-dialog > .notice {
+  flex: 0 0 auto;
+  margin: 12px 0 0;
+  font-size: 12px;
+}
+@media (max-width: 600px) {
+  .compare-dialog.comparison-dialog {
+    width: calc(100vw - 16px);
+    max-height: 94dvh;
+    padding: 14px;
+    border-radius: 14px;
+  }
+  .comparison-dialog .dialog-head {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .comparison-dialog .dialog-head h2 {
+    font-size: 22px;
+  }
+  .comparison-dialog .dialog-head p {
+    font-size: 13px;
+    margin-top: 6px;
+  }
+  .comparison-table th,
+  .comparison-table td {
+    padding: 12px;
+  }
+  .comparison-table {
+    /* Each value column fits beside the pinned labels, including the last one. */
+    width: calc(96px + var(--comparison-count) * (var(--comparison-viewport-width, 100cqw) - 96px));
+    min-width: calc(96px + var(--comparison-count) * (var(--comparison-viewport-width, 100cqw) - 96px));
+  }
+  .comparison-table th:first-child {
+    width: 96px;
+  }
+}

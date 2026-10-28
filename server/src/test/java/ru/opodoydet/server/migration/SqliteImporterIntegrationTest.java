@@ -19,6 +19,9 @@ import java.util.Map;
 import java.util.List;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import ru.opodoydet.shared.Json;
+import ru.opodoydet.accounts.persistence.AccountDatabase;
+import ru.opodoydet.accounts.search.OwnerListingSearchProvider;
+import ru.opodoydet.domain.RoomRecommendations;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.server.catalog.SeedImporter;
 import ru.opodoydet.server.support.TestDatabases;
@@ -44,6 +47,7 @@ class SqliteImporterIntegrationTest {
   @Autowired SeedImporter seedImporter;
   @Autowired Store store;
   @Autowired JdbcClient jdbc;
+  @Autowired AccountDatabase accounts;
   @LocalServerPort int port;
 
   @Test
@@ -52,7 +56,8 @@ class SqliteImporterIntegrationTest {
 
     assertThat(count("SELECT count(*) FROM account_users WHERE email LIKE '%@demo.test'")).isEqualTo(2);
     assertThat(count("SELECT count(*) FROM account_listings l JOIN account_users u ON u.id = l.host_id"
-            + " WHERE u.email = 'host@demo.test'")).isEqualTo(4);
+            + " WHERE u.email = 'host@demo.test'"))
+        .isEqualTo(Json.read(Files.readString(Path.of("../data/demo/fixtures.json"))).path("listings").size());
     assertThat(count("SELECT count(*) FROM account_bookings b JOIN account_users u ON u.id = b.user_id"
             + " WHERE u.email = 'user@demo.test'")).isEqualTo(6);
     assertThat(copied).containsKeys("account_users", "account_listings", "account_bookings", "account_questions");
@@ -121,6 +126,42 @@ class SqliteImporterIntegrationTest {
     importer.importFile(source);
     assertThat(jdbc.sql("SELECT generation FROM account_listing_scopes WHERE listing_id='import-listing'").query(Integer.class).single()).isEqualTo(8);
     assertThat(count("SELECT count(*) FROM account_clarification_answers WHERE clarification_id='import-question'")).isEqualTo(2);
+    assertThat(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(source))).containsExactly(before);
+  }
+
+  @Test
+  void explicitFixtureLayoutAndLocationImportWithoutMutatingSourceOrOverwritingPostgres() throws Exception {
+    Path source = temp.resolve("bed-fixture.sqlite3");
+    String beds = Json.write(List.of(Json.obj("type", "single", "count", 2, "placesPerUnit", 1, "room", "Спальня")));
+    try (var connection = DriverManager.getConnection("jdbc:sqlite:" + source);
+        var statement = connection.createStatement()) {
+      statement.execute("CREATE TABLE account_users(id TEXT PRIMARY KEY,email TEXT,password_hash TEXT,role TEXT,name TEXT,created_at TEXT)");
+      statement.executeUpdate("INSERT INTO account_users VALUES('beds-import-host','beds-import-host@example.test','unused','host','Fixture host','2026-10-26T00:00:00Z')");
+      statement.execute("CREATE TABLE account_listings(id TEXT PRIMARY KEY,host_id TEXT,title TEXT,description TEXT,city TEXT,address TEXT,room_type TEXT,capacity INTEGER,price_per_night INTEGER,amenities TEXT,status TEXT,created_at TEXT,updated_at TEXT,longitude REAL,latitude REAL,sleeping_places INTEGER,beds TEXT,demo INTEGER)");
+      try (var insert = connection.prepareStatement("INSERT INTO account_listings VALUES('beds-import','beds-import-host','Synthetic twin room','Fictional layout for import testing','Пусан','Fictional street 1','Twin',2,10000,'[]','published','2026-10-26T00:00:00Z','2026-10-26T00:00:00Z',129.16,35.16,2,?,1)")) {
+        insert.setString(1, beds); insert.executeUpdate();
+      }
+    }
+    byte[] before = MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(source));
+    assertThat(importer.importFile(source)).containsEntry("account_listings", 1);
+    var listing = jdbc.sql("SELECT longitude,latitude,sleeping_places,beds,demo FROM account_listings WHERE id='beds-import'").query().singleRow();
+    assertThat(listing.get("longitude")).isEqualTo(129.16);
+    assertThat(listing.get("latitude")).isEqualTo(35.16);
+    assertThat(listing.get("sleeping_places")).isEqualTo(2);
+    assertThat(listing.get("beds")).isEqualTo(beds);
+    assertThat(listing.get("demo")).isEqualTo(true);
+    var match = new OwnerListingSearchProvider(accounts)
+        .snapshot(Json.obj("region", "Пусан", "adults", 2, "children", 0, "text", ""))
+        .apply(List.of(), List.of()).stream()
+        .filter(value -> Json.str(value.path("hotel"), "accountListingId").equals("beds-import"))
+        .findFirst().orElseThrow();
+    assertThat(match.path("hotel").path("synthetic").asBoolean()).isTrue();
+    assertThat(match.path("best").path("room").path("demo").asBoolean()).isTrue();
+    assertThat(Json.str(RoomRecommendations.select(List.of(match), java.time.Instant.now(), "verified-only")
+        .recommendations().getFirst(), "source")).isEqualTo("demo");
+    jdbc.sql("UPDATE account_listings SET longitude=129.18, beds='[]', sleeping_places=NULL, demo=FALSE WHERE id='beds-import'").update();
+    assertThat(importer.importFile(source)).containsEntry("account_listings", 0);
+    assertThat(count("SELECT count(*) FROM account_listings WHERE id='beds-import' AND longitude=129.18 AND beds='[]' AND sleeping_places IS NULL AND NOT demo")).isEqualTo(1);
     assertThat(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(source))).containsExactly(before);
   }
 

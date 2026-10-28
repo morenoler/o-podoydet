@@ -1,0 +1,45 @@
+/* Tokens sampled from the supplied FigCraft document. */
+:root {
+  font-family: "Inter Variable", Inter, sans-serif;
+  color: #000;
+  background: #f3f3f3;
+  --ink: #171717;
+  --muted: #6f6f6f;
+  --blue: #0042da;
+  --soft-blue: #edf1ff;
+  --bg: #f3f3f3;
+  --line: #dedede;
+  --paper: #fff;
+  --fig-green: #97f171;
+}
+body { background: var(--bg); font-family: "Inter Variable", Inter, sans-serif; color: var(--ink); }
+button, input, select, textarea { font-family: inherit; }
+h1, h2, h3 { font-weight: 600; letter-spacing: -.025em; }
+.button { border-radius: 999px; font-weight: 500; }
+.button.primary { background: #000; border-color: #000; color: #fff; }
+.button.primary:hover { background: #292929; border-color: #292929; }
+.button.secondary { background: #fff; border-color: #dedede; color: #171717; }
+.button.secondary:hover { background: #ededed; border-color: #c9c9c9; }
+.site-header { height: 64px; border: 0; background: var(--bg); }
+.site-header-inner { max-width: 1600px; padding: 0 24px; gap: 20px; }
+.site-brand { gap: 0; color: #0042da; letter-spacing: -1.1px; }
+.site-brand > span { width: auto; height: auto; border-radius: 0; background: transparent; color: inherit; font-size: 27px; font-weight: 750; }
+.site-brand strong { font-size: 25px; font-weight: 750; }
+.site-navigation { display: none; }
+.site-header .site-menu-toggle { display: inline-flex; background: transparent; }
+.site-header-actions { gap: 20px; }
+.site-favorites { font-size: 13px; }
+.site-favorites > span { display: none; }
+.site-login { min-width: 76px; min-height: 36px; padding: 8px 18px; font-size: 13px; }
+.site-account-button { font-size: 14px; font-weight: 400; gap: 9px; }
+.site-avatar { width: 32px; height: 32px; background: #dde5f8; font-size: 15px; font-weight: 500; }
+.site-mobile-context strong { font-size: 17px; font-weight: 500; }
+.v2-modal { border-radius: 28px; }
+:is(a, button, input, textarea, select, summary):focus-visible { outline: 2px solid #0042da; outline-offset: 3px; }
+@media (max-width: 700px) {
+  .site-header-inner { padding: 0 16px; }
+  .site-header-actions { gap: 8px; }
+  .site-brand > span, .site-brand strong { font-size: 23px; }
+  .site-header.has-mobile-context .site-menu-toggle { display: inline-flex; }
+  .site-header .site-login { display: inline-flex; }
+}

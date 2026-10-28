@@ -1,0 +1,2524 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-10-24T09:06:06Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 736694948,
+  "lat": 43.5729017,
+  "lon": 39.7350363,
+  "timestamp": "2024-08-24T04:43:57Z",
+  "version": 4,
+  "changeset": 155679107,
+  "user": "TrickyFoxy",
+  "uid": 11528195,
+  "tags": {
+    "name": "MIRROR",
+    "stars": "3",
+    "tourism": "hotel",
+    "website": "https://mirror-hotel.ru/"
+  }
+},
+{
+  "type": "node",
+  "id": 736761646,
+  "lat": 43.5761102,
+  "lon": 39.7258462,
+  "timestamp": "2022-04-11T12:55:07Z",
+  "version": 5,
+  "changeset": 119578474,
+  "user": "Vyacheslav 89",
+  "uid": 10200827,
+  "tags": {
+    "name": "City Park Hotel",
+    "old_name": "Маринс Парк Отель",
+    "stars": "4",
+    "tourism": "hotel",
+    "website": "www.cph-sochi.com"
+  }
+},
+{
+  "type": "node",
+  "id": 948203233,
+  "lat": 43.5726527,
+  "lon": 39.7325921,
+  "timestamp": "2017-01-19T13:16:59Z",
+  "version": 5,
+  "changeset": 45297239,
+  "user": "tssst",
+  "uid": 1724658,
+  "tags": {
+    "addr:housenumber": "1",
+    "addr:street": "Комсомольская улица",
+    "name": "Отель \"Жемчуг\"",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 1323204199,
+  "lat": 43.5808926,
+  "lon": 39.7227223,
+  "timestamp": "2020-08-31T15:20:05Z",
+  "version": 4,
+  "changeset": 90199458,
+  "user": "-James-",
+  "uid": 491706,
+  "tags": {
+    "addr:city": "Сочи",
+    "internet_access": "wlan",
+    "name": "МИРИТ",
+    "stars": "3",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 1859716038,
+  "lat": 43.5717633,
+  "lon": 39.7398019,
+  "timestamp": "2017-01-19T13:17:00Z",
+  "version": 3,
+  "changeset": 45297239,
+  "user": "tssst",
+  "uid": 1724658,
+  "tags": {
+    "name": "Вилла \"Анна\"",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 2181712522,
+  "lat": 43.5772504,
+  "lon": 39.7223214,
+  "timestamp": "2017-01-23T18:10:09Z",
+  "version": 3,
+  "changeset": 45406995,
+  "user": "tssst",
+  "uid": 1724658,
+  "tags": {
+    "name": "Мини-отель \"Маяк\"",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 4985022111,
+  "lat": 43.5800081,
+  "lon": 39.7275415,
+  "timestamp": "2017-07-21T13:58:41Z",
+  "version": 1,
+  "changeset": 50459949,
+  "user": "literan",
+  "uid": 830106,
+  "tags": {
+    "name": "У Оксаны",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 4986725623,
+  "lat": 43.5760320,
+  "lon": 39.7242648,
+  "timestamp": "2021-03-12T05:56:02Z",
+  "version": 3,
+  "changeset": 100880532,
+  "user": "parukhin",
+  "uid": 519501,
+  "tags": {
+    "internet_access": "wlan",
+    "name": "Апартаменты в Маяке",
+    "opening_hours": "24/7",
+    "operator": "15 3х комнатных апартаментов к вашим услугам",
+    "phone": "+7 918 4304543",
+    "tourism": "hotel",
+    "website": "https://grasgroup.business.site/"
+  }
+},
+{
+  "type": "node",
+  "id": 5063986547,
+  "lat": 43.5712628,
+  "lon": 39.7359049,
+  "timestamp": "2017-08-28T11:26:34Z",
+  "version": 1,
+  "changeset": 51505781,
+  "user": "Calibrator",
+  "uid": 154487,
+  "tags": {
+    "name": "Чемодан",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 8660302065,
+  "lat": 43.5991573,
+  "lon": 39.7084095,
+  "timestamp": "2021-04-23T20:15:27Z",
+  "version": 1,
+  "changeset": 103504376,
+  "user": "Vyacheslav 89",
+  "uid": 10200827,
+  "tags": {
+    "addr:city": "Сочи",
+    "addr:country": "RU",
+    "addr:housenumber": "33А",
+    "addr:street": "Виноградная улица",
+    "name": "Санаторий \"Юность\"",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 8872412718,
+  "lat": 43.5764415,
+  "lon": 39.7236410,
+  "timestamp": "2026-10-15T16:40:21Z",
+  "version": 3,
+  "changeset": 190567706,
+  "user": "lxndrl",
+  "uid": 21771395,
+  "tags": {
+    "addr:postcode": "354000",
+    "email": "zakaz@grace-gorizont.ru",
+    "internet_access": "wlan",
+    "name": "СПА-отель \"Грейс Горизонт\"",
+    "name:en": "SPA-hotel \"Grace Gorizont\"",
+    "opening_hours": "24/7",
+    "phone": "+7 800 3025792",
+    "tourism": "hotel",
+    "website": "https://grace-gorizont.ru/"
+  }
+},
+{
+  "type": "node",
+  "id": 8951230053,
+  "lat": 43.5889113,
+  "lon": 39.7203505,
+  "timestamp": "2021-07-26T11:52:36Z",
+  "version": 1,
+  "changeset": 108622254,
+  "user": "loir",
+  "uid": 127606,
+  "tags": {
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 9764181317,
+  "lat": 43.5766209,
+  "lon": 39.7304914,
+  "timestamp": "2022-07-11T19:52:38Z",
+  "version": 2,
+  "changeset": 123489848,
+  "user": "Vyacheslav 89",
+  "uid": 10200827,
+  "tags": {
+    "name": "Магнолия",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 9875280518,
+  "lat": 43.5816918,
+  "lon": 39.7277483,
+  "timestamp": "2022-07-08T20:36:55Z",
+  "version": 1,
+  "changeset": 123381096,
+  "user": "maksimia",
+  "uid": 3907882,
+  "tags": {
+    "name": "Магеллан Панорама",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 9908709817,
+  "lat": 43.5876832,
+  "lon": 39.7242927,
+  "timestamp": "2026-04-30T14:19:22Z",
+  "version": 2,
+  "changeset": 182036379,
+  "user": "pirotexnic",
+  "uid": 23696519,
+  "tags": {
+    "addr:postcode": "354000",
+    "check_date": "2026-04-30",
+    "email": "galleryparksochi@gmail.com",
+    "internet_access": "wlan",
+    "name": "Отель Сочи Галерея Парк",
+    "name:en": "Hotel Sochi Gallery Park",
+    "phone": "+79897550888",
+    "tourism": "hotel",
+    "website": "https://sochigallerypark.ru/"
+  }
+},
+{
+  "type": "node",
+  "id": 10759606594,
+  "lat": 43.5741612,
+  "lon": 39.7393969,
+  "timestamp": "2026-05-20T05:15:48Z",
+  "version": 3,
+  "changeset": 182907962,
+  "user": "Wiseman",
+  "uid": 215339,
+  "tags": {
+    "check_date": "2026-05-20",
+    "contact:email": "ranovsky.dep@yandex.ru",
+    "contact:phone": "+7 862 2918740",
+    "contact:website": "https://ranovsky-park.ru/",
+    "name": "RP Ranovsky Park",
+    "opening_hours": "24/7",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 10759606596,
+  "lat": 43.5869054,
+  "lon": 39.7245803,
+  "timestamp": "2026-01-23T10:14:40Z",
+  "version": 5,
+  "changeset": 177601594,
+  "user": "Саша Лобанова",
+  "uid": 12381966,
+  "tags": {
+    "contact:email": "ranovsky.park@yandex.ru",
+    "contact:phone": "+7 800 2227142",
+    "contact:website": "https://ranovskypark.ru",
+    "name": "RP Manhattan",
+    "opening_hours": "24/7",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 11016638373,
+  "lat": 43.5852870,
+  "lon": 39.7212732,
+  "timestamp": "2024-05-27T12:02:14Z",
+  "version": 6,
+  "changeset": 151895179,
+  "user": "kate_rocketdata",
+  "uid": 12100948,
+  "tags": {
+    "contact:email": "gg@grand-gallery.net",
+    "contact:phone": "+7 862 4440225-1;+7 862 4440225-2;+7 939 8844604",
+    "contact:website": "https://grand-gallery.net/",
+    "name": "Grand Gallery",
+    "opening_hours": "24/7",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 11016638375,
+  "lat": 43.5838370,
+  "lon": 39.7263210,
+  "timestamp": "2023-06-30T19:05:13Z",
+  "version": 1,
+  "changeset": 137970896,
+  "user": "kate_rocketdata",
+  "uid": 12100948,
+  "tags": {
+    "contact:email": "veryhotel@yandex.ru",
+    "contact:phone": "+7 988 1878700",
+    "contact:website": "https://veryhotel.ru/",
+    "name": "Veryhotel",
+    "opening_hours": "24/7",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 11138786328,
+  "lat": 43.5865946,
+  "lon": 39.7245079,
+  "timestamp": "2024-02-27T09:52:22Z",
+  "version": 2,
+  "changeset": 147965475,
+  "user": "kate_rocketdata",
+  "uid": 12100948,
+  "tags": {
+    "contact:email": "ranovsky.park@yandex.ru",
+    "contact:phone": "+7 862 2593527",
+    "contact:website": "https://ranovskypark.ru/",
+    "name": "RP Manhattan",
+    "opening_hours": "24/7",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 11304222978,
+  "lat": 43.5820074,
+  "lon": 39.7272116,
+  "timestamp": "2023-11-01T10:43:28Z",
+  "version": 1,
+  "changeset": 143467520,
+  "user": "kate_rocketdata",
+  "uid": 12100948,
+  "tags": {
+    "contact:phone": "+7 980 8887744",
+    "contact:website": "https://grandwayhotels.ru",
+    "name": "Grand Way",
+    "opening_hours": "24/7",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 11304222979,
+  "lat": 43.5764775,
+  "lon": 39.7315300,
+  "timestamp": "2023-11-01T10:43:28Z",
+  "version": 1,
+  "changeset": 143467520,
+  "user": "kate_rocketdata",
+  "uid": 12100948,
+  "tags": {
+    "contact:phone": "+7 993 5557744",
+    "contact:website": "https://grandwayhotels.ru",
+    "name": "Grand Way",
+    "opening_hours": "24/7",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 11304222981,
+  "lat": 43.5654550,
+  "lon": 39.7478270,
+  "timestamp": "2023-11-01T10:43:28Z",
+  "version": 1,
+  "changeset": 143467520,
+  "user": "kate_rocketdata",
+  "uid": 12100948,
+  "tags": {
+    "contact:phone": "+7 934 5557744",
+    "contact:website": "https://grandwayhotels.ru",
+    "name": "Grand Way",
+    "opening_hours": "24/7",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 11304222984,
+  "lat": 43.5949850,
+  "lon": 39.7267395,
+  "timestamp": "2023-11-01T10:43:28Z",
+  "version": 1,
+  "changeset": 143467520,
+  "user": "kate_rocketdata",
+  "uid": 12100948,
+  "tags": {
+    "contact:phone": "+7 933 8887744",
+    "contact:website": "https://grandwayhotels.ru",
+    "name": "Grand Way",
+    "opening_hours": "24/7",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 11304222987,
+  "lat": 43.5701348,
+  "lon": 39.7389704,
+  "timestamp": "2023-11-01T10:43:28Z",
+  "version": 1,
+  "changeset": 143467520,
+  "user": "kate_rocketdata",
+  "uid": 12100948,
+  "tags": {
+    "contact:phone": "+7 939 8887744",
+    "contact:website": "https://grandwayhotels.ru",
+    "name": "Grand Way",
+    "opening_hours": "24/7",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 11497670982,
+  "lat": 43.5897671,
+  "lon": 39.7172009,
+  "timestamp": "2024-01-07T17:38:55Z",
+  "version": 1,
+  "changeset": 146000221,
+  "user": "Daniil Musatov",
+  "uid": 2261094,
+  "tags": {
+    "check_date": "2024-01-07",
+    "name": "Арт-отель",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 11843553792,
+  "lat": 43.5958475,
+  "lon": 39.7293573,
+  "timestamp": "2024-04-24T10:06:16Z",
+  "version": 1,
+  "changeset": 150436616,
+  "user": "kate_rocketdata",
+  "uid": 12100948,
+  "tags": {
+    "contact:email": "park@neolit.su",
+    "contact:phone": "+7 862 5552996",
+    "contact:website": "https://park.neolitapart.ru",
+    "name": "Парк Горького",
+    "opening_hours": "24/7",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 11843553834,
+  "lat": 43.5880905,
+  "lon": 39.7160589,
+  "timestamp": "2024-04-24T10:06:16Z",
+  "version": 1,
+  "changeset": 150436616,
+  "user": "kate_rocketdata",
+  "uid": 12100948,
+  "tags": {
+    "contact:email": "rivieraart@mail.ru",
+    "contact:phone": "+7 989 1600080",
+    "name": "Ривьера Арт",
+    "opening_hours": "24/7",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 11958163786,
+  "lat": 43.5900274,
+  "lon": 39.7385198,
+  "timestamp": "2024-06-05T10:34:14Z",
+  "version": 1,
+  "changeset": 152281444,
+  "user": "kate_rocketdata",
+  "uid": 12100948,
+  "tags": {
+    "contact:email": "info-hotelalpika@yandex.ru",
+    "contact:phone": "+7 988 1401690;+7 988 5058097",
+    "contact:website": "https://sochi-hotel-alpyskaya27.ru",
+    "name": "Альпийская",
+    "opening_hours": "24/7",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 12032893438,
+  "lat": 43.5760733,
+  "lon": 39.7236067,
+  "timestamp": "2024-07-04T09:02:43Z",
+  "version": 1,
+  "changeset": 153534565,
+  "user": "Evgeniya_rocketdata",
+  "uid": 17513069,
+  "tags": {
+    "contact:email": "88001012575@mail.ru",
+    "contact:phone": "+7 800 1012575;+7 862 5551202;+7 918 6090986",
+    "contact:website": "https://hotelportofino.ru",
+    "name": "Portofino",
+    "opening_hours": "24/7",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 12183637644,
+  "lat": 43.5897671,
+  "lon": 39.7251383,
+  "timestamp": "2025-01-27T09:00:05Z",
+  "version": 2,
+  "changeset": 161808793,
+  "user": "kate_rocketdata",
+  "uid": 12100948,
+  "tags": {
+    "contact:email": "info@mirror-hotel.ru",
+    "contact:phone": "+7 861 2132894",
+    "contact:website": "https://mirror-hotel.ru/",
+    "name": "Mirror Residence",
+    "opening_hours": "24/7",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 12749552601,
+  "lat": 43.5819586,
+  "lon": 39.7191449,
+  "timestamp": "2025-04-21T09:14:30Z",
+  "version": 3,
+  "changeset": 165228087,
+  "user": "b-jazz-bot",
+  "uid": 9451067,
+  "tags": {
+    "addr:housenumber": "6",
+    "addr:postcode": "354000",
+    "addr:street": "Несебрская улица",
+    "contact:instagram": "marinayacht_sochi",
+    "email": "marinayacht@stellarhotels.ru",
+    "internet_access": "wlan",
+    "level": "6",
+    "name": "Marina Yacht by Stellar",
+    "name:en": "Marina Yacht by Stellar",
+    "opening_hours": "24/7",
+    "phone": "+7 (862) 444-44-77",
+    "tourism": "hotel",
+    "website": "https://www.marinayacht.ru/"
+  }
+},
+{
+  "type": "node",
+  "id": 12958832506,
+  "lat": 43.5779618,
+  "lon": 39.7283874,
+  "timestamp": "2025-06-28T05:56:23Z",
+  "version": 1,
+  "changeset": 168213441,
+  "user": "Vyacheslav 89",
+  "uid": 10200827,
+  "tags": {
+    "brand": "Atlas",
+    "name": "Evopart by Benefit Sochi Center",
+    "tourism": "hotel",
+    "website": "https://benefit-evopart.ru/"
+  }
+},
+{
+  "type": "node",
+  "id": 13301736501,
+  "lat": 43.5729518,
+  "lon": 39.7348283,
+  "timestamp": "2025-11-13T14:07:25Z",
+  "version": 1,
+  "changeset": 174607983,
+  "user": "Nataliya Yashnik",
+  "uid": 23501929,
+  "tags": {
+    "addr:housenumber": "3",
+    "addr:street": "Учительская улица",
+    "name": "Lavicon apart Sochi",
+    "opening_hours": "24/7",
+    "phone": "+79604985900",
+    "tourism": "hotel",
+    "website": "https://lavicon.ru/"
+  }
+},
+{
+  "type": "node",
+  "id": 13438392946,
+  "lat": 43.5745120,
+  "lon": 39.7365946,
+  "timestamp": "2026-01-07T19:33:01Z",
+  "version": 1,
+  "changeset": 176958120,
+  "user": "Calibrator",
+  "uid": 154487,
+  "tags": {
+    "name": "Разин",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 44573571,
+  "timestamp": "2023-02-27T06:16:24Z",
+  "version": 21,
+  "changeset": 133072088,
+  "user": "Vyacheslav 89",
+  "uid": 10200827,
+  "center": {
+    "lat": 43.5834948,
+    "lon": 39.7220232
+  },
+  "nodes": [
+    10696355731,
+    10696355771,
+    10696355745,
+    10696355744,
+    10696355732,
+    10696355749,
+    10696355751,
+    10696355752,
+    10696355750,
+    566131918,
+    10696355765,
+    880538410,
+    10696355733,
+    10696355757,
+    10696355734,
+    10696355740,
+    10696355739,
+    10696355738,
+    10696355737,
+    10696355743,
+    10696355742,
+    10696355735,
+    10696355770,
+    10696355746,
+    10696355736,
+    2427963326,
+    10696355748,
+    10696355747,
+    10696355731
+  ],
+  "tags": {
+    "addr:city": "Сочи",
+    "addr:country": "RU",
+    "addr:housenumber": "18",
+    "addr:street": "Курортный проспект",
+    "building": "yes",
+    "building:colour": "#7b9dd4",
+    "building:levels": "14",
+    "building:material": "glass",
+    "name": "ГК \"Москва\"",
+    "old_name": "Сочи Плаза",
+    "tourism": "hotel",
+    "wikidata": "Q4303717",
+    "wikipedia": "ru:Москва (гостиница, Сочи)"
+  }
+},
+{
+  "type": "way",
+  "id": 51277929,
+  "timestamp": "2025-07-14T20:10:07Z",
+  "version": 14,
+  "changeset": 168934255,
+  "user": "masmirnov",
+  "uid": 16256027,
+  "center": {
+    "lat": 43.5954111,
+    "lon": 39.7214893
+  },
+  "nodes": [
+    654253132,
+    654253112,
+    654253116,
+    654253117,
+    654253130,
+    654253122,
+    654253119,
+    1146831145,
+    566158135,
+    12999869963,
+    1146831133,
+    566158130,
+    654253131,
+    654253132
+  ],
+  "tags": {
+    "addr:city": "Сочи",
+    "addr:country": "RU",
+    "addr:housenumber": "2",
+    "addr:street": "улица Гагарина",
+    "building": "yes",
+    "building:levels": "7",
+    "name": "Звёздный",
+    "name:en": "Zvezdny Hotel",
+    "stars": "4",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 51416856,
+  "timestamp": "2020-06-03T11:35:14Z",
+  "version": 9,
+  "changeset": 86133659,
+  "user": "Vyacheslav 89",
+  "uid": 10200827,
+  "center": {
+    "lat": 43.5766617,
+    "lon": 39.7251287
+  },
+  "nodes": [
+    656378745,
+    7589275772,
+    7589275769,
+    7589275770,
+    656378746,
+    656378758,
+    7589275771,
+    656378734,
+    7589275779,
+    7589275778,
+    7589275777,
+    7589275776,
+    7589275775,
+    7589275774,
+    7589275773,
+    656378745
+  ],
+  "tags": {
+    "addr:city": "Сочи",
+    "addr:country": "RU",
+    "addr:housenumber": "4Б",
+    "addr:postcode": "354000",
+    "addr:street": "Приморская улица",
+    "building": "yes",
+    "building:levels": "6",
+    "name": "Баунти-клуб",
+    "operator": "Араджян",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 51570675,
+  "timestamp": "2026-06-07T06:00:38Z",
+  "version": 12,
+  "changeset": 183764431,
+  "user": "mavl",
+  "uid": 564990,
+  "center": {
+    "lat": 43.5735008,
+    "lon": 39.7296742
+  },
+  "nodes": [
+    659536286,
+    659536290,
+    659536289,
+    659536288,
+    659536272,
+    659536271,
+    659695677,
+    659695678,
+    9743662081,
+    659536287,
+    659536284,
+    659536285,
+    659536286
+  ],
+  "tags": {
+    "barrier": "fence",
+    "name": "Санаторий \"Черноморье\"",
+    "name:de": "Sanatorium Tschernomorje",
+    "name:en": "Black Sea Sanatorium",
+    "name:ru": "Санаторий \"Черноморье\"",
+    "stars": "4",
+    "tourism": "hotel",
+    "website": "http://www.chernomorye.ru"
+  }
+},
+{
+  "type": "way",
+  "id": 51676847,
+  "timestamp": "2026-06-07T06:00:29Z",
+  "version": 15,
+  "changeset": 183764431,
+  "user": "mavl",
+  "uid": 564990,
+  "center": {
+    "lat": 43.5745842,
+    "lon": 39.7272836
+  },
+  "nodes": [
+    9887919438,
+    9887919450,
+    9887919439,
+    9887919440,
+    9887919458,
+    9887919454,
+    9887919441,
+    9887919455,
+    9887919442,
+    9887919457,
+    9887919443,
+    9887919456,
+    9887919459,
+    9887919444,
+    9887919445,
+    9887919446,
+    9887919447,
+    9887919453,
+    9887919448,
+    9887919452,
+    659708466,
+    9887919451,
+    659708478,
+    659708472,
+    659708468,
+    9887919449,
+    9887919438
+  ],
+  "tags": {
+    "addr:city": "Сочи",
+    "addr:country": "RU",
+    "addr:housenumber": "1А",
+    "addr:street": "улица Соколова",
+    "building": "yes",
+    "building:colour": "#ffe399",
+    "building:levels": "5",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 51677372,
+  "timestamp": "2019-07-19T23:06:44Z",
+  "version": 6,
+  "changeset": 72445740,
+  "user": "iWowik",
+  "uid": 481934,
+  "center": {
+    "lat": 43.5745127,
+    "lon": 39.7302530
+  },
+  "nodes": [
+    659713562,
+    659713615,
+    659713614,
+    659713563,
+    659713562
+  ],
+  "tags": {
+    "addr:city": "Сочи",
+    "addr:country": "RU",
+    "addr:housenumber": "34/2 литА",
+    "addr:postcode": "354000",
+    "addr:street": "улица Орджоникидзе",
+    "building": "yes",
+    "building:levels": "1",
+    "name": "LS Towns, хостел",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 51847420,
+  "timestamp": "2026-06-07T06:00:35Z",
+  "version": 13,
+  "changeset": 183764431,
+  "user": "mavl",
+  "uid": 564990,
+  "center": {
+    "lat": 43.5708250,
+    "lon": 39.7316751
+  },
+  "nodes": [
+    659714529,
+    1147490490,
+    661366243,
+    1147490498,
+    661366277,
+    1147490473,
+    661366305,
+    661366307,
+    661366313,
+    949654596,
+    661366476,
+    661366479,
+    661366483,
+    661366487,
+    661366490,
+    661366494,
+    661366499,
+    661366502,
+    661366515,
+    661366518,
+    661366505,
+    661366509,
+    661366512,
+    661366403,
+    661366406,
+    661366409,
+    661366449,
+    661366452,
+    661366397,
+    661366400,
+    661366389,
+    9133117340,
+    661366370,
+    661366358,
+    949654556,
+    662289932,
+    661366361,
+    661365951,
+    661366089,
+    661366107,
+    661366062,
+    661366069,
+    659714527,
+    659714529
+  ],
+  "tags": {
+    "name": "Жемчужина",
+    "stars": "4",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 51847429,
+  "timestamp": "2026-01-30T18:01:56Z",
+  "version": 11,
+  "changeset": 177900627,
+  "user": "Vyacheslav 89",
+  "uid": 10200827,
+  "center": {
+    "lat": 43.5707815,
+    "lon": 39.7313471
+  },
+  "nodes": [
+    661366232,
+    661366309,
+    661366392,
+    661366291,
+    661366294,
+    661366299,
+    13512692145,
+    13512692144,
+    661366232
+  ],
+  "tags": {
+    "addr:housenumber": "3",
+    "addr:street": "Черноморская улица",
+    "building": "hotel",
+    "building:levels": "17",
+    "name": "Жемчужина",
+    "name:en": "Zhemchuzhina",
+    "stars": "4",
+    "start_date": "1973",
+    "tourism": "hotel",
+    "website": "https://www.zhem.ru/"
+  }
+},
+{
+  "type": "way",
+  "id": 51853102,
+  "timestamp": "2024-07-17T11:56:42Z",
+  "version": 9,
+  "changeset": 154054957,
+  "user": "Dmitry2013",
+  "uid": 1185631,
+  "center": {
+    "lat": 43.5690476,
+    "lon": 39.7352862
+  },
+  "nodes": [
+    661499850,
+    661499838,
+    661499847,
+    661499837,
+    661499836,
+    661499848,
+    661499850
+  ],
+  "tags": {
+    "addr:city": "Сочи",
+    "addr:housenumber": "4",
+    "addr:postcode": "354002",
+    "addr:street": "Черноморская улица",
+    "building": "yes",
+    "building:levels": "18",
+    "name": "Sea Galaxy",
+    "start_date": "1981",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 51874466,
+  "timestamp": "2013-08-01T06:50:11Z",
+  "version": 6,
+  "changeset": 17175245,
+  "user": "agsochi",
+  "uid": 233125,
+  "center": {
+    "lat": 43.5660735,
+    "lon": 39.7395593
+  },
+  "nodes": [
+    2374075601,
+    2374075590,
+    662197153,
+    662077039,
+    662077040,
+    671450483,
+    671450484,
+    662077041,
+    662077042,
+    676682724,
+    662077044,
+    662077052,
+    2374075601
+  ],
+  "tags": {
+    "name": "Пансионат \"Эдем\"",
+    "stars": "3",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 52359906,
+  "timestamp": "2021-01-10T09:04:12Z",
+  "version": 11,
+  "changeset": 97239344,
+  "user": "Vyacheslav 89",
+  "uid": 10200827,
+  "center": {
+    "lat": 43.5704741,
+    "lon": 39.7528006
+  },
+  "nodes": [
+    666024002,
+    666023964,
+    666023989,
+    666024001,
+    666024002
+  ],
+  "tags": {
+    "addr:city": "Сочи",
+    "addr:country": "RU",
+    "addr:housenumber": "2/25",
+    "addr:postcode": "354002",
+    "addr:street": "улица Яна Фабрициуса",
+    "building": "yes",
+    "building:levels": "6",
+    "name": "Старт",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 52501847,
+  "timestamp": "2025-04-22T07:57:57Z",
+  "version": 12,
+  "changeset": 165271231,
+  "user": "Саша Лобанова",
+  "uid": 12381966,
+  "center": {
+    "lat": 43.5987159,
+    "lon": 39.7166251
+  },
+  "nodes": [
+    667273104,
+    1156134252,
+    1156134190,
+    667273100,
+    667273101,
+    1156134235,
+    1156134383,
+    1156134214,
+    667273104
+  ],
+  "tags": {
+    "addr:city": "Сочи",
+    "addr:country": "RU",
+    "addr:housenumber": "12/1",
+    "addr:street": "Виноградная улица",
+    "building": "yes",
+    "building:levels": "5",
+    "name": "Чеботарев",
+    "opening_hours": "24/7",
+    "phone": "+7 800 3011248",
+    "tourism": "hotel",
+    "website": "https://hotel-chebotarev.ru/"
+  }
+},
+{
+  "type": "way",
+  "id": 53065036,
+  "timestamp": "2026-06-07T06:00:35Z",
+  "version": 16,
+  "changeset": 183764431,
+  "user": "mavl",
+  "uid": 564990,
+  "center": {
+    "lat": 43.5699090,
+    "lon": 39.7395130
+  },
+  "nodes": [
+    671989159,
+    6025225514,
+    671989319,
+    671989209,
+    671989250,
+    671989240,
+    671989235,
+    671989190,
+    671989187,
+    671989175,
+    671989159
+  ],
+  "tags": {
+    "leisure": "park",
+    "name": "Пансионат \"Сочи Бриз Отель\"",
+    "stars": "4",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 53266521,
+  "timestamp": "2010-03-25T10:57:22Z",
+  "version": 1,
+  "changeset": 4228245,
+  "user": "agsochi",
+  "uid": 233125,
+  "center": {
+    "lat": 43.5900123,
+    "lon": 39.7128110
+  },
+  "nodes": [
+    673994808,
+    673994810,
+    293971629,
+    653733916,
+    653881504,
+    673994762,
+    673994811,
+    673994808
+  ],
+  "tags": {
+    "leisure": "park",
+    "stars": "5",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 57375782,
+  "timestamp": "2017-01-23T17:30:12Z",
+  "version": 3,
+  "changeset": 45406156,
+  "user": "tssst",
+  "uid": 1724658,
+  "center": {
+    "lat": 43.5987963,
+    "lon": 39.7166140
+  },
+  "nodes": [
+    713250431,
+    1156134201,
+    713250426,
+    1156134353,
+    713250439,
+    713250414,
+    713250418,
+    713250434,
+    713250431
+  ],
+  "tags": {
+    "leisure": "park",
+    "stars": "4",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 67540441,
+  "timestamp": "2026-06-07T06:00:38Z",
+  "version": 10,
+  "changeset": 183764431,
+  "user": "mavl",
+  "uid": 564990,
+  "center": {
+    "lat": 43.5702295,
+    "lon": 39.7350439
+  },
+  "nodes": [
+    799351643,
+    661332133,
+    815502757,
+    799351535,
+    799351515,
+    815502817,
+    815502825,
+    815502733,
+    815502763,
+    815502765,
+    815502818,
+    815502821,
+    815502739,
+    815502752,
+    672383080,
+    949654626,
+    661366358,
+    661366370,
+    9133117340,
+    661366389,
+    661366400,
+    799351528,
+    799351602,
+    799351559,
+    799351643
+  ],
+  "tags": {
+    "name": "Санаторий \"Светлана\"",
+    "name:en": "Svetlana Resort & Spa",
+    "stars": "4",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 99991540,
+  "timestamp": "2022-04-29T08:49:19Z",
+  "version": 9,
+  "changeset": 120338323,
+  "user": "Vyacheslav 89",
+  "uid": 10200827,
+  "center": {
+    "lat": 43.5952357,
+    "lon": 39.7201815
+  },
+  "nodes": [
+    1156134272,
+    1156134344,
+    9517029501,
+    9517029502,
+    9517029503,
+    1156134390,
+    9517029504,
+    9517029507,
+    9517029506,
+    9517029505,
+    9517029508,
+    9517029509,
+    9517029510,
+    9517029511,
+    9517029512,
+    1156134290,
+    9517029513,
+    1156134327,
+    9517082118,
+    9517082119,
+    9517082120,
+    9517082121,
+    9517082122,
+    9517082123,
+    1156134237,
+    9517029514,
+    9517029515,
+    1156134274,
+    1156134179,
+    9517029516,
+    9517082117,
+    1156134220,
+    9517082128,
+    1156134368,
+    9517082127,
+    1156134315,
+    1156134372,
+    9517082124,
+    9517082126,
+    9517082125,
+    1156134278,
+    1156134415,
+    1156134311,
+    9517029500,
+    1156134259,
+    1156134272
+  ],
+  "tags": {
+    "addr:city": "Сочи",
+    "addr:country": "RU",
+    "addr:housenumber": "5А",
+    "addr:postcode": "354065",
+    "addr:street": "улица Гагарина",
+    "building": "yes",
+    "building:levels": "10",
+    "name": "Звёздный",
+    "name:en": "Zvezdny Hotel",
+    "stars": "4",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 114131768,
+  "timestamp": "2021-08-16T08:53:44Z",
+  "version": 3,
+  "changeset": 109736716,
+  "user": "Vyacheslav 89",
+  "uid": 10200827,
+  "center": {
+    "lat": 43.5893831,
+    "lon": 39.7238696
+  },
+  "nodes": [
+    595920093,
+    595920135,
+    1293298624,
+    1293298610,
+    595920093
+  ],
+  "tags": {
+    "addr:street": "улица Островского",
+    "building": "yes",
+    "name": "Моё море",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 190714781,
+  "timestamp": "2025-01-19T12:51:24Z",
+  "version": 15,
+  "changeset": 161523126,
+  "user": "Vyacheslav 89",
+  "uid": 10200827,
+  "center": {
+    "lat": 43.5906686,
+    "lon": 39.7274082
+  },
+  "nodes": [
+    2013514474,
+    7544474014,
+    7544474010,
+    6848120180,
+    2016208863,
+    7544474013,
+    2016208862,
+    2013514476,
+    7544474034,
+    2013514475,
+    2374057931,
+    2374057930,
+    2374057921,
+    2374057923,
+    2013514473,
+    7544473991,
+    7544474009,
+    2641823699,
+    7544474012,
+    7544474011,
+    2013514474
+  ],
+  "tags": {
+    "addr:city": "Сочи",
+    "addr:housenumber": "56 с1",
+    "addr:postcode": "354000",
+    "addr:street": "улица Горького",
+    "building": "yes",
+    "building:levels": "6",
+    "contact:email": "info.sochi@cosmoshotels.ru",
+    "contact:phone": "+7 862 2968228",
+    "contact:website": "https://sochi.cosmosgroup.ru/",
+    "name": "Cosmos",
+    "opening_hours": "24/7",
+    "tourism": "hotel",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 201474330,
+  "timestamp": "2025-07-13T09:40:54Z",
+  "version": 11,
+  "changeset": 168865368,
+  "user": "desk77",
+  "uid": 3417100,
+  "center": {
+    "lat": 43.5767955,
+    "lon": 39.7243768
+  },
+  "nodes": [
+    2114672724,
+    2114672714,
+    2114672715,
+    2114672712,
+    2114672710,
+    2114672708,
+    2114672709,
+    2114672711,
+    2114672713,
+    2114672716,
+    2114672717,
+    2114672725,
+    2114672722,
+    2114672720,
+    2114672718,
+    2114672719,
+    2114672721,
+    2114672724
+  ],
+  "tags": {
+    "addr:city": "Сочи",
+    "addr:country": "RU",
+    "addr:housenumber": "11/1",
+    "addr:street": "улица Орджоникидзе",
+    "building": "hotel",
+    "building:levels": "16",
+    "description": "Апарт-отель Бревис/Brevis apartments - сервисные апартаменты для краткосрочного и длительного размещения, уровень гостиничного сервиса 3*",
+    "email": "RE@brevis-apartments.ru",
+    "internet_access": "wlan",
+    "internet_access:fee": "no",
+    "name": "Brevis apartments",
+    "payment:cash": "yes",
+    "payment:credit_cards": "yes",
+    "phone": "+7 862 2629711",
+    "rooms": "124",
+    "smoking": "no",
+    "stars": "3",
+    "start_date": "2013",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 201474331,
+  "timestamp": "2026-06-02T18:32:29Z",
+  "version": 11,
+  "changeset": 183559672,
+  "user": "Vyacheslav 89",
+  "uid": 10200827,
+  "center": {
+    "lat": 43.5776573,
+    "lon": 39.7243741
+  },
+  "nodes": [
+    2114672770,
+    2114672781,
+    2114672780,
+    2114672783,
+    2114672785,
+    2114672787,
+    2114672786,
+    2114672784,
+    2114672782,
+    2114672779,
+    2114672778,
+    2114672771,
+    2114672773,
+    2114672775,
+    2114672777,
+    2114672776,
+    2114672774,
+    2114672772,
+    2114672770
+  ],
+  "tags": {
+    "addr:city": "Сочи",
+    "addr:country": "RU",
+    "addr:housenumber": "11А к1",
+    "addr:postcode": "354000",
+    "addr:street": "улица Орджоникидзе",
+    "brand": "Mercure",
+    "brand:wikidata": "Q1709809",
+    "building": "hotel",
+    "building:levels": "16",
+    "internet_access": "wlan",
+    "name": "Mercure Sochi Centre",
+    "operator": "Mercure",
+    "stars": "4",
+    "start_date": "2013",
+    "tourism": "hotel",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 201474333,
+  "timestamp": "2026-06-02T18:32:29Z",
+  "version": 10,
+  "changeset": 183559672,
+  "user": "Vyacheslav 89",
+  "uid": 10200827,
+  "center": {
+    "lat": 43.5772268,
+    "lon": 39.7237832
+  },
+  "nodes": [
+    2114672732,
+    2114672734,
+    2114672741,
+    2114672742,
+    2114672743,
+    2114672744,
+    2114672756,
+    2114672757,
+    2114672759,
+    2114672758,
+    2114672765,
+    2114672764,
+    2114672760,
+    2114672750,
+    2114672748,
+    2114672746,
+    2114672740,
+    2114672733,
+    2114672732
+  ],
+  "tags": {
+    "addr:city": "Сочи",
+    "addr:country": "RU",
+    "addr:housenumber": "11А к2",
+    "addr:street": "улица Орджоникидзе",
+    "brand": "Pullman",
+    "brand:wikidata": "Q3410757",
+    "building": "hotel",
+    "building:levels": "16",
+    "name": "Pullman Sochi Centre",
+    "start_date": "2013",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 218836911,
+  "timestamp": "2026-01-30T18:01:56Z",
+  "version": 6,
+  "changeset": 177900627,
+  "user": "Vyacheslav 89",
+  "uid": 10200827,
+  "center": {
+    "lat": 43.5664537,
+    "lon": 39.7379956
+  },
+  "nodes": [
+    2280424147,
+    2374075609,
+    2374075612,
+    2374075613,
+    2374075614,
+    13512731044,
+    2374075608,
+    2374075607,
+    2374075606,
+    2374075604,
+    2374075603,
+    2374075591,
+    2374075588,
+    2280424145,
+    2374075587,
+    2374075589,
+    2280424146,
+    2374075592,
+    2374075593,
+    2374075594,
+    2374075595,
+    2374075596,
+    2374075597,
+    2374075598,
+    2374075599,
+    2374075600,
+    2374075602,
+    2280424148,
+    2374075605,
+    2280424147
+  ],
+  "tags": {
+    "addr:city": "Сочи",
+    "addr:housenumber": "19",
+    "addr:postcode": "354002",
+    "addr:street": "Черноморская улица",
+    "building": "hotel",
+    "name": "Dolphin resort Hotel",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 228736311,
+  "timestamp": "2025-06-18T06:06:45Z",
+  "version": 5,
+  "changeset": 167765712,
+  "user": "desk77",
+  "uid": 3417100,
+  "center": {
+    "lat": 43.5670844,
+    "lon": 39.7362366
+  },
+  "nodes": [
+    2374075635,
+    10604900315,
+    10604900316,
+    10604900321,
+    10604900317,
+    10604900320,
+    2374075632,
+    10604900319,
+    10604900318,
+    2374075624,
+    2374075626,
+    2374075627,
+    2374075628,
+    2374075630,
+    2374075631,
+    2374075633,
+    10604900312,
+    10604900313,
+    10604900314,
+    2374075635
+  ],
+  "tags": {
+    "addr:city": "Сочи",
+    "addr:housenumber": "13Г",
+    "addr:postcode": "354002",
+    "addr:street": "Черноморская улица",
+    "building": "hotel",
+    "building:levels": "4",
+    "name": "Sanremo",
+    "start_date": "2013",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 1078567033,
+  "timestamp": "2025-01-19T12:39:44Z",
+  "version": 4,
+  "changeset": 161522733,
+  "user": "Vyacheslav 89",
+  "uid": 10200827,
+  "center": {
+    "lat": 43.5804411,
+    "lon": 39.7233920
+  },
+  "nodes": [
+    655217901,
+    9887882228,
+    9887882229,
+    9887882230,
+    9887882231,
+    9887882232,
+    9887882233,
+    9887882234,
+    9887882235,
+    9887882236,
+    9887882237,
+    9887882238,
+    9887882239,
+    9887882240,
+    9887882241,
+    9887882242,
+    656072486,
+    9887882243,
+    9887882244,
+    9887882245,
+    9887882246,
+    655217950,
+    655217948,
+    655217945,
+    655217909,
+    655217906,
+    655217901
+  ],
+  "tags": {
+    "name": "Grand Cascade Spa",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "relation",
+  "id": 1949407,
+  "timestamp": "2026-10-15T16:40:21Z",
+  "version": 15,
+  "changeset": 190567706,
+  "user": "lxndrl",
+  "uid": 21771395,
+  "center": {
+    "lat": 43.5665171,
+    "lon": 39.7490710
+  },
+  "members": [
+    {
+      "type": "way",
+      "ref": 143909471,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 143909720,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 143909435,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 53550014,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 53550013,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 143909578,
+      "role": "outer"
+    }
+  ],
+  "tags": {
+    "addr:city": "Сочи",
+    "addr:housenumber": "86",
+    "addr:street": "Курортный проспект",
+    "leisure": "park",
+    "name": "Luciano отель и СПА 5*",
+    "old_name": "Санаторий \"Золотой колос\"",
+    "stars": "4",
+    "tourism": "hotel",
+    "type": "multipolygon",
+    "website": "https://luciano-sochi.ru/"
+  }
+},
+{
+  "type": "relation",
+  "id": 3076648,
+  "timestamp": "2023-08-25T09:36:08Z",
+  "version": 4,
+  "changeset": 140362345,
+  "user": "NorthCrab",
+  "uid": 15215305,
+  "center": {
+    "lat": 43.5993445,
+    "lon": 39.7121340
+  },
+  "members": [
+    {
+      "type": "way",
+      "ref": 52504316,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 229462767,
+      "role": "outer"
+    }
+  ],
+  "tags": {
+    "name": "Отель и СПА \"Родина\"",
+    "name:en": "Rodina Hotel and Spa",
+    "stars": "5",
+    "tourism": "hotel",
+    "type": "multipolygon"
+  }
+},
+{
+  "type": "relation",
+  "id": 3076649,
+  "timestamp": "2023-08-25T09:36:08Z",
+  "version": 6,
+  "changeset": 140362345,
+  "user": "NorthCrab",
+  "uid": 15215305,
+  "center": {
+    "lat": 43.5956759,
+    "lon": 39.7120088
+  },
+  "members": [
+    {
+      "type": "way",
+      "ref": 52504316,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 989309009,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 989309008,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 989309007,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 52587519,
+      "role": "outer"
+    }
+  ],
+  "tags": {
+    "name": "Санаторий \"Сочи\"",
+    "name:de": "Sanatorium \"Sotschi\"",
+    "name:en": "\"Sochi\" Sanatorium",
+    "stars": "4",
+    "tourism": "hotel",
+    "type": "multipolygon"
+  }
+},
+{
+  "type": "relation",
+  "id": 3113674,
+  "timestamp": "2023-08-25T09:36:08Z",
+  "version": 4,
+  "changeset": 140362345,
+  "user": "NorthCrab",
+  "uid": 15215305,
+  "center": {
+    "lat": 43.5637940,
+    "lon": 39.7492875
+  },
+  "members": [
+    {
+      "type": "way",
+      "ref": 53564717,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 51949955,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 231988713,
+      "role": "outer"
+    }
+  ],
+  "tags": {
+    "name": "Санаторий им. Фрунзе",
+    "name:en": "Frunze Sanatorium",
+    "stars": "4",
+    "tourism": "hotel",
+    "type": "multipolygon"
+  }
+},
+{
+  "type": "relation",
+  "id": 3113676,
+  "timestamp": "2023-08-25T09:36:08Z",
+  "version": 3,
+  "changeset": 140362345,
+  "user": "NorthCrab",
+  "uid": 15215305,
+  "center": {
+    "lat": 43.5646757,
+    "lon": 39.7462316
+  },
+  "members": [
+    {
+      "type": "way",
+      "ref": 53564717,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 231988712,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 231988710,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 231988711,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 231988713,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 231988705,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 231988704,
+      "role": "outer"
+    }
+  ],
+  "tags": {
+    "name": "Центральный военный клинический санаторий «Сочи»",
+    "stars": "4",
+    "tourism": "hotel",
+    "type": "multipolygon"
+  }
+},
+{
+  "type": "relation",
+  "id": 9273776,
+  "timestamp": "2025-10-16T08:58:22Z",
+  "version": 8,
+  "changeset": 173354646,
+  "user": "Emilio L",
+  "uid": 22077315,
+  "center": {
+    "lat": 43.5758548,
+    "lon": 39.7269194
+  },
+  "members": [
+    {
+      "type": "way",
+      "ref": 666876108,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 666876109,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 666876106,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 666876107,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 666876105,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 666876122,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 666876115,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 666876114,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 666876112,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 666876113,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 666876110,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 666876111,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 666876116,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 182053817,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 667653465,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 667653459,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 667653464,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 667653463,
+      "role": "outer"
+    }
+  ],
+  "tags": {
+    "addr:city": "Сочи",
+    "addr:housenumber": "17",
+    "addr:postcode": "354000",
+    "addr:street": "улица Орджоникидзе",
+    "air_conditioning": "yes",
+    "bar": "yes",
+    "brand": "Hyatt",
+    "building": "yes",
+    "building:levels": "27",
+    "description": "5-star hotel in Sochi.",
+    "email": "sochi.regency@hyatt.com",
+    "internet_access": "yes",
+    "internet_access:fee": "customers",
+    "name": "Hyatt Regency Sochi",
+    "not:name": "Grand karat Sochi",
+    "old_name": "Хаятт Ридженси Сочи",
+    "opening_hours": "24/7",
+    "operator": "Hyatt Hotels Corporation",
+    "payment:american_express": "yes",
+    "payment:credit_cards": "yes",
+    "payment:debit_cards": "yes",
+    "payment:diners_club": "yes",
+    "payment:discover_card": "yes",
+    "payment:maestro": "yes",
+    "payment:mastercard": "yes",
+    "payment:visa": "yes",
+    "payment:visa_electron": "yes",
+    "phone": "+7 862 227 12 34",
+    "reservation": "yes",
+    "rooms": "198",
+    "stars": "5",
+    "start_date": "2013",
+    "tourism": "hotel",
+    "type": "multipolygon",
+    "wikidata": "Q136512738"
+  }
+},
+{
+  "type": "relation",
+  "id": 11126889,
+  "timestamp": "2020-05-21T10:45:08Z",
+  "version": 1,
+  "changeset": 85549125,
+  "user": "Vyacheslav 89",
+  "uid": 10200827,
+  "center": {
+    "lat": 43.5906686,
+    "lon": 39.7274082
+  },
+  "members": [
+    {
+      "type": "way",
+      "ref": 806783535,
+      "role": "inner"
+    },
+    {
+      "type": "way",
+      "ref": 190714781,
+      "role": "outer"
+    }
+  ],
+  "tags": {
+    "tourism": "hotel",
+    "type": "multipolygon"
+  }
+},
+{
+  "type": "node",
+  "id": 9257645256,
+  "lat": 43.5692949,
+  "lon": 39.7306520,
+  "timestamp": "2023-08-25T08:09:55Z",
+  "version": 5,
+  "changeset": 140358152,
+  "user": "NorthCrab",
+  "uid": 15215305,
+  "tags": {
+    "name": "Жемчужина",
+    "natural": "beach"
+  }
+},
+{
+  "type": "way",
+  "id": 52505450,
+  "timestamp": "2026-09-22T13:57:59Z",
+  "version": 14,
+  "changeset": 189401611,
+  "user": "Реdактор",
+  "uid": 20365538,
+  "center": {
+    "lat": 43.5858589,
+    "lon": 39.7128357
+  },
+  "nodes": [
+    27984550,
+    653881503,
+    653881379,
+    14206489404,
+    653881421,
+    653881387,
+    653881386,
+    653881384,
+    13308414967,
+    13308414968,
+    653733875,
+    14206489447,
+    653733729,
+    667305413,
+    565054641,
+    1129536769,
+    1129536766,
+    9837999472,
+    9837999473,
+    9837999474,
+    9837999475,
+    27997608,
+    13315947261,
+    13315947260,
+    27975678,
+    27956631,
+    27937706,
+    27943146,
+    27915137,
+    28077359,
+    28082796,
+    28034143,
+    28040746,
+    28003416,
+    27984550
+  ],
+  "tags": {
+    "natural": "beach",
+    "surface": "pebblestone"
+  }
+},
+{
+  "type": "way",
+  "id": 53012378,
+  "timestamp": "2025-06-18T06:06:45Z",
+  "version": 24,
+  "changeset": 167765712,
+  "user": "desk77",
+  "uid": 3417100,
+  "center": {
+    "lat": 43.5658487,
+    "lon": 39.7398304
+  },
+  "nodes": [
+    27931731,
+    27973718,
+    27992026,
+    7709047485,
+    7709047385,
+    28011056,
+    28031222,
+    28076294,
+    27888776,
+    27905660,
+    10604859993,
+    10604859991,
+    27922898,
+    10604859992,
+    27964345,
+    27958808,
+    27999041,
+    671450481,
+    671450479,
+    671450480,
+    671450478,
+    27993448,
+    28039679,
+    28060815,
+    973590228,
+    28078830,
+    7743407614,
+    28072003,
+    27880582,
+    27898361,
+    27942078,
+    27933797,
+    27975245,
+    27970107,
+    28014341,
+    1131201694,
+    1131201779,
+    28032420,
+    7701976921,
+    1131201657,
+    7701976922,
+    671450486,
+    1131201819,
+    1131201826,
+    1131201728,
+    662590092,
+    1131201832,
+    1131201788,
+    1131201770,
+    1131201690,
+    1131201681,
+    1131201837,
+    1131201663,
+    1131201828,
+    676680196,
+    1131201836,
+    662497369,
+    1131201734,
+    676680197,
+    662590107,
+    662590106,
+    662590072,
+    662590076,
+    662072671,
+    662072672,
+    662023116,
+    662023106,
+    1131201723,
+    1131201714,
+    676682724,
+    662077042,
+    662077041,
+    671450484,
+    671450483,
+    662077040,
+    671450475,
+    671450477,
+    662197152,
+    662197150,
+    662197149,
+    671450474,
+    671450473,
+    662197148,
+    662197114,
+    662197111,
+    662197128,
+    671450459,
+    671450458,
+    662197116,
+    662197118,
+    671450461,
+    662197144,
+    662044342,
+    671450457,
+    671450462,
+    10604859995,
+    2374075623,
+    2374075629,
+    671450454,
+    671450452,
+    671450453,
+    671450450,
+    671450451,
+    671450442,
+    671450444,
+    671450447,
+    661533929,
+    661533930,
+    671450446,
+    671450445,
+    671450418,
+    27931731
+  ],
+  "tags": {
+    "name": "Солнечный",
+    "name:en": "Solnechny",
+    "natural": "beach"
+  }
+},
+{
+  "type": "way",
+  "id": 53012393,
+  "timestamp": "2026-06-07T06:00:38Z",
+  "version": 9,
+  "changeset": 183764431,
+  "user": "mavl",
+  "uid": 564990,
+  "center": {
+    "lat": 43.5772493,
+    "lon": 39.7207049
+  },
+  "nodes": [
+    653733699,
+    655197766,
+    671450413,
+    655197770,
+    655197771,
+    671450387,
+    671450388,
+    11634232460,
+    671450382,
+    653733654,
+    671450390,
+    671450391,
+    671450389,
+    653733645,
+    653733640,
+    653733712,
+    653733703,
+    653733699
+  ],
+  "tags": {
+    "name": "Пляж \"Маяк\"",
+    "natural": "beach"
+  }
+},
+{
+  "type": "way",
+  "id": 256077310,
+  "timestamp": "2023-08-25T08:09:55Z",
+  "version": 11,
+  "changeset": 140358152,
+  "user": "NorthCrab",
+  "uid": 15215305,
+  "center": {
+    "lat": 43.5725876,
+    "lon": 39.7270132
+  },
+  "nodes": [
+    27903038,
+    9257645250,
+    661365958,
+    661366031,
+    671450439,
+    671450438,
+    671450437,
+    671450436,
+    671450435,
+    671450433,
+    671450434,
+    661366208,
+    661366226,
+    661366223,
+    661366220,
+    661366216,
+    661366213,
+    661365968,
+    661365973,
+    661365971,
+    661365970,
+    671450428,
+    671450427,
+    671450426,
+    671450429,
+    671450490,
+    671450491,
+    671450493,
+    659582464,
+    659582468,
+    1410374592,
+    1072245833,
+    659582461,
+    671450361,
+    671450370,
+    671450371,
+    671450366,
+    671450367,
+    671450395,
+    671450397,
+    671450400,
+    671450401,
+    656072316,
+    656072317,
+    656072314,
+    656072315,
+    656072312,
+    656072313,
+    656072311,
+    656072285,
+    656072283,
+    656072284,
+    656072282,
+    656072292,
+    656072291,
+    656072293,
+    671450380,
+    671450394,
+    28006597,
+    653733672,
+    28027718,
+    1240517376,
+    1240517379,
+    571631924,
+    28073359,
+    653733661,
+    28066077,
+    653733667,
+    27901186,
+    571631925,
+    27893991,
+    27936338,
+    27954784,
+    27971313,
+    27989751,
+    9257645257,
+    28007907,
+    28056654,
+    27891365,
+    27885497,
+    27928620,
+    27921356,
+    27961828,
+    27956226,
+    27998728,
+    28019347,
+    28035933,
+    671450432,
+    28058593,
+    28048583,
+    28068848,
+    27903038
+  ],
+  "tags": {
+    "name": "пляж",
+    "name:en": "Riviera",
+    "name:ru": "Дельмар",
+    "natural": "beach",
+    "surface": "pebblestone"
+  }
+},
+{
+  "type": "relation",
+  "id": 13445892,
+  "timestamp": "2021-11-16T13:17:21Z",
+  "version": 1,
+  "changeset": 113851833,
+  "user": "AzurRu",
+  "uid": 731064,
+  "center": {
+    "lat": 43.6050609,
+    "lon": 39.7056267
+  },
+  "members": [
+    {
+      "type": "way",
+      "ref": 1003020736,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1003020737,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 53267900,
+      "role": "outer"
+    }
+  ],
+  "tags": {
+    "natural": "beach",
+    "surface": "pebblestone",
+    "type": "multipolygon"
+  }
+},
+{
+  "type": "count",
+  "id": 0,
+  "tags": {
+    "nodes": "0",
+    "ways": "2995",
+    "relations": "0",
+    "total": "2995"
+  }
+}
+
+  ]
+}

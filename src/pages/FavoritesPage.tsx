@@ -74,7 +74,7 @@ function ShareShortlist({ onClose }: { onClose: () => void }) {
     finally { setBusy(false); }
   }
   return <Modal open onClose={onClose} title="Поделиться подборкой" className="shortlist-share-modal">
-    <p>По ссылке будут доступны название подборки, даты, гости, выбранные фильтры и карточки. Личные заметки, текст пожеланий, места из диалога и переписки останутся у вас.</p>
+    <p>По ссылке будут доступны название подборки, даты, гости, условия из списка ниже и карточки. Личные заметки, текст пожеланий, фильтры каталога, места из диалога и переписки останутся у вас.</p>
     <div className="shortlist-share-preview"><h3>{shortlist.title}</h3><SavedTripSummary trip={shortlist.trip} /><ul>{shortlist.items.map((item) => <li key={item.id}>{item.name}</li>)}</ul></div>
     <p className="shortlist-muted">Это копия на момент создания ссылки, только для чтения. Ссылка действует 30 дней; открыть её сможет любой, кому вы её передадите. Новая ссылка закрывает прежнюю.</p>
     {error && <p role="alert" className="shortlist-error">{error}</p>}

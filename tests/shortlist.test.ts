@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { emptyShortlist, importShortlist, mergeShortlistItems, parseShortlist, safeFavorite, shortlistTrip } from "../src/features/favorites/shortlistState";
+import type { Trip } from "../shared/types";
 const item = { id: "hotel::room", name: "Номер", path: "/hotels/hotel?room=room", note: "Моя заметка", stage: "clarify" as const };
 
 test("legacy saved cards keep room identity and acquire neutral next step", () => {
@@ -44,4 +45,32 @@ test("sign-in import keeps saved journey A even after the active search changed 
   assert.equal(merged.title, "Поездка B");
   assert.deepEqual(merged.trip, account.trip);
   assert.equal(merged.items.length, 2);
+});
+
+test("Sochi saved journey retains its currency-bound budget, catalog limits and amenity wishes", () => {
+  const trip: Trip = {
+    region: "Сочи", checkIn: "2026-12-01", checkOut: "2026-12-04", adults: 2, children: 0,
+    preferences: [{ feature: "washing_machine", required: true }, { feature: "pool", required: false }],
+    scenarios: [], text: "Стиралка обязательна", admissionMode: "explore",
+    hotelFilters: { maxPricePerNight: 8000, lodgingTypes: ["apartment"], query: "балкон",
+      nearby: [{ kind: "beach", maxMeters: 900 }] },
+  };
+  const saved = parseShortlist({ ...emptyShortlist(), title: "Зима в Сочи", trip, items: [item] });
+  assert.deepEqual(saved.trip, trip);
+  assert.deepEqual(importShortlist(emptyShortlist(), saved).trip, trip);
+  assert.deepEqual(shortlistTrip({ ...trip, checkIn: "", checkOut: "" }), { ...trip, checkIn: "", checkOut: "" });
+  assert.equal(shortlistTrip({ ...trip, region: "Несуществующий регион" }), null);
+});
+
+test("importing Busan cards into a saved Sochi trip does not reinterpret the account budget", () => {
+  const sochi: Trip = { region: "Сочи", checkIn: "", checkOut: "", adults: 2, children: 0,
+    preferences: [], scenarios: [], text: "", hotelFilters: { maxPricePerNight: 8000 } };
+  const busan: Trip = { ...sochi, region: "Пусан", hotelFilters: { maxPricePerNight: 150000 } };
+  const account = { ...emptyShortlist(), title: "Сочи", trip: sochi, items: [item] };
+  const browser = { ...emptyShortlist(), title: "Пусан", trip: busan, items: [{ ...item, id: "busan-room" }] };
+  const merged = importShortlist(account, browser);
+  assert.deepEqual(merged.trip, sochi);
+  assert.equal(merged.title, account.title);
+  assert.equal(merged.items.length, 2);
+  assert.equal(emptyShortlist().title, "Моя поездка");
 });

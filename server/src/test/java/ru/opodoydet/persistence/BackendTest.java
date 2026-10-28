@@ -320,12 +320,15 @@ class BackendTest {
   void mandatorySelectionsSurviveTextAndNegationStaysLocal() {
     JsonNode interpreted =
         Agents.parseRules(
-            "Тишина не нужна, нужен семейный номер.", List.of(preference("courtyard", true)));
+            "Тишина не нужна, нужен семейный номер.", List.of(preference("low_noise", true)));
     assertFalse(interpreted.path("conflicts").isEmpty());
     assertTrue(interpreted.path("preferences").path(0).path("required").asBoolean());
     assertTrue(
         Json.list(interpreted.path("preferences")).stream()
             .anyMatch(p -> Json.str(p, "feature").equals("family")));
+    JsonNode courtyard = Agents.parseRules("Тишина не нужна", List.of(preference("courtyard", true)));
+    assertTrue(courtyard.path("conflicts").isEmpty());
+    assertEquals("courtyard", courtyard.path("preferences").path(0).path("feature").asText());
     assertFalse(
         Agents.parseRules("Не обязательно тихий номер", List.of())
             .path("preferences")
@@ -600,12 +603,17 @@ class BackendTest {
                   "test-only", "test-model", "http://127.0.0.1:" + mock.getAddress().getPort(), Agents.Protocol.RESPONSES));
       JsonNode interpreted = agents.interpret(trip().put("text", "Тихий номер"));
       assertEquals("rules", Json.str(interpreted, "mode"));
+      assertEquals(1, calls.get(), "Configured model is attempted once before deterministic fallback");
       assertTrue(interpreted.path("warnings").toString().contains("недоступен"));
       assertTrue(interpreted.path("warnings").toString().contains("не гарантирует"));
       JsonNode answer = agents.extract("Лифт есть.", "step_free_access");
       assertEquals("rules", Json.str(answer, "mode"));
       assertTrue(answer.path("extractions").isEmpty());
-      assertEquals(2, calls.get());
+      assertTrue(answer.path("warnings").toString().contains("недоступна"));
+      JsonNode unsupportedQuote = agents.extract("Лифт есть.", "step_free_access");
+      assertEquals("rules", Json.str(unsupportedQuote, "mode"));
+      assertTrue(unsupportedQuote.path("extractions").isEmpty(), "Invented model quotes cannot become facts");
+      assertEquals(3, calls.get());
     } finally {
       mock.stop(0);
     }
@@ -682,6 +690,10 @@ class BackendTest {
                   null)
               .code);
       search.put("text", "Тихий номер не нужен.");
+      JsonNode unrelated = request(base, "POST", "/api/search", search, null).body;
+      assertFalse(unrelated.path("results").isEmpty(), "Quietness and courtyard must remain separate");
+      assertTrue(unrelated.path("conflicts").isEmpty());
+      search.put("text", "Окна во двор не нужны.");
       JsonNode conflict = request(base, "POST", "/api/search", search, null).body;
       assertTrue(conflict.path("results").isEmpty());
       assertFalse(conflict.path("conflicts").isEmpty());

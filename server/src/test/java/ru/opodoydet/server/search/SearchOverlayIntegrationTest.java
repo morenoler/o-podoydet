@@ -102,7 +102,8 @@ class SearchOverlayIntegrationTest {
       assertTrue(criterion(only(result), "courtyard").path("facts").toString().contains("host"));
       // New evidence and caller mutations cannot rewrite the old search snapshot.
       host(db, "r1", "courtyard", false, false);
-      assertTrue(search(db).search(trip).path("results").isEmpty());
+      ObjectNode afterContradiction = search(db).search(trip);
+      assertTrue(afterContradiction.path("results").isEmpty(), afterContradiction::toString);
       ((ObjectNode) only(result).path("best")).put("status", "excluded");
       assertEquals(context, search(db).advisorContext(trip, id, "visitor:owner"));
       context.put("fitCount", 99);

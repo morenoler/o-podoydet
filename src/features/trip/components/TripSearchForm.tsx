@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowRight, MapPin, CalendarDays } from "lucide-react";
 import type { Trip } from "../../../../shared/types";
-import { today } from "../../../shared/lib/date";
+import { searchToday } from "../../search/searchTrip";
+import { changeTripRegion } from "../../search/searchPolicy";
+import { isRegionName, regionDetails } from "../../../../shared/regions";
 
-type TripField = "checkIn" | "checkOut" | "adults" | "children";
+type TripField = "region" | "checkIn" | "checkOut" | "adults" | "children";
 type FormErrors = Partial<Record<TripField, string>>;
 
 function validDate(value: string) {
@@ -14,8 +16,8 @@ function validDate(value: string) {
   );
 }
 
-function nextDate(value: string) {
-  if (!validDate(value)) return today();
+function nextDate(value: string, region: string) {
+  if (!validDate(value)) return searchToday(region);
   const date = new Date(`${value}T12:00:00Z`);
   date.setUTCDate(date.getUTCDate() + 1);
   return date.toISOString().slice(0, 10);
@@ -23,8 +25,9 @@ function nextDate(value: string) {
 
 function validate(form: Trip): FormErrors {
   const errors: FormErrors = {};
+  if (!isRegionName(form.region)) errors.region = "Выберите доступное направление.";
   if (!validDate(form.checkIn)) errors.checkIn = "Укажите дату заезда.";
-  else if (form.checkIn < today())
+  else if (form.checkIn < searchToday(form.region))
     errors.checkIn = "Дата заезда должна быть сегодня или позже.";
   if (!validDate(form.checkOut)) errors.checkOut = "Укажите дату выезда.";
   else if (validDate(form.checkIn) && form.checkOut <= form.checkIn)
@@ -43,9 +46,13 @@ function validate(form: Trip): FormErrors {
 export function TripSearchForm({
   initialTrip,
   onContinue,
+  regions = [initialTrip.region],
+  onRegionChange,
 }: {
   initialTrip: Trip;
   onContinue: (trip: Trip) => void;
+  regions?: string[];
+  onRegionChange?: (trip: Trip) => void;
 }) {
   const [form, setForm] = useState(initialTrip);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -68,7 +75,7 @@ export function TripSearchForm({
       setAttempt((value) => value + 1);
       return;
     }
-    onContinue({ ...form, region: "Пусан" });
+    onContinue(form);
   }
 
   const nights =
@@ -127,15 +134,21 @@ export function TripSearchForm({
           <MapPin size={20} aria-hidden="true" />
           <select
             id="trip-region"
-            value="Пусан"
+            value={form.region}
             aria-describedby="trip-region-hint"
-            onChange={() => {}}
+            aria-invalid={Boolean(errors.region)}
+            onChange={(event) => {
+              const next = changeTripRegion(form, event.target.value);
+              setForm(next);
+              setErrors((previous) => ({ ...previous, region: undefined }));
+              onRegionChange?.(next);
+            }}
           >
-            <option value="Пусан">Пусан, Южная Корея</option>
+            {(regions.length ? regions : [form.region]).map((region) => <option key={region} value={region}>{regionDetails(region)?.label || region}</option>)}
           </select>
         </div>
         <small id="trip-region-hint">
-          Подбираем жильё в районе пляжа Хэундэ.
+          {regionDetails(form.region)?.hint || "Выберите доступное направление."}
         </small>
       </label>
       <div className="trip-search-fields-row">
@@ -145,7 +158,7 @@ export function TripSearchForm({
             id="trip-checkIn"
             type="date"
             required
-            min={today()}
+            min={searchToday(form.region)}
             value={form.checkIn}
             aria-invalid={Boolean(errors.checkIn)}
             aria-describedby={errors.checkIn ? "trip-checkIn-error" : undefined}
@@ -163,7 +176,7 @@ export function TripSearchForm({
             id="trip-checkOut"
             type="date"
             required
-            min={nextDate(form.checkIn)}
+            min={nextDate(form.checkIn, form.region)}
             value={form.checkOut}
             aria-invalid={Boolean(errors.checkOut)}
             aria-describedby={
@@ -228,7 +241,7 @@ export function TripSearchForm({
         <CalendarDays size={17} aria-hidden="true" />
         <span>
           {nights > 0
-            ? `${nights} ${nightsText} в Пусане`
+            ? `${nights} ${nightsText} ${regionDetails(form.region)?.inName || form.region}`
             : "Выберите даты вашей поездки"}
         </span>
       </div>

@@ -5,7 +5,7 @@ import { tripSchema } from "../../../shared/validation";
 import { isPhotoUrl } from "../../shared/lib/hotelPhotos";
 
 export function emptyShortlist(): Shortlist {
-  return { title: "Моя поездка в Пусан", trip: null, items: [], revision: 0, updatedAt: null };
+  return { title: "Моя поездка", trip: null, items: [], revision: 0, updatedAt: null };
 }
 export function shortlistTrip(value: unknown): Trip | null {
   if (!value || typeof value !== "object") return null;

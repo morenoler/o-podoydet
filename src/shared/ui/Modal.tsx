@@ -18,6 +18,7 @@ export function Modal({
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
+    const trigger = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     if (open && !node.open) node.showModal();
     if (!open && node.open) node.close();
     if (!open) return;
@@ -25,6 +26,9 @@ export function Modal({
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = previous;
+      requestAnimationFrame(() => {
+        if (trigger?.isConnected && !document.querySelector("dialog[open]")) trigger.focus({ preventScroll: true });
+      });
     };
   }, [open]);
   return (

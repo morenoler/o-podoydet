@@ -40,6 +40,21 @@ function verifiedRoom(room: Room, now: Date) {
   );
 }
 
+/** A failure on any trip day matters; a positive statement must cover the entire stay. */
+function appliesToTrip(fact: Fact, trip: Trip, threshold?: number) {
+  const date = (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value)
+    && new Date(`${value}T12:00:00Z`).toISOString().slice(0, 10) === value;
+  const from = fact.validFrom, to = fact.validTo;
+  try {
+    if ((from != null && !date(from)) || (to != null && !date(to)) || (from && to && from > to)) return false;
+  } catch { return false; }
+  const negative = threshold === undefined ? fact.value === false
+    : typeof fact.value === "number" && Number.isFinite(fact.value) && fact.value > threshold;
+  return negative
+    ? (!from || from <= trip.checkOut) && (!to || to >= trip.checkIn)
+    : (!from || from <= trip.checkIn) && (!to || to >= trip.checkOut);
+}
+
 export function evaluate(
   facts: Fact[],
   preference: Preference,
@@ -65,14 +80,8 @@ export function evaluate(
       !f.supersededBy &&
       (definition.scope === "hotel" ? !f.roomId : f.roomId === room.id),
   );
-  const relevant = scoped.filter((f) => {
-    const negative = definition.evaluator === "max"
-      ? typeof f.value === "number" && f.value > definition.threshold!
-      : f.value === false;
-    return negative
-      ? (!f.validFrom || f.validFrom <= trip.checkOut) && (!f.validTo || f.validTo >= trip.checkIn)
-      : (!f.validFrom || f.validFrom <= trip.checkIn) && (!f.validTo || f.validTo >= trip.checkOut);
-  });
+  const relevant = scoped.filter((f) => appliesToTrip(f, trip,
+    definition.evaluator === "max" ? definition.threshold : undefined));
   const active = relevant.filter((f) => new Date(f.expiresAt) > now);
   const base = {
     feature: preference.feature,

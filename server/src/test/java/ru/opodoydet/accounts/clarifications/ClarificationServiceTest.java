@@ -56,6 +56,7 @@ class ClarificationServiceTest {
   static ObjectNode listing() {
     return Json.obj("title", "Объявление для изолированного теста", "description", "Один предлагаемый вариант размещения для проверки уточнений.",
         "city", "Пусан", "address", "Тестовая улица 1", "roomType", "Семейный номер", "capacity", 3,
+        "sleepingPlaces", 3, "beds", List.of(Json.obj("type", "single", "count", 3, "placesPerUnit", 1)),
         "pricePerNight", 10000, "amenities", List.of(), "status", "published", "floor", 2, "windowDirections", List.of("south"));
   }
   static ObjectNode trip(String feature) {
@@ -86,6 +87,32 @@ class ClarificationServiceTest {
       f.answer(question, true);
       assertEquals(0, f.db.rows("SELECT * FROM account_questions").size());
       assertEquals(0, f.store.facts().size());
+    }
+  }
+
+  @Test void sochiObservationDateAndRecheckUseMoscowAndPreserveStoredTimezones() throws Exception {
+    try (Fixture f = new Fixture()) {
+      f.listings.update("host", f.id, listing().put("city", "Сочи"));
+      var clock = Clock.fixed(Instant.parse("2026-10-27T18:30:00Z"), ZoneOffset.UTC);
+      var service = new ClarificationService(f.db, f.listings, clock);
+      var request = request("family");
+      request.set("trip", trip("family").put("region", "Сочи"));
+      var question = service.ask("guest", f.id, request);
+      assertEquals("Сочи", question.path("region").asText());
+      assertEquals("Europe/Moscow", question.path("timeZone").asText());
+      var invalid = response(0, true).put("observedOn", "2026-10-28");
+      problem(400, () -> service.answer("host", question.path("id").asText(), invalid));
+      var answered = service.answer("host", question.path("id").asText(), response(0, true).put("observedOn", "2026-10-27"));
+      assertEquals("2026-11-25T21:00:00Z", answered.path("answer").path("recheckAt").asText());
+      assertEquals("Europe/Moscow", answered.path("answer").path("timeZone").asText());
+      var projected = new OwnerListingSearchProvider(f.db, clock).snapshot(request.path("trip"))
+          .apply(List.of(), List.of(Json.obj("feature", "family", "required", true))).getFirst();
+      assertEquals("Europe/Moscow", projected.path("best").path("criteria").get(0).path("reportedEvidence").get(0).path("timeZone").asText());
+      // A later city edit invalidates scope but cannot rewrite the historical timestamp or zone.
+      f.listings.update("host", f.id, listing());
+      var historical = service.host("host").getFirst().path("history").get(0);
+      assertEquals("2026-11-25T21:00:00Z", historical.path("recheckAt").asText());
+      assertEquals("Europe/Moscow", historical.path("timeZone").asText());
     }
   }
 
@@ -357,6 +384,34 @@ class ClarificationServiceTest {
       problem(409, () -> f.service.answer("host", Json.str(question, "id"), response(1, true)));
       f.answer(f.ask("courtyard"), true);
       assertEquals("match", Json.str(f.criterion("courtyard", "verified"), "evidenceStatus"));
+    }
+  }
+
+  @Test void locationAndBedLayoutChangesThenRevertsRequireFreshClarification() throws Exception {
+    try (Fixture f = new Fixture()) {
+      ObjectNode original = listing();
+      original.set("coordinates", Json.array(List.of(129.16, 35.16)));
+      f.listings.update("host", f.id, original);
+      List<ObjectNode> changes = new ArrayList<>();
+      ObjectNode moved = original.deepCopy(); moved.set("coordinates", Json.array(List.of(129.17, 35.16))); changes.add(moved);
+      changes.add(original.deepCopy().putNull("coordinates"));
+      ObjectNode rearranged = original.deepCopy();
+      rearranged.set("beds", Json.array(List.of(Json.obj("type", "double", "count", 1, "placesPerUnit", 2),
+          Json.obj("type", "single", "count", 1, "placesPerUnit", 1)))); changes.add(rearranged);
+      ObjectNode morePlaces = original.deepCopy().put("sleepingPlaces", 4);
+      morePlaces.set("beds", Json.array(List.of(Json.obj("type", "single", "count", 4, "placesPerUnit", 1)))); changes.add(morePlaces);
+      ObjectNode rooms = original.deepCopy();
+      ((ObjectNode) rooms.path("beds").get(0)).put("room", "Спальня 2"); changes.add(rooms);
+      for (ObjectNode changed : changes) {
+        JsonNode question = f.ask("courtyard"); f.answer(question, true);
+        assertEquals("match", Json.str(f.criterion("courtyard", "verified"), "evidenceStatus"));
+        f.listings.update("host", f.id, changed);
+        f.listings.update("host", f.id, original);
+        assertEquals("unknown", Json.str(f.criterion("courtyard", "verified"), "evidenceStatus"));
+        JsonNode stale = f.service.user("guest").stream().filter(q -> Json.str(q, "id").equals(Json.str(question, "id"))).findFirst().orElseThrow();
+        assertEquals("scope_changed", Json.str(stale.path("answer"), "state"));
+        problem(409, () -> f.service.answer("host", Json.str(question, "id"), response(1, true)));
+      }
     }
   }
 

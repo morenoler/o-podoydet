@@ -24,8 +24,8 @@ function BookingRequestForm({ listing }: { listing: Listing }) {
   const { trip, effectivePreferences } = useApp();
   const location = useLocation();
   const [form, setForm] = useState({
-    checkIn: trip.checkIn >= bookingToday() ? trip.checkIn : "",
-    checkOut: trip.checkIn >= bookingToday() ? trip.checkOut : "",
+    checkIn: trip.checkIn >= bookingToday(listing.city) ? trip.checkIn : "",
+    checkOut: trip.checkIn >= bookingToday(listing.city) ? trip.checkOut : "",
     guests: Math.max(1, trip.adults + trip.children),
     note: "",
   });
@@ -34,13 +34,13 @@ function BookingRequestForm({ listing }: { listing: Listing }) {
   const [error, setError] = useState("");
   useEffect(() => {
     setForm((previous) => ({ ...previous,
-      checkIn: trip.checkIn >= bookingToday() ? trip.checkIn : "",
-      checkOut: trip.checkIn >= bookingToday() ? trip.checkOut : "",
+      checkIn: trip.checkIn >= bookingToday(listing.city) ? trip.checkIn : "",
+      checkOut: trip.checkIn >= bookingToday(listing.city) ? trip.checkOut : "",
       guests: Math.max(1, trip.adults + trip.children),
     }));
     setSent(null);
     setError("");
-  }, [trip.checkIn, trip.checkOut, trip.adults, trip.children]);
+  }, [trip.checkIn, trip.checkOut, trip.adults, trip.children, listing.city]);
   const errorRef = useRef<HTMLDivElement>(null);
   const submitting = useRef(false);
   const nights =
@@ -89,7 +89,7 @@ function BookingRequestForm({ listing }: { listing: Listing }) {
     >
       <h2 id="booking-title">Уточнить наличие и стоимость</h2>
       <p className="listing-night-price">
-        <strong>{price(listing.pricePerNight)}</strong>
+        <strong>{price(listing.pricePerNight, listing.currency)}</strong>
         <span>за ночь</span>
       </p>
       <p className="listing-booking-note">Цена из объявления. Наличие, обязательные сборы и условия отмены подтвердит отельер в ответ на заявку.</p>
@@ -144,8 +144,8 @@ function BookingRequestForm({ listing }: { listing: Listing }) {
               <input
                 type="date"
                 required
-                min={bookingToday()}
-                max={bookingLatestDate()}
+                min={bookingToday(listing.city)}
+                max={bookingLatestDate(listing.city)}
                 value={form.checkIn}
                 onChange={(event) =>
                   setForm({
@@ -162,7 +162,7 @@ function BookingRequestForm({ listing }: { listing: Listing }) {
               <input
                 type="date"
                 required
-                min={form.checkIn ? addDay(form.checkIn) : bookingToday()}
+                min={form.checkIn ? addDay(form.checkIn) : bookingToday(listing.city)}
                 max={form.checkIn ? addDay(form.checkIn, 90) : undefined}
                 value={form.checkOut}
                 onChange={(event) =>
@@ -229,7 +229,7 @@ function BookingRequestForm({ listing }: { listing: Listing }) {
           {nights > 0 && nights <= 90 && (
             <div className="listing-total">
               <span>По цене объявления за {nights} ноч.</span>
-              <strong>{price(nights * listing.pricePerNight)}</strong>
+              <strong>{price(nights * listing.pricePerNight, listing.currency)}</strong>
             </div>
           )}
           <button
@@ -239,7 +239,7 @@ function BookingRequestForm({ listing }: { listing: Listing }) {
             {busy ? "Отправляем заявку…" : "Отправить запрос отельеру"}
           </button>
           <p className="listing-booking-note">
-            Даты по времени Пусана, до 90 ночей. Без списаний. Наличие номера
+            Даты по местному времени ({listing.city}), до 90 ночей. Без списаний. Наличие номера
             подтверждает отельер.
           </p>
           </fieldset>

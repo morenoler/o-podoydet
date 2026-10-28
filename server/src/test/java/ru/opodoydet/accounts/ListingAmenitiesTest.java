@@ -16,6 +16,7 @@ class ListingAmenitiesTest {
   private ObjectNode input() {
     return Json.obj("title","Синтетическая квартира","description","Есть бассейн и стиральная машина. Это тестовый текст.",
         "city","Пусан","address","Тестовая улица","roomType","Квартира","capacity",4,"pricePerNight",50000,
+        "sleepingPlaces",4,"beds",List.of(Json.obj("type","single","count",4,"placesPerUnit",1)),
         "amenities",List.of("Посудомоечная машина", "Wi-Fi"),"status","published");
   }
   private ObjectNode trip(String mode) {

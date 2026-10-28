@@ -1,0 +1,12 @@
+[
+  {"key":"cafe","label":"кафе","defaultMaxMeters":500,"osmQueries":["[amenity=cafe]"],"aliases":[]},
+  {"key":"restaurant","label":"ресторан","defaultMaxMeters":500,"osmQueries":["[amenity=restaurant]"],"aliases":[]},
+  {"key":"supermarket","label":"супермаркет","defaultMaxMeters":700,"osmQueries":["[shop=supermarket]"],"aliases":[]},
+  {"key":"convenience","label":"магазин у дома","defaultMaxMeters":400,"osmQueries":["[shop=convenience]"],"aliases":[]},
+  {"key":"pharmacy","label":"аптека","defaultMaxMeters":700,"osmQueries":["[amenity=pharmacy]"],"aliases":[]},
+  {"key":"park","label":"парк","defaultMaxMeters":800,"osmQueries":["[leisure=park]"],"aliases":[]},
+  {"key":"museum","label":"музей","defaultMaxMeters":1500,"osmQueries":["[tourism=museum]"],"aliases":[]},
+  {"key":"shopping_mall","label":"торговый центр","defaultMaxMeters":1200,"osmQueries":["[shop=mall]"],"aliases":[]},
+  {"key":"beach","label":"пляж","defaultMaxMeters":1000,"osmQueries":["[natural=beach]"],"aliases":[]},
+  {"key":"train_station","label":"железнодорожная станция","defaultMaxMeters":1500,"osmQueries":["[railway=station][station!=subway][subway!=yes]"],"aliases":[]}
+]

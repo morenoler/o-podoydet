@@ -23,6 +23,11 @@ export function advisorTripKey(trip: Trip) {
     trip.text,
     trip.preferenceOverrides?.map(({ feature, required, enabled }) => [feature, required, enabled]),
     trip.admissionMode || "verified",
+    trip.hotelFilters?.query || "",
+    [...(trip.hotelFilters?.lodgingTypes || [])].sort(),
+    trip.hotelFilters?.maxPricePerNight ?? null,
+    trip.hotelFilters?.maxBeachMeters ?? null,
+    [...(trip.hotelFilters?.nearby || [])].sort((a, b) => a.kind.localeCompare(b.kind)).map(({ kind, maxMeters }) => [kind, maxMeters]),
   ]);
 }
 

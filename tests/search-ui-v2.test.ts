@@ -69,15 +69,16 @@ test("room recommendations name and link the exact category, with hotel photos l
     room: { room, criteria: [], score: 0, status: "fits" },
   };
   const html = markup(undefined, { roomRecommendation: recommendation });
-  assert.ok(html.includes("<h2>Deluxe Twin</h2>"));
-  assert.ok(html.includes("Отель у моря"));
+  assert.ok(html.includes("<h2>Отель у моря</h2>"));
+  assert.ok(html.includes('<p class="search-room-hotel">Deluxe Twin</p>'));
   assert.ok(html.includes("/hotels/real-hotel?room=deluxe-twin"));
   assert.ok(html.includes("Вместимость: до 2 гостей"));
   assert.ok(html.includes("Фото отеля"));
-  assert.ok(html.includes("Совпали все критерии"));
+  assert.ok(html.includes("Подходит по вместимости"));
+  assert.ok(!html.includes("Совпали выбранные условия"), "an empty criterion set must not imply amenity verification");
   const partial = markup(undefined, { roomRecommendation: recommendation, alternative: true });
   assert.ok(partial.includes("Не все условия подтверждены"));
-  assert.ok(!partial.includes("Совпали все критерии"));
+  assert.ok(!partial.includes("Совпали выбранные условия"));
 });
 
 test("two categories in one hotel keep separate comparison identity and one map marker", () => {
@@ -226,7 +227,8 @@ test("submit reads the displayed fields without discarding wishes or relying on 
   assert.deepEqual(current.scenarios, stale.scenarios);
   assert.equal(current.text, stale.text);
   assert.equal(current.admissionMode, "explore");
-  assert.equal(readSearchForm({ ...stale, region: "Адлер" }, fields).region, "Пусан");
+  assert.equal(readSearchForm({ ...stale, region: "Сочи" }, fields).region, "Сочи");
+  assert.equal(canSearch(readSearchForm({ ...stale, region: "Адлер" }, fields)), false);
 });
 
 function decision(overrides: Partial<CriterionDecision> = {}): CriterionDecision {

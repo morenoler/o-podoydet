@@ -28,6 +28,7 @@ class BookingReplyTest {
   private static ObjectNode listing() {
     return Json.obj("title","Синтетический вариант","description","Тестовое объявление для проверки приватных ответов.",
         "city","Пусан","address","Тестовая улица","roomType","Студия","capacity",2,"pricePerNight",100,
+        "sleepingPlaces",2,"beds",List.of(Json.obj("type","single","count",2,"placesPerUnit",1)),
         "amenities",List.of(),"status","published");
   }
   private static ObjectNode dates() {

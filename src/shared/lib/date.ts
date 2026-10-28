@@ -7,7 +7,7 @@ export const dateLabel = (d: string) =>
     : "Даты не выбраны";
 
 export const dateFull = (d: string) =>
-  new Date(d).toLocaleDateString("ru-RU", {
+  new Date(/^\d{4}-\d{2}-\d{2}$/.test(d) ? d + "T12:00:00" : d).toLocaleDateString("ru-RU", {
     day: "numeric",
     month: "long",
     year: "numeric",

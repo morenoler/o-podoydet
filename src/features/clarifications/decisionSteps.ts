@@ -1,4 +1,6 @@
 import { features } from "../../../shared/features";
+import { nearbyConditionLabel, nearbyMatches } from "../../../shared/nearby";
+import { regionDetails } from "../../../shared/regions";
 import type { HotelMatch, RoomMatch, Trip } from "../../../shared/types";
 import { capacityNeedsClarification, criterionNeedsClarification } from "../../shared/lib/matchPresentation";
 
@@ -50,6 +52,42 @@ export function decisionSteps(match: HotelMatch, room: RoomMatch, trip: Trip): D
       : criterion.evidenceStatus === "mismatch" ? "mismatch" : "unknown",
     explanation: criterion.explanation,
   });
+  const filters = trip.hotelFilters;
+  const hotel = match.hotel;
+  if (filters?.lodgingTypes?.length) result.push({
+    id: "catalog:lodging", label: "Тип размещения", required: true,
+    state: !hotel.lodgingType ? "unknown" : filters.lodgingTypes.includes(hotel.lodgingType) ? "match" : "mismatch",
+    explanation: !hotel.lodgingType ? "Тип размещения не указан в каталоге." : "Сопоставлен тип объекта из каталога с выбранными типами размещения.",
+  });
+  if (filters?.maxPricePerNight !== undefined) {
+    const currency = regionDetails(trip.region)?.currency;
+    const known = currency && hotel.currency === currency && typeof hotel.pricePerNight === "number"
+      && Number.isFinite(hotel.pricePerNight) && hotel.pricePerNight > 0;
+    result.push({
+      id: "catalog:budget", label: "Бюджет за ночь", required: true,
+      state: !known ? "unknown" : hotel.pricePerNight! <= filters.maxPricePerNight ? "match" : "mismatch",
+      explanation: !known ? "Нет сопоставимой цены в валюте выбранного региона. Конвертация валют не выполнялась."
+        : "Сопоставлена цена из объявления. Полная стоимость, сборы и цена на даты поездки ещё не подтверждены.",
+    });
+  }
+  if (filters?.maxBeachMeters !== undefined) {
+    const meters = hotel.route?.meters;
+    result.push({
+      id: "catalog:beach", label: "Расстояние до пляжа", required: true,
+      state: hotel.synthetic || meters == null || !Number.isFinite(meters) || meters < 0 ? "unknown"
+        : meters <= filters.maxBeachMeters ? "match" : "mismatch",
+      explanation: "Проверяется длина известного маршрута по карте. Вход, подходы и доступность всего пути не обследованы.",
+    });
+  }
+  for (const condition of filters?.nearby || []) result.push({
+    id: `catalog:nearby:${condition.kind}`, label: nearbyConditionLabel(condition, trip.region), required: true,
+    state: nearbyMatches(hotel, { nearby: [condition] }).length ? "match" : "unknown",
+    explanation: "Расстояние по прямой по актуальным сведениям карты. Отсутствие сведений не доказывает отсутствие места; маршрут и часы работы не проверены.",
+  });
+  if (filters?.query?.trim()) result.push({
+    id: "catalog:query", label: "Поиск по тексту каталога", required: true, state: "unknown",
+    explanation: "Текстовый поиск сопоставляет упоминания в источниках. Он не подтверждает наличие удобств в конкретном номере; проверьте контекст совпадений.",
+  });
   if (trip.pendingLocationQuery) result.push({
     id: "pending-location", label: trip.pendingLocationQuery.query, required: trip.pendingLocationQuery.required,
     state: "unknown", explanation: "Помощник ждёт уточнения места. Это пожелание ещё не участвовало в подборе.",
@@ -59,6 +97,10 @@ export function decisionSteps(match: HotelMatch, room: RoomMatch, trip: Trip): D
     state: "unknown", explanation: match.personalWishes?.status === "unrecognized"
       ? "В тексте не удалось распознать условия. Уточните пожелание или выберите готовые фильтры; соответствие этому тексту не проверено."
       : "Проверены только распознанные условия. Полнота проверки свободного текста не подтверждена: сопоставьте пожелание с условиями номера и дополните запрос отельеру.",
+  });
+  if (room.status === "excluded" && !result.some((step) => step.required && ["mismatch", "conflict"].includes(step.state))) result.push({
+    id: "admission", label: "Допуск к подбору", required: true, state: "mismatch",
+    explanation: "Сервер исключил этот вариант по текущим ограничениям подбора. Недостаток подтверждений тоже может препятствовать допуску; это не доказательство отсутствия удобства.",
   });
   return result.sort((a, b) => Number(b.required) - Number(a.required));
 }

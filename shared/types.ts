@@ -1,7 +1,24 @@
-import type { WindowDirection } from "./account";
+import type { ListingBed, WindowDirection } from "./account";
 import type { ReportedEvidence } from "./clarifications";
 import type { AmenityId, AmenityEvidenceMap } from "./amenities";
 export type Point = [number, number]; // longitude, latitude
+export const nearbyKinds = ["cafe", "restaurant", "supermarket", "convenience", "pharmacy", "park", "subway", "museum", "shopping_mall", "beach", "train_station", "city_center"] as const;
+export type NearbyKind = typeof nearbyKinds[number];
+export interface NearbyCondition { kind: NearbyKind; maxMeters: number }
+export interface NearbyPlace {
+  kind: NearbyKind;
+  name: string;
+  meters: number;
+  coordinates: Point;
+  sourceUrl: string;
+  osmId: string;
+  obtainedAt: string;
+  sourceDate?: string;
+  expiresAt: string;
+  method: "haversine-osm-v1";
+  status: "supported";
+  scope: "hotel_surroundings";
+}
 export type FeatureId =
   | AmenityId
   | "beach_walk"
@@ -48,6 +65,9 @@ export interface Room {
   name: string;
   scope?: "room_category" | "unknown";
   capacity: number | null;
+  /** Explicit owner layout; missing values do not establish separate beds or rooms. */
+  sleepingPlaces?: number | null;
+  beds?: ListingBed[];
   demo: boolean;
   evidenceStatus?: "verified" | "unknown";
   sourceUrl?: string;
@@ -57,7 +77,7 @@ export interface Room {
   description?: string;
   amenities?: string[];
   pricePerNight?: number;
-  currency?: "KRW";
+  currency?: "KRW" | "RUB";
   capacityMayVary?: boolean;
   occupancyRules?: OccupancyRule[];
 }
@@ -81,13 +101,17 @@ export interface NoiseSource {
 }
 export interface Hotel {
   amenityEvidence?: AmenityEvidenceMap;
+  region?: string;
+  hasCollectedRoomCategories?: boolean;
+  nearbyPlaces?: NearbyPlace[];
+  sourceEvidence?: { sourceUrl: string; obtainedAt: string; sourceDate?: string; expiresAt: string; status: "reported"; method: "osm" };
   /** Published owner listing; has no fabricated OpenStreetMap geometry. */
   accountListingId?: string;
   floor?: number | null;
   windowDirections?: WindowDirection[];
   photos?: string[];
   pricePerNight?: number;
-  currency?: "KRW";
+  currency?: "KRW" | "RUB";
   /** Fictional lab listing: its placeholder coordinates must not produce environmental claims. */
   synthetic?: boolean;
   dataNotes?: string[];
@@ -106,6 +130,8 @@ export interface MapLine {
   kind: string;
 }
 export interface Dataset {
+  regions?: { region: string; hotelCount: number; evidencePolicy: "verified-only" | "demo" }[];
+  defaultRegion?: string;
   evidencePolicy?: "verified-only" | "demo";
   region: string;
   fetchedAt: string;
@@ -133,6 +159,29 @@ export interface PersonalWishes {
   excludedFeatures: FeatureId[];
   ownerCriteria: Pick<OwnerCriterion, "id" | "feature" | "label" | "required">[];
 }
+export type LodgingType = "hotel" | "motel" | "guest_house" | "hostel" | "apartment";
+/** Hard catalog limits. Missing price/distance does not satisfy a supplied maximum. */
+export interface HotelFilters {
+  /** Each proximity condition must hold; distances are straight-line OSM estimates. */
+  nearby?: NearbyCondition[];
+  /** Literal catalog/source-text retrieval, never confirmation of a room amenity. */
+  query?: string;
+  lodgingTypes?: LodgingType[];
+  /** Published price in the selected region's currency; availability and a quote for the travel dates are not checked. */
+  maxPricePerNight?: number;
+  /** Calculated route length, excluding unverified access to the water. */
+  maxBeachMeters?: number;
+}
+export interface CatalogSearchSnippet {
+  field: "name" | "address" | "room" | "quote";
+  text: string;
+  sourceUrl?: string;
+  roomId?: string;
+  factId?: string;
+  obtainedAt?: string;
+  sourceDate?: string;
+  expiresAt?: string;
+}
 export interface Trip {
   /** Free-form location wishes resolved against sourced places, not the manual feature catalog. */
   locationWishes?: LocationWish[];
@@ -147,6 +196,7 @@ export interface Trip {
   scenarios: string[];
   preferences: Preference[];
   preferenceOverrides?: PreferenceOverride[];
+  hotelFilters?: HotelFilters;
   text: string;
 }
 export interface LocationWish {
@@ -211,6 +261,9 @@ export interface CriterionDecision extends Criterion {
   sourceExplanation: string;
 }
 export interface RoomMatch {
+  nearbyMatches?: NearbyPlace[];
+  /** Text matches only: the criteria below retain their independent evidence status. */
+  catalogMatches?: CatalogSearchSnippet[];
   /** An explicit reported capacity remains distinct from independently sourced category evidence. */
   capacitySource?: "owner" | "official";
   /** True only when admission relies on missing or outdated mandatory evidence. */
@@ -266,6 +319,8 @@ export interface Trace {
 }
 export interface SearchResult {
   locationWishes?: LocationWish[];
+  /** Real mapped hotels without collected room categories, never room recommendations. */
+  hotelCandidates?: HotelCandidate[];
   personalWishes?: PersonalWishes;
   admissionMode?: "explore" | "verified";
   searchId: string;
@@ -279,6 +334,15 @@ export interface SearchResult {
   conflicts: string[];
   trace: Trace[];
   mode: "rules" | "llm" | "local_model";
+}
+export interface HotelCandidate {
+  hotel: Hotel;
+  criteria?: CriterionDecision[];
+  nearbyMatches: NearbyPlace[];
+  catalogMatches: CatalogSearchSnippet[];
+  limitations: string[];
+  locationCriteria?: LocationCriterion[];
+  provisional?: boolean;
 }
 export interface Question {
   id: string;

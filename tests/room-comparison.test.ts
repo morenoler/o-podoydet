@@ -97,3 +97,14 @@ test("known optional mismatch remains separate from unknown evidence even when b
   assert.deepEqual(groups.find((group) => group.id === "clarify")?.items.map((item) => item.id), [unknown.id]);
   assert.deepEqual(groups.find((group) => group.id === "tradeoff")?.items.map((item) => item.id), [mismatch.id]);
 });
+
+test("comparison preserves unresolved category columns without leaking earlier evaluations", () => {
+  const item = recommendation("old-private-category");
+  const selection = comparisonSelection(recommendationItem(item));
+  const entries = currentComparisonEntries([selection], [], null, "changed-trip", "Перепроверяем условия");
+  const html = renderToStaticMarkup(createElement(MemoryRouter, null, createElement(CompareDialog, { entries, trip, onClose() {}, onRemove() {} })));
+  assert.match(html, /old-private-category/);
+  assert.match(html, /Перепроверяем условия/);
+  assert.match(html, /Убрать из сравнения/);
+  assert.doesNotMatch(html, /Подходит по вместимости|Подходит под фильтры|Совпало 0/);
+});

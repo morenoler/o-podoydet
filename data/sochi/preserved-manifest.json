@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "sourceKind": "preserved_bounded_snapshot",
+  "region": "Сочи",
+  "path": "raw/preserved-central-d68ad307ba1c2ef7.json",
+  "originalMetadataPath": "raw/preserved-central.meta.json",
+  "originalProjectPath": "o-podoydet-data/data/raw/pilot_sochi.json",
+  "copiedAt": "2026-10-27",
+  "originalMetadata": {
+    "source_url": "https://overpass-api.de/api/interpreter",
+    "query": "[out:json][timeout:90];\n        nwr[\"tourism\"=\"hotel\"](43.565,39.7,43.6,39.755);out meta center;\n        nwr[\"natural\"=\"beach\"](43.565,39.7,43.6,39.755);out meta center;\n        way[\"highway\"~\"^(footway|path|pedestrian|steps)$\"](43.565,39.7,43.6,39.755);out count;",
+    "retrieved_at": "2026-10-24T09:07:10.313929+00:00",
+    "sha256": "d68ad307ba1c2ef78bd8cc36ee028c8975cd7a478ca5f76e46847b179648dac4",
+    "bytes": 48557,
+    "osm_base_timestamp": "2026-10-24T09:06:06Z",
+    "license": "ODbL-1.0",
+    "attribution": "© OpenStreetMap contributors"
+  },
+  "scope": {
+    "kind": "bounding_box",
+    "bboxWestSouthEastNorth": [
+      39.7,
+      43.565,
+      39.755,
+      43.6
+    ],
+    "label": "Центральная прибрежная часть Сочи"
+  },
+  "httpStatus": null,
+  "completeness": "Original final counter describes pedestrian ways (2995), not the returned hotel/beach arrays; completeness of those arrays is not independently established.",
+  "license": "ODbL-1.0",
+  "attribution": "© OpenStreetMap contributors"
+}

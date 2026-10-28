@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "endpoint": "https://overpass.private.coffee/api/interpreter",
+  "license": "ODbL-1.0",
+  "attribution": "© OpenStreetMap contributors",
+  "boundaryRelationId": 2396450,
+  "entries": {
+    "boundary": {
+      "path": "raw/boundary-3c354b42a9202d48.json",
+      "query": "[out:json][timeout:45];rel[\"boundary\"=\"administrative\"][\"ISO3166-2\"=\"KR-26\"];out tags bb;out count;",
+      "url": "https://overpass.private.coffee/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A45%5D%3Brel%5B%22boundary%22%3D%22administrative%22%5D%5B%22ISO3166-2%22%3D%22KR-26%22%5D%3Bout%20tags%20bb%3Bout%20count%3B",
+      "method": "GET",
+      "receivedAt": "2026-10-27T11:57:16.029Z",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "sha256": "3c354b42a9202d48e3947acfea035db1c872b7792da931cb1f08c2a81305765d",
+      "bytes": 3293,
+      "osmBaseDate": "2026-05-31T22:37:44Z",
+      "count": 1,
+      "validation": "http-json-no-remark-count-checked"
+    },
+    "lodgings": {
+      "path": "raw/lodgings-2152c66c7c088c9e.json",
+      "query": "[out:json][timeout:90];rel(2396450);map_to_area->.busan;nwr(area.busan)[tourism~\"^(hotel|motel|guest_house|hostel|apartment)$\"];out body center;out count;",
+      "url": "https://maps.mail.ru/osm/tools/overpass/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A90%5D%3Brel(2396450)%3Bmap_to_area-%3E.busan%3Bnwr(area.busan)%5Btourism~%22%5E(hotel%7Cmotel%7Cguest_house%7Chostel%7Capartment)%24%22%5D%3Bout%20body%20center%3Bout%20count%3B",
+      "method": "GET",
+      "receivedAt": "2026-10-27T12:00:18.991Z",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "sha256": "2152c66c7c088c9e99df0fcef77484c399c4b056fc8c1504092ebfb86b5a9f13",
+      "bytes": 252389,
+      "osmBaseDate": "2026-10-27T11:57:58Z",
+      "areaBaseDate": "2026-10-27T10:23:50Z",
+      "count": 876,
+      "validation": "http-json-no-remark-count-checked"
+    },
+    "places-amenity-cafe-82c668df": {
+      "path": "raw/places-amenity-cafe-82c668df-6460c0b79162a535.json",
+      "query": "[out:json][timeout:45];nwr(35.145,129.045,35.17,129.075)[amenity=cafe];out body center;out count;",
+      "url": "https://maps.mail.ru/osm/tools/overpass/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A45%5D%3Bnwr(35.145%2C129.045%2C35.17%2C129.075)%5Bamenity%3Dcafe%5D%3Bout%20body%20center%3Bout%20count%3B",
+      "method": "GET",
+      "receivedAt": "2026-10-27T12:12:27.214Z",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "sha256": "6460c0b79162a5359111afb08398eccc303de7565bd8a47a481aafef311ff121",
+      "bytes": 22938,
+      "osmBaseDate": "2026-10-27T12:11:06Z",
+      "count": 68,
+      "validation": "http-json-no-remark-count-checked"
+    },
+    "places-amenity-restaurant-c22466cf": {
+      "path": "raw/places-amenity-restaurant-c22466cf-656477cafd63db6c.json",
+      "query": "[out:json][timeout:45];nwr(35.145,129.045,35.17,129.075)[amenity=restaurant];out body center;out count;",
+      "url": "https://maps.mail.ru/osm/tools/overpass/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A45%5D%3Bnwr(35.145%2C129.045%2C35.17%2C129.075)%5Bamenity%3Drestaurant%5D%3Bout%20body%20center%3Bout%20count%3B",
+      "method": "GET",
+      "receivedAt": "2026-10-27T12:12:38.961Z",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "sha256": "656477cafd63db6c3281fb7a680b30770f757e719e0978650381c44079424140",
+      "bytes": 33739,
+      "osmBaseDate": "2026-10-27T12:11:06Z",
+      "count": 122,
+      "validation": "http-json-no-remark-count-checked"
+    }
+  },
+  "regionalPlacesManifest": "regional-extract-manifest.json",
+  "placesScope": {
+    "kind": "boundary-bounding-box",
+    "bbox": [
+      128.7568072,
+      34.7252504,
+      129.4889527,
+      35.3892236
+    ],
+    "includesNeighboringMunicipalities": true,
+    "source": "regional-pbf-derivative",
+    "bboxOrder": "west,south,east,north"
+  }
+}

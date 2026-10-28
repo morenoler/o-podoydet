@@ -90,7 +90,7 @@ public final class AdvisorService implements AutoCloseable {
     String mode = Validation.text(input, "mode", 1, 20);
     if (Json.list(config.path("modes")).stream().noneMatch(v -> v.asText().equals(mode)))
       throw new IllegalArgumentException("Этот режим помощника не настроен.");
-    JsonNode trip = Validation.trip(input.path("trip"), store.region());
+    JsonNode trip = Validation.trip(input.path("trip"), store.forTrip(input.path("trip")).region());
     String searchId = Validation.text(input, "searchId", 1, 100);
     // Authorize the snapshot before duplicate detection: knowing another search/run ID is not
     // access.

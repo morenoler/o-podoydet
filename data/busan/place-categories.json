@@ -1,0 +1,14 @@
+[
+  {"key":"city_center","label":"центр — Сомён","defaultMaxMeters":1500,"osmQueries":[],"aliases":["центр(?:е|а|ом)?(?:\\s+города)?","центральн(?:ый|ом|ого)\\s+район","city\\s+cent(?:er|re)","downtown","сом[её]н","seomyeon"]},
+  {"key":"cafe","label":"кафе","defaultMaxMeters":500,"osmQueries":["[amenity=cafe]"],"aliases":["кафе","кофейн(?:я|и|ей|ю)","cafe","coffee\\s+shop"]},
+  {"key":"restaurant","label":"ресторан","defaultMaxMeters":500,"osmQueries":["[amenity=restaurant]"],"aliases":["ресторан(?:ом|а|ы|ами|ов)?","restaurant"]},
+  {"key":"supermarket","label":"супермаркет","defaultMaxMeters":700,"osmQueries":["[shop=supermarket]"],"aliases":["супермаркет(?:ом|а|ы|ами|ов)?","supermarket","продуктов(?:ый|ого|ым)\\s+магазин"]},
+  {"key":"convenience","label":"магазин у дома","defaultMaxMeters":400,"osmQueries":["[shop=convenience]"],"aliases":["магазин(?:ом|а)?(?:\\s+у\\s+дома)?","convenience\\s+store"]},
+  {"key":"pharmacy","label":"аптека","defaultMaxMeters":700,"osmQueries":["[amenity=pharmacy]"],"aliases":["аптек(?:а|и|ой|у)","pharmacy"]},
+  {"key":"park","label":"парк","defaultMaxMeters":800,"osmQueries":["[leisure=park]"],"aliases":["парк(?:ом|а|е|и)?","park"]},
+  {"key":"subway","label":"метро","defaultMaxMeters":800,"osmQueries":["[railway=subway_entrance]","[railway=station][station=subway]","[railway=station][subway=yes]"],"aliases":["метро","subway","metro"]},
+  {"key":"museum","label":"музей","defaultMaxMeters":1500,"osmQueries":["[tourism=museum]"],"aliases":["музе(?:й|я|ем|и)","museum"]},
+  {"key":"shopping_mall","label":"торговый центр","defaultMaxMeters":1200,"osmQueries":["[shop=mall]"],"aliases":["торгов(?:ый|ым|ого|ом)\\s+центр(?:ом|а|е)?","тц","shopping\\s+mall"]},
+  {"key":"beach","label":"пляж","defaultMaxMeters":1000,"osmQueries":["[natural=beach]"],"aliases":["пляж(?:ем|а|е|и)?","beach"]},
+  {"key":"train_station","label":"железнодорожная станция","defaultMaxMeters":1500,"osmQueries":["[railway=station][station!=subway][subway!=yes]"],"aliases":["вокзал(?:ом|а|е)?","железнодорожн(?:ая|ой|ую)\\s+станци(?:я|и|ей|ю)","train\\s+station","railway\\s+station"]}
+]

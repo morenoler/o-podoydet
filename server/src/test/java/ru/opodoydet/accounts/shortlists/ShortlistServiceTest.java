@@ -23,6 +23,26 @@ import ru.opodoydet.server.support.TestDatabases;
 import ru.opodoydet.shared.Json;
 
 class ShortlistServiceTest {
+  @Test void sochiTripPreservesCatalogFiltersAcrossPersistenceButDoesNotSharePrivateQuery() throws Exception {
+    try (var fixture = TestDatabases.create(seed())) {
+      user(fixture.accounts(), "regional-owner");
+      var service = new ShortlistService(fixture.accounts(), CLOCK);
+      assertEquals("Моя поездка", service.get("regional-owner").path("title").asText());
+      var request = input(0);
+      var trip = (ObjectNode) request.path("trip");
+      trip.put("region", "Сочи");
+      var filters = Json.obj("maxPricePerNight", 6000, "query", "PRIVATE_CATALOG_QUERY",
+          "lodgingTypes", List.of("apartment"), "nearby", List.of(Json.obj("kind", "cafe", "maxMeters", 500)));
+      trip.set("hotelFilters", filters);
+      service.save("regional-owner", request);
+      fixture.restart();
+      service = new ShortlistService(fixture.accounts(), CLOCK);
+      assertEquals("Сочи", service.get("regional-owner").path("trip").path("region").asText());
+      assertEquals(filters, service.get("regional-owner").path("trip").path("hotelFilters"));
+      String token = service.share("regional-owner", Json.obj("revision", 1)).path("token").asText();
+      assertFalse(service.shared(token).toString().contains("PRIVATE_CATALOG_QUERY"));
+    }
+  }
   private static final Instant NOW = Instant.parse("2026-10-28T12:00:00Z");
   private static final Clock CLOCK = Clock.fixed(NOW, ZoneOffset.UTC);
   private static ObjectNode seed() { return Json.obj("region", "Пусан", "hotels", List.of(), "facts", List.of()); }

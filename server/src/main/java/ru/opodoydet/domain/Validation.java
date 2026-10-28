@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public final class Validation {
@@ -85,7 +86,52 @@ public final class Validation {
       preferences(input.path("preferenceOverrides"), true);
       for (JsonNode override : input.path("preferenceOverrides")) bool(override, "enabled");
     }
+    if (input.has("hotelFilters")) hotelFilters(input.path("hotelFilters"));
     return input;
+  }
+
+  public static void hotelFilters(JsonNode filters) {
+    if (!filters.isObject()) throw new IllegalArgumentException("Некорректные фильтры жилья");
+    filters.fieldNames().forEachRemaining(key -> {
+      if (!Set.of("query", "lodgingTypes", "maxPricePerNight", "maxBeachMeters", "nearby").contains(key))
+        throw new IllegalArgumentException("Неизвестный фильтр жилья: " + key);
+    });
+    if (filters.has("query")) text(filters, "query", 0, 240);
+    if (filters.has("nearby")) {
+      JsonNode nearby = filters.path("nearby");
+      Set<String> kinds = Set.of("cafe", "restaurant", "supermarket", "convenience", "pharmacy", "park",
+          "subway", "museum", "shopping_mall", "beach", "train_station", "city_center");
+      Set<String> unique = new HashSet<>();
+      if (!nearby.isArray() || nearby.size() > kinds.size())
+        throw new IllegalArgumentException("Некорректные условия расположения");
+      for (JsonNode requirement : nearby) {
+        if (!requirement.isObject() || requirement.size() != 2
+            || !requirement.path("kind").isTextual()
+            || !kinds.contains(requirement.path("kind").asText())
+            || !unique.add(requirement.path("kind").asText()))
+          throw new IllegalArgumentException("Некорректные или повторяющиеся условия расположения");
+        JsonNode limit = requirement.path("maxMeters");
+        if (!limit.isNumber() || !Double.isFinite(limit.asDouble())
+            || limit.asDouble() < 1 || limit.asDouble() > 10_000)
+          throw new IllegalArgumentException("Расстояние до места должно быть от 1 до 10000 метров");
+      }
+    }
+    if (filters.has("lodgingTypes")) {
+      JsonNode types = filters.path("lodgingTypes");
+      Set<String> unique = new HashSet<>();
+      if (!types.isArray() || types.size() > 5)
+        throw new IllegalArgumentException("Некорректные типы жилья");
+      for (JsonNode type : types)
+        if (!type.isTextual() || !Set.of("hotel", "motel", "guest_house", "hostel", "apartment").contains(type.asText())
+            || !unique.add(type.asText())) throw new IllegalArgumentException("Некорректные или повторяющиеся типы жилья");
+    }
+    for (String key : List.of("maxPricePerNight", "maxBeachMeters")) {
+      if (!filters.has(key)) continue;
+      JsonNode value = filters.path(key);
+      double maximum = key.equals("maxPricePerNight") ? 100_000_000 : 100_000;
+      if (!value.isNumber() || !Double.isFinite(value.asDouble()) || value.asDouble() <= 0 || value.asDouble() > maximum)
+        throw new IllegalArgumentException("Некорректное ограничение: " + key);
+    }
   }
 
   public static void preferences(JsonNode values, boolean unique) {

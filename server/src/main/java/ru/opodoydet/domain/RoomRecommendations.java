@@ -42,11 +42,9 @@ public final class RoomRecommendations {
                     ? match.path("ownerCriteria").deepCopy()
                     : Json.array(List.of()),
                 "source",
-                owner
-                    ? "owner"
-                    : room.path("demo").asBoolean() || hotel.path("synthetic").asBoolean()
-                        ? "demo"
-                        : "verified");
+                room.path("demo").asBoolean() || hotel.path("synthetic").asBoolean()
+                    ? "demo"
+                    : owner ? "owner" : "verified");
         if (match.has("personalWishes"))
           item.set("personalWishes", match.path("personalWishes").deepCopy());
         if (match.has("locationCriteria")) item.set("locationCriteria", match.path("locationCriteria").deepCopy());

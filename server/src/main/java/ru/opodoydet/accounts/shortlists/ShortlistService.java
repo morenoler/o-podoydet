@@ -98,7 +98,7 @@ public final class ShortlistService {
   }
 
   private static AccountProblem unavailable() { return new AccountProblem(404, "Ссылка недоступна: владелец мог закрыть доступ или срок ссылки истёк."); }
-  private static ObjectNode empty() { return Json.obj("title", "Моя поездка в Пусан", "trip", null, "items", List.of(), "revision", 0, "updatedAt", null); }
+  private static ObjectNode empty() { return Json.obj("title", "Моя поездка", "trip", null, "items", List.of(), "revision", 0, "updatedAt", null); }
   private static long revision(JsonNode value) {
     JsonNode revision = value.path("revision");
     if (!revision.isIntegralNumber() || !revision.canConvertToLong() || revision.asLong() < 0 || revision.asLong() == Long.MAX_VALUE)
@@ -119,9 +119,11 @@ public final class ShortlistService {
     if (!input.isObject()) throw new AccountProblem(400, "Ожидается подборка.");
     ObjectNode result = Json.obj("title", bounded(input, "title", 1, 100));
     if (input.hasNonNull("trip")) {
-      JsonNode trip = Validation.tripDraft(input.path("trip"), "Пусан");
+      String region = Validation.text(input.path("trip"), "region", 1, 100);
+      if (!Set.of("Пусан", "Сочи").contains(region)) throw new AccountProblem(400, "Выберите доступный регион.");
+      JsonNode trip = Validation.tripDraft(input.path("trip"), region);
       ObjectNode clean = Json.obj();
-      for (String key : List.of("region", "checkIn", "checkOut", "adults", "children", "scenarios", "preferences", "text", "preferenceOverrides", "admissionMode", "locationWishes", "pendingLocationQuery"))
+      for (String key : List.of("region", "checkIn", "checkOut", "adults", "children", "scenarios", "preferences", "text", "preferenceOverrides", "admissionMode", "hotelFilters", "locationWishes", "pendingLocationQuery"))
         if (trip.has(key)) clean.set(key, trip.path(key));
       result.set("trip", clean);
     } else result.putNull("trip");

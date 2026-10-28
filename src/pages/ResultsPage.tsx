@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  Check,
   GitCompareArrows,
   Search,
   SlidersHorizontal,
   RotateCcw,
   List,
-  Map,
+  Map as MapIcon,
   MessageCircle,
   X,
+  Check,
+  ChevronDown,
 } from "lucide-react";
 import type { FeatureId, Hotel, SearchResult, Trip } from "../../shared/types";
 import { useApp } from "../app/providers/TripProvider";
@@ -17,6 +18,8 @@ import { api } from "../shared/api/client";
 import { ErrorMessage, Loading } from "../shared/ui/Feedback";
 import { accommodationPhotos } from "../shared/lib/hotelPhotos";
 import { HotelCard } from "../features/hotels/components/HotelCard";
+import { MappedHotelCard } from "../features/hotels/components/MappedHotelCard";
+import { nearbyConditionLabel } from "../../shared/nearby";
 import { CompareDialog } from "../features/hotels/components/CompareDialog";
 import { AdvisorDrawer } from "../features/advisor/AdvisorDrawer";
 import { SearchConversation } from "../features/advisor/SearchConversation";
@@ -25,17 +28,21 @@ import { features } from "../../shared/features";
 import { SearchBar } from "../features/search/SearchBar";
 import { SearchDiagnostics } from "../features/search/SearchDiagnostics";
 import { SearchMapPanel } from "../features/search/SearchMapPanel";
-import { SearchFilters } from "../features/search/SearchFilters";
+import { PriceFilter, SearchFilters } from "../features/search/SearchFilters";
 import { canSearch } from "../features/search/searchTrip";
-import { catalogRooms, recommendationItem, roomHotels } from "../features/search/roomResults";
+import { catalogHotelCandidates, catalogRooms, recommendationItem, roomHotels } from "../features/search/roomResults";
+import { countHotelFilters, hasHotelFilters, matchesHotelFilters } from "../../shared/catalogFilters";
+import { lodgingLabels } from "../features/search/CatalogFilterFields";
+import { regionDetails } from "../../shared/regions";
+import "../features/search/catalog-filters.css";
 import { useRoomComparison } from "../features/search/useRoomComparison";
 import { groupRoomAlternatives } from "../features/search/resultGroups";
-import { AdmissionModePicker } from "../features/search/AdmissionModePicker";
 import { listLimitForSelection, uiAdmissionMode } from "../features/search/searchPolicy";
 import { locationWishLabel } from "../features/places/locationPresentation";
 import "../features/places/places.css";
 import "../features/search/search.css";
 import "../features/search/search-experience.css";
+import "../features/search/figcraft-results.css";
 
 export function ResultsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -43,6 +50,7 @@ export function ResultsPage() {
     trip,
     setTrip,
     catalog,
+    regions,
     catalogError,
     revision,
     rememberSearch,
@@ -56,25 +64,31 @@ export function ResultsPage() {
   const error = !authLoading && response?.key === searchKey ? response.error : "";
   const [showCompare, setShowCompare] = useState(false);
   const [filters, setFilters] = useState(false);
+  const [priceAnchor, setPriceAnchor] = useState<{ left: number; top: number } | null>(null);
   const [advisor, setAdvisor] = useState(false);
   const [mapView, setMapView] = useState(false);
   const [mobileView, setMobileView] = useState<"list" | "map" | "assistant">("list");
   const [selectedId, setSelectedId] = useState("");
   const [limit, setLimit] = useState(8);
+  const [hotelLimit, setHotelLimit] = useState(8);
   const [alternativeLimit, setAlternativeLimit] = useState(4);
   const [alternativesOpen, setAlternativesOpen] = useState(false);
   const [sort, setSort] = useState("recommended");
-  const validTrip = canSearch(trip);
+  const [query, setQuery] = useState(trip.hotelFilters?.query || "");
+  useEffect(() => setQuery(trip.hotelFilters?.query || ""), [trip.hotelFilters?.query]);
+  const validTrip = canSearch(trip) && regions.includes(trip.region);
   const loading = validTrip && (authLoading || response?.key !== searchKey);
-  const comparison = useRoomComparison(authLoading ? "auth-pending" : scope, trip, searchKey, data, error);
+  const comparison = useRoomComparison(authLoading ? "auth-pending" : `${scope}:${trip.region}`, trip, searchKey, data, error);
   const compare = comparison.selections.map((selection) => selection.id);
-  useEffect(() => { setShowCompare(false); }, [scope]);
+  useEffect(() => { setShowCompare(false); }, [scope, trip.region]);
   useEffect(() => {
     let active = true;
+    const controller = new AbortController();
     setLimit(8);
+    setHotelLimit(8);
     setAlternativeLimit(4);
     if (!validTrip || authLoading) return;
-    api<SearchResult>("/search", trip)
+    api<SearchResult>("/search", trip, controller.signal)
       .then((result) => {
         if (!active) return;
         setResponse({ key: searchKey, data: result, error: "" });
@@ -88,6 +102,7 @@ export function ResultsPage() {
       });
     return () => {
       active = false;
+      controller.abort();
     };
   }, [trip, revision, validTrip, authLoading, user?.id]);
   const rooms = useMemo(() => {
@@ -95,7 +110,7 @@ export function ResultsPage() {
       ? data.roomRecommendations.map(recommendationItem)
       : validTrip
         ? []
-        : catalogRooms(catalog);
+        : catalogRooms(catalog).filter((item) => matchesHotelFilters(item.hotel, trip.hotelFilters, catalog?.facts, item.room, regionDetails(trip.region)?.currency));
     if (sort === "distance")
       return [...items].sort(
         (a, b) => (a.hotel.route?.meters ?? Infinity) - (b.hotel.route?.meters ?? Infinity),
@@ -109,14 +124,22 @@ export function ResultsPage() {
           Number(!!accommodationPhotos(a.hotel.id, a.hotel.photos).length),
       );
     return items;
-  }, [data, catalog, sort, validTrip]);
+  }, [data, catalog, sort, validTrip, trip.hotelFilters, trip.region]);
   const visible = rooms.slice(0, limit);
+  const hotelCandidates = useMemo(() => {
+    const candidates = data?.hotelCandidates || (validTrip ? [] : catalogHotelCandidates(catalog, trip.hotelFilters));
+    if (data && sort === "recommended") return candidates;
+    const distanceScore = (candidate: (typeof candidates)[number]) => (trip.hotelFilters?.nearby || []).reduce((score, condition) => score + (candidate.nearbyMatches.find((place) => place.kind === condition.kind)?.meters ?? Infinity) / condition.maxMeters, 0);
+    return [...candidates].sort((a, b) => sort === "distance" ? (a.hotel.route?.meters ?? Infinity) - (b.hotel.route?.meters ?? Infinity)
+      : (sort === "recommended" ? distanceScore(a) - distanceScore(b) : 0) || a.hotel.name.localeCompare(b.hotel.name, "ru"));
+  }, [data, validTrip, catalog, trip.hotelFilters, sort]);
   const alternatives = data?.roomAlternatives || [];
   const alternativeGroups = groupRoomAlternatives(alternatives);
   const selectable = [...rooms, ...alternatives.map(recommendationItem)];
   const selected =
-    selectable.find((item) => item.id === selectedId) || selectable[0];
-  const plotted = roomHotels(selectable);
+    selectable.find((item) => item.id === selectedId) || (hotelCandidates.some((item) => item.hotel.id === selectedId) ? undefined : selectable[0]);
+  const selectedHotel = selected?.hotel || (hotelCandidates.find((item) => item.hotel.id === selectedId) || hotelCandidates[0])?.hotel;
+  const plotted = [...new Map([...roomHotels(selectable), ...hotelCandidates.map((item) => item.hotel)].map((hotel) => [hotel.id, hotel])).values()];
   function submit(nextTrip: Trip) {
     if (JSON.stringify(nextTrip) === JSON.stringify(trip)) refresh();
     else setTrip(nextTrip);
@@ -135,6 +158,11 @@ export function ResultsPage() {
     setTrip(editPreferences(trip, preferences, effectivePreferences));
   }
   function selectHotel(hotel: Hotel) {
+    if (hotelCandidates.some((item) => item.hotel.id === hotel.id)) {
+      setSelectedId(hotel.id);
+      setHotelLimit((current) => Math.max(current, hotelCandidates.findIndex((item) => item.hotel.id === hotel.id) + 1));
+      return;
+    }
     const item = selected?.hotel.id === hotel.id ? selected : selectable.find((item) => item.hotel.id === hotel.id);
     if (!item) return;
     setSelectedId(item.id);
@@ -147,20 +175,24 @@ export function ResultsPage() {
     }
   }
   const provisionalCount = alternatives.filter((item) => item.room.provisional).length;
-  const sea = (data?.preferences || trip.preferences).some(
-    (value) => value.feature === "beach_walk",
-  );
-  const ResultsHeading = validTrip ? "h1" : "h2";
+  const filterCount = effectivePreferences.length + countHotelFilters(trip.hotelFilters) + (trip.locationWishes?.length || 0);
+  const ResultsHeading = "h1";
   return (
     <div className={`search-page search-page-conversation search-experience mobile-view-${mobileView}${compare.length ? " has-comparison" : ""}`}>
-      {!validTrip && <div className="search-introduction">
-        <h1>Номер, в котором совпадёт важное для вас</h1>
-        <p>Начнём с Пусана, район Хэундэ. Сравните условия одной категории номера и узнайте, что уточнить до поездки.</p>
-      </div>}
       <div className="search-layout">
         <div className="search-primary">
-      <SearchBar trip={trip} onSearch={submit} busy={loading} />
+      <SearchBar trip={trip} regions={regions} onSearch={submit} busy={loading} />
       <div className="search-toolbar">
+        <details className="search-catalog-disclosure">
+        <summary><Search size={18} aria-hidden="true" /><span>Название</span></summary>
+        <form className="search-catalog-query" role="search" aria-label="Поиск в каталоге"
+          onSubmit={(event) => { event.preventDefault(); submit({ ...trip, hotelFilters: { ...trip.hotelFilters, query: query.trim() || undefined } }); }}>
+          <label className="sr-only" htmlFor="catalog-query">Название или слова в источниках</label>
+          <input id="catalog-query" type="search" maxLength={240} value={query}
+            onChange={(event) => setQuery(event.target.value)} placeholder="Отель, категория или слово в источниках" />
+          <button type="submit" aria-label="Искать в каталоге" disabled={loading}><Search size={20} aria-hidden="true" /></button>
+        </form>
+        </details>
         <button
           type="button"
           className="search-chip"
@@ -168,16 +200,20 @@ export function ResultsPage() {
         >
           <SlidersHorizontal size={21} aria-hidden="true" />
           Фильтры
-          {!!effectivePreferences.length && (
+          {!!filterCount && (
             <span className="search-filter-count">
-              {effectivePreferences.length}
+              {filterCount}
             </span>
           )}
+        </button>
+        <button type="button" className={`search-chip${trip.hotelFilters?.maxPricePerNight ? " is-active" : ""}`}
+          aria-haspopup="dialog" onClick={(event) => { const bounds = event.currentTarget.getBoundingClientRect(); setPriceAnchor({ left: bounds.left, top: bounds.bottom + 12 }); }}>
+          Цена <ChevronDown size={16} aria-hidden="true" />
         </button>
         <button
           type="button"
           className="search-chip search-reset-filters"
-          disabled={!effectivePreferences.length && !trip.locationWishes?.length && !trip.pendingLocationQuery && !trip.scenarios.length && !trip.text.trim() && !trip.preferenceOverrides?.length && uiAdmissionMode(trip.admissionMode) === "explore" && sort === "recommended"}
+          disabled={!effectivePreferences.length && !hasHotelFilters(trip.hotelFilters) && !trip.locationWishes?.length && !trip.pendingLocationQuery && !trip.scenarios.length && !trip.text.trim() && !trip.preferenceOverrides?.length && uiAdmissionMode(trip.admissionMode) === "explore" && sort === "recommended"}
           onClick={() => {
             setSort("recommended");
             setTrip(resetSearchFilters(trip));
@@ -189,9 +225,9 @@ export function ResultsPage() {
         </button>
         {(
           [
-            { id: "beach_walk", label: "У моря" },
-            { id: "family", label: "Для семьи" },
-            { id: "step_free_access", label: "С коляской" },
+            { id: "pool", label: "Бассейн" },
+            { id: "washing_machine", label: "Стиралка" },
+            { id: "dishwasher", label: "Посудомойка" },
           ] as const
         ).map((item, index) => (
           <button
@@ -210,12 +246,24 @@ export function ResultsPage() {
           </button>
         ))}
       </div>
-      <div className="search-inline-admission"><AdmissionModePicker value={trip.admissionMode}
-        onChange={(admissionMode) => setTrip({ ...trip, admissionMode })} /></div>
       <button className="search-mobile-admission" type="button" aria-haspopup="dialog" onClick={() => setFilters(true)}>
-        <span><small>Режим подбора</small><strong>{uiAdmissionMode(trip.admissionMode) === "verified" ? "Только подтверждённые" : "Без известных препятствий"}</strong></span>
+        <span>Подбор: <strong>{uiAdmissionMode(trip.admissionMode) === "verified" ? "только подтверждённые" : "без известных препятствий"}</strong></span>
         <SlidersHorizontal size={18} aria-hidden="true" />
       </button>
+      {trip.hotelFilters?.query && <p className="search-query-note">Ищем слова в названиях и источниках. Упоминание удобства ещё не подтверждает его наличие в номере.</p>}
+      {hasHotelFilters(trip.hotelFilters) && <div className="search-active-preferences" aria-label="Активные фильтры каталога">
+        {([
+          ["query", trip.hotelFilters?.query ? `Поиск: ${trip.hotelFilters.query}` : ""],
+          ["lodgingTypes", trip.hotelFilters?.lodgingTypes?.map((type) => lodgingLabels[type]).join(", ") || ""],
+          ["maxPricePerNight", trip.hotelFilters?.maxPricePerNight ? `До ${trip.hotelFilters.maxPricePerNight.toLocaleString("ru-RU")} ${regionDetails(trip.region)?.currencySymbol || ""} / ночь` : ""],
+          ["maxBeachMeters", trip.hotelFilters?.maxBeachMeters ? `До пляжа: до ${trip.hotelFilters.maxBeachMeters} м по сети` : ""],
+        ] as const).filter(([, label]) => label).map(([key, label]) => <button key={key} type="button"
+          onClick={() => setTrip({ ...trip, hotelFilters: { ...trip.hotelFilters, [key]: undefined } })}
+          aria-label={`Убрать фильтр: ${label}`}><span>{label}</span><X size={15} aria-hidden="true" /></button>)}
+        {trip.hotelFilters?.nearby?.map((condition) => <button key={condition.kind} type="button"
+          onClick={() => setTrip({ ...trip, hotelFilters: { ...trip.hotelFilters, nearby: trip.hotelFilters?.nearby?.filter((item) => item.kind !== condition.kind) } })}
+          aria-label={`Убрать условие рядом: ${nearbyConditionLabel(condition, trip.region)}`}><span>{nearbyConditionLabel(condition, trip.region)}</span><X size={15} aria-hidden="true" /></button>)}
+      </div>}
       {!!effectivePreferences.length && (
         <div className="search-active-preferences" aria-label="Активные условия подбора">
           {effectivePreferences.map((preference) => (
@@ -256,27 +304,27 @@ export function ResultsPage() {
       )}
         </div>
         <nav className="search-mobile-navigation" aria-label="Способ просмотра подборки">
-          {([{ id: "list", label: "Варианты", icon: List }, { id: "map", label: "Карта", icon: Map }, { id: "assistant", label: "Помощник", icon: MessageCircle }] as const).map(({ id, label, icon: Icon }) =>
+          {([{ id: "list", label: "Варианты", icon: List }, { id: "map", label: "Карта", icon: MapIcon }, { id: "assistant", label: "Помощник", icon: MessageCircle }] as const).map(({ id, label, icon: Icon }) =>
             <button key={id} type="button" aria-pressed={mobileView === id} aria-controls={id === "list" ? "search-room-results" : "search-side-panel"} onClick={() => { setMobileView(id); if (id !== "list") setMapView(id === "map"); }}><Icon size={18} aria-hidden="true" />{label}</button>)}
         </nav>
         <section id="search-room-results" className="search-list-section" aria-label="Список номеров">
           <div className="search-results-heading">
             <div>
               <ResultsHeading>
-                {sea && validTrip ? "Номера у моря в Пусане" : "Номера в Пусане"}
+                Отели и номера {regionDetails(trip.region)?.inName || trip.region}
               </ResultsHeading>
               <p role="status" aria-live="polite">
                 {loading
                   ? "Подбираем номера…"
                   : error ? "Подборку не удалось обновить. Ваши условия сохранены."
                   : validTrip && data
-                    ? `Соответствуют всем критериям: ${rooms.length}`
+                    ? `Категории: ${rooms.length} · Другие отели: ${hotelCandidates.length}`
                     : validTrip ? "Подготовим подборку по вашим условиям."
-                    : `Категорий номеров в каталоге Хэундэ: ${rooms.length}`}
+                    : `Категории: ${rooms.length} · Другие отели: ${hotelCandidates.length}`}
               </p>
               {validTrip && !loading && provisionalCount > 0 && (
                 <p className="search-provisional-count">
-                  Нужно уточнить вместимость или обязательные условия: {provisionalCount}.
+                  Ещё вариантов для уточнения: {provisionalCount}.
                 </p>
               )}
             </div>
@@ -287,10 +335,10 @@ export function ResultsPage() {
                 onChange={(event) => setSort(event.target.value)}
               >
                 <option value="recommended">
-                  {validTrip ? "По совпадению условий" : "С фотографиями отеля"}
+                  {validTrip || trip.hotelFilters?.nearby?.length ? "Больше совпадений" : "С фотографиями отеля"}
                 </option>
                 <option value="distance">Ближе к пляжу</option>
-                <option value="name">По названию номера</option>
+                <option value="name">По названию</option>
               </select>
             </label>
           </div>
@@ -315,10 +363,10 @@ export function ResultsPage() {
                   Исправить пожелания
                 </button>
               )}
-              {!rooms.length && data && !error && validTrip && (
+              {!rooms.length && !hotelCandidates.length && data && !error && validTrip && (
                 <div className="search-empty">
                   <Search size={30} aria-hidden="true" />
-                  <h2>Номер под все критерии пока не найден</h2>
+                  <h2>Точного совпадения пока нет</h2>
                   <p>
                     Для рекомендации все условия должны совпасть в одной категории номера.
                     {uiAdmissionMode(trip.admissionMode) === "verified"
@@ -345,11 +393,17 @@ export function ResultsPage() {
                   </button>
                 </div>
               )}
+              {!rooms.length && !hotelCandidates.length && !error && !validTrip && hasHotelFilters(trip.hotelFilters) && <div className="search-empty">
+                <h2>В каталоге нет совпадений</h2>
+                <p>Измените слова или снимите ограничение. Если цена или маршрут неизвестны, такой вариант не проходит соответствующий фильтр.</p>
+                <button className="button secondary" type="button" onClick={() => setTrip({ ...trip, hotelFilters: undefined })}>Сбросить фильтры каталога</button>
+              </div>}
               <div className="search-hotel-list">
                 {visible.map((item) => (
                   <HotelCard
                     key={item.id}
                     hotel={item.hotel}
+                    hotelFilters={trip.hotelFilters}
                     previewRoom={item.room}
                     roomRecommendation={item.recommendation}
                     selected={item.id === selected?.id}
@@ -383,7 +437,7 @@ export function ResultsPage() {
                   <p>{group.description}</p>
                   <div className="search-hotel-list">
                     {group.items.slice(0, alternativeLimit).map((item) => <HotelCard
-                      key={item.id} roomRecommendation={item} alternative
+                      key={item.id} roomRecommendation={item} alternative hotelFilters={trip.hotelFilters}
                       selected={item.id === selected?.id}
                       onSelect={() => setSelectedId(item.id)}
                       onShowMap={() => {
@@ -399,11 +453,18 @@ export function ResultsPage() {
                   </section>)}
                 </details>
               )}
+              {!!hotelCandidates.length && <section className="mapped-hotel-section" aria-label="Отели без собранных категорий">
+                <h2>Ещё отели из каталога · {hotelCandidates.length}</h2>
+                <p>Проверьте сведения о расположении в карточке. Условия конкретной комнаты, вместимость и наличие на даты нужно уточнить.</p>
+                <div className="search-hotel-list">{hotelCandidates.slice(0, hotelLimit).map((candidate) => <MappedHotelCard key={candidate.hotel.id} candidate={candidate}
+                  selected={candidate.hotel.id === selectedHotel?.id} onSelect={() => setSelectedId(candidate.hotel.id)}
+                  onShowMap={() => { setSelectedId(candidate.hotel.id); showPanel("map"); }} />)}</div>
+                {hotelCandidates.length > hotelLimit && <button className="button secondary search-load-more" type="button" onClick={() => setHotelLimit((value) => value + 16)}>Показать ещё {Math.min(16, hotelCandidates.length - hotelLimit)} отелей</button>}
+              </section>}
               <p className="search-data-note">
-                Подбираем конкретную категорию номера. Физический номер комнаты и наличие на даты уточняйте у отельера.
+                Подбираем категории номеров. Конкретную комнату и наличие на даты уточняйте у отельера.
                 {!!data?.unverifiedHotelCount && ` У ${data.unverifiedHotelCount} объектов нет подтверждённых категорий для рекомендации.`}
-                Недостающие сведения отмечены отдельно и не считаются подтверждением.
-                Источники указаны в подробностях. Наличие на ваши даты не проверено.
+                {" Источники и ограничения — в подробностях."}
                 {catalog?.evidencePolicy === "demo" &&
                   " Варианты «ДЕМО» вымышлены."}
               </p>
@@ -412,10 +473,10 @@ export function ResultsPage() {
           )}
         </section>
         {authLoading ? <aside className="search-conversation" aria-label="Проверка аккаунта"><Loading /></aside> : <SearchConversation
-          key={scope}
+          key={`${scope}:${trip.region}`}
           scope={scope}
           trip={trip}
-          contextHotelId={selected?.hotel.id}
+          contextHotelId={selectedHotel?.id}
           onApply={setTrip}
           result={data}
           searching={loading}
@@ -423,7 +484,7 @@ export function ResultsPage() {
           onAnalyze={() => setAdvisor(true)}
           mapView={mapView}
           onMapViewChange={(value) => { setMapView(value); setMobileView(value ? "map" : "assistant"); }}
-          map={<SearchMapPanel catalog={catalog} selected={selected?.hotel} selectedRoom={selected?.room} plotted={plotted} onSelect={selectHotel} />}
+          map={<SearchMapPanel catalog={catalog} selected={selectedHotel} selectedRoom={selected?.room} plotted={plotted} onSelect={selectHotel} />}
         />}
       </div>
       {filters && (
@@ -434,6 +495,7 @@ export function ResultsPage() {
           onClose={() => setFilters(false)}
         />
       )}
+      {priceAnchor && <PriceFilter trip={trip} onApply={submit} onClose={() => setPriceAnchor(null)} anchor={priceAnchor} />}
       <AdvisorDrawer
         open={advisor}
         onClose={() => setAdvisor(false)}

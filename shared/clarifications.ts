@@ -9,6 +9,7 @@ export interface ClarificationContext {
   children: number;
 }
 export interface OwnerStatement {
+  timeZone?: string;
   id: string;
   feature: ClarificationFeature;
   value: boolean | null;
@@ -28,6 +29,8 @@ export interface ClarificationAnswer extends OwnerStatement {
 }
 /** Private DTO. Never return through the public Q&A/listing/search routes. */
 export interface ListingClarification {
+  region?: string;
+  timeZone?: string;
   id: string;
   listingId: string;
   listingTitle: string;
@@ -70,6 +73,7 @@ export interface AnswerClarification {
 }
 /** Public, sanitized provenance. No dialogue, person, question ID or original trip. */
 export interface ReportedEvidence {
+  timeZone?: string;
   method: "owner_response";
   provenanceStatus: "reported";
   feature: ClarificationFeature;

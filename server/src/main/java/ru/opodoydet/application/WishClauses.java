@@ -8,7 +8,7 @@ import ru.opodoydet.domain.Amenities;
 /** Carries an explicit command through a list, while contrast/sentence boundaries reset it. */
 final class WishClauses {
   record Clause(String text, String action) {}
-  private static final Pattern SEPARATOR = Pattern.compile("[,.!?;\\n]|\\s+(?:но|а также|и еще|а|и|and|but)\\s+");
+  private static final Pattern SEPARATOR = Pattern.compile("(?<!\\d)[,.]|[,.](?!\\d)|[!?;\\n]|\\s+(?:но|а также|и еще|а|и|and|but)\\s+");
   static List<Clause> parse(String text) {
     List<Clause> values = new ArrayList<>();
     var matcher = SEPARATOR.matcher(text);
@@ -33,6 +33,8 @@ final class WishClauses {
   private static String action(String clause) {
     if (has("убери|убрать|удали|удалить|(?:сними|снять).{0,12}(?:услов|фильтр|требован|огранич)|не (?:нуж|важ|требу|учитыва)|неваж|не хочу|не хотим|без требования|\\b(?:remove|delete|not needed)\\b", clause)) return "remove";
     if (has("не ?обязател|не принципиальн|желательн|по возможности|можно без|смягчи|\\b(?:optional|not required|not mandatory|preferably)\\b", clause)) return "optional";
+    if (Amenities.patterns().values().stream().anyMatch(pattern -> has(pattern, clause))
+        && has("(?:^|\\s)без\\s|не должно быть|не было|отсутств|\\bwithout\\b", clause)) return "absence";
     if (has("обязател|непременно|принципиальн|строго|только|\\b(?:required|mandatory|must have)\\b", clause)) return "required";
     if (has("(?:^|\\s)(?:хочу|хотим|нужен|нужна|нужно|нужны|добавь|добавить)(?:\\s|$)", clause)) return "add";
     return null;
@@ -43,7 +45,7 @@ final class WishClauses {
     return parse(normalized).stream().anyMatch(clause ->
         Amenities.patterns().values().stream().anyMatch(pattern -> has(pattern, clause.text()))
             && !clause.action().equals("remove") && !clause.action().equals("optional")
-            && has("(?:^|\\s)без\\s|не должно быть|не было|отсутств|\\bwithout\\b", clause.text()));
+            && (clause.action().equals("absence") || has("(?:^|\\s)без\\s|не должно быть|не было|отсутств|\\bwithout\\b", clause.text())));
   }
   static boolean unsupportedAmenityDetail(String text) {
     String normalized = text.toLowerCase(java.util.Locale.ROOT).replace('ё', 'е');

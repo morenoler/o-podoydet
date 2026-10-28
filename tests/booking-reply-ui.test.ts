@@ -28,6 +28,13 @@ test("host has a bounded private reply form with accessible context and an empty
   assert.match(html, /disabled="">Отправить ответ гостю/);
   assert.match(html, /aria-describedby=/);
 });
+
+test("Sochi reply date uses the property's local time", () => {
+  const html = renderToStaticMarkup(createElement(BookingReply, { booking: { ...booking, city: "Сочи", currency: "RUB", hostReply: "Учебный ответ", repliedAt: "2026-10-28T01:00:00Z" }, host: false }));
+  assert.match(html, /04:00/);
+  assert.match(html, /Сочи/);
+  assert.doesNotMatch(html, /Пусан|10:00/);
+});
 test("booking reply API sends only message and does not request price/status changes", async () => {
   const original = globalThis.fetch;
   let captured: { url: string; body: unknown } | undefined;

@@ -1,77 +1,86 @@
 import { canSearch } from "../features/search/searchTrip";
 import { SearchBar } from "../features/search/SearchBar";
 import { HotelCatalogPreview } from "../features/hotels/components/HotelCatalogPreview";
-import { HotelPhotoGallery } from "../features/hotels/components/HotelPhotoGallery";
-import { CatalogRoomDescription } from "../features/hotels/components/CatalogRoomDescription";
-import { LocationCriteria } from "../features/places/LocationCriteria";
-import { locationState } from "../features/places/locationPresentation";
-import { NearbyPlaces } from "../features/places/NearbyPlaces";
+import { DetailLayout } from "../features/hotels/components/DetailLayout";
+import { DetailGallery } from "../features/hotels/components/DetailGallery";
+import { DetailSidebar } from "../features/hotels/components/DetailSidebar";
+import { DetailHeading } from "../features/hotels/components/DetailHeading";
+import { CatalogSummary } from "../features/hotels/components/CatalogSummary";
 import { FavoriteButton } from "../features/favorites/FavoriteButton";
-import { roomDetailsLabel } from "../features/account/format";
 import "../features/search/search.css";
 import "../features/hotels/hotel-details.css";
-import "../features/places/places.css";
-import { CapacitySummary } from "../features/hotels/components/CapacitySummary";
+import { NearbySummary } from "../features/hotels/components/NearbySummary";
+import "../features/search/catalog-filters.css";
 import { PersonalWishesSummary } from "../features/hotels/components/PersonalWishesSummary";
 import { MatchBadge } from "../features/hotels/components/MatchBadge";
 import { matchForSelectedPreferences } from "../shared/lib/matchPresentation";
-import { useParams, useSearchParams, Link, useLocation } from "react-router-dom";
-import { useApp } from "../app/providers/TripProvider";
+import { useParams, useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../features/auth/AuthProvider";
+import { LocationCriteria } from "../features/places/LocationCriteria";
+import { NearbyPlaces } from "../features/places/NearbyPlaces";
+import { DecisionNextSteps, CatalogAvailability } from "../features/clarifications/DecisionNextSteps";
+import "../features/places/places.css";
+import { useApp } from "../app/providers/TripProvider";
 import { useState, useEffect } from "react";
 import type { HotelMatch, Hotel, Fact, Question } from "../../shared/types";
 import { api } from "../shared/api/client";
 import { ErrorMessage, Loading, Notice } from "../shared/ui/Feedback";
-import { ArrowLeft, MapPin, ExternalLink, ShieldCheck } from "lucide-react";
-import { TripSummary } from "../features/trip/components/TripSummary";
+import { ExternalLink } from "lucide-react";
 import { lodgingLabel } from "../shared/lib/presentation";
-import { GeoMap } from "../features/map/components/GeoMap";
 import { WishMatches } from "../features/hotels/components/WishMatches";
 import { OwnerCriteriaSummary } from "../features/hotels/components/OwnerCriteriaSummary";
-import { features } from "../../shared/features";
 import { CriterionLine } from "../features/hotels/components/CriterionLine";
 import { dateFull } from "../shared/lib/date";
 import { AreaPanel } from "../features/area/components/AreaPanel";
 import { FactEvidence } from "../features/hotels/components/FactEvidence";
 import { accommodationPath } from "../shared/lib/accommodation";
 import { CatalogClarificationPlan } from "../features/clarifications/CatalogClarificationPlan";
-import { CatalogAvailability, DecisionNextSteps } from "../features/clarifications/DecisionNextSteps";
-import { hasUncheckedPersonalWishes } from "../features/clarifications/decisionSteps";
 import "../features/clarifications/clarifications.css";
+import { changeTripRegion } from "../features/search/searchPolicy";
+import { hasEvaluableRooms } from "../features/search/roomResults";
+
+import { CatalogRoomDetails } from "../features/hotels/components/CatalogRoomDetails";
+import { HotelLocation } from "../features/hotels/components/HotelLocation";
+import { clarificationItems } from "../features/clarifications/clarificationPresentation";
 
 export function HotelPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { hash } = useLocation();
   const { user, loading: authLoading } = useAuth();
-  const { trip, setTrip, catalog, catalogError, revision, refresh } = useApp();
+  const { trip, setTrip, catalog, catalogError, revision, refresh, regions } = useApp();
   const validTrip = canSearch(trip);
   const [params] = useSearchParams();
   const requestedRoom = params.get("room");
-  const { hash } = useLocation();
   const tripKey = JSON.stringify(trip);
   const requestKey = JSON.stringify([id, requestedRoom, tripKey, revision, user?.id || "guest"]);
-  type DetailData = {
-      hotel: Hotel;
-      facts: Fact[];
-      questions: Question[];
-  };
-  const [response, setResponse] = useState<{ key: string; data: DetailData | null; ranked: HotelMatch | null; error: string } | null>(null);
+  const sourceKey = JSON.stringify([id, user?.id || "guest"]);
+  type DetailData = { region?: string; hotel: Hotel; facts: Fact[]; questions: Question[] };
+  const [response, setResponse] = useState<{ key: string; sourceKey: string; data: DetailData | null; ranked: HotelMatch | null; error: string } | null>(null);
   const current = !authLoading && response?.key === requestKey ? response : null;
-  const data = current?.data || null;
+  // Public detail content and the chat shell may remain mounted during a new evaluation.
+  // Private verdicts below still require an exact trip + account key.
+  const data = current?.data || (!authLoading && response?.sourceKey === sourceKey ? response.data : null);
   const ranked = current?.ranked || null;
   const error = current?.error || "";
   const [roomId, setRoomId] = useState("");
   useEffect(() => {
     if (authLoading) return;
     let active = true;
-    Promise.all([
-      api<DetailData>(`/hotels/${id}`),
-      validTrip
-        ? api<HotelMatch>(`/hotels/${id}/evaluate`, trip)
-        : Promise.resolve(null),
-    ])
+    api<DetailData>(`/hotels/${id}`)
+      .then(async (d) => {
+        if (!active || !d) return [null, null] as const;
+        const region = d.region || d.hotel.region;
+        if (region && region !== trip.region) {
+          setTrip(changeTripRegion(trip, region));
+          return [null, null] as const;
+        }
+        const evaluation = validTrip && hasEvaluableRooms(d.hotel) ? await api<HotelMatch>(`/hotels/${id}/evaluate`, trip) : null;
+        return [d, evaluation] as const;
+      })
       .then(([d, evaluation]) => {
         if (active) {
-          setResponse({ key: requestKey, data: d, ranked: evaluation, error: "" });
+          setResponse({ key: requestKey, sourceKey, data: d, ranked: evaluation, error: "" });
           if (d)
             setRoomId(
               d.hotel.rooms.some((r) => r.id === requestedRoom)
@@ -81,17 +90,17 @@ export function HotelPage() {
         }
       })
       .catch((e) => {
-        if (active) setResponse({ key: requestKey, data: null, ranked: null, error: e.message });
+        if (active) setResponse((previous) => ({ key: requestKey, sourceKey, data: previous?.sourceKey === sourceKey ? previous.data : null, ranked: null, error: e.message }));
       });
     return () => {
       active = false;
     };
   }, [id, revision, requestedRoom, tripKey, user?.id, authLoading]);
   useEffect(() => {
-    if (!data || (validTrip && !ranked) || !["#decision-next-steps", "#availability-request"].includes(hash)) return;
+    if (!data || !["#decision-next-steps", "#availability-request"].includes(hash)) return;
     const frame = requestAnimationFrame(() => document.getElementById(hash.slice(1))?.scrollIntoView({ block: "start" }));
     return () => cancelAnimationFrame(frame);
-  }, [hash, data, ranked, validTrip]);
+  }, [hash, data, ranked]);
   if (catalogError)
     return (
       <div className="page">
@@ -110,17 +119,21 @@ export function HotelPage() {
         <ErrorMessage text={error} />
       </div>
     );
-  if (!data || !catalog || (validTrip && !ranked))
+  if (!data || !catalog || (data.region && data.region !== catalog.region))
     return (
       <div className="page">
         <Loading />
       </div>
     );
   const { hotel, facts } = data;
-  if (!ranked)
-    return (
-      <HotelCatalogPreview hotel={hotel} facts={facts} catalog={catalog} selectedRoomId={requestedRoom} />
-    );
+  if (!ranked) return <DetailLayout backTo="/results"
+    gallery={<DetailGallery name={hotel.name} hotelId={hotel.id} photos={hotel.photos} />}
+    saved={<FavoriteButton label item={{ id: requestedRoom ? `${hotel.id}::${requestedRoom}` : hotel.id, name: hotel.name, path: accommodationPath(hotel, requestedRoom || undefined), hotelId: hotel.id, photos: hotel.photos, address: hotel.address }} />}
+    sidebar={<DetailSidebar hotelId={hotel.id} region={hotel.region || trip.region} map={<HotelLocation hotel={hotel} catalog={catalog} />} />}>
+    {!current && validTrip && <p role="status">Перепроверяем условия для новой поездки…</p>}
+    {error && <ErrorMessage text={error} />}
+    <HotelCatalogPreview embedded hotel={hotel} facts={facts} catalog={catalog} selectedRoomId={requestedRoom} />
+  </DetailLayout>;
   const labFixture =
     import.meta.env.VITE_LAB_MODE === "true" &&
     hotel.id.startsWith("lab-demo-");
@@ -131,310 +144,97 @@ export function HotelPage() {
     ),
   );
   const hasOwnerCriteria = !!ranked.ownerCriteria?.length;
-  const allConditionsMatch = !trip.pendingLocationQuery && !hasUncheckedPersonalWishes(trip, ranked) && room.status === "fits" && room.capacityEvidenceStatus === "match"
-    && !room.capacityAssumed && room.room.evidenceStatus === "verified"
-    && (ranked.locationCriteria || []).every((criterion) => locationState(criterion) === "match")
-    && [...selectedCriteria, ...(ranked.ownerCriteria || [])].every((criterion) =>
-      criterion.status === "match" && criterion.evidenceStatus === "match" && !criterion.assumed);
+  const preferences = ranked.preferences || trip.preferences;
+  const otherCriteria = room.criteria.filter((criterion) =>
+    !preferences.some((preference) => preference.feature === criterion.feature));
+  const needsClarification = !labFixture && clarificationItems(room, preferences).length > 0;
   return (
-    <div className="page hotel-detail-page">
-      <Link to="/results" className="back-link">
-        <ArrowLeft size={16} />К подбору
-      </Link>
-      <SearchBar
-        trip={trip}
-        onSearch={(next) =>
-          JSON.stringify(next) === JSON.stringify(trip)
-            ? refresh()
-            : setTrip(next)
-        }
-      />
-      <div className="detail-heading">
-        <div>
-          <h1>{room.room.name}</h1>
-          <p className="hotel-detail-hotel-name">{hotel.name}</p>
-          <p className="address">
-            <MapPin size={16} />
-            {lodgingLabel(hotel)} · {hotel.address}
-          </p>
-          <p className="hotel-detail-room-meta">
-            {roomDetailsLabel(hotel.floor, hotel.windowDirections)}
-          </p>
-        </div>
-        <div className="hotel-detail-actions">
-          <FavoriteButton
-            label
-            item={{
-              id: `${hotel.id}::${room.room.id}`,
-              name: `${room.room.name} · ${hotel.name}`,
-              path: accommodationPath(hotel, room.room.id),
-              hotelId: hotel.id,
-              photos: hotel.photos,
-              address: hotel.address,
-            }}
-          />
-          {hotel.osmUrl && !labFixture && (
-            <a
-              href={hotel.osmUrl}
-              className="button secondary"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Объект на OSM <ExternalLink size={16} />
-            </a>
-          )}
-        </div>
+    <DetailLayout backTo="/results" gallery={<DetailGallery name={hotel.name} hotelId={hotel.id} photos={hotel.photos} />}
+      saved={<FavoriteButton label item={{ id: `${hotel.id}::${room.room.id}`, name: `${room.room.name} · ${hotel.name}`, path: accommodationPath(hotel, room.room.id), hotelId: hotel.id, photos: hotel.photos, address: hotel.address }} />}
+      sidebar={<DetailSidebar hotelId={hotel.id} region={hotel.region || trip.region} map={<HotelLocation hotel={hotel} catalog={catalog} />} />}>
+      <DetailHeading title={hotel.name} address={`${lodgingLabel(hotel)} · ${hotel.address}`} pricePerNight={hotel.pricePerNight} currency={hotel.currency} demo={hotel.synthetic} />
+      <CatalogSummary hotel={hotel} room={room.room} />
+      {requestedRoom && !ranked.rooms.some((entry) => entry.room.id === requestedRoom) && (
+        <Notice>Запрошенная категория больше не доступна. Показана другая категория; проверьте её условия.</Notice>
+      )}
+      {labFixture && <Notice><strong>Вымышленное тестовое объявление.</strong> {hotel.dataNotes?.join(" ")}</Notice>}
+      <section className="figcraft-detail-section hotel-trip-fit" aria-labelledby="hotel-trip-title">
+        <h2 id="hotel-trip-title">Даты и гости</h2>
+        <SearchBar trip={trip} regions={regions} onSearch={(next) => {
+          if (next.region !== trip.region) { setTrip(next); navigate("/results"); }
+          else if (JSON.stringify(next) === JSON.stringify(trip)) refresh();
+          else setTrip(next);
+        }} />
+      </section>
+      <div className="figcraft-detail-section">
+        <section className="hotel-room-overview" aria-labelledby="hotel-about-title">
+          <h2 id="hotel-about-title">Категории номеров</h2>
+          {ranked.rooms.length > 1 && <label className="field">
+            <span>Категория номера</span>
+            <select value={roomId} onChange={(event) => setRoomId(event.target.value)}>
+              {ranked.rooms.map((entry) => <option key={entry.room.id} value={entry.room.id}>{entry.room.name}</option>)}
+            </select>
+          </label>}
+          <CatalogRoomDetails hotel={hotel} room={room.room} match={room} />
+        </section>
+
       </div>
-      <HotelPhotoGallery hotel={hotel} />
-      <CatalogRoomDescription hotel={hotel} room={room.room} />
-      <DecisionNextSteps match={ranked} room={room} trip={trip} />
+      <section className="figcraft-detail-section" aria-label="Проверка условий">
+        <MatchBadge match={matchForSelectedPreferences(ranked, preferences, room)} />
+        <NearbySummary matches={room.nearbyMatches || []} region={trip.region} />
+        {selectedCriteria.length > 0 && <WishMatches criteria={selectedCriteria} />}
+        {hasOwnerCriteria && <OwnerCriteriaSummary criteria={ranked.ownerCriteria} />}
+        <LocationCriteria criteria={ranked.locationCriteria} detailed />
+        <PersonalWishesSummary match={{ ...ranked, best: room }} />
+        <DecisionNextSteps match={ranked} room={room} trip={trip} />
+        {ranked.warnings?.map((text, index) => <Notice key={`warning-${index}`}>{text}</Notice>)}
+        {ranked.conflicts?.map((text, index) => <Notice key={`conflict-${index}`}>{text}</Notice>)}
+        {error && <ErrorMessage text={error} />}
+      </section>
       {!hotel.synthetic && <CatalogAvailability key={room.room.id} hotel={hotel} room={room.room} trip={trip} match={ranked} roomMatch={room} />}
       <NearbyPlaces hotelId={hotel.id} />
-      {requestedRoom && !ranked.rooms.some((entry) => entry.room.id === requestedRoom) && (
-        <Notice>Сведения о запрошенной категории больше не доступны. Ниже показана другая категория; проверьте её условия заново.</Notice>
-      )}
-      {labFixture ? (
-        <Notice>
-          <strong>Вымышленное тестовое объявление.</strong>{" "}
-          {hotel.dataNotes?.join(" ")} Демонстрационные сведения используются
-          только для проверки работы этой копии.
-        </Notice>
-      ) : (
-        <Notice>
-          Подбор использует проверяемые источники. Недостающие сведения отмечены
-          «Требует уточнения». Цена и наличие на даты поездки не проверены.
-        </Notice>
-      )}
-      <div className="detail-grid">
-        <section>
-          {labFixture ? (
-            <Notice>
-              Координаты этого объявления условные. Карта реального размещения и
-              маршрут для него не показываются.
-            </Notice>
-          ) : (
-            <GeoMap dataset={catalog} hotel={hotel} />
-          )}
-          {hotel.route && (
-            <div className="route-stats">
-              <div>
-                <strong>
-                  {hotel.route?.meters ?? "—"} <small>м</small>
-                </strong>
-                <span>по пешеходной сети</span>
-              </div>
-              <div>
-                <strong>
-                  ≈ {hotel.route ? Math.ceil(hotel.route.meters / 65) : "—"}{" "}
-                  <small>мин</small>
-                </strong>
-                <span>при скорости 65 м/мин</span>
-              </div>
-              <div>
-                <strong>{hotel.route?.steps ?? "—"}</strong>
-                <span>участков с лестницами</span>
-              </div>
-            </div>
-          )}
-          {hotel.route ? (
-            <p className="muted map-caveat">
-              Маршрут до подхода к пляжу «{hotel.route?.beachName}». Вход
-              приближённый: {hotel.route?.connectionMeters} м до сети.
-              Соединительные участки не включены в длину. Отсутствие отмеченных
-              лестниц не подтверждает доступность всего пути.
-            </p>
-          ) : !labFixture ? (
-            <Notice>
-              Пешеходный маршрут до пляжа пока не рассчитан. На карте показано
-              расположение объекта; расстояние и доступность пути остаются
-              неизвестными.
-            </Notice>
-          ) : null}
-          {hotel.route?.noStepsAlternative && (
-            <Notice>
-              Найден альтернативный путь без отмеченных лестниц:{" "}
-              {hotel.route.noStepsAlternative.meters} м. Отображён пунктиром;
-              доступность не обследована.
-            </Notice>
-          )}
-          {!labFixture && (
-            <div className="subsection">
-              <h2>Что находится рядом</h2>
-              <p>
-                Возможные источники внешнего шума. Уровень шума внутри номера не
-                измерен.
-              </p>
-              {hotel.noise.length ? (
-                hotel.noise.map((n) => (
-                  <a
-                    className="noise-row"
-                    key={n.osmUrl}
-                    href={n.osmUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <span>
-                      <span className="noise-dot" />
-                      {n.name}
-                    </span>
-                    <span>
-                      ≈ {n.meters} м <ExternalLink size={13} />
-                    </span>
-                  </a>
-                ))
-              ) : (
-                <Notice>
-                  В выгрузке не обнаружены учитываемые источники рядом. Это не
-                  подтверждает тишину.
-                </Notice>
-              )}
-              <p className="muted">
-                Расстояния до ближайшей точки геометрии в выгрузке, по прямой.
-              </p>
-            </div>
-          )}
-        </section>
-        <aside className="room-panel">
-          <h2>{allConditionsMatch ? "Этот номер подходит по всем условиям" : "Условия выбранного номера"}</h2>
-          <p>
-            Все пожелания проверяются в одной категории. Наличие конкретного номера на даты нужно уточнить у отеля.
-          </p>
-          <label className="field">
-            <span>Категория номера</span>
-            <select
-              value={roomId}
-              onChange={(e) => {
-                setRoomId(e.target.value);
-              }}
-            >
-              {ranked.rooms.map((entry) => (
-                <option key={entry.room.id} value={entry.room.id}>
-                  {entry.room.name} ·{" "}
-                  {entry.capacityRule
-                    ? `до ${entry.capacityRule.maxGuests} гостей по правилу размещения`
-                    : entry.room.capacity === null
-                      ? "вместимость требует уточнения"
-                      : `до ${entry.room.capacity} гостей`}
-                </option>
-              ))}
-            </select>
-          </label>
-          {room.room.sourceUrl && (
-            <p className="muted">
-              <a href={room.room.sourceUrl} target="_blank" rel="noreferrer">
-                Категория на сайте отеля <ExternalLink size={12} />
-              </a>
-              {room.room.quote && (
-                <>
-                  <br />
-                  {room.room.quote}
-                </>
-              )}
-            </p>
-          )}
-          <MatchBadge
-            match={matchForSelectedPreferences(
-              ranked,
-              ranked.preferences || trip.preferences,
-              room,
-            )}
-          />
-          <CapacitySummary match={room} />
-          <LocationCriteria criteria={ranked.locationCriteria} detailed />
-          {(selectedCriteria.length > 0 || !hasOwnerCriteria) && (
-            <WishMatches criteria={selectedCriteria} />
-          )}
-          {hasOwnerCriteria && (
-            <OwnerCriteriaSummary criteria={ranked.ownerCriteria} detailed />
-          )}
-          {!labFixture && (
-            <CatalogClarificationPlan
-              match={{
-                ...ranked,
-                preferences: ranked.preferences || trip.preferences,
-              }}
-              room={room}
-            />
-          )}
-          <div className="room-criteria">
-            <h3>Все условия номера</h3>
-            {room.criteria
-              .filter((c) => features[c.feature].tool !== "area")
-              .map((c) => (
-                <div className="room-criterion" key={c.feature}>
-                  <CriterionLine criterion={c} />
-                </div>
-              ))}
+      <section className="figcraft-detail-section hotel-additional" aria-labelledby="hotel-additional-title">
+        <h2 id="hotel-additional-title">Дополнительно</h2>
+        <details className="hotel-detail-disclosure" key={`additional-${room.room.id}`}>
+          <summary>Уточнения и окружение</summary>
+          <div className="hotel-disclosure-content">
+            {needsClarification && <CatalogClarificationPlan match={{ ...ranked, preferences }} room={room} />}
+            {otherCriteria.length > 0 && <section className="room-criteria">
+              <h3>Другие условия</h3>
+              {otherCriteria.map((criterion) => <div className="room-criterion" key={criterion.feature}>
+                <CriterionLine criterion={criterion} />
+              </div>)}
+            </section>}
+            {!labFixture && <>
+              <h3>Район на даты поездки</h3>
+              <p className="muted">{dateFull(trip.checkIn)} — {dateFull(trip.checkOut)} · {trip.region}</p>
+              <AreaPanel hotelId={hotel.id} region={trip.region} />
+              {hotel.route && <section className="hotel-route-details">
+                <h3>Путь к пляжу</h3>
+                <p>{hotel.route.meters} м по пешеходной сети, около {Math.ceil(hotel.route.meters / 65)} мин при скорости 65 м/мин.
+                  Приближённое соединение со входом: {hotel.route.connectionMeters} м, не включено в длину.
+                  Участков с отмеченными лестницами: {hotel.route.steps}. Доступность всего пути не проверена.</p>
+                {hotel.route.noStepsAlternative && <p>Альтернативный путь без отмеченных лестниц: {hotel.route.noStepsAlternative.meters} м. Доступность не обследована.</p>}
+              </section>}
+              <section className="hotel-noise-details">
+                <h3>Возможные источники шума</h3>
+                {hotel.noise.map((noise) => <a className="noise-row" key={noise.osmUrl} href={noise.osmUrl} target="_blank" rel="noreferrer">
+                  <span>{noise.name}</span><span>≈ {noise.meters} м <ExternalLink size={13} aria-hidden="true" /></span>
+                </a>)}
+                <p className="muted">{hotel.noise.length ? "Расстояния по прямой, по данным карты." : "В выгрузке нет отмеченных источников рядом; это не подтверждает тишину."} Шум внутри номера не измерен.</p>
+              </section>
+            </>}
           </div>
-          <PersonalWishesSummary match={{ ...ranked, best: room }} />
-          {error && <ErrorMessage text={error} />}
-          <Notice>
-            Это объект из исследовательского каталога. Задать вопрос владельцу и
-            отправить заявку можно в{" "}
-            <Link to="/stays">объявлениях отельеров</Link>.
-          </Notice>
-        </aside>
-      </div>
-      {!labFixture && (
-        <section className="subsection trip-environment">
-          <div className="environment-heading">
-            <span className="note-icon">
-              <ShieldCheck size={25} />
-            </span>
-            <div>
-              <h2>Район на даты вашей поездки</h2>
-              <p>
-                {dateFull(trip.checkIn)} — {dateFull(trip.checkOut)} · время
-                Пусана
-              </p>
-            </div>
+        </details>
+        <details className="hotel-detail-disclosure" key={`evidence-${room.room.id}`}>
+          <summary>Источники сведений</summary>
+          <div className="hotel-disclosure-content evidence-section">
+            {facts.filter((fact) => !fact.roomId || fact.roomId === room.room.id).map((fact) => (
+              <FactEvidence key={fact.id} fact={fact} allowDemo={labFixture && catalog.evidencePolicy === "demo"} />
+            ))}
           </div>
-          <p>
-            Эти условия одинаковы для всех номеров отеля. В основной список
-            рекомендаций попадают категории, где совпали все выбранные пожелания.
-          </p>
-          {ranked.warnings?.map((text, i) => (
-            <Notice key={`w${i}`}>{text}</Notice>
-          ))}
-          {ranked.conflicts?.map((text, i) => (
-            <Notice key={`c${i}`}>{text}</Notice>
-          ))}
-          <div className="environment-criteria">
-            {room.criteria
-              .filter((c) => features[c.feature].tool === "area")
-              .map((c) => (
-                <div className="environment-criterion" key={c.feature}>
-                  <CriterionLine criterion={c} detailed />
-                  <span className="muted">
-                    {ranked.preferences?.some((p) => p.feature === c.feature)
-                      ? "Учтено в подборе"
-                      : "Справочно · не выбрано в пожеланиях"}
-                  </span>
-                </div>
-              ))}
-          </div>
-        </section>
-      )}
-      {!labFixture && <AreaPanel hotelId={hotel.id} />}
-      <section className="subsection evidence-section">
-        <h2>Почему мы так считаем</h2>
-        <p>
-          Источники и история для выбранной категории. Реальные факты отделены
-          от демонстрации.
-        </p>
-        {facts
-          .filter((f) => !f.roomId || f.roomId === roomId)
-          .map((f) => (
-            <FactEvidence
-              key={f.id}
-              fact={f}
-              allowDemo={
-                import.meta.env.VITE_LAB_MODE === "true" &&
-                catalog.evidencePolicy === "demo"
-              }
-            />
-          ))}
+        </details>
       </section>
-    </div>
+    </DetailLayout>
   );
 }

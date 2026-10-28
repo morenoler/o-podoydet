@@ -1,0 +1,95 @@
+.review-highlights {
+  margin-block: 28px;
+  padding-block: 24px;
+  border-block: 1px solid var(--line);
+  scroll-margin-top: 100px;
+}
+.review-highlights-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.review-highlights-heading > svg {
+  flex-shrink: 0;
+  color: var(--blue);
+}
+.review-highlights-heading h2,
+.review-highlights-heading h3 {
+  margin: 0;
+}
+.review-highlights-demo {
+  padding: 2px 7px;
+  color: var(--blue);
+  background: var(--soft-blue);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 800;
+}
+.review-highlights .review-highlights-note {
+  max-width: 68ch;
+  margin: 10px 0 16px;
+  font-size: 14px;
+  color: var(--ink);
+}
+.review-highlights-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.review-highlights-list li {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.review-highlights-list strong {
+  font-size: 16px;
+  color: var(--ink);
+}
+.review-highlights-list p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.review-highlights-compact {
+  margin-block: 16px 0;
+  padding-block: 14px 0;
+  border-bottom: 0;
+}
+.review-highlights-compact .review-highlights-heading h3 {
+  font-size: 15px;
+}
+.review-highlights-compact .review-highlights-note {
+  margin-block: 6px 10px;
+  font-size: 12px;
+}
+.review-highlights-compact .review-highlights-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  list-style: disc inside;
+}
+.review-highlights-compact .review-highlights-list strong {
+  font-size: 13px;
+  font-weight: 700;
+}
+.review-highlights-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.review-highlights-link:hover { text-decoration-thickness: 2px; }
+.review-highlights-link:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+@media (max-width: 600px) {
+  .review-highlights-list { grid-template-columns: 1fr; }
+}

@@ -30,7 +30,7 @@ type Filter = "active" | "history";
 function isCurrent(booking: Booking, host: boolean) {
   return (
     ["pending", "confirmed"].includes(booking.status) &&
-    (host || booking.checkOut > bookingToday())
+    (host || booking.checkOut > bookingToday(booking.city))
   );
 }
 
@@ -165,7 +165,7 @@ function BookingCard({
   const [confirmCancel, setConfirmCancel] = useState(false);
   const active = ["pending", "confirmed"].includes(booking.status);
   const canCancel =
-    host || booking.status === "pending" || booking.checkIn >= bookingToday();
+    host || booking.status === "pending" || booking.checkIn >= bookingToday(booking.city);
   async function update(status: BookingStatus) {
     setBusy(true);
     setError("");
@@ -217,7 +217,7 @@ function BookingCard({
           </span>
         </div>
         <div className="booking-price">
-          <strong>{price(booking.totalPrice)}</strong>
+          <strong>{price(booking.totalPrice, booking.currency)}</strong>
           <span>
             за {countLabel(booking.nights, ["ночь", "ночи", "ночей"])} · по цене объявления
           </span>
@@ -266,7 +266,7 @@ function BookingCard({
           <div className="account-record-actions">
             {host &&
               booking.status === "pending" &&
-              booking.checkOut > bookingToday() && (
+              booking.checkOut > bookingToday(booking.city) && (
                 <button
                   className="button primary"
                   disabled={busy}
@@ -277,7 +277,7 @@ function BookingCard({
               )}
             {host &&
               booking.status === "confirmed" &&
-              booking.checkOut <= bookingToday() && (
+              booking.checkOut <= bookingToday(booking.city) && (
                 <button
                   className="button primary"
                   disabled={busy}

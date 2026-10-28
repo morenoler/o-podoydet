@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { HotelMatch, LocationCriterion, LocationWish, Trip } from "../shared/types";
+import { tripSchema } from "../shared/validation";
 import { LocationCriteria } from "../src/features/places/LocationCriteria";
 import { locationState, locationWishLabel } from "../src/features/places/locationPresentation";
 import { currentChatLocations, emptyLocationChanges, readChatLocations, recordChatLocations, resetChatLocations } from "../src/features/advisor/conversationLocations";
@@ -12,11 +13,20 @@ import { personalWishSummary } from "../src/shared/lib/personalWishes";
 
 const base: Trip = { region: "Пусан", checkIn: "2027-06-10", checkOut: "2027-06-17", adults: 2, children: 0, scenarios: [], preferences: [], text: "" };
 const cafe: LocationWish = { query: "cafe", relation: "near", radiusMeters: 500, required: false };
-const center: LocationWish = { query: "центр", relation: "near", radiusMeters: 1000, required: true };
+const center: LocationWish = { query: "center", relation: "near", radiusMeters: 1000, required: true };
 const criterion: LocationCriterion = { id: "cafe", query: "cafe", label: "Кафе в пределах 500 м", required: true,
   status: "unknown", evidenceStatus: "unknown", explanation: "Неизвестны координаты здания.", places: [], method: "haversine", assumptions: [] };
 const room = { room: { id: "room", name: "Учебный номер", capacity: 2, demo: true }, criteria: [], score: 0, status: "fits" as const, capacityEvidenceStatus: "match" as const };
 const match: HotelMatch = { hotel: { id: "fixture", name: "Учебный отель", address: "", coordinates: null, osmUrl: "", rooms: [room.room], route: null, noise: [] }, best: room, rooms: [room], locationCriteria: [criterion] };
+
+test("location inputs agree with server limits and cannot restore invalid pending questions", () => {
+  assert.equal(tripSchema.safeParse({ ...base, locationWishes: [cafe], pendingLocationQuery: center }).success, true);
+  for (const wish of [{ ...cafe, radiusMeters: 20001 }, { ...cafe, query: "a".repeat(121) }, { ...cafe, query: "cafe\n" }])
+    assert.equal(tripSchema.safeParse({ ...base, locationWishes: [wish] }).success, false);
+  assert.equal(tripSchema.safeParse({ ...base, locationWishes: [{ ...cafe, query: "Сомён" }, { ...cafe, query: " сомЕн " }] }).success, false);
+  assert.equal(tripSchema.safeParse({ ...base, pendingLocationQuery: cafe }).success, false);
+  assert.deepEqual(readChatLocations({ wishes: [], pending: { before: null, after: cafe } }), emptyLocationChanges);
+});
 
 test("unknown geospatial data never turns a room badge or personal wish into a match", () => {
   assert.equal(matchPresentationState(match), "unknown");

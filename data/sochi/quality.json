@@ -1,0 +1,161 @@
+{
+  "stage": "expanded",
+  "boundaryRelationId": 365233,
+  "sourceUrl": "https://www.openstreetmap.org/relation/365233",
+  "area": "Центральная прибрежная часть Сочи; ограниченный bbox сохранённого снимка, не весь городской округ",
+  "sourceMethod": "Preserved 2026-10-24 bbox snapshot; original SHA-256 checked; named OSM hotel records",
+  "bboxSemantics": "Display extent of saved lodging representative coordinates, not the administrative boundary polygon",
+  "recordScope": "hotel_identity_and_representative_location",
+  "algorithm": "sochi-catalog-v1",
+  "sourceDateSemantics": "Dataset.sourceDate is the database snapshot date; absent hotel sourceEvidence.sourceDate means unknown element update date.",
+  "distanceAlgorithm": "haversine-osm-v1",
+  "distanceModel": "Great-circle distance, radius 6371008.8 m, rounded up; no walking graph.",
+  "requestedLodgingTypes": [
+    "hotel"
+  ],
+  "obtainedAt": "2026-10-24T09:07:10.313929+00:00",
+  "expiresAt": "2026-11-23T09:07:10.313Z",
+  "unknownFields": [
+    "physical_rooms",
+    "room_categories",
+    "capacity",
+    "price",
+    "date_availability",
+    "hotel_entrance",
+    "walking_route",
+    "step_free_access",
+    "room_noise",
+    "city_center_reference",
+    "citywide_coverage",
+    "non_beach_nearby_places"
+  ],
+  "counts": {
+    "sourceLodgingRecords": 67,
+    "eligibleRecords": 61,
+    "catalogRecords": 61,
+    "excludedRecords": 6,
+    "namedHotelRecords": 61,
+    "sourcePlaces": 6,
+    "roomCategories": 0,
+    "calculatedWalkingRoutes": 0,
+    "prices": 0,
+    "fieldVerifiedHotels": 0
+  },
+  "exclusions": [
+    {
+      "osmId": "node/8951230053",
+      "reason": "missing or generic name; identity unresolved"
+    },
+    {
+      "osmId": "way/51676847",
+      "reason": "missing or generic name; identity unresolved"
+    },
+    {
+      "osmId": "way/53266521",
+      "reason": "missing or generic name; identity unresolved"
+    },
+    {
+      "osmId": "way/57375782",
+      "reason": "missing or generic name; identity unresolved"
+    },
+    {
+      "osmId": "relation/11126889",
+      "reason": "missing or generic name; identity unresolved"
+    },
+    {
+      "osmId": "relation/9273776",
+      "reason": "OSM names Hyatt Regency Sochi and explicitly rejects Grand karat Sochi in not:name, while the official Grand Karat site reports the same street address. Current identity is unresolved; both source versions are preserved."
+    }
+  ],
+  "limitations": [
+    "Original final counter describes pedestrian ways (2995), not the returned hotel/beach arrays; completeness of those arrays is not independently established.",
+    "Citywide collection failed with HTTP 502/504/timeouts. This release uses the preserved central snapshot, not a complete Sochi catalog.",
+    "OSM records are not independently verified operating businesses; completeness against the real market is unknown.",
+    "Different OSM IDs may represent the same business. Duplicate candidates are reported, not merged without evidence.",
+    "Nearby coverage excludes unmapped places and places outside the source collection area; nearest means nearest in this saved set.",
+    "No selected city-center reference or subway evidence; missing evidence does not imply absence.",
+    "The pilot includes the first five eligible records by sorted OSM ID; it is not a representative field sample."
+  ],
+  "lodgingTypeCounts": {
+    "hotel": 61,
+    "motel": 0,
+    "guest_house": 0,
+    "hostel": 0,
+    "apartment": 0
+  },
+  "byNearbyKind": {
+    "cafe": {
+      "defaultMaxMeters": 500,
+      "recordsWithEvidence": 0,
+      "recordsWithinDefaultRadius": 0
+    },
+    "restaurant": {
+      "defaultMaxMeters": 500,
+      "recordsWithEvidence": 0,
+      "recordsWithinDefaultRadius": 0
+    },
+    "supermarket": {
+      "defaultMaxMeters": 700,
+      "recordsWithEvidence": 0,
+      "recordsWithinDefaultRadius": 0
+    },
+    "convenience": {
+      "defaultMaxMeters": 400,
+      "recordsWithEvidence": 0,
+      "recordsWithinDefaultRadius": 0
+    },
+    "pharmacy": {
+      "defaultMaxMeters": 700,
+      "recordsWithEvidence": 0,
+      "recordsWithinDefaultRadius": 0
+    },
+    "park": {
+      "defaultMaxMeters": 800,
+      "recordsWithEvidence": 0,
+      "recordsWithinDefaultRadius": 0
+    },
+    "museum": {
+      "defaultMaxMeters": 1500,
+      "recordsWithEvidence": 0,
+      "recordsWithinDefaultRadius": 0
+    },
+    "shopping_mall": {
+      "defaultMaxMeters": 1200,
+      "recordsWithEvidence": 0,
+      "recordsWithinDefaultRadius": 0
+    },
+    "beach": {
+      "defaultMaxMeters": 1000,
+      "recordsWithEvidence": 61,
+      "recordsWithinDefaultRadius": 51
+    },
+    "train_station": {
+      "defaultMaxMeters": 1500,
+      "recordsWithEvidence": 0,
+      "recordsWithinDefaultRadius": 0
+    }
+  },
+  "duplicateAudit": {
+    "method": "NFKC/lowercase letters+digits same name within 100 m; candidates retained, not merged",
+    "candidatePairs": 2,
+    "candidates": [
+      {
+        "ids": [
+          "node-10759606596",
+          "node-11138786328"
+        ],
+        "normalizedName": "rpmanhattan",
+        "meters": 36
+      },
+      {
+        "ids": [
+          "way-51847420",
+          "way-51847429"
+        ],
+        "normalizedName": "жемчужина",
+        "meters": 27
+      }
+    ]
+  },
+  "snapshotIntegrity": "Preserved source SHA-256, byte length, original metadata and element structure checked offline; its final counter measures pedestrian ways, not completeness of hotel/beach records"
+}

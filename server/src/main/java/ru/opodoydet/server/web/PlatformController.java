@@ -193,7 +193,7 @@ public class PlatformController {
           Json.obj("error", "Ответы принимаются только по вашим объявлениям в личном кабинете."));
     String path = request.getRequestURI(), method = request.getMethod();
     if (method.equals("GET") && path.equals("/api/questions"))
-      return JsonResponses.send(200, store.questions());
+      return JsonResponses.send(200, store.forRegion(request.getParameter("region")).questions());
     if (!method.equals("POST")) return JsonResponses.notFound("Метод не найден");
     JsonNode input = body(request);
     if (path.equals("/api/questions")) return ask(input);
@@ -224,6 +224,7 @@ public class PlatformController {
   }
 
   private ResponseEntity<String> ask(JsonNode input) {
+    Store store = this.store.forTrip(input.path("trip"));
     String hotelId = Validation.text(input, "hotelId", 1, 150),
         roomId = Validation.text(input, "roomId", 1, 150),
         feature = Validation.feature(input, "feature");
@@ -313,7 +314,9 @@ public class PlatformController {
   public JsonNode assessment(JsonNode hotel, Instant now) throws IOException {
     if (!Files.isRegularFile(areaData)) return null;
     JsonNode file = Json.MAPPER.readTree(areaData.toFile());
-    if (file.hasNonNull("region") && !Json.str(file, "region").equals(store.region())) return null;
+    String region = store.hotelRegion(Json.str(hotel, "id"));
+    if (region == null) region = store.region();
+    if (file.hasNonNull("region") && !Json.str(file, "region").equals(region)) return null;
     for (JsonNode item : file.path("assessments"))
       if (Json.str(item, "hotelId").equals(Json.str(hotel, "id"))) {
         JsonNode coordinates = item.path("coordinates"), expected = hotel.path("coordinates");

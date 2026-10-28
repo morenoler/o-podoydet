@@ -31,7 +31,7 @@ class ReportedEvidencePropertiesTest {
       new Period(null, null), new Period(-2, 6), new Period(1, 2), new Period(-4, -1),
       new Period(5, 8), new Period(0, 0), new Period(4, 4), new Period(0, 2), new Period(3, 4));
   private static final Set<String> PUBLIC_FIELDS = Set.of("method", "provenanceStatus", "feature", "value",
-      "evidenceStatus", "scope", "scopeId", "recordedAt", "observedOn", "validFrom", "validTo", "recheckAt");
+      "evidenceStatus", "scope", "scopeId", "recordedAt", "observedOn", "validFrom", "validTo", "recheckAt", "timeZone");
 
   private record Period(Integer from, Integer to) {
     boolean contains(int day) { return from == null || day >= from && day <= to; }

@@ -1,12 +1,13 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { MessageCircle } from "lucide-react";
 import type { Booking } from "../../../../shared/account";
+import { propertyTimeZone } from "../../../../shared/regions";
 import { accountApi } from "../api";
 import "../booking-reply.css";
 
-function replyDate(value?: string) {
+function replyDate(value: string | undefined, city: string) {
   if (!value || !Number.isFinite(Date.parse(value))) return "";
-  return new Intl.DateTimeFormat("ru-RU", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Seoul" }).format(new Date(value));
+  return new Intl.DateTimeFormat("ru-RU", { dateStyle: "medium", timeStyle: "short", timeZone: propertyTimeZone(city) }).format(new Date(value));
 }
 
 export function BookingReply({ booking, host, disabled = false, onBusyChange }: {
@@ -43,7 +44,7 @@ export function BookingReply({ booking, host, disabled = false, onBusyChange }: 
   return <section className="booking-correspondence" aria-labelledby={`${id}-title`}>
     <h3 id={`${id}-title`}><MessageCircle size={18} aria-hidden="true" />{host ? "Вопросы гостя и ваш ответ" : "Вопросы и ответ отельера"}</h3>
     {booking.note && <div className="booking-private-message"><strong>{host ? "Гость написал" : "Ваш запрос"}</strong><p>{booking.note}</p></div>}
-    {published.message ? <div className="booking-private-message is-host"><strong>{host ? "Ваш ответ гостю" : "Ответ отельера"}</strong><p>{published.message}</p>{published.date && <time dateTime={published.date}>{replyDate(published.date)} · Пусан</time>}</div>
+    {published.message ? <div className="booking-private-message is-host"><strong>{host ? "Ваш ответ гостю" : "Ответ отельера"}</strong><p>{published.message}</p>{published.date && <time dateTime={published.date}>{replyDate(published.date, booking.city)} · {booking.city}</time>}</div>
       : !host && <p className="booking-reply-pending">Отельер ещё не ответил на вопросы.</p>}
     {host && <>
       <button className="text-link" type="button" disabled={busy || disabled} aria-expanded={open} aria-controls={`${id}-form`} onClick={() => { setOpen(!open); setSaved(false); }}>{open ? "Скрыть форму ответа" : published.message ? "Изменить ответ" : "Ответить гостю"}</button>

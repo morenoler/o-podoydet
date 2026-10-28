@@ -4,13 +4,14 @@ import type {
 } from "../../../shared/clarifications";
 
 /** Date-only source dates stay dates; instants are displayed in the property's timezone. */
-export function clarificationDate(value: string) {
-  const date = /^\d{4}-\d{2}-\d{2}$/.test(value)
-    ? new Date(`${value}T12:00:00+09:00`)
+export function clarificationDate(value: string, timeZone = "Asia/Seoul") {
+  const dateOnly = /^\d{4}-\d{2}-\d{2}$/.test(value);
+  const date = dateOnly
+    ? new Date(`${value}T12:00:00Z`)
     : new Date(value);
   if (Number.isNaN(date.getTime())) return "Дата неизвестна";
   return new Intl.DateTimeFormat("ru-RU", {
-    timeZone: "Asia/Seoul",
+    timeZone: dateOnly ? "UTC" : timeZone,
     day: "numeric",
     month: "long",
     year: "numeric",

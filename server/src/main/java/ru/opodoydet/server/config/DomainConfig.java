@@ -108,8 +108,8 @@ public class DomainConfig {
   }
 
   @Bean
-  BookingService bookingService(AccountDatabase db, ListingService listings) {
-    return new BookingService(db, listings);
+  BookingService bookingService(AccountDatabase db, ListingService listings, Clock clock) {
+    return new BookingService(db, listings, clock);
   }
 
   @Bean

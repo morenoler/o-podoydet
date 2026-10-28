@@ -13,7 +13,9 @@ export function ListingGallery({
     [index, setIndex] = useState(0);
   return (
     <>
-      <div className={`listing-gallery${photos.length < 2 ? " single" : ""}`}>
+      <div
+        className={`listing-gallery${photos.length < 2 ? " single" : ""}${photos.length === 0 ? " is-empty" : ""}`}
+      >
         <AccommodationPhoto name={name} photos={photos} eager />
         {photos.length > 1 && (
           <div className="listing-gallery-side">
