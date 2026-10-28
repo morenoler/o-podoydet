@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { X } from "lucide-react";
 import type { Dataset, Hotel, Room } from "../../../shared/types";
@@ -6,6 +6,7 @@ import { GeoMap } from "../map/components/GeoMap";
 import { accommodationPath } from "../../shared/lib/accommodation";
 import { AccommodationPhoto } from "../../shared/ui/AccommodationPhoto";
 import { price } from "../account/format";
+import { accommodationPrice } from "../hotels/presentationPrice";
 import "./search-map-panel.css";
 
 export function SearchMapPanel({
@@ -27,9 +28,10 @@ export function SearchMapPanel({
     selected?.coordinates && !selected.synthetic ? selected : undefined;
   const [dismissedId, setDismissedId] = useState<string | null>(null);
   const panel = useRef<HTMLElement>(null);
-  const amount = selectedRoom?.pricePerNight ?? selected?.pricePerNight;
-  const currency = selectedRoom?.currency ?? selected?.currency;
-  const hasPrice = typeof amount === "number" && Number.isFinite(amount) && amount > 0 && !!currency;
+  const offer = selected ? accommodationPrice(selected, selectedRoom) : null;
+  const mapHotels = useMemo(() => plotted.map(hotel => hotel.id === selected?.id
+    ? { ...hotel, pricePerNight: offer?.amount, currency: offer?.currency } : hotel),
+  [plotted, selected?.id, offer?.amount, offer?.currency]);
   const detailsPath = selected ? accommodationPath(selected, selectedRoom?.id) : null;
   return (
     <aside className="search-map-section" aria-label="Расположение найденных номеров" ref={panel}>
@@ -37,7 +39,7 @@ export function SearchMapPanel({
         <div className="search-map-shell">
           <GeoMap
             dataset={catalog}
-            hotels={plotted}
+            hotels={mapHotels}
             focusHotels={focusHotels}
             hotel={selectedMap}
             showRoute={false}
@@ -57,7 +59,7 @@ export function SearchMapPanel({
                 <p>{selected.address || "Адрес пока не указан"}</p>
               </div>
               <footer>
-                <strong>{hasPrice ? price(amount!, currency!) : "Цена по запросу"}</strong>{hasPrice && <span className="sr-only">за ночь · наличие уточняйте</span>}
+                <strong>{offer ? price(offer.amount, offer.currency) : "Цена по запросу"}</strong>{offer && <span className="sr-only">за ночь · наличие уточняйте</span>}
               </footer>
             </div>
           )}

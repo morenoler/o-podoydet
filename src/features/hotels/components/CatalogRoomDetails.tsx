@@ -4,7 +4,7 @@ import { price, roomDetailsLabel } from "../../account/format";
 import { CapacitySummary } from "./CapacitySummary";
 import { SleepingArrangement } from "../../listings/SleepingArrangement";
 import { DetailRoomCard } from "./DetailRoomCard";
-import { accountListingId } from "../../../shared/lib/accommodation";
+import { accommodationPrice } from "../presentationPrice";
 
 export function CatalogRoomDetails({ hotel, room, match, selected, onInspect }: {
   hotel: Hotel;
@@ -13,11 +13,9 @@ export function CatalogRoomDetails({ hotel, room, match, selected, onInspect }: 
   selected?: boolean;
   onInspect?: () => void;
 }) {
-  const ownUnit = accountListingId(hotel) && hotel.rooms.length === 1;
-  const pricePerNight = room.pricePerNight ?? (ownUnit ? hotel.pricePerNight : undefined);
-  const currency = room.currency ?? (ownUnit ? hotel.currency : undefined);
+  const offer = accommodationPrice(hotel, room);
   return <DetailRoomCard name={room.name} description={room.description || room.quote} amenities={room.amenities}
-    pricePerNight={pricePerNight} currency={currency} selected={selected} onInspect={onInspect}>
+    pricePerNight={offer?.amount} currency={offer?.currency} selected={selected} onInspect={onInspect}>
     <div className="catalog-room-details">
     {match ? <CapacitySummary match={match} /> : <p className="catalog-room-capacity">
       {room.capacity == null ? "Вместимость нужно уточнить" : `До ${room.capacity} гостей`}
@@ -25,8 +23,8 @@ export function CatalogRoomDetails({ hotel, room, match, selected, onInspect }: 
     </p>}
     <dl className="catalog-room-basics">
       <div><dt>Цена за ночь</dt><dd>
-        {pricePerNight != null && Number.isFinite(pricePerNight) && pricePerNight > 0 && (currency === "KRW" || currency === "RUB")
-          ? <>{price(pricePerNight, currency)} <small>по объявлению</small></>
+        {offer
+          ? <>{price(offer.amount, offer.currency)} <small>по объявлению</small></>
           : "Нужно уточнить"}
       </dd></div>
       <div><dt>Этаж и окна</dt><dd>{roomDetailsLabel(hotel.floor, hotel.windowDirections)}</dd></div>

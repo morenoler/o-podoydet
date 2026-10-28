@@ -1,4 +1,4 @@
-.earth-globe { position: relative; width: 100%; height: 100%; min-height: 360px; overflow: hidden; isolation: isolate; color: white; background: #040509; }
+.earth-globe { position: relative; width: 100%; height: 100%; min-height: 360px; overflow: hidden; isolation: isolate; color: white; background: var(--globe-background, #040509); }
 .earth-globe-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; touch-action: pan-y; cursor: grab; }
 .earth-globe-canvas:active { cursor: grabbing; }
 .earth-globe-canvas:focus-visible { outline: 2px solid #97f171; outline-offset: -4px; }
@@ -25,7 +25,7 @@
 .earth-globe-caption summary { cursor: pointer; }
 .earth-globe-caption details > div { position: absolute; right: 0; bottom: 24px; width: min(300px,calc(100vw - 48px)); padding: 16px; border: 1px solid #ffffff33; border-radius: 16px; color: #ccc; background: #111; font-size: 11px; line-height: 1.6; box-shadow: 0 8px 30px #0008; }
 .earth-globe-caption a { color: #c4e8ff; }
-.earth-globe-fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #040509; }
+.earth-globe-fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--globe-background, #040509); }
 .earth-globe-fallback img { width: min(90%,700px); height: auto; border-radius: 16px; }
 .earth-globe-fallback p { position: absolute; left: 24px; right: 24px; bottom: 95px; margin: 0; color: #ccc; font-size: 12px; text-align: center; }
 .earth-globe-error { position: absolute; left: 24px; right: 24px; bottom: 98px; color: #bbb; font-size: 12px; }

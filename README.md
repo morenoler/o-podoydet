@@ -219,6 +219,24 @@ python -X utf8 scripts/verify-personal-wishes.py --base http://127.0.0.1:8090 --
 
 [Архитектура](docs/ARCHITECTURE.md) · [Проверенные данные](docs/VERIFIED_DATA.md) · [Концепция](CONCEPT.md) · [Реализация и ограничения](docs/IMPLEMENTATION.md) · [Ручная приёмка](docs/ACCEPTANCE.md)
 
+## Правки дизайнера: глобус, фильтры и карта
+
+Результаты проверки и ограничения цен/отзывов:
+[отчёт от 28 октября 2026](docs/DESIGNER_REVISIONS_QUALITY.md).
+
+```powershell
+node node_modules/typescript/bin/tsc --noEmit
+node node_modules/tsx/dist/cli.mjs --test tests/*.test.ts
+node node_modules/vite/bin/vite.js build --outDir .local/designer-review-dist
+```
+
+Для проверки используйте отдельные `PORT`, `DB_SCHEMA`, `UPLOADS_PATH` и
+`DIST_PATH=.local/designer-review-dist`, затем `npm start`. Открывайте страницу
+на том же порту, что и API: POST-запросы защищены проверкой Origin. Для обычной
+демоверсии действуют команды `npm run demo:setup` и `npm run demo:start` из
+[инструкции демо](docs/DEMO.md). Расширенные проверки перечислены выше и в
+`AGENTS.md`; результаты этого прохода приведены в отчёте.
+
 ## Сочи: офлайн-подготовка и отдельная проверка
 
 ```powershell

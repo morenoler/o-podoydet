@@ -3,7 +3,7 @@ import { ChevronDown } from "lucide-react";
 import type { FeatureId, Preference, Trip } from "../../../shared/types";
 import { Modal } from "../../shared/ui/Modal";
 import { PreferencePicker } from "../preferences/PreferencePicker";
-import { applyFilterDraft, editPreferences, resetSearchFilters } from "./preferences";
+import { applyFilterDraft, editPreferences, hasSearchFilters, resetSearchFilters } from "./preferences";
 import { AdmissionModePicker } from "./AdmissionModePicker";
 import { CatalogFilterFields } from "./CatalogFilterFields";
 import { countHotelFilters } from "../../../shared/catalogFilters";
@@ -48,9 +48,7 @@ export function SearchFilters({ trip, preferences = trip.preferences, onApply, o
     const frame = requestAnimationFrame(update);
     return () => { observer.disconnect(); body.removeEventListener("scroll", update); cancelAnimationFrame(frame); };
   }, []);
-  const hasFilters = !!(draft.preferences.length || draft.scenarios.length || draft.text.trim() || countHotelFilters(draft.hotelFilters)
-    || draft.preferenceOverrides?.length || draft.locationWishes?.length || draft.pendingLocationQuery
-    || draft.admissionMode === "verified" || (sortDraft ?? sort) !== "recommended");
+  const hasFilters = hasSearchFilters(draft, draft.preferences, sortDraft ?? sort);
   const selected = (feature: FeatureId) => draft.preferences.find((preference) => preference.feature === feature);
   function toggle(feature: FeatureId) {
     setDraft(editPreferences(draft, selected(feature) ? draft.preferences.filter((preference) => preference.feature !== feature)

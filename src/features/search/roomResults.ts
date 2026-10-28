@@ -3,6 +3,7 @@ import { matchesHotelFilters, matchingCatalogSnippets } from "../../../shared/ca
 import { nearbyMatches } from "../../../shared/nearby";
 import { regionDetails } from "../../../shared/regions";
 import { accountListingId } from "../../shared/lib/accommodation";
+import { accommodationPrice } from "../hotels/presentationPrice";
 
 export interface RoomSearchItem {
   id: string;
@@ -34,7 +35,14 @@ export function catalogRooms(catalog: Dataset | null): RoomSearchItem[] {
 }
 
 export function roomHotels(items: RoomSearchItem[]): Hotel[] {
-  return [...new Map(items.filter(({ hotel }) => hotel.coordinates && !hotel.synthetic).map(({ hotel }) => [hotel.id, hotel])).values()];
+  const hotels = new Map<string, Hotel>();
+  for (const { hotel, room } of items) {
+    if (!hotel.coordinates || hotel.synthetic || hotels.has(hotel.id)) continue;
+    // Selecting a hotel opens its first result, so its marker uses that same room's offer.
+    const offer = accommodationPrice(hotel, room);
+    hotels.set(hotel.id, { ...hotel, pricePerNight: offer?.amount, currency: offer?.currency });
+  }
+  return [...hotels.values()];
 }
 
 /** Hotel presence on the map does not establish a room category or capacity. */

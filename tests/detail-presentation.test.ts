@@ -2,11 +2,16 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { MemoryRouter } from "react-router-dom";
 import type { Hotel, Room } from "../shared/types";
 import { DetailGallery } from "../src/features/hotels/components/DetailGallery";
 import { CatalogRoomDetails } from "../src/features/hotels/components/CatalogRoomDetails";
 import { CatalogSummary } from "../src/features/hotels/components/CatalogSummary";
 import { DetailRoomCard } from "../src/features/hotels/components/DetailRoomCard";
+import { HotelCard } from "../src/features/hotels/components/HotelCard";
+import { accommodationPrice } from "../src/features/hotels/presentationPrice";
+import { roomHotels } from "../src/features/search/roomResults";
+import { FavoritesTestProvider } from "./helpers/favoritesTestProvider";
 
 const room: Room = { id: "category", name: "Категория из источника", capacity: 2, demo: false };
 const hotel: Hotel = { id: "real-hotel", name: "Отель", address: "", coordinates: null, osmUrl: "", rooms: [room], route: null, noise: [], pricePerNight: 4500, currency: "RUB" };
@@ -36,6 +41,43 @@ test("a single owner unit may show its declared price without asserting availabi
   }));
   assert.match(html, /4.?500.*₽/);
   assert.match(html, /Наличие на даты поездки не проверено/);
+});
+
+test("search and map offers keep category amount and currency together", () => {
+  assert.equal(accommodationPrice(hotel, room), null);
+  assert.equal(accommodationPrice(hotel, { ...room, pricePerNight: 80000 }), null);
+  assert.equal(accommodationPrice(hotel, { ...room, currency: "KRW" }), null);
+  assert.deepEqual(accommodationPrice(hotel, { ...room, pricePerNight: 80000, currency: "KRW" }), { amount: 80000, currency: "KRW" });
+  assert.deepEqual(accommodationPrice(hotel), { amount: 4500, currency: "RUB" });
+  const own = { ...hotel, id: "account-listing:owner", accountListingId: "owner" };
+  assert.deepEqual(accommodationPrice(own, room), { amount: 4500, currency: "RUB" });
+  assert.equal(accommodationPrice(own, { ...room, id: "another-unit" }), null);
+  assert.equal(accommodationPrice(own, { ...room, pricePerNight: 80000 }), null);
+  assert.equal(accommodationPrice({ ...own, rooms: [room, { ...room, id: "another-unit" }] }, room), null);
+  for (const amount of [0, -1, NaN, Infinity]) {
+    assert.equal(accommodationPrice(hotel, { ...room, pricePerNight: amount, currency: "RUB" }), null);
+  }
+});
+
+test("a result card does not advertise a property price as the selected room's offer", () => {
+  const html = renderToStaticMarkup(createElement(MemoryRouter, {}, createElement(FavoritesTestProvider, {},
+    createElement(HotelCard, { hotel, previewRoom: room }))));
+  assert.match(html, /Цена по запросу/);
+  assert.doesNotMatch(html, /4.?500|₽/);
+});
+
+test("map markers show the first selectable category price and preserve unknown amounts", () => {
+  const mapped = { ...hotel, coordinates: [129.16, 35.16] as [number, number] };
+  const first = { ...room, pricePerNight: 80000, currency: "KRW" as const };
+  const second = { ...room, id: "other", pricePerNight: 120000, currency: "KRW" as const };
+  const markers = roomHotels([{ id: "first", hotel: mapped, room: first }, { id: "second", hotel: mapped, room: second }]);
+  assert.equal(markers.length, 1);
+  assert.equal(markers[0].pricePerNight, 80000);
+  assert.equal(markers[0].currency, "KRW");
+  const unknown = roomHotels([{ id: "unknown", hotel: mapped, room }, { id: "second", hotel: mapped, room: second }]);
+  assert.equal(unknown[0].pricePerNight, undefined);
+  assert.equal(unknown[0].currency, undefined);
+  assert.equal(mapped.pricePerNight, 4500, "map presentation must not mutate source prices");
 });
 
 test("the four gallery slots do not repeat a single supplied photograph", () => {

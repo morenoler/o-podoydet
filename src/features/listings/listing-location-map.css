@@ -23,7 +23,7 @@
 .listing-location-canvas:focus-visible,
 .listing-location-map .leaflet-control-zoom a:focus-visible,
 .listing-location-map .listing-map-pin:focus-visible {
-  outline: 3px solid var(--blue);
+  outline: 3px solid #555;
   outline-offset: -3px;
 }
 .listing-map-pin {

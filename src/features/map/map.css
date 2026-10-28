@@ -29,11 +29,11 @@
   outline: none;
 }
 .v2-map-marker:focus-visible rect {
-  stroke: #172c4c;
+  stroke: #555;
   stroke-width: 4px;
 }
 .v2-map-marker:hover rect {
-  stroke: #163e8e;
+  stroke: #555;
   stroke-width: 2px;
 }
 .v2-map-heading {

@@ -69,7 +69,7 @@ export function EarthGlobe({ selectedRegion, selectedPoint, focusVersion = 0, on
         pickedMarker.style.left=`${projected.x}px`; pickedMarker.style.top=`${projected.y}px`;
       }
     };
-    const lose = (event: Event) => { event.preventDefault(); cancelAnimationFrame(transitionFrame.current); gesture.current=null; renderer.current = null; setFallback(true); setPaused(true); setAnnouncement("Графика временно недоступна. Направление можно выбрать кнопками."); draw.current(); };
+    const lose = (event: Event) => { event.preventDefault(); cancelAnimationFrame(transitionFrame.current); gesture.current=null; renderer.current = null; setFallback(true); setPaused(true); setAnnouncement("Графика временно недоступна. Направление можно выбрать в форме поиска."); draw.current(); };
     const restore = () => { if (!disposed) setContextVersion(value => value+1); };
     canvas.addEventListener("webglcontextlost",lose); canvas.addEventListener("webglcontextrestored",restore);
     let current: GlobeRenderer | null = null;
@@ -186,7 +186,7 @@ export function EarthGlobe({ selectedRegion, selectedPoint, focusVersion = 0, on
     </div>
     <div className="earth-globe-caption">
       {visiblePoint && <span>{Math.abs(visiblePoint.latitude).toFixed(1)}° {visiblePoint.latitude>=0 ? "с. ш." : "ю. ш."}, {Math.abs(visiblePoint.longitude).toFixed(1)}° {visiblePoint.longitude>=0 ? "в. д." : "з. д."}</span>}
-      <details><summary>Изображения NASA</summary><div>Спутниковые мозаики, не текущая погода. Освещение условное.<br/><a href="https://science.nasa.gov/earth/earth-observatory/the-blue-marble-true-color-global-imagery-at-1km-resolution/" target="_blank" rel="noreferrer">Земля: NASA/GSFC, Reto Stöckli, Robert Simmon</a><br/><a href="https://svs.gsfc.nasa.gov/2916/" target="_blank" rel="noreferrer">Ночные огни: NASA/NOAA</a><br/><a href="https://svs.gsfc.nasa.gov/4851/" target="_blank" rel="noreferrer">Звёзды: NASA SVS, каталоги Hipparcos/Tycho/Gaia</a></div></details>
+      <details><summary>Изображения NASA</summary><div>Спутниковые мозаики, не текущая погода. Освещение условное.<br/><a href="https://science.nasa.gov/earth/earth-observatory/the-blue-marble-true-color-global-imagery-at-1km-resolution/" target="_blank" rel="noreferrer">Земля: NASA/GSFC, Reto Stöckli, Robert Simmon</a><br/><a href="https://svs.gsfc.nasa.gov/2916/" target="_blank" rel="noreferrer">Ночные огни: NASA/NOAA</a></div></details>
     </div>
     {assetError && <p className="earth-globe-error" role="status">Не все изображения загрузились. Выбор направлений доступен.</p>}
     <span className="sr-only" role="status" aria-live="polite">{announcement}</span>

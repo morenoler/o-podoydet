@@ -6,6 +6,7 @@ import { AccommodationPhoto } from "../../../shared/ui/AccommodationPhoto";
 import { FavoriteButton } from "../../favorites/FavoriteButton";
 import { PersonalWishesSummary } from "./PersonalWishesSummary";
 import { HotelRating, HotelStars } from "./HotelReputation";
+import { accommodationPrice } from "../presentationPrice";
 import { features } from "../../../../shared/features";
 import { directionLabels, price } from "../../account/format";
 import { recommendationMatch } from "../../search/roomResults";
@@ -40,9 +41,7 @@ export function HotelCard({ match: hotelMatch, roomRecommendation, previewRoom, 
   const sourceHint = hotel.synthetic || room?.demo ? "Демонстрационные данные · вымышленное объявление"
     : ownerId ? "Сведения отельера · без независимой проверки"
       : publishedCategoryCount ? `Категории с официального сайта: ${publishedCategoryCount}` : "Категорию и условия номера нужно уточнить";
-  const amount = room?.pricePerNight ?? hotel.pricePerNight;
-  const currency = room?.currency ?? hotel.currency;
-  const hasPrice = typeof amount === "number" && Number.isFinite(amount) && amount > 0 && (currency === "RUB" || currency === "KRW");
+  const offer = accommodationPrice(hotel, room ?? match?.best.room);
   const resultLabel = match?.best.provisional ? "Вариант для уточнения"
     : alternative ? "Не все условия подтверждены"
       : match ? roomRecommendation && !hasConditions && presentationState === "match" ? "Подходит по вместимости" : matchLabel(match) : "Категория номера из каталога";
@@ -77,9 +76,9 @@ export function HotelCard({ match: hotelMatch, roomRecommendation, previewRoom, 
         {hotel.floor != null && <p>Этаж: {hotel.floor}</p>}
         {!!hotel.windowDirections?.length && <p>Окна: {hotel.windowDirections.map(value => directionLabels[value]).join(", ")}</p>}
         <span className={`search-hotel-result${!match ? " is-preview" : ""}`}>{resultLabel}</span>
-        <span>{hasPrice ? "Наличие и итоговую стоимость уточняйте" : "Цена и наличие не проверены"}</span>
+        <span>{offer ? "Наличие и итоговую стоимость уточняйте" : "Цена и наличие не проверены"}</span>
       </div>
-      <div className="search-hotel-bottom"><strong className="search-hotel-price">{hasPrice ? <>{price(amount!, currency!)} <small>/ ночь</small></> : "Цена по запросу"}</strong></div>
+      <div className="search-hotel-bottom"><strong className="search-hotel-price">{offer ? <>{price(offer.amount, offer.currency)} <small>/ ночь</small></> : "Цена по запросу"}</strong></div>
     </div>
     {match && <PersonalWishesSummary match={match} />}
   </article>;

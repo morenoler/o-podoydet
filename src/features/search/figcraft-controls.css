@@ -7,6 +7,7 @@
   --control-soft: #ededed;
   --control-focus: #555;
   --control-green: #97f171;
+  --control-selected: #171717;
   color: var(--control-ink);
   font-family: "Inter Variable", Inter, sans-serif;
 }
@@ -202,7 +203,7 @@ dialog.v2-modal.figcraft-trip-modal.figcraft-price-modal::backdrop { background:
 .figcraft-popular-amenities > h3 { margin: 0 0 12px; font-size: 14px; line-height: 18px; font-weight: 400; letter-spacing: 0; }
 .figcraft-popular-pills { display: flex; flex-wrap: wrap; gap: 12px; }
 .figcraft-popular-pills > button { width: max-content; height: 38px; padding: 9px 13px; border: 0; border-radius: 50px; color: #000; background: #ededed; font: inherit; font-size: 12px; line-height: 20px; white-space: nowrap; cursor: pointer; }
-.figcraft-popular-pills > button[aria-pressed="true"] { color: #fff; background: #0042da; }
+.figcraft-popular-pills > button[aria-pressed="true"] { color: #fff; background: var(--control-selected); }
 .figcraft-all-filters { margin-top: 16px; }
 .figcraft-all-filters > summary { display: flex; align-items: center; gap: 6px; width: max-content; height: 16px; color: #777; font-size: 12px; line-height: 16px; list-style: none; cursor: pointer; }
 .figcraft-all-filters > summary > span { text-decoration: underline; }
@@ -220,7 +221,7 @@ dialog.v2-modal.figcraft-trip-modal.figcraft-price-modal::backdrop { background:
 .search-filters-modal.figcraft-filters-modal .figcraft-expanded-filters .search-filter-description { margin: 0 0 12px; color: #777; font-size: 12px; }
 .search-filters-modal.figcraft-filters-modal .figcraft-expanded-filters .preference-list { display: flex; flex-wrap: wrap; gap: 8px; }
 .search-filters-modal.figcraft-filters-modal .figcraft-expanded-filters .preference { width: auto; max-width: 100%; border: 0; border-radius: 20px; background: #ededed; overflow: hidden; }
-.search-filters-modal.figcraft-filters-modal .figcraft-expanded-filters .preference.selected { color: #fff; background: #0042da; }
+.search-filters-modal.figcraft-filters-modal .figcraft-expanded-filters .preference.selected { color: #fff; background: var(--control-selected); }
 .search-filters-modal.figcraft-filters-modal .figcraft-expanded-filters .preference-button { display: flex; min-height: 38px; width: auto; padding: 9px 13px; gap: 8px; color: inherit; background: transparent; }
 .search-filters-modal.figcraft-filters-modal .figcraft-expanded-filters .preference-button strong { font-size: 12px; line-height: 20px; font-weight: 400; }
 .search-filters-modal.figcraft-filters-modal .figcraft-expanded-filters .preference-button small, .search-filters-modal.figcraft-filters-modal .figcraft-expanded-filters .check-box { display: none; }
@@ -245,12 +246,12 @@ dialog.v2-modal.figcraft-trip-modal.figcraft-price-modal::backdrop { background:
 dialog.v2-modal.figcraft-trip-modal.figcraft-price-modal { width: 320px; height: 223px; padding: 0; overflow: visible; }
 dialog.v2-modal.figcraft-trip-modal.figcraft-price-modal.is-anchored { position: fixed; inset: auto; top: clamp(16px, var(--price-popover-top), calc(100dvh - 255px)); left: clamp(16px, var(--price-popover-left), calc(100vw - 336px)); margin: 0; }
 .figcraft-price-modal > form { padding: 29px 19px 15px; }
-.figcraft-price-chart { position: relative; height: 65px; width: 280px; }
+.figcraft-price-chart { position: relative; height: 65px; width: 100%; }
 .figcraft-price-chart > p { display: grid; place-items: center; margin: 0; height: 53px; color: #999; font-size: 12px; }
-.figcraft-price-bars { display: flex; align-items: end; justify-content: space-around; height: 53px; width: 280px; border-bottom: 2px solid #d8d8d8; }
+.figcraft-price-bars { display: flex; align-items: end; justify-content: space-around; height: 53px; width: 100%; border-bottom: 2px solid #d8d8d8; }
 .figcraft-price-bars > i { flex: 0 0 3px; border-radius: 2px 2px 0 0; background: #d8d8d8; }
-.figcraft-price-bars > i.is-included { background: #0042da; }
-.figcraft-price-range { position: absolute; left: 0; top: 42px; width: 280px; height: 20px; margin: 0; padding: 0; appearance: none; background: transparent; cursor: pointer; }
+.figcraft-price-bars > i.is-included { background: var(--control-selected); }
+.figcraft-price-range { position: absolute; left: 0; top: 42px; width: 100%; height: 20px; margin: 0; padding: 0; appearance: none; background: transparent; cursor: pointer; }
 .figcraft-price-range::-webkit-slider-runnable-track { height: 2px; background: transparent; }
 .figcraft-price-range::-webkit-slider-thumb { width: 20px; height: 20px; margin-top: -9px; appearance: none; border: 1px solid #dedede; border-radius: 50%; background: #fff; box-shadow: 0 2px 3px #0002; }
 .figcraft-price-range::-moz-range-track { height: 2px; background: transparent; }

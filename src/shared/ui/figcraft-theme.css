@@ -13,13 +13,14 @@
   --fig-green: #97f171;
 }
 body { background: var(--bg); font-family: "Inter Variable", Inter, sans-serif; color: var(--ink); }
+::selection { background: #d5edca; color: #171717; }
 html:has(.figcraft-detail-page) { scrollbar-width: none; }
 html:has(.figcraft-detail-page)::-webkit-scrollbar { display: none; }
 button, input, select, textarea { font-family: inherit; }
 h1, h2, h3 { font-weight: 600; letter-spacing: -.025em; }
 .button { border-radius: 999px; font-weight: 500; }
 .button.primary { background: #000; border-color: #000; color: #fff; }
-.button.primary:hover { background: #292929; border-color: #292929; }
+.button.primary:hover:not(:disabled) { background: #292929; border-color: #292929; }
 .button.secondary { background: #fff; border-color: #dedede; color: #171717; }
 .button.secondary:hover { background: #ededed; border-color: #c9c9c9; }
 .site-header { height: 64px; border: 0; background: var(--bg); }

@@ -1,4 +1,12 @@
 import { nearbyKinds, type Preference, type Trip } from "../../../shared/types";
+import { countHotelFilters } from "../../../shared/catalogFilters";
+
+/** Include every condition that Reset clears, including policy and chat-only edits. */
+export function hasSearchFilters(trip: Trip, preferences = trip.preferences, sort = "recommended"): boolean {
+  return !!(preferences.length || trip.scenarios.length || trip.text.trim() || countHotelFilters(trip.hotelFilters)
+    || trip.preferenceOverrides?.length || trip.locationWishes?.length || trip.pendingLocationQuery
+    || trip.admissionMode === "verified" || sort !== "recommended");
+}
 
 /** Clear every source of filtering while keeping the destination, dates and guests. */
 export function resetSearchFilters(trip: Trip): Trip {

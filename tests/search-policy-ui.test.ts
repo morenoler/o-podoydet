@@ -76,7 +76,12 @@ test("provisional admission is explicit across cards and badges without confirmi
   const provisional=match(true);
   assert.match(card(provisional),/Вариант для уточнения/);
   assert.doesNotMatch(card(provisional),/Подходит под фильтры/);
-  const priced={...provisional,hotel:{...hotel,pricePerNight:100000,currency:"KRW" as const}};
+  const propertyPriced={...provisional,hotel:{...hotel,pricePerNight:100000,currency:"KRW" as const}};
+  assert.match(card(propertyPriced),/Цена по запросу/);
+  assert.doesNotMatch(card(propertyPriced),/₩/);
+  const pricedRoom={...provisional.best.room,pricePerNight:100000,currency:"KRW" as const};
+  const pricedBest={...provisional.best,room:pricedRoom};
+  const priced={...provisional,hotel:{...hotel,rooms:[pricedRoom]},best:pricedBest,rooms:[pricedBest]};
   assert.match(card(priced),/Вариант для уточнения/);
   assert.match(card(priced),/₩/);
   const badge=renderToStaticMarkup(createElement(MatchBadge,{match:provisional}));

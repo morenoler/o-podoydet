@@ -5,10 +5,31 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { SearchMonthCalendar, selectSearchDate, searchDatesLabel } from "../src/features/search/SearchBar";
 import { PriceFilter, SearchFilters, priceDistribution } from "../src/features/search/SearchFilters";
 import { nextSearchDate } from "../src/features/search/searchTrip";
+import { hasSearchFilters, resetSearchFilters } from "../src/features/search/preferences";
 import type { Trip } from "../shared/types";
 
 const trip: Trip = { region: "Сочи", checkIn: "2028-02-28", checkOut: "2028-03-03", adults: 2, children: 0,
   scenarios: [], preferences: [{ feature: "washing_machine", required: true }], text: "", hotelFilters: { maxPricePerNight: 8000 } };
+
+test("filter activity includes policy, text and pending chat conditions and clears on reset", () => {
+  const plain = resetSearchFilters(trip);
+  assert.equal(hasSearchFilters(plain), false);
+  for (const patch of [
+    { admissionMode: "verified" },
+    { text: "Уточнить поздний заезд" },
+    { pendingLocationQuery: { query: "центр", relation: "near", radiusMeters: 500, required: false } },
+    { preferenceOverrides: [{ feature: "pool", enabled: false, required: false }] },
+    { hotelFilters: { maxPricePerNight: 6000 } },
+    { preferences: [{ feature: "wifi", required: false }] },
+  ] as Partial<Trip>[]) {
+    const filtered = { ...plain, ...patch };
+    assert.equal(hasSearchFilters(filtered), true);
+    assert.equal(hasSearchFilters(resetSearchFilters(filtered)), false);
+  }
+  assert.equal(hasSearchFilters(plain, [{ feature: "pool", required: true }]), true);
+  assert.equal(hasSearchFilters(plain, [], "distance"), true);
+  assert.equal(hasSearchFilters({ ...plain, text: "   " }), false);
+});
 
 function calendar(month: string, start = "", end = "", today = "2027-01-01") {
   return renderToStaticMarkup(createElement(SearchMonthCalendar, { month, start, end, today, onSelect() {}, onMonth() {} }));

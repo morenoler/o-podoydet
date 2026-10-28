@@ -1,15 +1,15 @@
 /* FigCraft frames 3 / 813 / 1798, measured at 1280 × 832. */
-.search-page.search-experience { max-width: 1600px; padding: 0 16px 0; color: #000; --search-accent: #0042da; --search-soft: #edf1ff; }
+.search-page.search-experience { max-width: 1600px; padding: 0 16px 0; color: #000; --search-accent: #171717; --search-soft: #ededed; }
 .search-experience .search-layout { grid-template-columns: minmax(0, 820fr) minmax(0, 412fr); gap: 27px 16px; grid-template-rows: auto minmax(0, 1fr); }
 .search-experience .search-primary { min-width: 0; }
 .search-experience .search-toolbar { position: relative; display: flex; flex-wrap: nowrap; gap: 16px; height: 48px; padding: 0; margin-top: 16px; border: 0; }
 .search-experience .search-chip { display: inline-flex; align-items: center; justify-content: center; gap: 10px; flex: 0 0 auto; height: 48px; min-height: 48px; padding: 0 17px; border: 0; border-radius: 100px; background: #fff; color: #000; font-size: 14px; font-weight: 400; line-height: 20px; white-space: nowrap; }
 .search-experience .search-chip:hover { background: #e8e8e8; }
-.search-experience .search-chip.is-active { background: #0042da; color: #fff; }
+.search-experience .search-chip.is-active { background: var(--search-accent); color: #fff; }
 .search-experience .search-all-filters { position: relative; width: 122px; padding: 0 16px; }
 .search-filter-dot { position: absolute; top: 5px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .search-chip-with-reset { display: inline-flex; align-items: center; flex: 0 0 auto; border-radius: 100px; overflow: hidden; }
-.search-chip-with-reset.is-active, .search-chip-with-reset.search-selection-summary { background: #0042da; color: #fff; }
+.search-chip-with-reset.is-active, .search-chip-with-reset.search-selection-summary { background: var(--search-accent); color: #fff; }
 .search-experience .search-chip-with-reset:has(.search-chip-reset) > .search-chip { border-radius: 100px 0 0 100px; padding-right: 6px; }
 .search-chip-reset { align-self: stretch; display: grid; place-items: center; flex: 0 0 30px; width: 30px; border: 0; padding: 0 8px 0 2px; background: transparent; color: inherit; cursor: pointer; }
 .search-chip-reset:hover { background: #0002; }
@@ -46,7 +46,7 @@
 .search-card-admission.is-mismatch { color: #9c3b3b; }
 .search-experience .search-hotel-heading h2 { margin: 0; color: #000; font-size: 16px; font-weight: 400; line-height: 20px; letter-spacing: 0; }
 .search-experience .search-compare-toggle { position: absolute; right: -4px; top: 0; width: 32px; height: 32px; flex-basis: 32px; margin: 0; border: 0; color: #777; background: transparent; }
-.search-experience .search-compare-toggle.is-selected { color: #0042da; background: #edf1ff; }
+.search-experience .search-compare-toggle.is-selected { color: var(--search-accent); background: var(--search-soft); }
 .search-experience .search-room-hotel { margin: 2px 0 0; color: #777; font-size: 14px; font-weight: 400; line-height: 20px; }
 .search-experience .search-hotel-meta { margin: 0; color: #777; font-size: 14px; line-height: 20px; }
 .search-experience .search-room-capacity, .search-experience .search-hotel-room { color: #777; font-size: 13px; line-height: 19px; margin: 4px 0; }

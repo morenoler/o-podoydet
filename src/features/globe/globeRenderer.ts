@@ -11,24 +11,16 @@ uniform vec3 u_up;
 uniform vec3 u_front;
 uniform sampler2D u_day;
 uniform sampler2D u_night;
-uniform sampler2D u_stars;
 const float PI = 3.141592653589793;
 void main() {
   vec2 pixel = vec2(gl_FragCoord.x, u_size.y - gl_FragCoord.y);
-  vec2 skyUv = vec2(pixel.x / max(u_size.x, u_size.y * 2.0), pixel.y / u_size.y);
-  vec3 starMap = texture2D(u_stars, skyUv).rgb;
-  float starBrightness = max(starMap.r,max(starMap.g,starMap.b));
-  // Keep the catalogue's point sources while suppressing the diffuse Milky Way.
-  vec2 starStep = vec2(2.0/1024.0,2.0/512.0);
-  vec3 surrounding = (texture2D(u_stars,skyUv+vec2(starStep.x,0.0)).rgb
-    + texture2D(u_stars,skyUv-vec2(starStep.x,0.0)).rgb
-    + texture2D(u_stars,skyUv+vec2(0.0,starStep.y)).rgb
-    + texture2D(u_stars,skyUv-vec2(0.0,starStep.y)).rgb) * 0.25;
-  float pointContrast = starBrightness-max(surrounding.r,max(surrounding.g,surrounding.b));
-  vec3 sky = vec3(4.0,5.0,9.0)/255.0 + starMap * smoothstep(0.16,0.38,pointContrast) * smoothstep(0.28,0.75,starBrightness);
   vec2 sphere = vec2(pixel.x-u_center.x, u_center.y-pixel.y) / u_radius;
   float distance = length(sphere);
-  vec3 color = sky;
+  // Transparent space inherits the page's single solid background, including
+  // while the canvas is resized or handed over to the results map.
+  vec3 atmosphereColor = vec3(0.12,0.40,0.95);
+  vec3 color = atmosphereColor;
+  float alpha = exp(-max(0.0,distance-1.0)*105.0) * 0.48;
   if (distance <= 1.0) {
     vec3 normal = vec3(sphere, sqrt(max(0.0, 1.0-dot(sphere,sphere))));
     vec3 world = u_right*normal.x + u_up*normal.y + u_front*normal.z;
@@ -43,19 +35,18 @@ void main() {
     vec3 lit = pow(day,vec3(0.90)) * mix(0.035,0.28+0.85*max(0.0,solar),daylight);
     color = lit + night * vec3(1.0,0.76,0.46) * (1.0-daylight) * 1.35;
     float atmosphere = pow(1.0-normal.z,5.0) * (0.18 + 0.60*max(0.0,solar));
-    color += vec3(0.12,0.40,0.95)*atmosphere;
-    color = mix(sky,color,1.0-smoothstep(0.997,1.0,distance));
-  } else {
-    float glow = exp(-(distance-1.0)*105.0) * 0.48;
-    color += vec3(0.12,0.40,0.95)*glow;
+    color += atmosphereColor*atmosphere;
+    float coverage = 1.0-smoothstep(0.997,1.0,distance);
+    color = mix(atmosphereColor,color,coverage);
+    alpha = mix(0.48,1.0,coverage);
   }
-  gl_FragColor = vec4(color,1.0);
+  gl_FragColor = vec4(color,alpha);
 }`;
 
 export interface GlobeRenderer { render(camera: GlobeCamera, geometry: GlobeGeometry): void; destroy(): void }
-/** WebGL 1 uses one quad and three local power-of-two textures. No external runtime or API. */
+/** WebGL 1 uses one quad and two local power-of-two textures. No external runtime or API. */
 export function createGlobeRenderer(canvas: HTMLCanvasElement, onAssetError: () => void, onTextureChange: () => void): GlobeRenderer | null {
-  const gl = canvas.getContext("webgl", { alpha: false, antialias: false, depth: false, stencil: false, powerPreference: "low-power" });
+  const gl = canvas.getContext("webgl", { alpha: true, premultipliedAlpha: false, antialias: false, depth: false, stencil: false, powerPreference: "low-power" });
   if (!gl) return null;
   const shaders: WebGLShader[] = [];
   const textures: WebGLTexture[] = [];
@@ -78,13 +69,13 @@ export function createGlobeRenderer(canvas: HTMLCanvasElement, onAssetError: () 
     gl.useProgram(program); gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]), gl.STATIC_DRAW);
     const position = gl.getAttribLocation(program, "a_position"); gl.enableVertexAttribArray(position); gl.vertexAttribPointer(position,2,gl.FLOAT,false,0,0);
-    ["earth-day-clouds-2048.jpg", "earth-night-2048.png", "stars-2020-1024.jpg"].forEach((file, index) => {
+    ["earth-day-clouds-2048.jpg", "earth-night-2048.png"].forEach((file, index) => {
       const texture = gl.createTexture(); if (!texture) throw new Error("Could not allocate globe texture");
       textures.push(texture); gl.activeTexture(gl.TEXTURE0+index); gl.bindTexture(gl.TEXTURE_2D,texture);
       gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array(index === 0 ? [15,32,48,255] : [0,0,0,255]));
       gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
-      gl.uniform1i(gl.getUniformLocation(program,["u_day","u_night","u_stars"][index]),index);
+      gl.uniform1i(gl.getUniformLocation(program,["u_day","u_night"][index]),index);
       const image = new Image(); images.push(image);
       image.onload = () => { if (destroyed || gl.isContextLost()) return; gl.activeTexture(gl.TEXTURE0+index); gl.bindTexture(gl.TEXTURE_2D,texture); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,0); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image); onTextureChange(); };
       image.onerror = () => { if (!destroyed) onAssetError(); };

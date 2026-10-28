@@ -17,9 +17,10 @@ import { api } from "../shared/api/client";
 import { ErrorMessage, Loading } from "../shared/ui/Feedback";
 import { accommodationPhotos } from "../shared/lib/hotelPhotos";
 import { HotelCard } from "../features/hotels/components/HotelCard";
+import { accommodationPrice } from "../features/hotels/presentationPrice";
 import { AdvisorDrawer } from "../features/advisor/AdvisorDrawer";
 import { SearchConversation } from "../features/advisor/SearchConversation";
-import { editPreferences, resetSearchFilters } from "../features/search/preferences";
+import { editPreferences, hasSearchFilters, resetSearchFilters } from "../features/search/preferences";
 import { features } from "../../shared/features";
 import { SearchBar } from "../features/search/SearchBar";
 import { SearchDiagnostics } from "../features/search/SearchDiagnostics";
@@ -114,6 +115,10 @@ export function ResultsPage() {
     return items;
   }, [data, catalog, sort, validTrip, trip.hotelFilters, trip.region, trip.admissionMode]);
   const visible = rooms.slice(0, limit);
+  const knownRoomPrices = useMemo(() => catalogRooms(catalog).flatMap(({ hotel, room }) => {
+    const offer = accommodationPrice(hotel, room);
+    return offer && offer.currency === regionDetails(trip.region)?.currency ? [offer.amount] : [];
+  }), [catalog, trip.region]);
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") { setManualLoading(true); return; }
     const node = loadTrigger.current;
@@ -162,15 +167,16 @@ export function ResultsPage() {
   }
   const provisionalCount = rooms.filter((item) => item.recommendation?.room.provisional).length;
   const filterCount = effectivePreferences.length + countHotelFilters(trip.hotelFilters) + (trip.locationWishes?.length || 0);
+  const hasActiveFilters = hasSearchFilters(trip, effectivePreferences, sort);
   return (
     <div className={`search-page search-page-conversation search-experience mobile-view-${mobileView}`}>
       <div className="search-layout">
         <div className="search-primary">
       <SearchBar trip={trip} regions={regions} onSearch={submit} busy={loading} />
       <div className="search-toolbar">
-        <button type="button" className={`search-chip search-all-filters${filterCount ? " is-active" : ""}`} onClick={() => setFilters(true)} aria-label={`Фильтры${filterCount ? `: выбрано ${filterCount}` : ""}`}>
+        <button type="button" className={`search-chip search-all-filters${hasActiveFilters ? " is-active" : ""}`} onClick={() => setFilters(true)} aria-label={`Фильтры${filterCount ? `: выбрано ${filterCount}` : hasActiveFilters ? ": есть активные условия" : ""}`}>
           <Filter size={16} aria-hidden="true" />Фильтры
-          {!!filterCount && <span className="search-filter-dot" aria-hidden="true" />}
+          {hasActiveFilters && <span className="search-filter-dot" aria-hidden="true" />}
         </button>
         <span className="search-toolbar-divider" aria-hidden="true" />
         <div className="search-filter-scroll" ref={filterScroll}>
@@ -196,7 +202,7 @@ export function ResultsPage() {
             {item.label}
           </button>{effectivePreferences.some((value) => value.feature === item.id) && <button type="button" className="search-chip-reset" aria-label={`Сбросить фильтр: ${item.label}`} onClick={() => quickFilter(item.id)}><X size={14} aria-hidden="true" /></button>}</div>)}
           <button type="button" className="search-chip" onClick={() => setFilters(true)}><Search size={16} aria-hidden="true" />Название</button>
-          {(filterCount > 0 || trip.text.trim() || trip.preferenceOverrides?.length || trip.scenarios.length || sort !== "recommended" || uiAdmissionMode(trip.admissionMode) !== "explore") &&
+          {hasActiveFilters &&
             <button type="button" className="search-chip search-reset-filters" onClick={() => { setSort("recommended"); setTrip(resetSearchFilters(trip)); }} aria-label="Сбросить все фильтры"><RotateCcw size={16} aria-hidden="true" />Сбросить</button>}
         </div>
         <button type="button" className="search-filter-next" aria-label="Следующие быстрые фильтры" onClick={() => filterScroll.current?.scrollBy({ left: 250, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" })}><ChevronRight size={18} aria-hidden="true" /></button>
@@ -332,7 +338,7 @@ export function ResultsPage() {
           onClose={() => setFilters(false)}
         />
       )}
-      {priceAnchor && <PriceFilter trip={trip} prices={(catalog?.hotels || []).filter((hotel) => hotel.currency === regionDetails(trip.region)?.currency).map((hotel) => hotel.pricePerNight).filter((value): value is number => typeof value === "number" && value > 0)} onApply={submit} onClose={() => setPriceAnchor(null)} anchor={priceAnchor} />}
+      {priceAnchor && <PriceFilter trip={trip} prices={knownRoomPrices} onApply={submit} onClose={() => setPriceAnchor(null)} anchor={priceAnchor} />}
       <AdvisorDrawer
         open={advisor}
         onClose={() => setAdvisor(false)}
