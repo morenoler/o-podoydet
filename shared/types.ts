@@ -288,7 +288,7 @@ export interface HotelMatch {
   preferences?: Preference[];
   warnings?: string[];
   conflicts?: string[];
-  mode?: "rules" | "llm" | "local_model";
+  mode?: "rules" | "llm" | "local_model" | "deepseek";
   ownerCriteria?: OwnerCriterion[];
 }
 /** One named category; every criterion is evaluated against this same room. */
@@ -333,7 +333,7 @@ export interface SearchResult {
   warnings: string[];
   conflicts: string[];
   trace: Trace[];
-  mode: "rules" | "llm" | "local_model";
+  mode: "rules" | "llm" | "local_model" | "deepseek";
 }
 export interface HotelCandidate {
   hotel: Hotel;
@@ -366,5 +366,5 @@ export interface Draft {
   text: string;
   extractions: Extraction[];
   warnings: string[];
-  mode: "rules" | "llm" | "local_model";
+  mode: "rules" | "llm" | "local_model" | "deepseek";
 }

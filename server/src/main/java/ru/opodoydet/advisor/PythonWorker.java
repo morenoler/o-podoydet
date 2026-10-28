@@ -21,7 +21,9 @@ public final class PythonWorker implements AdvisorService.Worker {
   private static final int MAX_OUTPUT_BYTES = 4 * 1024 * 1024;
   private static final int MAX_LINE_BYTES = 256 * 1024;
   private static final List<String> CONFIG_KEYS =
-      List.of("ADVISOR_LOCAL_MODEL", "ADVISOR_LOCAL_BASE_URL");
+      List.of("AI_PROVIDER", "ADVISOR_LOCAL_MODEL", "ADVISOR_LOCAL_BASE_URL");
+  private static final List<String> DEEPSEEK_KEYS = List.of("DEEPSEEK_API_KEY", "DEEPSEEK_MODEL",
+      "DEEPSEEK_BASE_URL", "DEEPSEEK_TIMEOUT_SECONDS", "DEEPSEEK_MAX_TOKENS");
   private final Map<String, String> configuration;
   private final Duration timeout;
 
@@ -38,9 +40,12 @@ public final class PythonWorker implements AdvisorService.Worker {
   public ObjectNode execute(JsonNode context, String mode, Consumer<ObjectNode> progress)
       throws Exception {
     if (Thread.currentThread().isInterrupted()) throw new InterruptedException();
+    // Capture/validate the explicit run mode before crossing the asynchronous process boundary.
+    new ru.opodoydet.application.ProviderSelection(configuration).environmentFor(mode);
     ProcessBuilder builder =
         new ProcessBuilder(
             configuration.getOrDefault("ADVISOR_PYTHON", "python"), "-u", "-m", "agents.worker");
+    builder.directory(java.nio.file.Path.of(configuration.getOrDefault("ADVISOR_ROOT", ".")).toFile());
     Map<String, String> inherited = Map.copyOf(builder.environment());
     builder.environment().clear();
     // Python and Windows need these OS paths. Provider keys are explicitly scoped below.
@@ -63,6 +68,10 @@ public final class PythonWorker implements AdvisorService.Worker {
         });
     for (String key : CONFIG_KEYS)
       if (configuration.containsKey(key)) builder.environment().put(key, configuration.get(key));
+    builder.environment().put("AI_PROVIDER", mode);
+    if (mode.equals("deepseek"))
+      for (String key : DEEPSEEK_KEYS)
+        if (configuration.containsKey(key)) builder.environment().put(key, configuration.get(key));
     builder.environment().put("PYTHONIOENCODING", "utf-8");
     builder.environment().put("PYTHONUTF8", "1");
     builder.redirectError(ProcessBuilder.Redirect.DISCARD);

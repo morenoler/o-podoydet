@@ -227,7 +227,7 @@ def main():
         browser = Browser(args.base)
         health = browser.request("/api/health")
         require(health.get("ok") and health.get("mode") == "rules" and health.get("accountsEnabled"),
-                "Use an isolated server with accounts enabled and LLM_API_KEY/LLM_MODEL unset")
+                "Use an isolated server with accounts enabled and AI_PROVIDER=rules")
         cases = [("blank_with_chips", trip(), "not_requested"),
                  ("unrecognized_with_chips", trip("абракадабра " + CANARY), "unrecognized"),
                  ("partly_supported_text", trip("Тихо и бассейн. " + CANARY), "recognized"),

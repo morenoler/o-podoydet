@@ -30,7 +30,7 @@ def main():
     except (ValueError, TypeError, KeyError):
         emit("error", message="Некорректные данные советника.")
     except Exception:
-        emit("error", message="Не удалось выполнить разбор. Проверьте настройку локального советника.")
+        emit("error", message="Не удалось выполнить разбор. Проверьте настройку провайдера помощника.")
     return 1
 
 

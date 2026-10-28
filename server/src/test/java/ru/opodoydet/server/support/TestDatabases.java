@@ -120,6 +120,8 @@ public final class TestDatabases {
       properties.putIfAbsent("SESSION_COOKIE_SECURE", "false");
       properties.putIfAbsent("FRONTEND_ORIGIN", "");
       properties.putIfAbsent("LLM_API_KEY", "");
+      properties.putIfAbsent("AI_PROVIDER", "");
+      properties.putIfAbsent("DEEPSEEK_API_KEY", "");
       // Local Ollama needs no key; disable it too unless a test explicitly supplies a model.
       properties.putIfAbsent("LLM_MODEL", "");
       properties.putIfAbsent("ADVISOR_LOCAL_MODEL", "");

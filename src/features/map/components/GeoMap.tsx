@@ -4,7 +4,7 @@ import type { Dataset, Hotel } from "../../../../shared/types";
 import { InteractiveMap } from "./InteractiveMap";
 import { SavedGeoMap } from "./SavedGeoMap";
 import { validPath } from "../mapData";
-import type { Basemap } from "../basemaps";
+import { BASEMAPS, DEFAULT_BASEMAP, SATELLITE_UNAVAILABLE, type Basemap } from "../basemaps";
 import type { SurroundingPlace } from "../../places/placePresentation";
 import "../interactive-map.css";
 
@@ -25,7 +25,7 @@ export function GeoMap(props: GeoMapProps) {
     () => typeof navigator !== "undefined" && navigator.onLine === false,
   );
   const [reason, setReason] = useState("");
-  const [basemap, setBasemap] = useState<Basemap>("satellite");
+  const [basemap, setBasemap] = useState<Basemap>(DEFAULT_BASEMAP);
   const unavailable = useCallback((message: string) => {
     setReason(message);
     setSaved(true);
@@ -44,6 +44,10 @@ export function GeoMap(props: GeoMapProps) {
         <div className="geo-map-basemaps" role="group" aria-label="Вид карты">
           {(["satellite", "streets"] as const).map((mode) => <button key={mode} type="button"
             aria-pressed={!saved && basemap === mode} onClick={() => {
+              if (!BASEMAPS[mode].available) {
+                setReason(SATELLITE_UNAVAILABLE);
+                return;
+              }
               setBasemap(mode); setSaved(false); setReason("");
             }}>{mode === "satellite" ? "Спутник" : "Карта"}</button>)}
         </div>
@@ -55,7 +59,7 @@ export function GeoMap(props: GeoMapProps) {
             setReason("Спутниковые снимки недоступны. Показываем карту OpenStreetMap.");
           } else unavailable(message);
         }} />}
-      {!saved && basemap === "satellite" && <span className="geo-map-imagery-date" title="Мозаика Sentinel-2 за 2016 год, исходное разрешение около 10 м. Увеличение не добавляет деталей и не подтверждает состояние отеля.">Снимки 2016 · 10 м</span>}
+      {!saved && basemap === "satellite" && <span className="geo-map-imagery-date" title="Esri World Imagery. Дата и детализация зависят от участка; снимки не подтверждают нынешнее состояние отеля.">Esri World Imagery</span>}
       {saved && <span className="geo-map-saved-label">Сохранённая схема</span>}
       {reason && <p className="geo-map-status" role="status">{reason}</p>}
       {props.showRoute !== false && props.hotel?.route && !props.hotel.synthetic && validPath(props.hotel.route.coordinates).length > 0 && (

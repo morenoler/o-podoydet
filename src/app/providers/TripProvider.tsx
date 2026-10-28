@@ -9,7 +9,7 @@ import type { Dataset, Preference, Trip } from "../../../shared/types";
 import { api } from "../../shared/api/client";
 import { changeTripRegion, normalizeSearchTrip, restoreSearchTrip } from "../../features/search/searchPolicy";
 import { isRegionName, type RegionCatalog } from "../../../shared/regions";
-type Catalog = Dataset & { mode: "rules" | "llm" | "local_model" };
+type Catalog = Dataset & { mode: "rules" | "llm" | "local_model" | "deepseek" };
 const initialTrip: Trip = {
   region: "Пусан",
   checkIn: "",

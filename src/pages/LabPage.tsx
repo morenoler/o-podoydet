@@ -10,11 +10,14 @@ import {
   Square,
 } from "lucide-react";
 import type { Trip } from "../../shared/types";
+import { advisorModeLabel } from "../../shared/advisor";
 import { useApp } from "../app/providers/TripProvider";
 import { PreferencePicker } from "../features/preferences/PreferencePicker";
 import { ErrorMessage } from "../shared/ui/Feedback";
 import { today } from "../shared/lib/date";
 import { useLab } from "../features/lab/useLab";
+import { AiProviderSelect } from "../shared/ui/AiProviderSelect";
+import { useAiProvider } from "../shared/api/useAiProvider";
 import { executionLabel, LabRunView } from "../features/lab/LabRunView";
 import { advisorIsActive } from "../features/advisor/useAdvisor";
 import {
@@ -60,21 +63,24 @@ export function LabPage() {
   const [draft, setDraft] = useState<Trip>(() => preset("fit"));
   const [formError, setFormError] = useState("");
   const lab = useLab();
+  const selectedProvider = useAiProvider();
   const locked = !!lab.busy || !!lab.active;
+  const chosen = selectedProvider ?? lab.config?.defaultMode;
+  const modelMode = chosen && chosen !== "rules" && lab.config?.modes.includes(chosen) ? chosen : undefined;
   const local =
-    lab.selected?.mode === "local"
+    lab.selected && lab.selected.mode !== "rules"
       ? lab.selected
       : lab.runs.find(
           (run) =>
             run.context.searchId === lab.selected?.context.searchId &&
-            run.mode === "local",
+            run.mode !== "rules",
         );
   const counterpart = lab.selected
     ? lab.runs.find(
         (run) =>
           run.id !== lab.selected!.id &&
           run.context.searchId === lab.selected!.context.searchId &&
-          run.mode !== lab.selected!.mode,
+          (run.mode === "rules") !== (lab.selected!.mode === "rules"),
       )
     : undefined;
   const verifiedHotels =
@@ -127,7 +133,7 @@ export function LabPage() {
     setTrip(testTrip);
     void lab.start(
       testTrip,
-      lab.config?.modes.includes("local") ? "local" : "rules",
+      modelMode ?? "rules",
       undefined,
       true,
     );
@@ -140,7 +146,7 @@ export function LabPage() {
     setTrip(testTrip);
     void lab.start(
       testTrip,
-      lab.config?.modes.includes("local") ? "local" : "rules",
+      modelMode ?? "rules",
       undefined,
       true,
     );
@@ -157,7 +163,7 @@ export function LabPage() {
           </span>
           <h1>Посмотрите, как принимается решение</h1>
           <p>
-            Меняйте поездку, запускайте локальный ИИ и проверяйте каждый переход
+            Меняйте поездку, запускайте модель и проверяйте каждый переход
             от условий до ответа.
           </p>
         </div>
@@ -175,7 +181,7 @@ export function LabPage() {
         <span>
           <strong>{verifiedRooms}</strong> подтверждённых категорий
         </span>
-        <span className="lab-free">Без платных API</span>
+        <span className="lab-free">{modelMode === "deepseek" ? "DeepSeek · платные запросы API" : "Без платных API"}</span>
       </div>
       {catalog?.evidencePolicy === "demo" && (
         <div className="notice lab-catalog-notice">
@@ -323,17 +329,18 @@ export function LabPage() {
                 />
               </details>
             </fieldset>
+            <AiProviderSelect disabled={locked} />
             <div className="lab-actions">
               <button
                 type="button"
                 className="button primary"
-                disabled={locked || !lab.config?.modes.includes("local")}
+                disabled={locked || !modelMode}
                 onClick={() => {
-                  if (valid()) void lab.start(draft, "local");
+                  if (valid() && modelMode) void lab.start(draft, modelMode);
                 }}
               >
                 <Play size={16} aria-hidden="true" />
-                Запустить локальный ИИ
+                Запустить {modelMode ? advisorModeLabel(modelMode) : "модель"}
               </button>
               <button
                 type="button"
@@ -363,9 +370,9 @@ export function LabPage() {
               </p>
             )}
             <p className="lab-model">
-              {lab.config?.modes.includes("local")
-                ? `Модель: ${lab.config.model || "локальная"}. До ${lab.config.maxModelCalls} вызовов за запуск.`
-                : "Локальная модель пока не настроена. Проверка без ИИ уже доступна."}
+              {modelMode && lab.config
+                ? `Модель: ${lab.config.modelNames?.[modelMode] ?? lab.config.model}. До ${lab.config.maxModelCalls} вызовов за запуск.`
+                : "Модель не выбрана или не настроена. Проверка без ИИ доступна."}
             </p>
             <button
               type="button"
@@ -393,7 +400,7 @@ export function LabPage() {
                     aria-pressed={lab.selected?.id === run.id}
                   >
                     <strong>
-                      {run.mode === "local" ? "Локальный ИИ" : "Правила"} ·{" "}
+                      {advisorModeLabel(run.mode)} ·{" "}
                       {new Date(run.createdAt).toLocaleTimeString("ru-RU", {
                         hour: "2-digit",
                         minute: "2-digit",

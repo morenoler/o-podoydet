@@ -28,6 +28,7 @@ import ru.opodoydet.advisor.AdvisorService;
 import ru.opodoydet.application.Agents;
 import ru.opodoydet.application.Environment;
 import ru.opodoydet.application.SearchService;
+import ru.opodoydet.application.ProviderSelection;
 import ru.opodoydet.application.WindowViewClient;
 import ru.opodoydet.application.places.PlaceSearch;
 import ru.opodoydet.persistence.Store;
@@ -140,8 +141,13 @@ public class DomainConfig {
   }
 
   @Bean
-  Agents agents(RuntimeEnv env) {
-    return new Agents(Agents.Config.from(env.values()));
+  ProviderSelection providerSelection(RuntimeEnv env) {
+    return new ProviderSelection(env.values());
+  }
+
+  @Bean
+  Agents agents(ProviderSelection providers) {
+    return new Agents(() -> Agents.Config.from(providers.environment()));
   }
 
   @Bean
@@ -153,8 +159,8 @@ public class DomainConfig {
   }
 
   @Bean
-  PlaceSearch placeSearch(RuntimeEnv env) {
-    return new PlaceSearch(Path.of(env.get("PLACES_DATA_PATH", "data/places/busan-places.json")), env.values());
+  PlaceSearch placeSearch(RuntimeEnv env, ProviderSelection providers) {
+    return new PlaceSearch(Path.of(env.get("PLACES_DATA_PATH", "data/places/busan-places.json")), providers);
   }
 
   @Bean
@@ -180,8 +186,8 @@ public class DomainConfig {
 
   @Bean(destroyMethod = "close")
   @DependsOn("flywayInitializer")
-  AdvisorService advisorService(Store store, SearchService search, RuntimeEnv env)
+  AdvisorService advisorService(Store store, SearchService search, RuntimeEnv env, ProviderSelection providers)
       throws SQLException {
-    return new AdvisorService(store, search, env.values());
+    return new AdvisorService(store, search, providers, new ru.opodoydet.advisor.PythonWorker(env.values()));
   }
 }

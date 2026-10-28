@@ -1,11 +1,14 @@
 import type { FeatureId, PersonalWishes, Preference, Trip } from "./types";
 
-export type AdvisorMode = "rules" | "local";
+export type AdvisorMode = "rules" | "local" | "deepseek";
+export function advisorModeLabel(mode: AdvisorMode): string {
+  return mode === "deepseek" ? "DeepSeek API" : mode === "local" ? "Локальный ИИ" : "Правила";
+}
 export type AdvisorStatus =
   "queued" | "running" | "completed" | "failed" | "cancelled";
 export interface AdvisorEvidence {
   id: string;
-  feature: FeatureId | "capacity" | "floor" | "window_direction";
+  feature: FeatureId | "capacity" | "floor" | "window_direction" | "location";
   label: string;
   required: boolean;
   status: "match" | "mismatch";
@@ -75,7 +78,7 @@ export interface AdvisorReport {
   nextSteps: string[];
 }
 export interface AdvisorRun {
-  execution?: "rules" | "local" | "rules_fallback";
+  execution?: "rules" | "local" | "deepseek" | "rules_fallback";
   model?: string;
   diagnostics?: AdvisorDiagnostic[];
   id: string;
@@ -115,8 +118,9 @@ export interface AdvisorDiagnostic {
   error?: string;
 }
 export interface AdvisorConfig {
+  modelNames?: Partial<Record<AdvisorMode, string>>;
   modes: AdvisorMode[];
-  defaultMode: "rules";
+  defaultMode: AdvisorMode;
   maxModelCalls: number;
   model: string;
 }

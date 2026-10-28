@@ -170,7 +170,7 @@ export function ResultsPage() {
   const hasActiveFilters = hasSearchFilters(trip, effectivePreferences, sort);
   return (
     <div className={`search-page search-page-conversation search-experience mobile-view-${mobileView}`}>
-      <div className="search-layout">
+      <div className={`search-layout${mobileView !== "list" ? " is-side-panel-open" : ""}`}>
         <div className="search-primary">
       <SearchBar trip={trip} regions={regions} onSearch={submit} busy={loading} />
       <div className="search-toolbar">

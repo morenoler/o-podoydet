@@ -263,7 +263,8 @@ public final class SearchConversation {
     warnings.addAll(Json.list(location.path("warnings")));
     result.set("warnings", Json.array(warnings));
     result.put("changed", !next.equals(trip));
-    if (Json.str(location, "mode").equals("local_model")) result.put("mode", "local_model");
+    if (Set.of("local_model", "deepseek").contains(Json.str(location, "mode")))
+      result.put("mode", Json.str(location, "mode"));
     return result;
   }
 

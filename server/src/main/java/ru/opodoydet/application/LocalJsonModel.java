@@ -26,7 +26,7 @@ import java.util.concurrent.TimeoutException;
 import ru.opodoydet.shared.Json;
 
 /** Native Ollama JSON-schema protocol shared by local interpretation paths, never remote. */
-public final class LocalJsonModel {
+public final class LocalJsonModel implements StructuredModel {
   public static final Duration TIMEOUT = Duration.ofSeconds(10);
   private static final int MAX_RESPONSE_BYTES = 100_000;
   private final URI endpoint;

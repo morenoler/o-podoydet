@@ -3,6 +3,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import type { Question, FeatureId } from "../../shared/types";
 import { api } from "../shared/api/client";
+import { useAiProvider } from "../shared/api/useAiProvider";
 import { today } from "../shared/lib/date";
 import { MessageCircle, ChevronDown, Sparkles, ArrowLeft } from "lucide-react";
 import { Notice, Loading, ErrorMessage } from "../shared/ui/Feedback";
@@ -11,6 +12,8 @@ import { QuestionCard } from "../features/host/components/QuestionCard";
 
 export function HostPage() {
   const { catalog, trip, refresh } = useApp();
+  const selectedProvider = useAiProvider();
+  const modelMode = selectedProvider === "local" ? "local_model" : selectedProvider ?? catalog?.mode;
   const [params, setParams] = useSearchParams();
   const [questions, setQuestions] = useState<Question[]>([]),
     [error, setError] = useState(""),
@@ -113,11 +116,11 @@ export function HostPage() {
             </label>
             <div className="host-mode">
               <span className="live-dot" />
-              {catalog.mode === "local_model" ? "Подключена локальная модель" : catalog.mode === "llm"
+              {modelMode === "deepseek" ? "Выбран DeepSeek API" : modelMode === "local_model" ? "Выбрана локальная модель" : modelMode === "llm"
                 ? "Подключена языковая модель"
                 : "Локальный разбор по правилам"}
               <small>
-                {catalog.mode === "rules"
+                {modelMode === "rules"
                   ? "Работает без API-ключа. Не понимает произвольные формулировки."
                   : "С проверкой структуры и цитат перед сохранением."}
               </small>

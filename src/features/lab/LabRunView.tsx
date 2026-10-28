@@ -10,23 +10,24 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import type { AdvisorRun } from "../../../shared/advisor";
+import { advisorModeLabel } from "../../../shared/advisor";
 import { AdvisorReportView } from "../advisor/AdvisorReportView";
 import { advisorIsActive } from "../advisor/useAdvisor";
 import { LabDecisionSummary, LabStageCheck } from "./LabDecisionAudit";
 
 export function executionLabel(run: AdvisorRun) {
-  if (run.mode === "local" && advisorIsActive(run))
+  if (run.mode !== "rules" && advisorIsActive(run))
     return run.status === "queued"
-      ? "Локальный ИИ ожидает запуска"
-      : "Локальный ИИ выполняется · ожидаем результат";
+      ? `${advisorModeLabel(run.mode)} ожидает запуска`
+      : `${advisorModeLabel(run.mode)} выполняется · ожидаем результат`;
   if (run.execution === "rules_fallback")
     return "ИИ не завершил работу · результат по правилам";
-  if (run.execution === "local")
-    return `Локальный ИИ${run.model ? ` · ${run.model}` : ""}`;
+  if (run.execution === "local" || run.execution === "deepseek")
+    return `${advisorModeLabel(run.execution)}${run.model ? ` · ${run.model}` : ""}`;
   if (run.execution === "rules" || run.mode === "rules")
     return "Правила · без языковой модели";
   return advisorIsActive(run)
-    ? "Запрошен локальный ИИ · ожидаем результат"
+    ? `Запрошен ${advisorModeLabel(run.mode)} · ожидаем результат`
     : "Исполнение ИИ не подтверждено";
 }
 
@@ -71,8 +72,8 @@ function Comparison({
   run: AdvisorRun;
   counterpart?: AdvisorRun;
 }) {
-  if (!counterpart) return null;
-  const local = run.mode === "local" ? run : counterpart;
+  if (!counterpart || (run.mode === "rules") === (counterpart.mode === "rules")) return null;
+  const local = run.mode !== "rules" ? run : counterpart;
   const rules = run.mode === "rules" ? run : counterpart;
   return (
     <section className="lab-comparison">
@@ -86,7 +87,7 @@ function Comparison({
       </p>
       {local.status === "completed" && rules.status === "completed" && (
         <p className="lab-audit-note">
-          {local.execution !== "local"
+          {local.execution !== "local" && local.execution !== "deepseek"
             ? "ИИ-ответ не принят: здесь сопоставлены резервный результат и контроль по правилам. Исходная попытка модели видна в её этапах."
             : JSON.stringify(local.report?.candidateIds) ===
                 JSON.stringify(rules.report?.candidateIds)
@@ -98,8 +99,8 @@ function Comparison({
         {[local, rules].map((item) => (
           <article key={item.id}>
             <h4>
-              {item.mode === "local"
-                ? "Запуск с локальным ИИ"
+              {item.mode !== "rules"
+                ? `Запуск с ${advisorModeLabel(item.mode)}`
                 : "Контроль по правилам"}
             </h4>
             <p className="lab-muted">{executionLabel(item)}</p>

@@ -283,6 +283,7 @@ def main(audit_function=audit, default_report="docs/ACCOUNTS_HTTP_REPORT.json",
         env = {**os.environ, **database, "PORT": str(args.port),
                "UPLOADS_PATH": str(work / "uploads"), "DATA_PATH": str(source), "DIST_PATH": str(ROOT / "dist"),
                "ACCOUNT_MODE": "true", "LAB_MODE": "false", "LLM_API_KEY": "", "ADVISOR_LOCAL_MODEL": "",
+               "AI_PROVIDER": "rules", "DEEPSEEK_API_KEY": "",
                "SESSION_COOKIE_SECURE": "false", "FRONTEND_ORIGIN": "", "JAVA_TOOL_OPTIONS": "-Djava.io.tmpdir=" + str(tmp)}
         log = (work / "server.log").open("ab")
         base = f"http://127.0.0.1:{args.port}"

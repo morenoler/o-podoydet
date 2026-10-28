@@ -7,6 +7,7 @@ import java.util.Set;
 import org.springframework.stereotype.Component;
 import ru.opodoydet.server.knowledge.Characteristic;
 import ru.opodoydet.server.llm.LlmClient;
+import ru.opodoydet.shared.Json;
 
 /**
  * Разбор ответа через LLM. Модель не «угадывает» факты об отеле — она только переводит
@@ -48,6 +49,7 @@ public class LlmAnswerExtractor implements AnswerExtractor {
 
   @Override
   public List<Extraction> extract(String answer, List<Characteristic> candidates) {
+    if (candidates.isEmpty()) return List.of();
     StringBuilder user = new StringBuilder("Характеристики:\n");
     for (Characteristic c : candidates)
       user.append("- ")
@@ -62,7 +64,7 @@ public class LlmAnswerExtractor implements AnswerExtractor {
 
     List<Extraction> result = new ArrayList<>();
     for (JsonNode item :
-        llm.completeJson(SYSTEM, user.toString())
+        llm.completeJson(SYSTEM, user.toString(), schema(candidates))
             .map(r -> r.path("extractions"))
             .orElse(com.fasterxml.jackson.databind.node.MissingNode.getInstance())) {
       String level = item.path("certainty").asText("medium");
@@ -79,5 +81,18 @@ public class LlmAnswerExtractor implements AnswerExtractor {
         result.add(e);
     }
     return result;
+  }
+
+  private static JsonNode schema(List<Characteristic> candidates) {
+    JsonNode item = Json.obj("type", "object", "additionalProperties", false,
+        "properties", Json.obj(
+            "characteristic", Json.obj("type", "string", "enum", candidates.stream().map(Characteristic::getCode).toList()),
+            "value", Json.obj("anyOf", List.of(Json.obj("type", "boolean"), Json.obj("type", "integer"))),
+            "quote", Json.obj("type", "string"),
+            "certainty", Json.obj("type", "string", "enum", List.of("low", "medium", "high"))),
+        "required", List.of("characteristic", "value", "quote", "certainty"));
+    return Json.obj("type", "object", "additionalProperties", false,
+        "properties", Json.obj("extractions", Json.obj("type", "array", "maxItems", candidates.size(), "items", item)),
+        "required", List.of("extractions"));
   }
 }

@@ -7,7 +7,7 @@ import { datasetMapPoints, detailMapPoints, groupMapHotels, hotelCountLabel, lat
 import { placePresentation, validMapPlaces } from "../../places/placePresentation";
 import { locationDistance } from "../../places/locationPresentation";
 import { tileLoadMonitor } from "../tileLoadMonitor";
-import { BASEMAPS, OSM_ATTRIBUTION, type Basemap } from "../basemaps";
+import { BASEMAPS, OSM_ATTRIBUTION, imageryAttribution, type Basemap } from "../basemaps";
 import { price } from "../../account/format";
 import "leaflet/dist/leaflet.css";
 
@@ -120,25 +120,50 @@ export function InteractiveMap({ dataset, hotel, hotels, focusHotels, places, sh
     const active = runtime.current;
     if (!ready || !active) return;
     const source = BASEMAPS[basemap];
+    if (!source.available) {
+      current.current.onTilesUnavailable(basemap, "Спутниковые снимки не подключены.");
+      return;
+    }
+    let disposed = false;
+    let tiles: Leaflet.TileLayer | undefined;
+    const controller = new AbortController();
     const monitor = tileLoadMonitor((message) => {
       if (current.current.basemap === basemap) current.current.onTilesUnavailable(basemap, message);
     });
     // Only request the viewport, once it is stationary. Keep normal HTTP cache
     // headers and Referer; never prefetch or retry around a provider's rate limit.
-    const tiles = active.library.tileLayer(source.url, {
-      maxNativeZoom: source.maxNativeZoom, maxZoom: 19, keepBuffer: 0,
-      updateWhenIdle: true, updateWhenZooming: false, attribution: source.attribution,
+    async function addTiles() {
+      let attribution = source.attribution;
+      if (source.metadataUrl) {
+        const response = await fetch(source.metadataUrl, {
+          credentials: "omit",
+          signal: AbortSignal.any([controller.signal, AbortSignal.timeout(8_000)]),
+        });
+        if (!response.ok) throw new Error("Imagery metadata unavailable");
+        attribution = imageryAttribution(await response.json(), attribution);
+      }
+      if (disposed) return;
+      tiles = active!.library.tileLayer(source.url, {
+        maxNativeZoom: source.maxNativeZoom, maxZoom: 19, keepBuffer: 0,
+        updateWhenIdle: true, updateWhenZooming: false, attribution,
+      });
+      tiles.on("loading", monitor.loading);
+      tiles.on("load", monitor.loaded);
+      tiles.on("tileerror", monitor.error);
+      tiles.addTo(active!.map);
+    }
+    void addTiles().catch(() => {
+      // Never log provider URLs: the browser key is present in the tile query.
+      if (!disposed) monitor.error();
     });
-    tiles.on("loading", monitor.loading);
-    tiles.on("load", monitor.loaded);
-    tiles.on("tileerror", monitor.error);
-    tiles.addTo(active.map);
     return () => {
+      disposed = true;
+      controller.abort();
       monitor.dispose();
-      tiles.off("loading", monitor.loading);
-      tiles.off("load", monitor.loaded);
-      tiles.off("tileerror", monitor.error);
-      tiles.remove();
+      tiles?.off("loading", monitor.loading);
+      tiles?.off("load", monitor.loaded);
+      tiles?.off("tileerror", monitor.error);
+      tiles?.remove();
     };
   }, [ready, basemap]);
 

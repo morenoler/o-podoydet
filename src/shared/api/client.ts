@@ -1,11 +1,13 @@
-export async function api<T>(path: string, body?: unknown, signal?: AbortSignal): Promise<T> {
+import { aiProviderHeaders, aiRequestTimeout, type AiProvider } from "./aiProvider";
+
+export async function api<T>(path: string, body?: unknown, signal?: AbortSignal, provider?: AiProvider | null): Promise<T> {
   let response: Response;
   try { response = await fetch(`/api${path}`, {
     method: body === undefined ? "GET" : "POST",
-    headers:
-      body === undefined ? undefined : { "Content-Type": "application/json" },
+    headers: { ...aiProviderHeaders(path, body !== undefined, provider),
+      ...(body === undefined ? {} : { "Content-Type": "application/json" }) },
     body: body === undefined ? undefined : JSON.stringify(body),
-    signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(30000)]) : AbortSignal.timeout(30000),
+    signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(aiRequestTimeout(path, body !== undefined))]) : AbortSignal.timeout(aiRequestTimeout(path, body !== undefined)),
   }); } catch (error) {
     if (signal?.aborted) throw error;
     const timedOut = error instanceof Error && ["TimeoutError", "AbortError"].includes(error.name);

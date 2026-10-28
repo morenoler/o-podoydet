@@ -43,7 +43,7 @@ public final class PlaceSearch {
       "Открытая карта неполна; отсутствие места в снимке не подтверждает его отсутствие.");
   private final JsonNode snapshot;
   private final Map<String, JsonNode> sources;
-  private final LocalPlacePlanner planner;
+  private final java.util.function.Supplier<LocalPlacePlanner> planners;
 
   public PlaceSearch(Path path) { this(path, Map.of()); }
 
@@ -51,11 +51,19 @@ public final class PlaceSearch {
     this(read(path), LocalPlacePlanner.from(env));
   }
 
-  public PlaceSearch(JsonNode snapshot) { this(snapshot, null); }
+  public PlaceSearch(Path path, ru.opodoydet.application.ProviderSelection providers) {
+    this(read(path), () -> LocalPlacePlanner.from(providers.environment()));
+  }
+
+  public PlaceSearch(JsonNode snapshot) { this(snapshot, (LocalPlacePlanner) null); }
 
   PlaceSearch(JsonNode snapshot, LocalPlacePlanner planner) {
+    this(snapshot, () -> planner);
+  }
+
+  private PlaceSearch(JsonNode snapshot, java.util.function.Supplier<LocalPlacePlanner> planners) {
     this.snapshot = snapshot == null ? Json.obj() : snapshot.deepCopy();
-    this.planner = planner;
+    this.planners = planners;
     this.sources = new LinkedHashMap<>();
     for (JsonNode source : this.snapshot.path("sources"))
       if (!Json.str(source, "id").isBlank()) sources.put(Json.str(source, "id"), source);
@@ -194,6 +202,7 @@ public final class PlaceSearch {
       // Preserve a non-location condition in a mixed clause rather than silently swallowing it.
       if (ordinaryWish(clause)) remaining.add(original.strip());
     }
+    LocalPlacePlanner planner = planners.get();
     if (!handled && planner != null && !message.isBlank() && !ordinaryOnly(message)) {
       try {
         JsonNode result = planner.plan(message, trip.path("locationWishes"));
@@ -237,13 +246,13 @@ public final class PlaceSearch {
           wishes = proposed;
           messages.addAll(applied);
           handled = true;
-          mode = "local_model";
+          mode = planner.mode();
           remaining.clear();
           String remainder = Json.str(result, "remainingText");
           if (!remainder.isBlank()) remaining.add(remainder);
         }
       } catch (Exception ignored) {
-        warnings.add("Локальная модель не смогла надёжно разобрать пожелание. Укажите место и расстояние, например «кафе в пределах 500 м».");
+        warnings.add("Модель не смогла надёжно разобрать пожелание. Укажите место и расстояние, например «кафе в пределах 500 м».");
       }
     }
     return Json.obj("locationWishes", wishes.values(), "pendingLocationQuery", pending,

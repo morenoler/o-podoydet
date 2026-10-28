@@ -66,7 +66,7 @@ export function LabGuide() {
         </span>
         <span>
           <Bot size={16} aria-hidden="true" />
-          ИИ: реальные вызовы локальной модели
+          ИИ: реальные вызовы выбранной модели
         </span>
       </div>
       <div className="lab-guide-roles">

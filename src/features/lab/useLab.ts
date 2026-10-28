@@ -20,6 +20,11 @@ function savedIds(): string[] {
   }
 }
 
+/** The control run must also build its search snapshot without any model calls. */
+export function requestLabSnapshot(trip: Trip, mode: AdvisorMode, testOnly = false) {
+  return api<SearchResult>(testOnly ? "/lab/search" : "/search", trip, undefined, mode);
+}
+
 export function useLab() {
   const [config, setConfig] = useState<AdvisorConfig | null>(null);
   const [runs, setRuns] = useState<AdvisorRun[]>([]);
@@ -135,7 +140,7 @@ export function useLab() {
     try {
       const snapshot =
         searchId ||
-        (await api<SearchResult>(testOnly ? "/lab/search" : "/search", trip))
+        (await requestLabSnapshot(trip, mode, testOnly))
           .searchId;
       if (!snapshot)
         throw new Error(

@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { ArrowLeft, ChevronDown, Heart, LogOut, Menu, UserRound } from "lucide-react";
 import type { AccountUser } from "../../../shared/account";
 import { Modal } from "../../shared/ui/Modal";
+import { AiProviderSelect } from "../../shared/ui/AiProviderSelect";
 import "./SiteHeader.css";
 
 export function SiteHeader({
@@ -200,6 +201,7 @@ export function SiteHeader({
             </Link>
           )}
         </nav>
+        <AiProviderSelect />
         {user && onLogout && (
           <button
             className="button secondary site-logout"

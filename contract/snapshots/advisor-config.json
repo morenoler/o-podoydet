@@ -6,6 +6,9 @@
     ],
     "defaultMode": "rules",
     "maxModelCalls": 2,
-    "model": ""
+    "model": "",
+    "modelNames": {
+      "rules": ""
+    }
   }
 }

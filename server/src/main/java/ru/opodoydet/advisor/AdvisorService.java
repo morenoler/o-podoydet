@@ -15,12 +15,13 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import ru.opodoydet.application.SearchService;
+import ru.opodoydet.application.ProviderSelection;
 import ru.opodoydet.domain.AdmissionPolicy;
 import ru.opodoydet.domain.Validation;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.shared.Json;
 
-/** Runs Python advice against immutable server-calculated facts, with no paid provider. */
+/** Runs Python advice against immutable server-calculated facts and an explicit provider. */
 public final class AdvisorService implements AutoCloseable {
   @FunctionalInterface
   public interface Worker {
@@ -31,7 +32,7 @@ public final class AdvisorService implements AutoCloseable {
   private final Store store;
   private final SearchService search;
   private final Worker worker;
-  private final ObjectNode config;
+  private final ProviderSelection providers;
   private final ExecutorService executor = Executors.newSingleThreadExecutor();
   private Future<?> activeTask;
   private String activeId;
@@ -44,19 +45,20 @@ public final class AdvisorService implements AutoCloseable {
 
   public AdvisorService(Store store, SearchService search, Map<String, String> env, Worker worker)
       throws SQLException {
+    this(store, search, new ProviderSelection(env), worker);
+  }
+
+  public AdvisorService(Store store, SearchService search, ProviderSelection providers, Worker worker)
+      throws SQLException {
     this.store = store;
     this.search = search;
     this.worker = worker;
-    List<String> modes = new ArrayList<>(List.of("rules"));
-    String model = env.getOrDefault("ADVISOR_LOCAL_MODEL", "");
-    if (!model.isBlank() && !model.toLowerCase(java.util.Locale.ROOT).contains("cloud"))
-      modes.add("local");
-    config = Json.obj("modes", modes, "defaultMode", "rules", "maxModelCalls", 2, "model", model);
+    this.providers = providers;
     store.recoverAdvisorRuns();
   }
 
   public ObjectNode config() {
-    return config.deepCopy();
+    return providers.advisorConfig();
   }
 
   public JsonNode get(String id) throws SQLException {
@@ -88,6 +90,7 @@ public final class AdvisorService implements AutoCloseable {
   private JsonNode startForActor(JsonNode input, String actor) throws SQLException {
     if (closed) throw new IllegalStateException("Помощник остановлен.");
     String mode = Validation.text(input, "mode", 1, 20);
+    ObjectNode config = config();
     if (Json.list(config.path("modes")).stream().noneMatch(v -> v.asText().equals(mode)))
       throw new IllegalArgumentException("Этот режим помощника не настроен.");
     JsonNode trip = Validation.trip(input.path("trip"), store.forTrip(input.path("trip")).region());
@@ -137,7 +140,7 @@ public final class AdvisorService implements AutoCloseable {
             0,
             "warnings",
             List.of());
-    run.put("model", mode.equals("local") ? Json.str(config, "model") : "");
+    run.put("model", config.path("modelNames").path(mode).asText());
     run.set("diagnostics", Json.array(List.of()));
     if (mode.equals("rules")) run.put("execution", "rules");
     if (actor == null) store.saveAdvisorRun(run);
@@ -166,8 +169,8 @@ public final class AdvisorService implements AutoCloseable {
             run.put("status", "failed")
                 .put(
                     "error",
-                    "Помощник не завершил работу. Проверьте Python и локальную модель. Платные API"
-                        + " не использовались.");
+                    "Помощник не завершил работу. Проверьте Python и настройки провайдера."
+                        + (mode.equals("deepseek") ? " Уже отправленные запросы могли быть оплачены." : ""));
             finishInterruptedDiagnostics(run, "Вызов прерван до получения результата.");
             save(run);
           } catch (SQLException persistenceError) {
@@ -212,7 +215,8 @@ public final class AdvisorService implements AutoCloseable {
       if (run.path("modelCalls").asInt() > 2)
         throw new IllegalArgumentException("Advisor budget exceeded");
       AdvisorDiagnostics.validateEvents(run);
-      AdvisorDiagnostics.validate(run, Json.str(config, "model"), complete);
+      AdvisorDiagnostics.validate(run,
+          providers.advisorConfig().path("modelNames").path(Json.str(run, "mode")).asText(), complete);
       if (run.hasNonNull("report"))
         run.set("report", checkedReport(run.path("context"), run.path("report")));
       if (complete) {

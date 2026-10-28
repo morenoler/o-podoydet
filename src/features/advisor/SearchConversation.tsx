@@ -4,6 +4,7 @@ import type { SearchResult, Trip } from "../../../shared/types";
 import { canSearch } from "../search/searchTrip";
 import { useSearchConversation } from "./useSearchConversation";
 import { ConversationRecommendation } from "./ConversationRecommendation";
+import { AiProviderSelect } from "../../shared/ui/AiProviderSelect";
 import "./conversation.css";
 import "./figcraft-conversation.css";
 
@@ -53,6 +54,7 @@ export function SearchConversation({ trip, onApply, scope, result, searching, se
       </div>
       <div id="conversation-map" className="conversation-map" hidden={!mapView}>{map}</div>
       <div id="conversation-chat" className="conversation-chat" hidden={mapView}>
+      <AiProviderSelect disabled={chat.busy || searching} />
       <div className={`conversation-log${!chat.messages.length ? " is-empty" : ""}`} ref={log} role="log" aria-label="Диалог о подборе номеров" aria-live="polite" aria-relevant="additions text">
         {!chat.messages.length && (
         <div className="conversation-welcome">

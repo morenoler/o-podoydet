@@ -33,12 +33,14 @@ final class AdvisorDiagnostics {
   static void validate(JsonNode run, String configuredModel, boolean complete) {
     if (run.has("execution")) {
       String execution = Validation.text(run, "execution", 1, 30);
-      if (!Set.of("rules", "local", "rules_fallback").contains(execution)
-          || (!Json.str(run, "mode").equals("local") && !execution.equals("rules")))
+      String requested = Json.str(run, "mode");
+      if (!Set.of("rules", "local", "deepseek", "rules_fallback").contains(execution)
+          || (requested.equals("rules") && !execution.equals("rules"))
+          || (Set.of("local", "deepseek").contains(execution) && !execution.equals(requested)))
         throw new IllegalArgumentException("Invalid execution mode");
     } else if (complete) throw new IllegalArgumentException("Missing execution result");
     String model = Validation.text(run, "model", 0, 200);
-    if (!model.equals(Json.str(run, "mode").equals("local") ? configuredModel : ""))
+    if (!model.equals(Json.str(run, "mode").equals("rules") ? "" : configuredModel))
       throw new IllegalArgumentException("Unexpected advisor model");
     JsonNode diagnostics = run.path("diagnostics");
     if (!diagnostics.isArray() || diagnostics.size() > 2 || bytes(diagnostics) > 160 * 1024)
@@ -88,12 +90,12 @@ final class AdvisorDiagnostics {
       int calls = run.path("modelCalls").asInt();
       if (execution.equals("rules") && (calls != 0 || !diagnostics.isEmpty()))
         throw new IllegalArgumentException("Rules execution cannot hide model calls");
-      if (execution.equals("local")
+      if (Set.of("local", "deepseek").contains(execution)
           && (calls != 2
               || diagnostics.size() != 2
               || Json.list(diagnostics).stream()
                   .anyMatch(d -> !Json.str(d, "status").equals("completed"))))
-        throw new IllegalArgumentException("Local execution needs two completed model calls");
+        throw new IllegalArgumentException("Model execution needs two completed model calls");
     }
   }
 
