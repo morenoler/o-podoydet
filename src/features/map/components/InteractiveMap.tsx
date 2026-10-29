@@ -125,8 +125,9 @@ export function InteractiveMap({ dataset, hotel, hotels, focusHotels, places, sh
       current.current.onTilesUnavailable(basemap, "Спутниковые снимки не подключены.");
       return;
     }
-    // Do not stretch 10 m overview pixels to hotel/building zoom levels.
-    active.map.setMaxZoom(source.maxNativeZoom);
+    // Keep navigation identical across basemaps. Native zoom only caps tile
+    // requests; Leaflet scales cached imagery while markers retain full detail.
+    active.map.setMaxZoom(source.maxZoom);
     let disposed = false;
     let tiles: Leaflet.TileLayer | undefined;
     const controller = new AbortController();
@@ -149,7 +150,7 @@ export function InteractiveMap({ dataset, hotel, hotels, focusHotels, places, sh
       }
       if (disposed) return;
       tiles = active!.library.tileLayer(source.url, {
-        maxNativeZoom: source.maxNativeZoom, maxZoom: source.maxNativeZoom, keepBuffer: 0,
+        maxNativeZoom: source.maxNativeZoom, maxZoom: source.maxZoom, keepBuffer: 0,
         updateWhenIdle: true, updateWhenZooming: false, attribution,
       });
       tiles.on("loading", monitor.loading);

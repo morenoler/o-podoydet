@@ -6,14 +6,17 @@ const ARCGIS_IMAGERY = "https://ibasemaps-api.arcgis.com/arcgis/rest/services/Wo
 const OPEN_IMAGERY: BasemapSource = {
   url: "https://wmts.terrascope.be/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=esa-worldcover-s2rgbnir-10m-2021-v2_tcc&STYLE=default&FORMAT=image%2Fpng&TILEMATRIXSET=EPSG%3A3857&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&TIME=2021-01-01",
   maxNativeZoom: 14,
+  maxZoom: 19,
   available: true,
   attribution: '&copy; <a href="https://esa-worldcover.org/en/data-access" target="_blank" rel="noopener">ESA WorldCover project 2021</a> / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium · <a href="https://terrascope.be/" target="_blank" rel="noopener">Terrascope</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>',
   label: "Sentinel-2 · 2021 · ≈10 м",
-  description: "Обзорная спутниковая мозаика ESA WorldCover за 2021 год, около 10 м на пиксель. Для деталей улиц переключитесь на «Карта». Снимки не подтверждают нынешнее состояние отеля.",
+  description: "Спутниковая мозаика ESA WorldCover за 2021 год, около 10 м на пиксель. При приближении снимок увеличивается без новых деталей. Снимки не подтверждают нынешнее состояние отеля.",
 };
 export interface BasemapSource {
   url: string;
   maxNativeZoom: number;
+  /** Display zoom is independent of the provider's native tile resolution. */
+  maxZoom: number;
   available: boolean;
   attribution: string;
   metadataUrl?: string;
@@ -31,6 +34,7 @@ export function createBasemaps(apiKey: string | undefined): Record<Basemap, Base
       // Request native city-scale tiles, never stretch the former z14 / 10m mosaic.
       // Detail and capture dates vary by place; a tile zoom is not a resolution claim.
       maxNativeZoom: 19,
+      maxZoom: 19,
       available: true,
       attribution: 'Powered by <a href="https://www.esri.com/" target="_blank" rel="noopener">Esri</a>',
       label: "Esri World Imagery",
@@ -39,6 +43,7 @@ export function createBasemaps(apiKey: string | undefined): Record<Basemap, Base
     streets: {
       url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
       maxNativeZoom: 19,
+      maxZoom: 19,
       available: true,
       // OSM also supplies the hotel's coordinates and route overlays in both modes.
       attribution: "",

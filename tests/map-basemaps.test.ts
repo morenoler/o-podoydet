@@ -14,6 +14,9 @@ test("a missing imagery key provides licensed overview satellite tiles without a
     assert.deepEqual(["TILEMATRIXSET", "TILEMATRIX", "TILEROW", "TILECOL"].map(name => url.searchParams.get(name)),
       ["EPSG:3857", "{z}", "{y}", "{x}"]);
     assert.equal(maps.satellite.maxNativeZoom, 14);
+    assert.equal(maps.satellite.maxZoom, maps.streets.maxZoom);
+    assert.equal(maps.satellite.maxZoom, 19);
+    assert.ok(maps.satellite.maxZoom > maps.satellite.maxNativeZoom);
     assert.equal(maps.satellite.metadataUrl, undefined);
     assert.match(maps.satellite.attribution, /Copernicus Sentinel data \(2021\)/);
     assert.match(maps.satellite.attribution, /licenses\/by\/4\.0/);
@@ -30,6 +33,7 @@ test("imagery uses the authorized ArcGIS service and native city zoom with encod
   assert.match(satellite.url, /^https:\/\/ibasemaps-api\.arcgis\.com\//);
   assert.match(satellite.url, /\/tile\/\{z\}\/\{y\}\/\{x\}\?token=synthetic-token%26unexpected%3D1$/);
   assert.equal(satellite.maxNativeZoom, 19);
+  assert.equal(satellite.maxZoom, 19);
   assert.match(satellite.attribution, /Powered by.*Esri/);
   assert.match(satellite.description!, /Esri World Imagery/);
   assert.doesNotMatch(satellite.description!, /2021|10 м/);
