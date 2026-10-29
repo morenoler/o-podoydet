@@ -133,7 +133,7 @@ export function InteractiveMap({ dataset, hotel, hotels, focusHotels, places, sh
     const controller = new AbortController();
     const monitor = tileLoadMonitor((message) => {
       if (current.current.basemap === basemap) current.current.onTilesUnavailable(basemap, message);
-    }, 12_000, (partial) => {
+    }, source.loadTimeoutMs ?? 12_000, (partial) => {
       if (!disposed && current.current.basemap === basemap) current.current.onTilesPartial?.(partial);
     });
     // Only request the viewport, once it is stationary. Keep normal HTTP cache
@@ -152,6 +152,7 @@ export function InteractiveMap({ dataset, hotel, hotels, focusHotels, places, sh
       tiles = active!.library.tileLayer(source.url, {
         maxNativeZoom: source.maxNativeZoom, maxZoom: source.maxZoom, keepBuffer: 0,
         updateWhenIdle: true, updateWhenZooming: false, attribution,
+        referrerPolicy: "strict-origin-when-cross-origin",
       });
       tiles.on("loading", monitor.loading);
       tiles.on("load", monitor.loaded);

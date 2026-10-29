@@ -2,6 +2,34 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createBasemaps, imageryAttribution, OSM_ATTRIBUTION } from "../src/features/map/basemaps";
 
+test("local development requests detailed Stadia tiles without an account or overzoom", () => {
+  for (const hostname of ["localhost", "127.0.0.1"]) {
+    const { satellite, streets } = createBasemaps(undefined, { hostname });
+    assert.equal(satellite.url, "https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}.jpg");
+    assert.equal(satellite.maxNativeZoom, streets.maxZoom);
+    assert.equal(satellite.maxNativeZoom, satellite.maxZoom);
+    assert.equal(satellite.maxNativeZoom, 19);
+    assert.match(satellite.attribution, /CNES.*Airbus DS.*PlanetObserver.*Stadia Maps.*OpenMapTiles/);
+    assert.doesNotMatch(satellite.description!, /10 м|2021|без новых деталей/);
+  }
+});
+
+test("public hosts never silently use Stadia's localhost exception", () => {
+  for (const hostname of [undefined, "example.org", "localhost.example.org", "127.0.0.1.example.org", "192.168.1.10", "[::1]"]) {
+    const { satellite } = createBasemaps(undefined, { hostname });
+    assert.match(satellite.url, /wmts\.terrascope\.be/);
+    assert.equal(satellite.maxNativeZoom, 14);
+  }
+});
+
+test("Stadia public access requires explicit domain auth or an encoded account key", () => {
+  const { satellite } = createBasemaps(undefined, { hostname: "example.org", stadiaApiKey: " test&key=1 " });
+  assert.match(satellite.url, /\.jpg\?api_key=test%26key%3D1$/);
+  assert.match(createBasemaps(undefined, { stadiaDomainAuth: true }).satellite.url, /stadiamaps\.com/);
+  assert.doesNotMatch(createBasemaps(undefined, { stadiaApiKey: "  " }).satellite.url, /stadiamaps\.com/);
+  assert.match(createBasemaps("existing-esri-key", { hostname: "localhost", stadiaApiKey: "test" }).satellite.url, /arcgis\.com/);
+});
+
 test("a missing imagery key provides licensed overview satellite tiles without an ArcGIS request", () => {
   for (const key of [undefined, "", "  "]) {
     const maps = createBasemaps(key);
