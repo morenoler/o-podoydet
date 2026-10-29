@@ -11,17 +11,34 @@
     "roomType": "Двухместный номер",
     "capacity": 3,
     "pricePerNight": 90000,
+    "currency": "KRW",
     "amenities": [
       "Wi-Fi",
       "Кухня"
     ],
+    "amenityEvidence": {},
     "status": "draft",
     "floor": null,
     "windowDirections": [],
     "photos": [],
+    "sleepingPlaces": null,
+    "beds": [],
+    "demo": false,
     "createdAt": "<volatile>",
     "updatedAt": "<volatile>",
-    "currency": "KRW",
+    "amenityStates": {
+      "dishwasher": null,
+      "washing_machine": null,
+      "pool": null,
+      "kitchen": null,
+      "wifi": null,
+      "air_conditioning": null,
+      "parking": null,
+      "balcony": null,
+      "breakfast": null,
+      "pets_allowed": null
+    },
+    "coordinates": null,
     "searchProfile": {
       "notes": ""
     }

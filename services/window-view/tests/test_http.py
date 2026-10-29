@@ -26,23 +26,21 @@ def valid_request():
 
 
 class HttpTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.directory = tempfile.TemporaryDirectory()
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
         # The second synthetic copy deliberately exercises the mode flag; it
         # is never supplied as evidence for an actual hotel.
         classified_real = {**demo_scene(), "is_demo": False}
-        cls.application = Application(cache_dir=cls.directory.name, scenes={"demo-http": demo_scene(), "mode-marker": classified_real}, observations={})
-        cls.server = create_server("127.0.0.1", 0, cls.application)
-        cls.thread = threading.Thread(target=cls.server.serve_forever, kwargs={"poll_interval": .01}, daemon=True)
-        cls.thread.start()
+        self.application = Application(cache_dir=self.directory.name, scenes={"demo-http": demo_scene(), "mode-marker": classified_real}, observations={})
+        self.server = create_server("127.0.0.1", 0, self.application)
+        self.thread = threading.Thread(target=self.server.serve_forever, kwargs={"poll_interval": .01}, daemon=True)
+        self.thread.start()
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.server.shutdown()
-        cls.server.server_close()
-        cls.thread.join(3)
-        cls.directory.cleanup()
+    def tearDown(self):
+        self.server.shutdown()
+        self.server.server_close()
+        self.thread.join(3)
+        self.directory.cleanup()
 
     def call(self, method="POST", path="/v1/views/estimate", value=None, raw=None, headers=None):
         body = raw if raw is not None else json.dumps(value if value is not None else valid_request()).encode()
@@ -188,6 +186,13 @@ class HttpTests(unittest.TestCase):
         self.assertEqual(result, {"error": "internal_error"})
         self.assertEqual(self.call()[0], 200)
 
+    def test_invalid_application_response_is_internal_error_and_releases_slot(self):
+        with patch.object(self.application, "run", return_value={"invalid": float("nan")}):
+            status, _, result = self.call()
+        self.assertEqual(status, 500)
+        self.assertEqual(result, {"error": "internal_error"})
+        self.assertEqual(self.call()[0], 200)
+
     def test_concurrent_assessment_receives_bounded_busy_response(self):
         entered, release = threading.Event(), threading.Event()
         first_result = []
@@ -209,6 +214,36 @@ class HttpTests(unittest.TestCase):
                 worker.join(5)
         self.assertEqual(first_result[0][0], 200)
         self.assertEqual(self.call()[0], 200)
+
+    def test_completed_response_releases_slot_before_client_receives_it(self):
+        # Hold the first response writer after its computation has finished.
+        # A subsequent request must be allowed, even while that writer waits.
+        handler = self.server.RequestHandlerClass
+        send_json = handler.send_json
+        writing, release = threading.Event(), threading.Event()
+        first_result = []
+        writer_threads = []
+
+        def held_response(instance, status, value):
+            if not writing.is_set():
+                writer_threads.append(threading.current_thread())
+                writing.set()
+                if not release.wait(4):
+                    raise RuntimeError("test response release timeout")
+            return send_json(instance, status, value)
+
+        with patch.object(handler, "send_json", held_response), patch.object(self.application, "run", return_value={"synthetic": True}):
+            worker = threading.Thread(target=lambda: first_result.append(self.call()), daemon=True)
+            worker.start()
+            try:
+                self.assertTrue(writing.wait(2))
+                self.assertEqual(self.call()[0], 200)
+            finally:
+                release.set()
+                worker.join(5)
+                for writer in writer_threads:
+                    writer.join(5)
+        self.assertEqual(first_result[0][0], 200)
 
 
 if __name__ == "__main__":

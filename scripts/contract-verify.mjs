@@ -5,7 +5,7 @@
 //   npm run contract:verify
 //
 // Рабочую базу и запущенный npm run dev не трогает: Spring — на 8089 в отдельной новой схеме.
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
@@ -15,6 +15,9 @@ import { fileURLToPath } from "node:url";
 import { buildBackend, ensureDatabase, startBackend } from "./backend.mjs";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
+const baseline = JSON.parse(readFileSync(join(root, "contract", "baseline.json"), "utf8"));
+if (typeof baseline.clockInstant !== "string" || !Number.isFinite(Date.parse(baseline.clockInstant)))
+  throw new Error("contract/baseline.json должен содержать корректный clockInstant исходного эталона");
 const stamp = new Date().toISOString().replace(/\D/g, "").slice(0, 14)
   + "_" + randomUUID().replaceAll("-", "").slice(0, 12);
 const work = join(".local", "contract-runs", stamp);
@@ -57,8 +60,12 @@ try {
   server = startBackend({
     env: {
       PORT,
+      SPRING_PROFILES_ACTIVE: "contract",
+      CONTRACT_INSTANT: baseline.clockInstant,
       DB_SCHEMA: schema,
       LEGACY_DB_PATH: "", // чистая схема без переноса старых данных
+      DEMO_SEED_PATH: "",
+      DEMO_MODE: "false",
       UPLOADS_PATH: join(work, "uploads"),
       ACCOUNT_MODE: "true",
       LAB_MODE: "false",

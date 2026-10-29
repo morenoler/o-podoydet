@@ -17,6 +17,7 @@ import {
   setupDemoDatabase,
   validateDemoDatabase,
 } from "./demo-data.mjs";
+import { seedDemoJson, readDemoSeed, validateDemoSeed } from "./demo-seed.mjs";
 
 function temporary(run) {
   const directory = resolve(root, ".local");
@@ -142,14 +143,31 @@ test("invalid dates and paths to the main database are rejected before writing",
 
 test("CLI can prepare a new demo copy and start never falls back from an explicit missing source", () =>
   temporary((path) => {
-    const target = join(path, "next.sqlite3");
+    const target = join(path, "next.json");
     const setup = spawnSync(process.execPath, ["scripts/demo.mjs", "setup", "--output", target], { cwd: root, encoding: "utf8", timeout: 30000 });
     assert.equal(setup.status, 0, setup.stderr);
-    assert.equal(validateDemoDatabase(target).counts.account_listings, 8);
+    assert.equal(readDemoSeed(target).counts.account_listings, 8);
     const start = spawnSync(process.execPath, ["scripts/demo.mjs", "start"], {
       cwd: root, encoding: "utf8", timeout: 30000,
-      env: { ...process.env, DEMO_DB_PATH: join(path, "missing.sqlite3") },
+      env: { ...process.env, DEMO_DB_PATH: "", DEMO_SEED_PATH: join(path, "missing.json") },
     });
     assert.equal(start.status, 1);
     assert.match(start.stderr, /Сначала выполните npm run demo:setup/);
+  }));
+
+test("ordinary demo creates portable JSON, preserves source bytes and refuses overwrites", () =>
+  temporary((path) => {
+    const original = digest(resolve(root, "data/demo/fixtures.json"));
+    const output = join(path, "native.json");
+    const seed = seedDemoJson({ output, date: "2028-02-29" });
+    assert.equal(seed.seedDate, "2028-02-29");
+    assert.equal(seed.counts.account_users, 2);
+    assert.equal(seed.counts.account_sessions, 0);
+    assert.equal(digest(resolve(root, "data/demo/fixtures.json")), original);
+    assert.throws(() => seedDemoJson({ output }), /Перезапись запрещена/);
+    const value = JSON.parse(readFileSync(output, "utf8"));
+    value.fixtures.listings[0].demo = false;
+    assert.throws(() => validateDemoSeed(value), /SHA-256/);
+    assert.throws(() => seedDemoJson({ output: join(path, "bad.json"), date: "2027-02-29" }), /Некорректная/);
+    assert.throws(() => seedDemoJson({ output: ".local/main.json" }), /Основные базы недоступны/);
   }));

@@ -35,7 +35,8 @@ class ResolutionTest {
     Resolution.Outcome two =
         resolve(
             ev("a", BooleanNode.TRUE, "official", "medium"),
-            ev("b", BooleanNode.TRUE, "geo", "medium"));
+            Evidence.of("b", "courtyard", BooleanNode.TRUE, "geo", "https://survey.example/report",
+                "medium", NOW.minus(2, ChronoUnit.DAYS), NOW.plus(28, ChronoUnit.DAYS), false));
 
     assertThat(one.status()).isEqualTo(Fact.Status.confirmed);
     assertThat(one.confidence()).isCloseTo(0.63, org.assertj.core.data.Offset.offset(0.001));

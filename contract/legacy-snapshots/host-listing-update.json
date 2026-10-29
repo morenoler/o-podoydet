@@ -1,0 +1,34 @@
+{
+  "status": 200,
+  "body": {
+    "id": "<uuid>",
+    "hostId": "<uuid>",
+    "hostName": "Отельер Контракт",
+    "title": "Светлый номер у моря, 5 этаж",
+    "description": "Просторный номер с отдельной ванной и видом на город.",
+    "city": "Пусан",
+    "address": "Хэундэ, дом 10",
+    "roomType": "Двухместный номер",
+    "capacity": 3,
+    "pricePerNight": 95000,
+    "amenities": [
+      "Wi-Fi",
+      "Кухня"
+    ],
+    "status": "published",
+    "floor": 5,
+    "windowDirections": [
+      "south",
+      "west"
+    ],
+    "photos": [
+      "/uploads/listings/<uuid>.jpg"
+    ],
+    "createdAt": "<volatile>",
+    "updatedAt": "<volatile>",
+    "currency": "KRW",
+    "searchProfile": {
+      "notes": "Окна во двор, ночью тихо"
+    }
+  }
+}

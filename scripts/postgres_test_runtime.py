@@ -39,4 +39,5 @@ def isolated_postgres(label: str) -> dict[str, str]:
     query.append(("currentSchema", schema))
     url = "jdbc:" + urlunsplit(parsed._replace(query=urlencode(query)))
     return {"DATABASE_URL": url, "DATABASE_USER": user, "DATABASE_PASSWORD": password,
-            "DB_SCHEMA": schema, "LEGACY_DB_PATH": ""}
+            "DB_SCHEMA": schema, "LEGACY_DB_PATH": "",
+            "DEMO_SEED_PATH": "", "DEMO_MODE": "false"}

@@ -37,6 +37,8 @@ try {
     process.env.UPLOADS_PATH = process.env.LAB_UPLOADS_PATH || ".local/lab-uploads";
     // Importing any historical data requires an explicit lab-specific choice.
     process.env.LEGACY_DB_PATH = process.env.LAB_LEGACY_DB_PATH || "";
+    process.env.DEMO_SEED_PATH = "";
+    process.env.DEMO_MODE = "false";
     const { writeLabDataset } = await import("./lab-data.ts");
     const labDataPath = resolve(root, ".local/lab-hotels.json");
     await writeLabDataset(

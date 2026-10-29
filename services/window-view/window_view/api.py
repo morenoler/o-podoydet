@@ -124,20 +124,27 @@ def create_server(host="127.0.0.1", port=8011, application=None):
                 if len(raw) != length:
                     raise ValidationError("Incomplete body")
                 request = json.loads(raw, parse_constant=lambda value: (_ for _ in ()).throw(ValidationError("Non-finite JSON value")))
-                self.send_json(200, application.run(request))
+                status, response = 200, application.run(request)
             except (ValidationError, json.JSONDecodeError, UnicodeDecodeError) as error:
-                self.send_json(422, {"error": "invalid_request", "detail": str(error)[:300]})
+                status, response = 422, {"error": "invalid_request", "detail": str(error)[:300]}
             except PermissionError as error:
-                self.send_json(403, {"error": "network_disabled", "detail": str(error)})
+                status, response = 403, {"error": "network_disabled", "detail": str(error)}
             except CacheMiss as error:
-                self.send_json(503, {"error": "source_cache_missing", "detail": str(error)[:300]})
+                status, response = 503, {"error": "source_cache_missing", "detail": str(error)[:300]}
             except SourceError as error:
-                self.send_json(502, {"error": "source_unavailable", "detail": str(error)[:300]})
+                status, response = 502, {"error": "source_unavailable", "detail": str(error)[:300]}
             except Exception:
                 # Avoid leaking file paths, credentials or upstream internals.
-                self.send_json(500, {"error": "internal_error"})
+                status, response = 500, {"error": "internal_error"}
             finally:
                 busy.release()
+            # A client may send its next request as soon as it receives this
+            # response. Release the calculation slot first, including errors.
+            try:
+                self.send_json(status, response)
+            except (TypeError, ValueError):
+                # Serialization still fails closed without exposing internals.
+                self.send_json(500, {"error": "internal_error"})
 
         def log_message(self, format, *args):
             # No payload, room ID or source quote enters access logs.

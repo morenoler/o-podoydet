@@ -1,0 +1,138 @@
+{
+  "status": 200,
+  "body": {
+    "hotel": {
+      "id": "node-4199814292",
+      "name": "Paradise Hotel Busan",
+      "lodgingType": "hotel",
+      "address": "해운대해변로 (Haeundaehaebyeonno), 296",
+      "coordinates": [
+        129.1652071,
+        35.1602041
+      ],
+      "osmUrl": "https://www.openstreetmap.org/node/4199814292",
+      "route": null,
+      "noise": [
+        {
+          "name": "KUDETA infra club",
+          "kind": "nightlife",
+          "meters": 127,
+          "osmUrl": "https://www.openstreetmap.org/node/5137519621",
+          "coordinates": [
+            129.1663773,
+            35.1608344
+          ]
+        },
+        {
+          "name": "Haeundaehaebyeon-ro",
+          "kind": "road",
+          "meters": 165,
+          "osmUrl": "https://www.openstreetmap.org/way/509125478",
+          "coordinates": [
+            129.16395218460585,
+            35.161281021004434
+          ]
+        },
+        {
+          "name": "Dalmaji-gil",
+          "kind": "road",
+          "meters": 204,
+          "osmUrl": "https://www.openstreetmap.org/way/37399935",
+          "coordinates": [
+            129.1655396,
+            35.1620146
+          ]
+        },
+        {
+          "name": "Billie Jean",
+          "kind": "nightlife",
+          "meters": 249,
+          "osmUrl": "https://www.openstreetmap.org/node/12500700401",
+          "coordinates": [
+            129.1671484,
+            35.1617791
+          ]
+        },
+        {
+          "name": "Muse On Vinyl Pub",
+          "kind": "nightlife",
+          "meters": 265,
+          "osmUrl": "https://www.openstreetmap.org/node/13455895192",
+          "coordinates": [
+            129.1635061,
+            35.1621373
+          ]
+        }
+      ],
+      "dataNotes": [
+        "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
+        "Для Deluxe City подтверждены название, основной корпус, базовая норма 2 взрослых и варианты кроватей King/Twin/Ondol. Максимум гостей и безусловная семейная политика для обычного тарифа не подтверждены."
+      ],
+      "rooms": [
+        {
+          "id": "node-4199814292-real-main-deluxe-city",
+          "name": "Deluxe City — Main Building",
+          "capacity": null,
+          "scope": "room_category",
+          "demo": false,
+          "evidenceStatus": "verified",
+          "sourceUrl": "https://www.busanparadisehotel.co.kr/front/hotel/room/view?RR_LOCATION_TYPE=MAIN_BUILDING&RR_ROOM_CATEGORY=DELUXE&RR_ROOM_TYPE=DELUXE_CITY",
+          "obtainedAt": "2026-10-24T14:04:55.303Z",
+          "quote": "Официальная категория: Deluxe City — Main Building. Максимальная вместимость не подтверждена. Опубликованный вид: City. Это не подтверждает окна во двор.",
+          "capacityMayVary": false
+        }
+      ]
+    },
+    "facts": [
+      {
+        "id": "node-4199814292-real-main-deluxe-city-courtyard-partial",
+        "hotelId": "node-4199814292",
+        "roomId": "node-4199814292-real-main-deluxe-city",
+        "feature": "courtyard",
+        "value": null,
+        "source": "Paradise Hotel Busan",
+        "sourceUrl": "https://www.busanparadisehotel.co.kr/front/hotel/room/view?RR_LOCATION_TYPE=MAIN_BUILDING&RR_ROOM_CATEGORY=DELUXE&RR_ROOM_TYPE=DELUXE_CITY",
+        "quote": "Сторона всех окон этой категории не подтверждена как внутренний двор. Опубликованный вид: City.",
+        "method": "official",
+        "confidence": "low",
+        "confidenceReason": "Частичные сведения; положительное или отрицательное совпадение не установлено.",
+        "obtainedAt": "2026-10-24T14:04:55.303Z",
+        "expiresAt": "<volatile>",
+        "demo": false
+      },
+      {
+        "id": "node-4199814292-real-main-deluxe-city-step_free_access-partial",
+        "hotelId": "node-4199814292",
+        "roomId": "node-4199814292-real-main-deluxe-city",
+        "feature": "step_free_access",
+        "value": null,
+        "source": "Paradise Hotel Busan",
+        "sourceUrl": "https://www.busanparadisehotel.co.kr/front/hotel/room/view?RR_LOCATION_TYPE=MAIN_BUILDING&RR_ROOM_CATEGORY=DELUXE&RR_ROOM_TYPE=DELUXE_CITY",
+        "quote": "В собранных официальных сведениях нет подтверждения всего пути от улицы до этой категории без ступеней. Наличие лифта само по себе не подтверждает доступность всего пути.",
+        "method": "official",
+        "confidence": "low",
+        "confidenceReason": "Частичные сведения; положительное или отрицательное совпадение не установлено.",
+        "obtainedAt": "2026-10-24T14:04:55.303Z",
+        "expiresAt": "<volatile>",
+        "demo": false
+      },
+      {
+        "id": "node-4199814292-real-main-deluxe-city-family-partial",
+        "hotelId": "node-4199814292",
+        "roomId": "node-4199814292-real-main-deluxe-city",
+        "feature": "family",
+        "value": null,
+        "source": "Paradise Hotel Busan",
+        "sourceUrl": "https://www.busanparadisehotel.co.kr/front/hotel/room/view?RR_LOCATION_TYPE=MAIN_BUILDING&RR_ROOM_CATEGORY=DELUXE&RR_ROOM_TYPE=DELUXE_CITY",
+        "quote": "В собранных сведениях для этой категории нет достаточного подтверждения условий размещения с детьми.",
+        "method": "official",
+        "confidence": "low",
+        "confidenceReason": "Частичные сведения; положительное или отрицательное совпадение не установлено.",
+        "obtainedAt": "2026-10-24T14:04:55.303Z",
+        "expiresAt": "<volatile>",
+        "demo": false
+      }
+    ],
+    "questions": []
+  }
+}

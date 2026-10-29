@@ -1,0 +1,170 @@
+{
+  "status": 200,
+  "body": {
+    "hotel": {
+      "id": "node-368662694",
+      "name": "Haeundae Geullori Condominium",
+      "lodgingType": "hotel",
+      "address": "Пусан, Хэундэ",
+      "coordinates": [
+        129.1578105,
+        35.1595133
+      ],
+      "osmUrl": "https://www.openstreetmap.org/node/368662694",
+      "route": {
+        "end": 5915769236,
+        "meters": 244,
+        "coordinates": [
+          [
+            129.1577473,
+            35.1597403
+          ],
+          [
+            129.1576209,
+            35.1592431
+          ],
+          [
+            129.1575231,
+            35.1588582
+          ],
+          [
+            129.1573556,
+            35.158792
+          ],
+          [
+            129.1571935,
+            35.1587152
+          ],
+          [
+            129.1568449,
+            35.1585501
+          ],
+          [
+            129.1568339,
+            35.1584408
+          ],
+          [
+            129.1566871,
+            35.1582805
+          ],
+          [
+            129.1567528,
+            35.1581649
+          ],
+          [
+            129.1568909,
+            35.1579753
+          ]
+        ],
+        "wayIds": [
+          170600362,
+          1534786017,
+          627350922,
+          168101028
+        ],
+        "steps": 0,
+        "beachName": "Haeundae Beach",
+        "beachId": 107531972,
+        "connectionMeters": 26,
+        "approximate": true
+      },
+      "noise": [
+        {
+          "name": "Haeundaehaebyeon-ro",
+          "kind": "road",
+          "meters": 59,
+          "osmUrl": "https://www.openstreetmap.org/way/627350922",
+          "coordinates": [
+            129.1580278236541,
+            35.159017760979516
+          ]
+        },
+        {
+          "name": "Haeun-daero 570beon-gil",
+          "kind": "road",
+          "meters": 82,
+          "osmUrl": "https://www.openstreetmap.org/way/37399392",
+          "coordinates": [
+            129.15799312046175,
+            35.16023266452715
+          ]
+        },
+        {
+          "name": "Автомобильная дорога",
+          "kind": "road",
+          "meters": 196,
+          "osmUrl": "https://www.openstreetmap.org/way/627150759",
+          "coordinates": [
+            129.1599639,
+            35.1594705
+          ]
+        },
+        {
+          "name": "Galmegi Brewing",
+          "kind": "nightlife",
+          "meters": 285,
+          "osmUrl": "https://www.openstreetmap.org/node/4239385553",
+          "coordinates": [
+            129.1607574,
+            35.1603942
+          ]
+        },
+        {
+          "name": "Melt",
+          "kind": "nightlife",
+          "meters": 294,
+          "osmUrl": "https://www.openstreetmap.org/node/12769439501",
+          "coordinates": [
+            129.1548418,
+            35.1605601
+          ]
+        }
+      ],
+      "dataNotes": [],
+      "rooms": [
+        {
+          "id": "node-368662694-unverified",
+          "name": "Категория номера не подтверждена",
+          "capacity": null,
+          "demo": false,
+          "evidenceStatus": "unknown"
+        }
+      ]
+    },
+    "facts": [
+      {
+        "id": "node-368662694-route",
+        "hotelId": "node-368662694",
+        "feature": "beach_walk",
+        "value": 244,
+        "source": "OpenStreetMap, локальный пешеходный граф",
+        "sourceUrl": "https://www.openstreetmap.org/node/368662694",
+        "quote": "244 м по графу. Привязка точки отеля к сети: 26 м. Вход и подход к пляжу не обследованы; соединительные участки не включены в длину.",
+        "method": "geo",
+        "confidence": "medium",
+        "confidenceReason": "Рассчитано по сети OSM; точки входа приближённые.",
+        "obtainedAt": "2026-10-24T10:07:47.270Z",
+        "sourceDate": "2026-10-24T10:07:47.270Z",
+        "expiresAt": "<volatile>",
+        "demo": false
+      },
+      {
+        "id": "node-368662694-step-free-route-partial",
+        "hotelId": "node-368662694",
+        "feature": "step_free_route",
+        "value": null,
+        "source": "OpenStreetMap, локальный пешеходный граф",
+        "sourceUrl": "https://www.openstreetmap.org/node/368662694",
+        "quote": "На рассчитанном пути 0 участков с отмеченными лестницами. Вход, бордюры и непрерывный проход без ступеней не обследованы. Доступность всего пути не подтверждена.",
+        "method": "geo",
+        "confidence": "medium",
+        "confidenceReason": "Наблюдаемые отметки OSM не заменяют обследование всего пути.",
+        "obtainedAt": "2026-10-24T10:07:47.270Z",
+        "sourceDate": "2026-10-24T10:07:47.270Z",
+        "expiresAt": "<volatile>",
+        "demo": false
+      }
+    ],
+    "questions": []
+  }
+}

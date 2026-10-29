@@ -4,10 +4,9 @@ import {
   demoToday,
   localDemoPath,
   root,
-  seedDemoDatabase,
-  setupDemoDatabase,
-  validateDemoDatabase,
-} from "./demo-data.mjs";
+  seedDemoJson,
+  readDemoSeed,
+} from "./demo-seed.mjs";
 
 function option(name) {
   const index = process.argv.indexOf(name);
@@ -24,15 +23,12 @@ try {
         !process.argv[index + 1]
       )
         throw new Error(
-          "Ожидаются --date YYYY-MM-DD и --output путь к новой демо-базе.",
+          "Ожидаются --date YYYY-MM-DD и --output путь к новому JSON-образцу.",
         );
     const options = { date: option("--date") || demoToday(), ...(option("--output") ? { output: option("--output") } : {}) };
-    const result =
-      action === "seed"
-        ? seedDemoDatabase(options)
-        : setupDemoDatabase(options);
+    const result = seedDemoJson(options);
     console.log(
-      `Создана синтетическая демо-база: ${relative(root, result.path)}. Дата примеров: ${result.seedDate}.`,
+      `Создан синтетический JSON-образец: ${relative(root, result.path)}. Дата примеров: ${result.seedDate}.`,
     );
     console.log(
       `${result.counts.account_users} аккаунта, ${result.counts.account_listings} объявлений, ${result.counts.account_bookings} поездок, ${result.counts.account_questions} вопросов. Сессии и история ИИ отсутствуют.`,
@@ -46,10 +42,12 @@ try {
       throw new Error(
         "Для порта задайте DEMO_PORT; другие аргументы запуска не поддерживаются.",
       );
-    const demoPath = resolve(root, process.env.DEMO_DB_PATH || localDemoPath);
+    if (process.env.DEMO_DB_PATH)
+      throw new Error("DEMO_DB_PATH относится к прежней SQLite. Для JSON используйте DEMO_SEED_PATH; старую базу переносите явно через LEGACY_DB_PATH и сборку -Plegacy-import.");
+    const demoPath = resolve(root, process.env.DEMO_SEED_PATH || localDemoPath);
     if (!existsSync(demoPath))
       throw new Error("Сначала выполните npm run demo:setup.");
-    validateDemoDatabase(demoPath, { strict: false });
+    readDemoSeed(demoPath);
     if (!existsSync(resolve(root, "dist/index.html")))
       throw new Error(
         "Сначала выполните npm run build:all: демо использует основную сборку dist/.",
@@ -62,7 +60,9 @@ try {
       throw new Error("Схема демо должна отличаться от схемы основного сайта.");
     Object.assign(process.env, {
       PORT: String(port),
-      LEGACY_DB_PATH: demoPath, // явный импорт учебной SQLite при первом старте
+      LEGACY_DB_PATH: "",
+      DEMO_SEED_PATH: demoPath,
+      DEMO_MODE: "true",
       DB_SCHEMA: demoSchema,
       UPLOADS_PATH: resolve(root, ".local/demo-uploads"),
       DIST_PATH: "dist",
@@ -72,6 +72,7 @@ try {
       SESSION_COOKIE_SECURE: "false",
       FRONTEND_ORIGIN: "",
       LLM_API_KEY: "",
+      AI_PROVIDER: "rules",
     });
     mkdirSync(process.env.UPLOADS_PATH, { recursive: true });
     // Import after setting the environment: backend.mjs snapshots it for the child JVM.

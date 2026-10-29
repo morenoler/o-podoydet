@@ -4,9 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -53,8 +50,8 @@ public final class Agents {
   }
 
   private final java.util.function.Supplier<Config> configuration;
-  private final HttpClient http =
-      HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
+  private final java.util.concurrent.ConcurrentMap<Config, StructuredModel> models =
+      new java.util.concurrent.ConcurrentHashMap<>();
   private static final String UNCLEAR =
       "не знаю|неизвестн|не уверен|не могу подтверд|возможно|кажется|уточню|не"
           + " провер|вероятно|часть|некотор|не все|не всегда|один из|если"
@@ -454,50 +451,18 @@ public final class Agents {
             + "Example: 'Обязательно Wi-Fi' -> {\"updates\":[{\"feature\":\"wifi\",\"action\":\"required\"}],\"unhandled\":[]}. JSON only.";
         default -> instructions;
       };
-      StructuredModel selected = config.protocol() == Protocol.DEEPSEEK
-          ? new DeepSeekJsonModel(new ProviderSettings("deepseek", config.key(), config.model(), config.baseUrl(), config.timeoutSeconds(), config.maxTokens()))
-          : new LocalJsonModel(config.baseUrl(), config.model(), Duration.ofSeconds(15));
-      return selected.complete(localInstructions, input, schema);
+      return transport(config).complete(localInstructions, input, schema);
     }
-    String base = config.baseUrl().replaceAll("/$", "");
-    ObjectNode body =
-        Json.obj(
-            "model",
-            config.model(),
-            "store",
-            false,
-            "instructions",
-            instructions,
-            "input",
-            Json.write(input),
-            "max_output_tokens",
-            1400,
-            "text",
-            Json.obj(
-                "format",
-                Json.obj("type", "json_schema", "name", name, "strict", true, "schema", schema)));
-    HttpRequest request =
-        HttpRequest.newBuilder(URI.create(base + "/responses"))
-            .timeout(Duration.ofSeconds(20))
-            .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer " + config.key())
-            .POST(HttpRequest.BodyPublishers.ofString(Json.write(body)))
-            .build();
-    HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());
-    if (response.statusCode() < 200 || response.statusCode() >= 300)
-      throw new IOException("LLM HTTP " + response.statusCode());
-    if (response.body().length() > 256_000) throw new IOException("LLM response too large");
-    JsonNode result = Json.read(response.body());
-    if (!Json.str(result, "status").equals("completed"))
-      throw new IOException("LLM incomplete response");
-    StringBuilder output = new StringBuilder();
-    for (JsonNode message : result.path("output"))
-      for (JsonNode content : message.path("content"))
-        if (Json.str(content, "type").equals("output_text"))
-          output.append(Json.str(content, "text"));
-    JsonNode parsed = Json.read(output.toString());
-    if (parsed == null || !parsed.isObject())
-      throw new IOException("LLM did not return structured output");
-    return parsed;
+    return transport(config).completeNamed(name, instructions, input, schema);
+  }
+
+  private StructuredModel transport(Config config) {
+    return models.computeIfAbsent(config, value -> {
+      if (value.protocol() == Protocol.DEEPSEEK)
+        return new DeepSeekJsonModel(new ProviderSettings("deepseek", value.key(), value.model(),
+            value.baseUrl(), value.timeoutSeconds(), value.maxTokens()));
+      if (value.local()) return new LocalJsonModel(value.baseUrl(), value.model(), Duration.ofSeconds(15));
+      return new LegacyJsonModel(value.baseUrl(), value.key(), value.model(), LegacyJsonModel.Protocol.RESPONSES);
+    });
   }
 }

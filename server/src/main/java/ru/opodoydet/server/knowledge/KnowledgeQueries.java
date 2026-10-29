@@ -39,10 +39,7 @@ public class KnowledgeQueries {
 
   /** Пробелы в знаниях: факты, которые неизвестны, устарели или противоречивы. */
   public List<Fact> gaps(String hotelIdOrNull) {
-    return facts.findAll().stream()
-        .filter(f -> hotelIdOrNull == null || f.getHotelId().equals(hotelIdOrNull))
-        .filter(f -> f.getStatus() != Fact.Status.confirmed)
-        .toList();
+    return facts.findGaps(hotelIdOrNull, Fact.Status.confirmed);
   }
 
   public java.util.Optional<Characteristic> characteristic(String code) {
@@ -55,10 +52,24 @@ public class KnowledgeQueries {
         .collect(Collectors.groupingBy(Evidence::getHotelId, java.util.LinkedHashMap::new, Collectors.toList()));
   }
 
+  public Map<String, List<Evidence>> activeEvidenceByHotel(Collection<String> hotelIds) {
+    if (hotelIds.isEmpty()) return Map.of();
+    return evidence.findActiveByHotels(hotelIds).stream()
+        .collect(Collectors.groupingBy(Evidence::getHotelId, java.util.LinkedHashMap::new, Collectors.toList()));
+  }
+
   /** Уверенность итоговых фактов: hotelId → (roomId|"" + ":" + характеристика) → уверенность. */
   public Map<String, Map<String, java.math.BigDecimal>> confidenceByHotel() {
+    return confidence(facts.findAll());
+  }
+
+  public Map<String, Map<String, java.math.BigDecimal>> confidenceByHotel(Collection<String> hotelIds) {
+    return hotelIds.isEmpty() ? Map.of() : confidence(facts.findByHotelIdIn(hotelIds));
+  }
+
+  private static Map<String, Map<String, java.math.BigDecimal>> confidence(List<Fact> facts) {
     Map<String, Map<String, java.math.BigDecimal>> result = new java.util.HashMap<>();
-    for (Fact f : facts.findAll())
+    for (Fact f : facts)
       result
           .computeIfAbsent(f.getHotelId(), k -> new java.util.HashMap<>())
           .put((f.getRoomId() == null ? "" : f.getRoomId()) + ":" + f.getCharacteristic(), f.getConfidence());

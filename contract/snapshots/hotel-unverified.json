@@ -1,6 +1,7 @@
 {
   "status": 200,
   "body": {
+    "region": "Пусан",
     "hotel": {
       "id": "node-368662694",
       "name": "Haeundae Geullori Condominium",
@@ -121,6 +122,8 @@
         }
       ],
       "dataNotes": [],
+      "region": "Пусан",
+      "hasCollectedRoomCategories": false,
       "rooms": [
         {
           "id": "node-368662694-unverified",

@@ -39,6 +39,8 @@ public final class IsolatedPostgresInitializer
       properties.put("SESSION_COOKIE_SECURE", "false");
       properties.put("FRONTEND_ORIGIN", "");
       properties.put("LEGACY_DB_PATH", "");
+      properties.put("DEMO_SEED_PATH", "");
+      properties.put("DEMO_MODE", "false");
       properties.put("LLM_API_KEY", "");
       properties.put("AI_PROVIDER", "");
       properties.put("DEEPSEEK_API_KEY", "");

@@ -14,6 +14,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.mock.web.MockHttpServletRequest;
+import ru.opodoydet.application.Environment;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.server.config.DomainConfig.RuntimeEnv;
 import ru.opodoydet.shared.Json;
@@ -35,13 +36,14 @@ class PlatformClockTest {
     when(store.hotel("clock-hotel"))
         .thenReturn(Json.obj("id", "clock-hotel", "coordinates", coordinates));
     RuntimeEnv env = new RuntimeEnv(Map.of("AREA_DATA_PATH", area.toString()));
-    var controller = new PlatformController(store, null, null, null, null, null, null, null, null,
+    var environment = new Environment(area, temporary.resolve("noise.json"));
+    var controller = new PlatformController(store, null, environment, null, null, null, null, null, null,
         env, Clock.fixed(now, ZoneOffset.UTC));
     var request = new MockHttpServletRequest("GET", "/api/areas/clock-hotel");
     assertThat(Json.read(controller.area(request).getBody())
         .path("assessment").path("airQuality").path("status").asText()).isEqualTo("reported");
 
-    var later = new PlatformController(store, null, null, null, null, null, null, null, null,
+    var later = new PlatformController(store, null, environment, null, null, null, null, null, null,
         env, Clock.fixed(now.plusSeconds(6 * 3600 + 1), ZoneOffset.UTC));
     assertThat(Json.read(later.area(request).getBody())
         .path("assessment").path("airQuality").path("status").asText()).isEqualTo("stale");

@@ -78,7 +78,7 @@ export function ResultsPage() {
     setLimit(8);
     setSelectedId("");
     if (!validTrip || authLoading) return;
-    api<SearchResult>("/search", trip, controller.signal)
+    api<SearchResult>("/search?includeExcluded=false", trip, controller.signal)
       .then((result) => {
         if (!active) return;
         setResponse({ key: searchKey, data: result, error: "" });

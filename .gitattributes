@@ -1,9 +1,12 @@
 # Hash-verified packaged scenes must keep identical bytes on Windows and Linux.
+*.gz -text
 services/window-view/data/demo/*.scene.json -text
 services/window-view/data/open/*.json.gz -text
 # Source archives and byte-verified responses must survive checkout unchanged.
 data/*.gz -text
 data/*.raw.geojson -text
+# Preserve the original EUC-KR CSV bytes, including source CRLF line endings.
+data/*.csv -text whitespace=cr-at-eol
 # Preserve Busan evidence bytes and audited extractor/config hashes after Windows checkout.
 data/busan/raw/*.json -text
 data/busan/place-categories.json text eol=lf

@@ -1,6 +1,7 @@
 {
   "status": 200,
   "body": {
+    "region": "Пусан",
     "hotel": {
       "id": "node-4199814292",
       "name": "Paradise Hotel Busan",
@@ -68,6 +69,8 @@
         "Вид во внутренний двор прямо не указан. City, Ocean, Dalmaji-gil и интерьерная тема не считаются подтверждением courtyard; факта courtyard нет.",
         "Для Deluxe City подтверждены название, основной корпус, базовая норма 2 взрослых и варианты кроватей King/Twin/Ondol. Максимум гостей и безусловная семейная политика для обычного тарифа не подтверждены."
       ],
+      "region": "Пусан",
+      "hasCollectedRoomCategories": true,
       "rooms": [
         {
           "id": "node-4199814292-real-main-deluxe-city",

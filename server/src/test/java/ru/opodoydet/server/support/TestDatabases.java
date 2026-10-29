@@ -110,6 +110,8 @@ public final class TestDatabases {
       properties.put("catalog.import-on-startup", "false");
       properties.put("knowledge.resolve-interval", "PT24H");
       properties.put("LEGACY_DB_PATH", "");
+      properties.putIfAbsent("DEMO_SEED_PATH", "");
+      properties.putIfAbsent("DEMO_MODE", "false");
       properties.putIfAbsent("ACCOUNT_MODE", "false");
       properties.putIfAbsent("LAB_MODE", "false");
       properties.putIfAbsent("UPLOADS_PATH", directory.resolve("uploads").toString());

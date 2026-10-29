@@ -109,11 +109,25 @@ public final class Store {
 
   /** Факты, допустимые для подбора по старой политике (официальные и геоданные). */
   public List<JsonNode> matchingFacts() {
-    List<JsonNode> facts = facts();
+    return matchingFacts(null);
+  }
+
+  /** SQL narrows candidates before JSON parsing; the domain policy remains the final authority. */
+  public List<JsonNode> matchingFacts(String hotelId) {
     Instant now = clock.instant();
-    return Evidence.demoPolicy(evidencePolicy())
-        ? facts
-        : facts.stream().filter(f -> Evidence.fact(f, now)).toList();
+    boolean demo = Evidence.demoPolicy(evidencePolicy());
+    String sql = "SELECT e.raw FROM evidence e JOIN hotel h ON h.id = e.hotel_id"
+        + " WHERE e.active AND h.region = :region"
+        + (hotelId == null ? "" : " AND e.hotel_id = :hotel")
+        + (demo ? "" : " AND NOT e.demo AND e.method IN ('official', 'geo')"
+            + " AND e.obtained_at <= :now AND e.source_url IS NOT NULL"
+            + " AND e.quote IS NOT NULL AND length(trim(e.quote)) > 0")
+        + " ORDER BY e.ord";
+    var query = jdbc.sql(sql).param("region", region());
+    if (hotelId != null) query = query.param("hotel", hotelId);
+    if (!demo) query = query.param("now", Timestamp.from(now));
+    return query.query(String.class).list().stream().map(Json::read)
+        .filter(f -> demo || Evidence.fact(f, now)).toList();
   }
 
   // ---- Демонстрационные вопросы по каталогу (только при ACCOUNT_MODE=false) ----

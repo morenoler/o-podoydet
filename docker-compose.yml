@@ -1,15 +1,39 @@
-# База для нового бэкенда. Запуск: docker compose up -d db
-# (npm run dev:spring поднимает её сам).
+name: opodoydet
+
+x-app: &app
+  image: opodoydet-app:local
+  build:
+    context: .
+  init: true
+  depends_on:
+    db:
+      condition: service_healthy
+    window-view:
+      condition: service_healthy
+
+x-app-environment: &app-environment
+  BIND_ADDRESS: 0.0.0.0
+  PORT: "8080"
+  DATABASE_USER: opodoydet
+  DATABASE_PASSWORD: opodoydet
+  WINDOW_VIEW_URL: http://window-view:8011
+  ADVISOR_PYTHON: python3
+  AI_PROVIDER: rules
+  LEGACY_DB_PATH: ""
+  DEMO_SEED_PATH: ""
+  DEMO_MODE: "false"
+  LLM_API_KEY: ""
+  DEEPSEEK_API_KEY: ""
+
 services:
   db:
     image: postgis/postgis:16-3.4
-    container_name: opodoydet-db
     environment:
       POSTGRES_DB: opodoydet
       POSTGRES_USER: opodoydet
       POSTGRES_PASSWORD: opodoydet
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     volumes:
       - opodoydet-db:/var/lib/postgresql/data
     healthcheck:
@@ -18,5 +42,51 @@ services:
       timeout: 3s
       retries: 30
 
+  window-view:
+    image: opodoydet-window-view:local
+    build:
+      context: services/window-view
+    init: true
+    # Internal service: the browser calls it through the Java API.
+    expose:
+      - "8011"
+
+  app:
+    <<: *app
+    environment:
+      <<: *app-environment
+      DATABASE_URL: jdbc:postgresql://db:5432/opodoydet?currentSchema=public
+      DB_SCHEMA: public
+      DATA_PATH: /app/data/verified-hotels.json
+      ACCOUNT_MODE: "true"
+      LAB_MODE: "false"
+    ports:
+      - "127.0.0.1:${APP_PORT:-8080}:8080"
+    volumes:
+      - app-uploads:/app/.local/uploads
+
+  host-demo:
+    <<: *app
+    profiles: [jury]
+    environment:
+      <<: *app-environment
+      DATABASE_URL: jdbc:postgresql://db:5432/opodoydet?currentSchema=host_dialog_demo
+      DB_SCHEMA: host_dialog_demo
+      DATA_PATH: /app/data/demo/spring-host-dialog.json
+      ACCOUNT_MODE: "false"
+      LAB_MODE: "true"
+    ports:
+      - "127.0.0.1:${JURY_PORT:-8081}:8080"
+
+  jury-check:
+    image: opodoydet-app:local
+    profiles: [checks]
+    depends_on:
+      host-demo:
+        condition: service_healthy
+    entrypoint: ["python3", "/app/scripts/jury-demo.py"]
+    command: ["--base", "http://host-demo:8080"]
+
 volumes:
   opodoydet-db:
+  app-uploads:

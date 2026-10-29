@@ -35,7 +35,8 @@ if (typeof window !== "undefined") window.addEventListener("storage", event => {
 
 /** History, cancellation, authentication and config recovery must remain reachable. */
 function modelOperation(path: string) {
-  return /^\/(search(?:\/conversation)?|lab\/search|hotels\/[^/]+\/evaluate|questions(?:\/.*)?|drafts(?:\/.*)?|v2\/(?:questions|host)(?:\/.*)?)$/.test(path);
+  const pathname = path.split("?", 1)[0];
+  return /^\/(search(?:\/conversation)?|lab\/search|hotels\/[^/]+\/evaluate|questions(?:\/.*)?|drafts(?:\/.*)?|v2\/(?:questions|host)(?:\/.*)?)$/.test(pathname);
 }
 export function aiProviderHeaders(path: string, hasBody: boolean, provider: AiProvider | null = selected): Record<string, string> {
   return provider && hasBody && modelOperation(path) ? { "X-AI-Provider": provider } : {};

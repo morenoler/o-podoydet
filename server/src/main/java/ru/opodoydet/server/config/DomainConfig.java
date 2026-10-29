@@ -1,7 +1,6 @@
 package ru.opodoydet.server.config;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.time.Clock;
@@ -43,29 +42,13 @@ import ru.opodoydet.server.search.SearchOverlay;
 @Configuration
 public class DomainConfig {
 
-  /**
-   * Файл .env из текущей папки, поверх — переменные окружения и настройки Spring.
-   * Нужны модулям, которые читают их сами (помощник, разбор текста, кабинеты).
+  /** Domain adapters use the same resolved Spring environment as datasource and web settings.
+   * The Node launcher loads .env once; direct java/containers use normal Spring configuration.
    */
   @Bean
-  RuntimeEnv runtimeEnv(ConfigurableEnvironment spring) throws IOException {
+  RuntimeEnv runtimeEnv(ConfigurableEnvironment spring) {
     Map<String, String> result = new HashMap<>();
-    Path file = Path.of(".env");
-    if (Files.isRegularFile(file))
-      for (String line : Files.readAllLines(file)) {
-        String entry = line.trim();
-        if (entry.isEmpty() || entry.startsWith("#")) continue;
-        int equals = entry.indexOf('=');
-        if (equals < 1) continue;
-        String value = entry.substring(equals + 1).trim();
-        if (value.length() > 1
-            && ((value.startsWith("\"") && value.endsWith("\""))
-                || (value.startsWith("'") && value.endsWith("'"))))
-          value = value.substring(1, value.length() - 1);
-        result.put(entry.substring(0, equals).trim(), value);
-      }
-    result.putAll(System.getenv());
-    // Spring command-line and test properties take precedence over .env and process variables.
+    // Resolve through Spring to preserve command-line, test and environment precedence.
     for (var source : spring.getPropertySources()) {
       if (source instanceof EnumerablePropertySource<?> enumerable)
         for (String key : enumerable.getPropertyNames()) {

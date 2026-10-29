@@ -6,6 +6,8 @@ import { accommodationPath } from "../../shared/lib/accommodation";
 import { capacityNeedsClarification, criterionNeedsClarification } from "../../shared/lib/matchPresentation";
 
 export function SearchDiagnostics({ data }: { data: SearchResult }) {
+  const excluded = data.excludedSummary ?? data.excluded;
+  const excludedCount = data.pagination?.totals.excluded ?? excluded.length;
   return (
     <div className="search-explanations">
       {(!!data.warnings.length || !!data.preferences.length) && (
@@ -27,13 +29,13 @@ export function SearchDiagnostics({ data }: { data: SearchResult }) {
           <Link to="/wishes">Изменить пожелания</Link>
         </details>
       )}
-      {!!data.excluded.length && (
+      {!!excludedCount && (
         <details>
           <summary>
-            Не прошли обязательные условия: {data.excluded.length}{" "}
+            Не прошли обязательные условия: {excludedCount}{" "}
             <ChevronDown size={18} aria-hidden="true" />
           </summary>
-          {data.excluded.map((match) => (
+          {excluded.map((match) => (
             <div className="search-excluded-row" key={match.hotel.id}>
               <Link to={accommodationPath(match.hotel)}>
                 {match.hotel.name}

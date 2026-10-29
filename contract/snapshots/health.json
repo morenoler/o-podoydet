@@ -6,7 +6,14 @@
     "mode": "rules",
     "accountsEnabled": true,
     "runtime": "Java 21",
-    "database": "SQLite 3",
-    "region": "Пусан"
+    "database": "PostgreSQL 16",
+    "region": "Пусан",
+    "regions": [
+      {
+        "region": "Пусан",
+        "hotelCount": 96,
+        "evidencePolicy": "verified-only"
+      }
+    ]
   }
 }

@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "body": {
+    "ok": true,
+    "hotels": 96,
+    "mode": "rules",
+    "accountsEnabled": true,
+    "runtime": "Java 21",
+    "database": "SQLite 3",
+    "region": "Пусан"
+  }
+}

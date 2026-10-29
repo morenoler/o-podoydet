@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.opodoydet.persistence.Store;
 import ru.opodoydet.server.catalog.SeedImporter;
 import ru.opodoydet.server.migration.SqliteImporter;
+import ru.opodoydet.server.migration.DemoSeedImporter;
 
 /**
  * Загрузка каталога и перенос старой SQLite до того, как сервер начнёт принимать запросы.
@@ -18,12 +19,14 @@ class StartupImports implements SmartLifecycle {
 
   private final SeedImporter seed;
   private final SqliteImporter sqlite;
+  private final DemoSeedImporter demo;
   private final Store store;
   private volatile boolean running;
 
-  StartupImports(SeedImporter seed, SqliteImporter sqlite, Store store) {
+  StartupImports(SeedImporter seed, SqliteImporter sqlite, DemoSeedImporter demo, Store store) {
     this.seed = seed;
     this.sqlite = sqlite;
+    this.demo = demo;
     this.store = store;
   }
 
@@ -31,6 +34,7 @@ class StartupImports implements SmartLifecycle {
   public void start() {
     try {
       seed.run();
+      demo.run();
       sqlite.run();
       // Imported runs arrive after AdvisorService's constructor recovery. They have no worker
       // in this process and must be terminal before HTTP history can expose them as running.

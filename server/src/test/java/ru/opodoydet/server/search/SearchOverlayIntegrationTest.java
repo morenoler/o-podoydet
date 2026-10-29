@@ -196,4 +196,50 @@ class SearchOverlayIntegrationTest {
     }
   }
 
+  @Test void hotelCandidatesCannotBypassConflictingKnowledgeWithoutRoomCategories() throws Exception {
+    var distance = Json.obj("id", "distance", "hotelId", "hotel", "feature", "beach_walk", "value", 200,
+        "method", "official", "demo", false, "sourceUrl", "https://example.test/location", "quote", "Test distance",
+        "obtainedAt", Instant.now().minusSeconds(60).toString(), "expiresAt", Instant.now().plusSeconds(86400).toString());
+    var seed = Json.obj("region", "Пусан", "hotels", List.of(Json.obj("id", "hotel", "name", "Test",
+        "rooms", List.of())), "facts", List.of(distance));
+    try (var db = TestDatabases.create(seed)) {
+      assertEquals(1, search(db).search(trip("explore", "beach_walk")).path("hotelCandidates").size());
+      db.context().getBean(KnowledgeCommands.class).recordHostStatement(new KnowledgeCommands.HostStatement(
+          "hotel", null, "beach_walk", com.fasterxml.jackson.databind.node.IntNode.valueOf(1500),
+          "Contradicting controlled test statement", "medium", "Test fixture", "Test host", false, null));
+      var query = trip("explore", "beach_walk");
+      var result = search(db).search(query);
+      assertTrue(result.path("results").isEmpty());
+      assertTrue(result.path("hotelCandidates").isEmpty(), "A hotel-only card obeys the same conflicting evidence");
+      assertEquals("conflict", criterion(only(result), "beach_walk").path("evidenceStatus").asText());
+      assertEquals("conflict", criterion(search(db).detail("hotel", query), "beach_walk").path("evidenceStatus").asText());
+      assertEquals(0, search(db).advisorContext(query, result.path("searchId").asText()).path("fitCount").asInt());
+    }
+  }
+
+  @Test void detailKeepsKnowledgeSelectedRoomAndOwnerScoreAndBlocker() throws Exception {
+    try (var db = TestDatabases.create(seed(List.of()))) {
+      host(db, "r2", "courtyard", true, false);
+      host(db, "r1", "family", true, false);
+      // Owner requirements apply after knowledge ranking; an unknown floor remains a blocker.
+      var query = trip("verified", "courtyard").put("text", "Нужен номер на 1-м этаже");
+      var service = new SearchService(db.store(), new ru.opodoydet.application.Agents(
+          ru.opodoydet.application.Agents.Config.from(java.util.Map.of())),
+          db.context().getBean(ru.opodoydet.application.Environment.class), java.time.Clock.systemUTC(),
+          new ru.opodoydet.accounts.search.OwnerListingSearchProvider(db.accounts()),
+          db.context().getBean(SearchOverlay.class));
+      var result = service.search(query);
+      var searched = only(result);
+      var detailed = service.detail("hotel", query);
+      assertEquals("r2", searched.path("best").path("room").path("id").asText());
+      assertFalse(searched.path("ownerCriteria").isEmpty());
+      assertEquals("excluded", searched.path("best").path("status").asText());
+      assertEquals(searched.path("best").path("score"), detailed.path("best").path("score"));
+      assertEquals(searched.path("best").path("room"), detailed.path("best").path("room"));
+      assertEquals(searched.path("ownerCriteria"), detailed.path("ownerCriteria"));
+      assertEquals("excluded", detailed.path("best").path("status").asText());
+      assertEquals(0, service.advisorContext(query, result.path("searchId").asText()).path("fitCount").asInt());
+    }
+  }
+
 }

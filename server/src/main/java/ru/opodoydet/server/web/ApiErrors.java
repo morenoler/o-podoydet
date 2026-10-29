@@ -25,6 +25,17 @@ public class ApiErrors {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", error.getMessage()));
   }
 
+  @ExceptionHandler({org.springframework.http.converter.HttpMessageNotReadableException.class,
+      org.springframework.web.bind.MethodArgumentNotValidException.class})
+  ResponseEntity<Map<String, String>> invalidBody(Exception error) {
+    // Jackson wraps validation from the DTO creator. Preserve the established client messages.
+    for (Throwable cause = error.getCause(); cause != null; cause = cause.getCause())
+      if (cause instanceof IllegalArgumentException invalid) return badRequest(invalid);
+    String message = error instanceof org.springframework.http.converter.HttpMessageNotReadableException
+        ? "Некорректный JSON" : "Некорректные данные запроса";
+    return ResponseEntity.badRequest().body(Map.of("error", message));
+  }
+
   @ExceptionHandler(Exception.class)
   ResponseEntity<Map<String, String>> failure(Exception error) {
     // Ошибки самого Spring MVC (не тот метод, не тот Content-Type и т. п.) сохраняют свой статус.

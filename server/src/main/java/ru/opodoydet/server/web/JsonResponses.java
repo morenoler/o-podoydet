@@ -9,6 +9,15 @@ public final class JsonResponses {
 
   private JsonResponses() {}
 
+  /** Typed Spring MVC responses retain the privacy headers of the legacy API. */
+  public static <T> ResponseEntity<T> json(int status, T body) {
+    return ResponseEntity.status(status)
+        .header(HttpHeaders.CONTENT_TYPE, "application/json; charset=utf-8")
+        .header(HttpHeaders.CACHE_CONTROL, "no-store")
+        .header("X-Content-Type-Options", "nosniff")
+        .body(body);
+  }
+
   public static ResponseEntity<String> send(int status, Object body) {
     return ResponseEntity.status(status)
         .header(HttpHeaders.CONTENT_TYPE, "application/json; charset=utf-8")

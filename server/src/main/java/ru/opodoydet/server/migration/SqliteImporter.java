@@ -112,8 +112,14 @@ public class SqliteImporter {
   /** Вызывается после импорта каталога: ответы отельеров ссылаются на его отели. */
   public void run() throws Exception {
     if (path.isBlank()) return;
+    try {
+      Class.forName("org.sqlite.JDBC");
+    } catch (ClassNotFoundException absent) {
+      throw new IllegalStateException(
+          "LEGACY_DB_PATH требует отдельной сборки Maven с -Plegacy-import. Для учебных кабинетов используйте DEMO_SEED_PATH.", absent);
+    }
     Path file = Path.of(path).toAbsolutePath().normalize();
-    if (!Files.isRegularFile(file)) return;
+    if (!Files.isRegularFile(file)) throw new IllegalArgumentException("Не найден явный источник LEGACY_DB_PATH: " + file);
     String identity = file + ":" + Files.size(file) + ":" + Files.getLastModifiedTime(file).toMillis();
     String marker = "sqlite-import:v3:" + identity;
     if (completed(marker)) return;
@@ -162,9 +168,9 @@ public class SqliteImporter {
   }
 
   private static java.util.Properties sqliteProps() {
-    org.sqlite.SQLiteConfig config = new org.sqlite.SQLiteConfig();
-    config.setReadOnly(true); // исходная база не меняется
-    return config.toProperties();
+    java.util.Properties properties = new java.util.Properties();
+    properties.setProperty("open_mode", "1"); // SQLITE_OPEN_READONLY, without a compile-time driver dependency.
+    return properties;
   }
 
   private boolean completed(String marker) {

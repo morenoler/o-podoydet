@@ -13,6 +13,16 @@ import ru.opodoydet.shared.Json;
 public final class Matching {
   private static final Map<String, Integer> ORDER = Map.of("fits", 0, "excluded", 1);
 
+  /** Raw evidence for a criterion; null delegates to the saved-data fallback.
+   * Required/optional is a search preference and must not change the underlying evidence.
+   */
+  @FunctionalInterface
+  public interface CriterionSource {
+    ObjectNode evaluateCriterion(JsonNode hotel, JsonNode room, String feature);
+  }
+
+  public static final CriterionSource SAVED_FACTS = (hotel, room, feature) -> null;
+
   private Matching() {}
 
   public static ObjectNode evaluate(
@@ -181,6 +191,14 @@ public final class Matching {
       Instant now,
       Map<String, Map<String, JsonNode>> environments,
       String policy) {
+    return rank(hotels, facts, preferences, trip, now, environments, policy, SAVED_FACTS);
+  }
+
+  /** One evaluator supplies each criterion before the shared admission, scoring and sorting. */
+  public static List<JsonNode> rank(
+      List<JsonNode> hotels, List<JsonNode> facts, List<JsonNode> preferences,
+      JsonNode trip, Instant now, Map<String, Map<String, JsonNode>> environments,
+      String policy, CriterionSource source) {
     List<JsonNode> matches = new ArrayList<>();
     Comparator<JsonNode> roomOrder =
         Comparator.comparingInt((JsonNode r) -> ORDER.get(Json.str(r, "status")))
@@ -200,16 +218,8 @@ public final class Matching {
                 .map(
                     p ->
                         (JsonNode)
-                            BinaryDecisionPolicy.decide(
-                                evaluateWithEnvironment(
-                                    scoped,
-                                    p,
-                                    room,
-                                    trip,
-                                    now,
-                                    environments.getOrDefault(Json.str(hotel, "id"), Map.of()),
-                                    policy),
-                                hotel))
+                            criterion(source, hotel, scoped, p, room, trip, now,
+                                environments.getOrDefault(Json.str(hotel, "id"), Map.of()), policy))
                 .toList();
         ObjectNode capacity = BinaryDecisionPolicy.capacity(hotel, room, trip, now);
         int score =
@@ -244,5 +254,15 @@ public final class Matching {
                   b.path("hotel").path("route").path("meters").asDouble(Double.POSITIVE_INFINITY));
         });
     return matches;
+  }
+
+  /** Shared by search, detail and hotel-only candidates; never evaluates then overwrites evidence. */
+  public static ObjectNode criterion(
+      CriterionSource source, JsonNode hotel, List<JsonNode> facts, JsonNode preference,
+      JsonNode room, JsonNode trip, Instant now, Map<String, JsonNode> environment, String policy) {
+    ObjectNode raw = source.evaluateCriterion(hotel, room, Json.str(preference, "feature"));
+    if (raw == null) raw = evaluateWithEnvironment(facts, preference, room, trip, now, environment, policy);
+    else raw = raw.deepCopy().put("required", preference.path("required").asBoolean());
+    return BinaryDecisionPolicy.decide(raw, hotel);
   }
 }

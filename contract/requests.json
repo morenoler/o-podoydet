@@ -508,7 +508,21 @@
         ],
         "searchProfile": {
           "notes": "Окна во двор, ночью тихо"
-        }
+        },
+        "coordinates": null,
+        "sleepingPlaces": 3,
+        "beds": [
+          {
+            "type": "double",
+            "count": 1,
+            "placesPerUnit": 2
+          },
+          {
+            "type": "single",
+            "count": 1,
+            "placesPerUnit": 1
+          }
+        ]
       },
       "capture": {
         "listingId": "$.id"
@@ -597,7 +611,21 @@
         ],
         "searchProfile": {
           "notes": "Окна во двор, ночью тихо"
-        }
+        },
+        "coordinates": null,
+        "sleepingPlaces": 3,
+        "beds": [
+          {
+            "type": "double",
+            "count": 1,
+            "placesPerUnit": 2
+          },
+          {
+            "type": "single",
+            "count": 1,
+            "placesPerUnit": 1
+          }
+        ]
       }
     },
     {

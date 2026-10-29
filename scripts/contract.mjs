@@ -6,13 +6,14 @@
 //   node scripts/contract.mjs capture --base http://127.0.0.1:8080        переснять эталоны (осознанное изменение API)
 //   node scripts/contract.mjs diff    --base URL --against URL            сравнить два живых сервера
 //
-// Сервер сравнивает даты фактов с текущим временем: после 23.11.2026 (срок данных) статусы фактов
-// в эталонах устареют — тогда обновите данные и переснимите эталоны.
+// contract:verify фиксирует Clock отдельным Spring-профилем contract.
+// При сравнении самостоятельно запущенных серверов согласуйте время и снимки данных.
 
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomUUID } from "node:crypto";
+import { readSnapshot, writeSnapshot, snapshotDigest } from "./contract-files.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const spec = JSON.parse(readFileSync(join(root, "contract", "requests.json"), "utf8"));
@@ -194,21 +195,19 @@ async function main() {
   if (options.mode === "capture") {
     mkdirSync(snapshots, { recursive: true });
     const results = await runAll(options.base, options);
-    for (const [name, { status, body }] of results)
-      writeFileSync(join(snapshots, `${name}.json`), JSON.stringify({ status, body }, null, 2) + "\n");
     const broken = [...results].filter(([, r]) => r.status === "NETWORK" || r.status >= 500);
-    console.log(`Сохранено эталонов: ${results.size} → contract/snapshots/`);
     if (broken.length) {
-      console.log("Внимание, ответы с ошибкой сервера:", broken.map(([n]) => n).join(", "));
-      process.exit(1);
+      throw new Error("Эталоны не изменены: ошибки сервера в " + broken.map(([n]) => n).join(", "));
     }
+    for (const [name, { status, body }] of results) writeSnapshot(snapshots, name, { status, body });
+    const manifest = Object.fromEntries(spec.requests.map(({ name }) => [name, snapshotDigest(readSnapshot(snapshots, name))]));
+    writeFileSync(join(root, "contract", "snapshots-manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
+    console.log(`Сохранено эталонов: ${results.size} → contract/snapshots/`);
   } else if (options.mode === "check") {
     const expected = new Map();
     for (const r of spec.requests) {
       if (options.only && !options.only.has(r.name)) continue;
-      const file = join(snapshots, `${r.name}.json`);
-      if (!existsSync(file)) throw new Error(`Нет эталона ${r.name}: сравнение неполно`);
-      expected.set(r.name, JSON.parse(readFileSync(file, "utf8")));
+      expected.set(r.name, JSON.parse(readSnapshot(snapshots, r.name).toString("utf8")));
     }
     process.exit(compare(expected, await runAll(options.base, options)) ? 1 : 0);
   } else {

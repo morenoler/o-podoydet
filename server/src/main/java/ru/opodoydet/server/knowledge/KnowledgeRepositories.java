@@ -13,11 +13,19 @@ interface EvidenceRepository extends JpaRepository<Evidence, String> {
 
   @Query("select e from Evidence e where e.active = true and e.hotelId = ?1 order by e.ord")
   List<Evidence> findActiveByHotel(String hotelId);
+
+  @Query("select e from Evidence e where e.active = true and e.hotelId in ?1 order by e.ord")
+  List<Evidence> findActiveByHotels(java.util.Collection<String> hotelIds);
 }
 
 interface FactRepository extends JpaRepository<Fact, Long> {
 
   List<Fact> findByHotelIdOrderByRoomIdAscCharacteristicAsc(String hotelId);
+
+  List<Fact> findByHotelIdIn(java.util.Collection<String> hotelIds);
+
+  @Query("select f from Fact f where (?1 is null or f.hotelId = ?1) and f.status <> ?2")
+  List<Fact> findGaps(String hotelId, Fact.Status excludedStatus);
 }
 
 interface ConflictRepository extends JpaRepository<Conflict, Long> {

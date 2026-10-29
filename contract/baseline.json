@@ -1,0 +1,26 @@
+{
+  "sourceBranch": "origin/main",
+  "sourceCommit": "0fc7c5608c00887e4b0d86a3ecd6de92850da9e8",
+  "jarSha256": "93ea7fa50fcf5cf0bdce79bf91a1e14c4de26e63a4197d9d03decc7beb5ce77b",
+  "clockInstant": "2026-10-29T01:07:53Z",
+  "captureStartedAt": "2026-10-29T01:07:53Z",
+  "capturedAt": "2026-10-29T01:08:04Z",
+  "sourceRuntime": "Unmodified main, JDK 21, PostgreSQL 16, real UTC Clock; no code from the reviewed branch",
+  "schema": "contract_baseline_20261029010717",
+  "requestCount": 85,
+  "dataFiles": {
+    "data/verified-hotels.json": "e1e7121b6caa9f0c6f9f619e7e0276796208f97c620949dd6cba97f9d0d6e092",
+    "data/area-assessments.json": "1984c8de672fefb6d1a856e2c6a7094765d6863cd96a1293c53367ef2a224254",
+    "data/noise-context.json": "5e499cc1fa4bf66d7ccac9d1c0cb2a7ff216f0cd9d26b015af159e7cedc28c88",
+    "data/traffic-ktdb-2024.json": "cc33dd99a2bb820b3ab6f8be75aa5e39838d9a362efc9d8325f2422e818b8ac2",
+    "data/places/busan-places.json": "a6687a4a43225d30e354119b682e59ddd4fbf863d70cb0dd29c7834f2dd29a54"
+  },
+  "requestsSha256": "1ccea5fe1a73470ba128c29d757650ffaf4257b057c5c82dd6119e49601109fb",
+  "dataMatchesOriginalMain": {
+    "data/verified-hotels.json": true,
+    "data/area-assessments.json": true,
+    "data/noise-context.json": true,
+    "data/traffic-ktdb-2024.json": true,
+    "data/places/busan-places.json": true
+  }
+}

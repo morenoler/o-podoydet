@@ -14,7 +14,7 @@ test("provider selection is explicit, scoped to model operations, and can be res
     for (const provider of ["deepseek", "local", "rules"] as const) {
       setAiProvider(provider);
       assert.equal(getAiProvider(), provider);
-      for (const path of ["/search", "/search/conversation", "/lab/search", "/hotels/hotel/evaluate", "/questions/id/answer", "/drafts/id/confirm", "/v2/questions/id/answer", "/v2/host/hotel/simulate"])
+      for (const path of ["/search", "/search?includeExcluded=false", "/search?page=1&pageSize=24", "/search/conversation", "/lab/search", "/hotels/hotel/evaluate", "/questions/id/answer", "/drafts/id/confirm", "/v2/questions/id/answer", "/v2/host/hotel/simulate"])
         assert.deepEqual(aiProviderHeaders(path, true), { "X-AI-Provider": provider });
       assert.deepEqual(aiProviderHeaders("/advisor/config", false), {});
       assert.deepEqual(aiProviderHeaders("/catalog?region=Пусан", false), {});

@@ -3,7 +3,6 @@ package ru.opodoydet.application;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.net.URI;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -27,23 +26,23 @@ public final class Environment {
   private static ZoneId timezone(JsonNode trip) {
     return ru.opodoydet.domain.RegionSettings.of(Json.str(trip, "region")).timezone();
   }
-  private final Path areaPath;
-  private final Path noisePath;
-  private final Path trafficPath;
+  private final SavedJsonSource areas;
+  private final SavedJsonSource noise;
+  private final SavedJsonSource traffic;
 
   public Environment(Path areaPath, Path noisePath) {
     this(areaPath, noisePath, noisePath.resolveSibling("traffic-ktdb-2024.json"));
   }
 
   public Environment(Path areaPath, Path noisePath, Path trafficPath) {
-    this.areaPath = areaPath;
-    this.noisePath = noisePath;
-    this.trafficPath = trafficPath;
+    this.areas = new SavedJsonSource(areaPath);
+    this.noise = new SavedJsonSource(noisePath);
+    this.traffic = new SavedJsonSource(trafficPath);
   }
 
   public Map<String, Map<String, JsonNode>> evaluate(
       List<JsonNode> hotels, JsonNode trip, Instant now) {
-    JsonNode areas = read(areaPath), noise = read(noisePath), traffic = read(trafficPath);
+    JsonNode areas = this.areas.read(), noise = this.noise.read(), traffic = this.traffic.read();
     Map<String, Map<String, JsonNode>> result = new HashMap<>();
     for (JsonNode hotel : hotels) {
       if (hotel.path("synthetic").asBoolean(false)) {
@@ -128,13 +127,15 @@ public final class Environment {
     return raw;
   }
 
-  private static JsonNode read(Path path) {
-    try {
-      JsonNode value = Files.isRegularFile(path) ? Json.MAPPER.readTree(path.toFile()) : Json.obj();
-      return value == null ? Json.obj() : value;
-    } catch (Exception ignored) {
-      return Json.obj();
-    }
+  /** Returns a detached assessment: API freshness annotations must not mutate the cached source. */
+  public JsonNode areaAssessment(JsonNode hotel, String region) {
+    JsonNode found = findArea(areas.read(), hotel, region);
+    return found.isEmpty() ? null : found.deepCopy();
+  }
+
+  public List<String> dataWarnings() {
+    return java.util.stream.Stream.of(areas, noise, traffic)
+        .map(SavedJsonSource::diagnostic).filter(java.util.Objects::nonNull).toList();
   }
 
   private static JsonNode findArea(JsonNode data, JsonNode hotel, String region) {

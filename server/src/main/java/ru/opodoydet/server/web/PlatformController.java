@@ -51,7 +51,6 @@ public class PlatformController {
   private final AdvisorService advisor;
   private final AuthService auth;
   private final PhotoService photos;
-  private final Path areaData;
   private final boolean accounts;
   private final boolean labMode;
   private final AdvisorIdentity identity;
@@ -80,7 +79,6 @@ public class PlatformController {
     this.advisor = advisor;
     this.auth = auth;
     this.photos = photos;
-    this.areaData = Path.of(env.get("AREA_DATA_PATH", "data/area-assessments.json"));
     this.accounts = env.accountsEnabled();
     this.labMode = env.labMode();
   }
@@ -106,7 +104,9 @@ public class PlatformController {
     if (!request.getMethod().equals("GET")) return JsonResponses.notFound("Метод не найден");
     JsonNode hotel = store.hotel(request.getRequestURI().substring("/api/areas/".length()));
     if (hotel == null) return JsonResponses.notFound("Отель не найден");
-    return JsonResponses.send(200, Json.obj("assessment", assessment(hotel, clock.instant())));
+    ObjectNode body = Json.obj("assessment", assessment(hotel, clock.instant()));
+    if (!environment.dataWarnings().isEmpty()) body.set("dataWarnings", Json.array(environment.dataWarnings()));
+    return JsonResponses.send(200, body);
   }
 
   // ---- Геометрическая оценка вида из окна ----
@@ -312,22 +312,10 @@ public class PlatformController {
 
   /** Оценка района из data/area-assessments.json — перенос Api.assessment. */
   public JsonNode assessment(JsonNode hotel, Instant now) throws IOException {
-    if (!Files.isRegularFile(areaData)) return null;
-    JsonNode file = Json.MAPPER.readTree(areaData.toFile());
     String region = store.hotelRegion(Json.str(hotel, "id"));
     if (region == null) region = store.region();
-    if (file.hasNonNull("region") && !Json.str(file, "region").equals(region)) return null;
-    for (JsonNode item : file.path("assessments"))
-      if (Json.str(item, "hotelId").equals(Json.str(hotel, "id"))) {
-        JsonNode coordinates = item.path("coordinates"), expected = hotel.path("coordinates");
-        if (!coordinates.isArray()
-            || coordinates.size() != 2
-            || !expected.isArray()
-            || expected.size() != 2) return null;
-        for (int i = 0; i < 2; i++)
-          if (!coordinates.path(i).isNumber()
-              || Math.abs(coordinates.path(i).asDouble() - expected.path(i).asDouble()) > 0.0001)
-            return null;
+    JsonNode item = environment.areaAssessment(hotel, region);
+    if (item != null) {
         ObjectNode assessment = item.deepCopy();
         JsonNode air = assessment.path("airQuality");
         if (air.isObject() && !Json.str(air, "status").equals("unknown")) {

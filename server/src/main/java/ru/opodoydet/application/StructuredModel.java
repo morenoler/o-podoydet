@@ -8,4 +8,9 @@ import java.io.IOException;
 public interface StructuredModel {
   JsonNode complete(String instructions, JsonNode input, JsonNode schema)
       throws IOException, InterruptedException;
+
+  default JsonNode completeNamed(String name, String instructions, JsonNode input, JsonNode schema)
+      throws IOException, InterruptedException {
+    return complete(instructions, input, schema);
+  }
 }

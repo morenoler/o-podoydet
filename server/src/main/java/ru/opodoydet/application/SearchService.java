@@ -166,26 +166,25 @@ public final class SearchService {
     }
     Instant now = clock.instant();
     Map<String, Map<String, JsonNode>> environments = environment.evaluate(hotels, trip, now);
+    if (!environment.dataWarnings().isEmpty()) {
+      var warnings = interpreted.withArray("warnings");
+      environment.dataWarnings().forEach(warnings::add);
+    }
     List<JsonNode> preferences = Json.list(interpreted.path("preferences"));
     SearchExtension.Snapshot extra =
         !syntheticOnly && extension != null ? extension.snapshot(trip) : SearchExtension.EMPTY;
     PersonalWishes.includeOwnerCriteria(interpreted, extra.personalCriteria());
-    SearchProjection.Snapshot projected = projection.snapshot(trip, now);
+    SearchProjection.Snapshot projected = SearchProjection.memoized(projection.snapshot(trip, now));
     final List<JsonNode> snapshotHotels = copyNodes(hotels), snapshotFacts = copyNodes(facts);
     boolean conflict = !interpreted.path("conflicts").isEmpty();
     java.util.function.Function<List<JsonNode>, List<JsonNode>> ranker =
-        requested ->
-            applyLocations(HotelFilters.apply(
-                projected.apply(
-                    extra.apply(
-                        Matching.rank(
-                            snapshotHotels, snapshotFacts, requested, trip, now, environments, policy),
-                        requested),
-                    requested,
-                    conflict),
-                snapshotFacts,
-                trip.path("hotelFilters"),
-                now), trip, now);
+        requested -> {
+          List<JsonNode> matches = extra.apply(Matching.rank(
+              snapshotHotels, snapshotFacts, requested, trip, now, environments, policy, projected), requested);
+          if (conflict) for (JsonNode match : matches) excludeForConflict((ObjectNode) match);
+          return applyLocations(HotelFilters.apply(matches, snapshotFacts,
+              trip.path("hotelFilters"), now), trip, now);
+        };
     List<JsonNode> ranked = ranker.apply(preferences);
     for (JsonNode match : ranked)
       ((ObjectNode) match).set("personalWishes", interpreted.path("personalWishes").deepCopy());
@@ -224,7 +223,7 @@ public final class SearchService {
     interpreted.set("roomRecommendations", Json.array(rooms.recommendations()));
     interpreted.set("roomAlternatives", Json.array(rooms.alternatives()));
     interpreted.set("hotelCandidates", Json.array(conflict ? List.of()
-        : hotelCandidates(snapshotHotels, snapshotFacts, preferences, trip, now, environments, policy)));
+        : hotelCandidates(snapshotHotels, snapshotFacts, preferences, trip, now, environments, policy, projected)));
     interpreted.put("unverifiedHotelCount", rooms.unverifiedHotelCount());
     interpreted.set(
         "results",
@@ -374,16 +373,14 @@ public final class SearchService {
       if (!interpreted.path("conflicts").isEmpty()) excludeForConflict(match);
       for (String key : List.of("preferences", "warnings", "conflicts", "mode", "personalWishes"))
         match.set(key, interpreted.path(key));
-      List<JsonNode> projected = projection
-          .snapshot(trip, now)
-          .apply(List.of(match), preferences, !interpreted.path("conflicts").isEmpty());
-      List<JsonNode> filtered = applyLocations(HotelFilters.apply(projected, List.of(), trip.path("hotelFilters"), now), trip, now);
+      List<JsonNode> filtered = applyLocations(HotelFilters.apply(List.of(match), List.of(), trip.path("hotelFilters"), now), trip, now);
       return filtered.isEmpty() ? null : filtered.getFirst().deepCopy();
     }
     List<JsonNode> facts =
-        store.matchingFacts().stream().filter(f -> Json.str(f, "hotelId").equals(id)).toList();
+        store.matchingFacts(id);
     Map<String, Map<String, JsonNode>> environments =
         environment.evaluate(List.of(hotel), trip, now);
+    SearchProjection.Snapshot projected = SearchProjection.memoized(projection.snapshot(trip, now));
     ObjectNode match =
         (ObjectNode)
             Matching.rank(
@@ -393,27 +390,21 @@ public final class SearchService {
                     trip,
                     now,
                     environments,
-                    store.evidencePolicy())
+                    store.evidencePolicy(), projected)
                 .getFirst();
     String bestId = Json.str(match.path("best").path("room"), "id");
     for (JsonNode room : match.path("rooms")) {
+      Map<String, JsonNode> selected = Json.list(room.path("criteria")).stream()
+          .collect(Collectors.toMap(c -> Json.str(c, "feature"), java.util.function.Function.identity()));
       ((ObjectNode) room)
           .set(
               "criteria",
               Json.array(
                   allPreferences.stream()
                       .map(
-                          preference ->
-                              BinaryDecisionPolicy.decide(
-                                  Matching.evaluateWithEnvironment(
-                                      facts,
-                                      preference,
-                                      room.path("room"),
-                                      trip,
-                                      now,
-                                      environments.get(id),
-                                      store.evidencePolicy()),
-                                  hotel))
+                          preference -> selected.computeIfAbsent(Json.str(preference, "feature"),
+                              feature -> Matching.criterion(projected, hotel, facts, preference,
+                                  room.path("room"), trip, now, environments.get(id), store.evidencePolicy())))
                       .toList()));
       if (Json.str(room.path("room"), "id").equals(bestId)) match.set("best", room.deepCopy());
     }
@@ -427,10 +418,7 @@ public final class SearchService {
     if (!interpreted.path("conflicts").isEmpty()) excludeForConflict(match);
     for (String key : List.of("preferences", "warnings", "conflicts", "mode", "personalWishes"))
       match.set(key, interpreted.path(key));
-    List<JsonNode> projected = projection
-        .snapshot(trip, now)
-        .apply(List.of(match), preferences, !interpreted.path("conflicts").isEmpty());
-    List<JsonNode> filtered = applyLocations(HotelFilters.apply(projected, facts, trip.path("hotelFilters"), now), trip, now);
+    List<JsonNode> filtered = applyLocations(HotelFilters.apply(List.of(match), facts, trip.path("hotelFilters"), now), trip, now);
     return filtered.isEmpty() ? null : filtered.getFirst().deepCopy();
   }
 
@@ -448,7 +436,7 @@ public final class SearchService {
   /** Hotel-only cards obey the same requested evidence constraints without inventing a room. */
   private List<JsonNode> hotelCandidates(
       List<JsonNode> hotels, List<JsonNode> facts, List<JsonNode> preferences, JsonNode trip, Instant now,
-      Map<String, Map<String, JsonNode>> environments, String policy) {
+      Map<String, Map<String, JsonNode>> environments, String policy, SearchProjection.Snapshot projected) {
     JsonNode filters = trip.path("hotelFilters");
     PlaceSearch locationSearch = places == null ? new PlaceSearch(Json.obj()) : places;
     return hotels.stream()
@@ -464,11 +452,11 @@ public final class SearchService {
           List<JsonNode> scopedFacts = facts.stream()
               .filter(fact -> Json.str(fact, "hotelId").equals(Json.str(hotel, "id"))).toList();
           List<JsonNode> criteria = preferences.stream().map(preference -> {
-            JsonNode raw = Features.get(Json.str(preference, "feature")).scope().equals("hotel")
-                ? Matching.evaluateWithEnvironment(scopedFacts, preference, Json.obj(), trip, now,
-                    environments.getOrDefault(Json.str(hotel, "id"), Map.of()), policy)
-                : Json.obj("feature", preference.path("feature"), "required", preference.path("required").asBoolean(),
-                    "facts", List.of(), "status", "unknown", "explanation", "Категория номера не подтверждена источником");
+            if (Features.get(Json.str(preference, "feature")).scope().equals("hotel"))
+              return (JsonNode) Matching.criterion(projected, hotel, scopedFacts, preference, Json.obj(), trip, now,
+                  environments.getOrDefault(Json.str(hotel, "id"), Map.of()), policy);
+            JsonNode raw = Json.obj("feature", preference.path("feature"), "required", preference.path("required").asBoolean(),
+                "facts", List.of(), "status", "unknown", "explanation", "Категория номера не подтверждена источником");
             return (JsonNode) BinaryDecisionPolicy.decide(raw, hotel);
           }).toList();
           List<JsonNode> locationCriteria = locationSearch.evaluate(hotel, trip, now);

@@ -31,3 +31,4 @@ services/window-view/examples/real-hotel.result.json
 
 # Local design reviews and skill artifacts are not project deliverables.
 .impeccable/
+.idea/

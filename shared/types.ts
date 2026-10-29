@@ -318,6 +318,17 @@ export interface Trace {
   tool?: string;
 }
 export interface SearchResult {
+  excludedSummary?: {
+    hotel: Pick<Hotel, "id" | "name" | "accountListingId">;
+    best: RoomMatch;
+    ownerCriteria?: OwnerCriterion[];
+  }[];
+  pagination?: {
+    page: number;
+    pageSize: number | null;
+    includeExcluded: boolean;
+    totals: Record<"results" | "excluded" | "roomRecommendations" | "roomAlternatives" | "hotelCandidates", number>;
+  };
   locationWishes?: LocationWish[];
   /** Real mapped hotels without collected room categories, never room recommendations. */
   hotelCandidates?: HotelCandidate[];

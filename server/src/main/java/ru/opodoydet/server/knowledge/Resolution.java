@@ -19,7 +19,8 @@ import java.util.function.ToDoubleFunction;
  *   <li>Отбрасываем недопустимые доказательства ({@link EvidencePolicy#admissible}).
  *   <li>Срок жизни: {@code expiresAt} источника, иначе {@code obtainedAt + ttl} характеристики.
  *   <li>Нет свежих со значением, но есть устаревшие — {@code stale}: нужна перепроверка.
- *   <li>Свежие согласны — {@code confirmed}; уверенность складывается как noisy-OR: два независимых
+ *   <li>Свежие согласны — {@code confirmed}; копии первоисточника учитываются один раз (лучший вес),
+ *       затем уверенность складывается как noisy-OR: два независимых
  *       источника по 0.6 дают 0.84.
  *   <li>Свежие расходятся — {@code conflict}: берём значение с наибольшим весом, а уверенность
  *       снижаем на вес лучшего несогласного.
@@ -156,8 +157,11 @@ public final class Resolution {
   }
 
   private static double noisyOr(List<Evidence> group, ToDoubleFunction<Evidence> weight) {
+    Map<String, Double> independent = new LinkedHashMap<>();
+    for (Evidence e : group)
+      independent.merge(SourceIdentity.of(e), Math.min(1.0, Math.max(0.0, weight.applyAsDouble(e))), Math::max);
     double miss = 1.0;
-    for (Evidence e : group) miss *= 1 - Math.min(1.0, Math.max(0.0, weight.applyAsDouble(e)));
+    for (double contribution : independent.values()) miss *= 1 - contribution;
     return 1 - miss;
   }
 

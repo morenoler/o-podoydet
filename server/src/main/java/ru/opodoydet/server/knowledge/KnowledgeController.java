@@ -91,11 +91,12 @@ public class KnowledgeController {
       return ResponseEntity.status(404)
           .body(Map.of("error", "Для отеля " + id + " нет фактов (проверьте id)"));
     Instant now = clock.instant();
+    List<Characteristic> definitions = queries.characteristics();
     Map<String, String> labels =
-        queries.characteristics().stream()
+        definitions.stream()
             .collect(Collectors.toMap(Characteristic::getCode, Characteristic::getLabel));
     Map<String, Characteristic> byCode =
-        queries.characteristics().stream()
+        definitions.stream()
             .collect(Collectors.toMap(Characteristic::getCode, Function.identity()));
     Map<String, Evidence> evidence =
         queries.evidenceById(facts.stream().flatMap(f -> f.getEvidenceIds().stream()).toList());
@@ -106,34 +107,15 @@ public class KnowledgeController {
                 f ->
                     new FactView(
                         f.getCharacteristic(),
-                        labels.get(f.getCharacteristic()),
+                        labels.getOrDefault(f.getCharacteristic(), f.getCharacteristic()),
                         f.getRoomId(),
-                        f.getValue(),
-                        f.getStatus(),
-                        f.getConfidence(),
+                        complete(f, byCode, evidence) ? f.getValue() : null,
+                        complete(f, byCode, evidence) ? f.getStatus() : Fact.Status.unknown,
+                        complete(f, byCode, evidence) ? f.getConfidence() : BigDecimal.ZERO,
                         f.getValidUntil(),
                         f.getResolvedAt(),
                         f.getEvidenceIds().stream()
-                            .map(evidence::get)
-                            .map(
-                                e ->
-                                    new EvidenceView(
-                                        e.getId(),
-                                        e.getMethod(),
-                                        e.getSourceName(),
-                                        e.getSourceUrl(),
-                                        e.getQuote(),
-                                        e.getValue(),
-                                        e.getConfidenceLevel(),
-                                        e.getConfidenceReason(),
-                                        e.getObtainedAt(),
-                                        e.getExpiresAt(),
-                                        e.isDemo(),
-                                        e.isSimulated(),
-                                        EvidencePolicy.admissible(e, now, false),
-                                        !Resolution.expiry(
-                                                e, byCode.get(e.getCharacteristic()).getTtlDays())
-                                            .isAfter(now)))
+                            .map(evidenceId -> evidenceView(evidenceId, evidence.get(evidenceId), byCode, now))
                             .toList()))
             .toList();
     List<ConflictView> conflicts =
@@ -150,6 +132,28 @@ public class KnowledgeController {
                         c.getResolution()))
             .toList();
     return ResponseEntity.ok(new HotelKnowledge(id, views, conflicts));
+  }
+
+  private static boolean complete(Fact fact, Map<String, Characteristic> definitions,
+      Map<String, Evidence> evidence) {
+    return definitions.containsKey(fact.getCharacteristic())
+        && fact.getEvidenceIds().stream().allMatch(evidence::containsKey);
+  }
+
+  private static EvidenceView evidenceView(
+      String id, Evidence e, Map<String, Characteristic> definitions, Instant now) {
+    if (e == null)
+      return new EvidenceView(id, "unknown", null, null, null, null, null,
+          "Запись доказательства отсутствует; требуется перепроверка.", null, null,
+          false, false, false, false);
+    Characteristic definition = definitions.get(e.getCharacteristic());
+    boolean expired = e.getExpiresAt() != null ? !e.getExpiresAt().isAfter(now)
+        : definition != null && !Resolution.expiry(e, definition.getTtlDays()).isAfter(now);
+    return new EvidenceView(e.getId(), e.getMethod(), e.getSourceName(), e.getSourceUrl(),
+        e.getQuote(), e.getValue(), e.getConfidenceLevel(),
+        definition == null ? "Определение характеристики отсутствует; требуется перепроверка." : e.getConfidenceReason(),
+        e.getObtainedAt(), e.getExpiresAt(), e.isDemo(), e.isSimulated(),
+        definition != null && EvidencePolicy.admissible(e, now, false), expired);
   }
 
   /** Принудительный пересчёт фактов (обычно идёт сам после импорта и по расписанию). */
