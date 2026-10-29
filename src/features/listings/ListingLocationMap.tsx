@@ -22,6 +22,7 @@ export function ListingLocationMap({ coordinates, onChange, disabled = false, de
   current.current = { coordinates: point, onChange, disabled, demo };
   const [ready, setReady] = useState(false);
   const [unavailable, setUnavailable] = useState(false);
+  const [partial, setPartial] = useState(false);
   const editable = typeof onChange === "function";
   const showMap = editable || point !== null;
   const longitude = point?.[0];
@@ -36,7 +37,7 @@ export function ListingLocationMap({ coordinates, onChange, disabled = false, de
     let observer: ResizeObserver | undefined;
     let resizeFrame: number | undefined;
     const fail = () => { if (!disposed) setUnavailable(true); };
-    const monitor = tileLoadMonitor(fail);
+    const monitor = tileLoadMonitor(fail, 12_000, (value) => { if (!disposed) setPartial(value); });
     const resize = () => {
       if (resizeFrame !== undefined) cancelAnimationFrame(resizeFrame);
       resizeFrame = requestAnimationFrame(() => {
@@ -59,7 +60,8 @@ export function ListingLocationMap({ coordinates, onChange, disabled = false, de
       });
       tiles.on("loading", monitor.loading);
       tiles.on("load", monitor.loaded);
-      tiles.on("tileerror", monitor.error);
+      tiles.on("tileload", monitor.tileLoaded);
+      tiles.on("tileerror", monitor.tileError);
       tiles.addTo(map);
       map.on("click", (event: Leaflet.LeafletMouseEvent) => {
         const callback = current.current.onChange;
@@ -122,8 +124,9 @@ export function ListingLocationMap({ coordinates, onChange, disabled = false, de
       </div> : null}
     <p className="listing-location-caption">
       {point ? <>{demo ? "Демонстрационная точка" : "Точка отельера"}: {point[1]}, {point[0]}.{!demo && " Адрес и вход независимо не проверены."}</>
-        : editable ? "Точка пока не выбрана. Обзор Пусана не сохраняется как расположение объявления." : "Точка на карте не указана."}
+        : editable ? "Точка пока не выбрана. Обзор карты не сохраняется как расположение объявления." : "Точка на карте не указана."}
     </p>
+    {showMap && !unavailable && partial && <p className="listing-location-caption" role="status">Часть карты не загрузилась. Переместите карту, чтобы загрузить соседние участки.</p>}
     {demo && <p className="listing-location-demo">Вымышленное объявление. Точка условная.</p>}
   </div>;
 }

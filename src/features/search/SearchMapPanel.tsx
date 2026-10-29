@@ -7,6 +7,7 @@ import { accommodationPath } from "../../shared/lib/accommodation";
 import { AccommodationPhoto } from "../../shared/ui/AccommodationPhoto";
 import { price } from "../account/format";
 import { accommodationPrice } from "../hotels/presentationPrice";
+import { BASEMAPS } from "../map/basemaps";
 import "./search-map-panel.css";
 
 export function SearchMapPanel({
@@ -66,7 +67,7 @@ export function SearchMapPanel({
         </div>
       )}
       <details className="search-map-note"><summary>О карте и данных</summary><p>
-        Спутниковый фон — EOX Sentinel-2 за 2016 год, около 10 м на пиксель. Это обзор территории, а не актуальная съёмка отеля.
+        {BASEMAPS.satellite.description}{" "}
         Улицы, координаты и маршруты — OpenStreetMap. Вход и подходы к сети не проверены и не включены в длину маршрута. На карте — отели
         из выдачи с известными координатами. Если снимки недоступны, покажем улицы; без сети — сохранённую схему.
       </p></details>

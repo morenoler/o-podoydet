@@ -4,7 +4,7 @@ import type { Dataset, Hotel } from "../../../../shared/types";
 import { InteractiveMap } from "./InteractiveMap";
 import { SavedGeoMap } from "./SavedGeoMap";
 import { validPath } from "../mapData";
-import { BASEMAPS, DEFAULT_BASEMAP, SATELLITE_UNAVAILABLE, type Basemap } from "../basemaps";
+import { BASEMAPS, DEFAULT_BASEMAP, type Basemap } from "../basemaps";
 import type { SurroundingPlace } from "../../places/placePresentation";
 import "../interactive-map.css";
 
@@ -25,6 +25,7 @@ export function GeoMap(props: GeoMapProps) {
     () => typeof navigator !== "undefined" && navigator.onLine === false,
   );
   const [reason, setReason] = useState("");
+  const [partial, setPartial] = useState(false);
   const [basemap, setBasemap] = useState<Basemap>(DEFAULT_BASEMAP);
   const unavailable = useCallback((message: string) => {
     setReason(message);
@@ -44,24 +45,23 @@ export function GeoMap(props: GeoMapProps) {
         <div className="geo-map-basemaps" role="group" aria-label="Вид карты">
           {(["satellite", "streets"] as const).map((mode) => <button key={mode} type="button"
             aria-pressed={!saved && basemap === mode} onClick={() => {
-              if (!BASEMAPS[mode].available) {
-                setReason(SATELLITE_UNAVAILABLE);
-                return;
-              }
-              setBasemap(mode); setSaved(false); setReason("");
+              setBasemap(mode); setSaved(false); setReason(""); setPartial(false);
             }}>{mode === "satellite" ? "Спутник" : "Карта"}</button>)}
         </div>
       </div>
       {saved ? <SavedGeoMap {...props} /> : <InteractiveMap {...props} basemap={basemap} onUnavailable={unavailable}
+        onTilesPartial={setPartial}
         onTilesUnavailable={(mode, message) => {
+          setPartial(false);
           if (mode === "satellite") {
             setBasemap("streets");
             setReason("Спутниковые снимки недоступны. Показываем карту OpenStreetMap.");
           } else unavailable(message);
         }} />}
-      {!saved && basemap === "satellite" && <span className="geo-map-imagery-date" title="Esri World Imagery. Дата и детализация зависят от участка; снимки не подтверждают нынешнее состояние отеля.">Esri World Imagery</span>}
+      {!saved && basemap === "satellite" && <span className="geo-map-imagery-date" title={BASEMAPS.satellite.description}>{BASEMAPS.satellite.label}</span>}
       {saved && <span className="geo-map-saved-label">Сохранённая схема</span>}
       {reason && <p className="geo-map-status" role="status">{reason}</p>}
+      {!saved && partial && <p className="geo-map-status" role="status">Часть карты не загрузилась. Переместите карту или выберите другой вид.</p>}
       {props.showRoute !== false && props.hotel?.route && !props.hotel.synthetic && validPath(props.hotel.route.coordinates).length > 0 && (
         <p className="geo-map-legend">
           <span><i className="geo-map-route-line" aria-hidden="true" />Маршрут до пляжа</span>

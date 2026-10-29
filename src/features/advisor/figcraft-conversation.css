@@ -69,7 +69,7 @@
 .conversation-map .geo-map-mode button { min-height: 36px; background: #fff; box-shadow: 0 2px 8px #0001; border: 0; border-radius: 999px; padding: 8px 12px; color: #333; font-size: 11px; font-weight: 400; }
 .conversation-map .geo-map-legend { position: absolute; z-index: 400; bottom: 28px; left: 12px; right: 12px; padding: 6px 8px; background: #fffffff0; border-radius: 8px; font-size: 10px; gap: 6px; }
 .conversation-map .geo-map-status { flex-shrink: 0; margin: 0; padding: 8px 12px; font-size: 11px; line-height: 1.4; }
-.conversation-map .search-map-note { position: absolute; z-index: 400; bottom: 8px; left: 10px; margin: 0; max-width: calc(100% - 20px); border-radius: 8px; background: #fffffff2; color: #666; font-size: 10px; line-height: 1.4; }
+.conversation-map .search-map-note { position: static; flex-shrink: 0; margin: 0; max-width: 100%; background: #fff; color: #555; font-size: 12px; line-height: 1.4; }
 .conversation-map .search-map-note summary { padding: 5px 8px; cursor: pointer; }
 .conversation-map .search-map-note p { margin: 0; padding: 0 8px 8px; max-width: 320px; }
 .conversation-map .map-caveat { margin: 0; padding: 7px 14px; color: #777; font-size: 10px; line-height: 1.4; }

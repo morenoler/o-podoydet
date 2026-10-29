@@ -2,12 +2,22 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createBasemaps, imageryAttribution, OSM_ATTRIBUTION } from "../src/features/map/basemaps";
 
-test("a missing imagery key leaves OSM available without issuing anonymous imagery requests", () => {
+test("a missing imagery key provides licensed overview satellite tiles without an ArcGIS request", () => {
   for (const key of [undefined, "", "  "]) {
     const maps = createBasemaps(key);
-    assert.equal(maps.satellite.available, false);
-    assert.equal(maps.satellite.url, "");
+    assert.equal(maps.satellite.available, true);
+    const url = new URL(maps.satellite.url);
+    assert.equal(url.origin + url.pathname, "https://wmts.terrascope.be/wmts");
+    assert.equal(url.searchParams.get("REQUEST"), "GetTile");
+    assert.equal(url.searchParams.get("LAYER"), "esa-worldcover-s2rgbnir-10m-2021-v2_tcc");
+    assert.equal(url.searchParams.get("TIME"), "2021-01-01");
+    assert.deepEqual(["TILEMATRIXSET", "TILEMATRIX", "TILEROW", "TILECOL"].map(name => url.searchParams.get(name)),
+      ["EPSG:3857", "{z}", "{y}", "{x}"]);
+    assert.equal(maps.satellite.maxNativeZoom, 14);
     assert.equal(maps.satellite.metadataUrl, undefined);
+    assert.match(maps.satellite.attribution, /Copernicus Sentinel data \(2021\)/);
+    assert.match(maps.satellite.attribution, /licenses\/by\/4\.0/);
+    assert.match(maps.satellite.label!, /2021.*10 м/);
     assert.equal(maps.streets.available, true);
     assert.equal(maps.streets.maxNativeZoom, 19);
     assert.match(maps.streets.url, /tile\.openstreetmap\.org/);
@@ -21,6 +31,8 @@ test("imagery uses the authorized ArcGIS service and native city zoom with encod
   assert.match(satellite.url, /\/tile\/\{z\}\/\{y\}\/\{x\}\?token=synthetic-token%26unexpected%3D1$/);
   assert.equal(satellite.maxNativeZoom, 19);
   assert.match(satellite.attribution, /Powered by.*Esri/);
+  assert.match(satellite.description!, /Esri World Imagery/);
+  assert.doesNotMatch(satellite.description!, /2021|10 м/);
   assert.match(OSM_ATTRIBUTION, /OpenStreetMap contributors/);
 });
 

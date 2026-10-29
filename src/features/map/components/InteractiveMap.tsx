@@ -13,15 +13,16 @@ import "leaflet/dist/leaflet.css";
 
 type MapRuntime = { library: typeof Leaflet; map: Leaflet.Map; layers: Leaflet.LayerGroup };
 
-export function InteractiveMap({ dataset, hotel, hotels, focusHotels, places, showRoute = true, onSelect, onUnavailable, basemap, onTilesUnavailable }: GeoMapProps & {
+export function InteractiveMap({ dataset, hotel, hotels, focusHotels, places, showRoute = true, onSelect, onUnavailable, basemap, onTilesUnavailable, onTilesPartial }: GeoMapProps & {
   onUnavailable: (message: string) => void;
   basemap: Basemap;
   onTilesUnavailable: (basemap: Basemap, message: string) => void;
+  onTilesPartial?: (partial: boolean) => void;
 }) {
   const canvas = useRef<HTMLDivElement>(null);
   const runtime = useRef<MapRuntime | null>(null);
-  const current = useRef({ dataset, hotel, hotels, focusHotels, places, showRoute, basemap, onSelect, onUnavailable, onTilesUnavailable });
-  current.current = { dataset, hotel, hotels, focusHotels, places, showRoute, basemap, onSelect, onUnavailable, onTilesUnavailable };
+  const current = useRef({ dataset, hotel, hotels, focusHotels, places, showRoute, basemap, onSelect, onUnavailable, onTilesUnavailable, onTilesPartial });
+  current.current = { dataset, hotel, hotels, focusHotels, places, showRoute, basemap, onSelect, onUnavailable, onTilesUnavailable, onTilesPartial };
   const [ready, setReady] = useState(false);
   const [zoomRevision, setZoomRevision] = useState(0);
   const priorView = useRef<{ results: string; focus: string; selected?: string } | null>(null);
@@ -124,11 +125,15 @@ export function InteractiveMap({ dataset, hotel, hotels, focusHotels, places, sh
       current.current.onTilesUnavailable(basemap, "Спутниковые снимки не подключены.");
       return;
     }
+    // Do not stretch 10 m overview pixels to hotel/building zoom levels.
+    active.map.setMaxZoom(source.maxNativeZoom);
     let disposed = false;
     let tiles: Leaflet.TileLayer | undefined;
     const controller = new AbortController();
     const monitor = tileLoadMonitor((message) => {
       if (current.current.basemap === basemap) current.current.onTilesUnavailable(basemap, message);
+    }, 12_000, (partial) => {
+      if (!disposed && current.current.basemap === basemap) current.current.onTilesPartial?.(partial);
     });
     // Only request the viewport, once it is stationary. Keep normal HTTP cache
     // headers and Referer; never prefetch or retry around a provider's rate limit.
@@ -144,12 +149,13 @@ export function InteractiveMap({ dataset, hotel, hotels, focusHotels, places, sh
       }
       if (disposed) return;
       tiles = active!.library.tileLayer(source.url, {
-        maxNativeZoom: source.maxNativeZoom, maxZoom: 19, keepBuffer: 0,
+        maxNativeZoom: source.maxNativeZoom, maxZoom: source.maxNativeZoom, keepBuffer: 0,
         updateWhenIdle: true, updateWhenZooming: false, attribution,
       });
       tiles.on("loading", monitor.loading);
       tiles.on("load", monitor.loaded);
-      tiles.on("tileerror", monitor.error);
+      tiles.on("tileload", monitor.tileLoaded);
+      tiles.on("tileerror", monitor.tileError);
       tiles.addTo(active!.map);
     }
     void addTiles().catch(() => {
@@ -162,7 +168,8 @@ export function InteractiveMap({ dataset, hotel, hotels, focusHotels, places, sh
       monitor.dispose();
       tiles?.off("loading", monitor.loading);
       tiles?.off("load", monitor.loaded);
-      tiles?.off("tileerror", monitor.error);
+      tiles?.off("tileload", monitor.tileLoaded);
+      tiles?.off("tileerror", monitor.tileError);
       tiles?.remove();
     };
   }, [ready, basemap]);

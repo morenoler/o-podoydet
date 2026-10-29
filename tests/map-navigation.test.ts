@@ -161,3 +161,33 @@ test("completed and disposed tile loads cancel timeouts; a new stalled viewport 
   disposed.loading(); disposed.dispose(); t.mock.timers.tick(101);
   assert.equal(failures.length, 1);
 });
+
+test("one failed tile keeps a partially loaded map visible and reports the missing area", (t) => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  const failures: string[] = [], partial: boolean[] = [];
+  const monitor = tileLoadMonitor((message) => failures.push(message), 100, value => partial.push(value));
+  monitor.loading(); monitor.tileError(); monitor.tileLoaded(); monitor.loaded();
+  t.mock.timers.tick(101);
+  assert.deepEqual(failures, []);
+  assert.deepEqual(partial, [true]);
+  monitor.loading(); monitor.tileLoaded(); monitor.loaded();
+  assert.deepEqual(partial, [true, false], "a healthy viewport clears the partial warning");
+  monitor.dispose(); monitor.tileError(); monitor.loaded();
+  assert.deepEqual(partial, [true, false]);
+});
+
+test("all-error tile batches fall back once, while a partially stalled batch remains usable", (t) => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  const failures: string[] = [], partial: boolean[] = [];
+  const failed = tileLoadMonitor(message => failures.push(message), 100);
+  failed.loading(); failed.tileError(); failed.tileError(); failed.loaded(); failed.loaded();
+  t.mock.timers.tick(101);
+  assert.equal(failures.length, 1);
+  const stalled = tileLoadMonitor(message => failures.push(message), 100, value => partial.push(value));
+  stalled.loading(); stalled.tileLoaded(); t.mock.timers.tick(101);
+  assert.equal(failures.length, 1);
+  assert.deepEqual(partial, [true]);
+  stalled.loaded();
+  assert.deepEqual(partial, [true, false]);
+  stalled.dispose();
+});
