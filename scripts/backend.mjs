@@ -133,7 +133,10 @@ export function databaseEnvironment(environment) {
   const schema = environment.DB_SCHEMA || "public";
   if (!/^[a-z][a-z0-9_]{0,62}$/.test(schema))
     throw new Error("DB_SCHEMA должен быть простым именем PostgreSQL (a-z, 0-9, _).");
-  const jdbc = environment.DATABASE_URL || "jdbc:postgresql://127.0.0.1:5432/opodoydet";
+  const port = environment.POSTGRES_PORT || "5432";
+  if (!environment.DATABASE_URL && (!/^\d+$/.test(String(port)) || Number(port) < 1 || Number(port) > 65535))
+    throw new Error("POSTGRES_PORT должен быть числом от 1 до 65535.");
+  const jdbc = environment.DATABASE_URL || `jdbc:postgresql://127.0.0.1:${port}/opodoydet`;
   if (!jdbc.startsWith("jdbc:postgresql://"))
     throw new Error("DATABASE_URL должен быть JDBC URL PostgreSQL.");
   const url = new URL(jdbc.slice(5));
@@ -152,8 +155,8 @@ export function startBackend({
 } = {}) {
   verifyJava();
   const environment = { ...runtimeEnv, ...env };
-  if (database) ensureDatabase(environment);
   const childEnv = databaseEnvironment(environment);
+  if (database) ensureDatabase(environment);
   const jar = resolve(root, jarPath);
   if (!existsSync(jar))
     throw new Error("Сначала выполните npm run backend:build");

@@ -26,3 +26,4 @@ backend/target
 **/*.db-*
 test-results
 contract/snapshots
+contract/legacy-snapshots

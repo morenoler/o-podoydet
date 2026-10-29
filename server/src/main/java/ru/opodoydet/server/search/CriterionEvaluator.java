@@ -19,6 +19,7 @@ import ru.opodoydet.server.catalog.RoomPolicy;
 import ru.opodoydet.server.knowledge.Characteristic;
 import ru.opodoydet.server.knowledge.Evidence;
 import ru.opodoydet.server.knowledge.EvidencePolicy;
+import ru.opodoydet.server.knowledge.Resolution;
 
 /**
  * Оценка одного условия поиска по доказательствам нового ядра.
@@ -90,7 +91,7 @@ final class CriterionEvaluator {
       relevant.add(e);
     }
     List<Evidence> active =
-        relevant.stream().filter(e -> e.getExpiresAt() != null && e.getExpiresAt().isAfter(now)).toList();
+        relevant.stream().filter(e -> Resolution.expiry(e, definition.getTtlDays()).isAfter(now)).toList();
 
     ArrayNode facts = result.putArray("facts");
     for (Evidence e : active.isEmpty() ? relevant : active) facts.add(raw(e));
@@ -158,14 +159,7 @@ final class CriterionEvaluator {
   }
 
   static boolean same(JsonNode a, JsonNode b, String valueType, Integer threshold) {
-    // Approximate measurements can agree only when they imply the same search decision.
-    if (threshold != null && a.isNumber() && b.isNumber()
-        && (a.asDouble() <= threshold) != (b.asDouble() <= threshold)) return false;
-    if ("meters".equals(valueType) && a.isNumber() && b.isNumber()) {
-      double x = a.asDouble(), y = b.asDouble();
-      return Math.abs(x - y) <= Math.max(50.0, 0.25 * Math.min(x, y));
-    }
-    return a.equals(b);
+    return Resolution.same(a, b, valueType, threshold);
   }
 
   private static int rank(String method) {

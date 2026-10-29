@@ -1,4 +1,5 @@
 import { test } from "node:test";
+import { accountDemoEnvironment } from "./local-runtime.mjs";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
@@ -171,3 +172,24 @@ test("ordinary demo creates portable JSON, preserves source bytes and refuses ov
     assert.throws(() => seedDemoJson({ output: join(path, "bad.json"), date: "2027-02-29" }), /Некорректная/);
     assert.throws(() => seedDemoJson({ output: ".local/main.json" }), /Основные базы недоступны/);
   }));
+
+test("public-password demo stays local and cannot inherit model credentials or a contract clock", () => {
+  const parent = {
+    BIND_ADDRESS: "0.0.0.0", DB_SCHEMA: "main_custom", DEMO_DB_SCHEMA: "demo_review",
+    PORT: "8080", DEMO_PORT: "8083", AI_PROVIDER: "deepseek", DEEPSEEK_API_KEY: "private-key",
+    LLM_API_KEY: "legacy-key", ADVISOR_LOCAL_MODEL: "local-model", LEGACY_DB_PATH: "main.sqlite3",
+    SPRING_PROFILES_ACTIVE: "contract", CONTRACT_INSTANT: "2026-01-01T00:00:00Z", CATALOG_IMPORT: "false",
+  };
+  const child = accountDemoEnvironment(parent, root, "seed.json");
+  assert.equal(child.BIND_ADDRESS, "127.0.0.1");
+  assert.equal(child.PORT, "8083");
+  assert.equal(child.DB_SCHEMA, "demo_review");
+  assert.equal(child.DEMO_SEED_PATH, "seed.json");
+  assert.equal(child.AI_PROVIDER, "rules");
+  assert.equal(child.CATALOG_IMPORT, "true");
+  for (const name of ["DEEPSEEK_API_KEY", "LLM_API_KEY", "ADVISOR_LOCAL_MODEL", "LEGACY_DB_PATH", "SPRING_PROFILES_ACTIVE", "CONTRACT_INSTANT"])
+    assert.equal(child[name], "");
+  assert.equal(parent.DEEPSEEK_API_KEY, "private-key");
+  assert.equal(parent.BIND_ADDRESS, "0.0.0.0");
+  assert.throws(() => accountDemoEnvironment({ DEMO_PORT: "65536" }, root, "seed.json"), /DEMO_PORT/);
+});

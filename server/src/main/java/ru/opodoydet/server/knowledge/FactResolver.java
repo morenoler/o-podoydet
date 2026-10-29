@@ -54,6 +54,7 @@ public class FactResolver {
   @Scheduled(
       initialDelayString = "${knowledge.resolve-interval:PT1H}",
       fixedDelayString = "${knowledge.resolve-interval:PT1H}")
+  @Transactional
   public void scheduled() {
     Summary summary = resolveAll();
     log.info("Пересчёт фактов по расписанию: {}", summary);
@@ -95,6 +96,7 @@ public class FactResolver {
               entry.getValue(),
               characteristic.getTtlDays(),
               characteristic.getValueType(),
+              characteristic.getThreshold(),
               priors,
               now,
               demoPolicies.getOrDefault(subject.hotelId(), false));

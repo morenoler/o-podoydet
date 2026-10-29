@@ -59,6 +59,17 @@ public final class Resolution {
       Map<String, Double> methodPrior,
       Instant now,
       boolean demoPolicy) {
+    return compute(evidence, ttlDays, valueType, null, methodPrior, now, demoPolicy);
+  }
+
+  public static Outcome compute(
+      List<Evidence> evidence,
+      int ttlDays,
+      String valueType,
+      Integer threshold,
+      Map<String, Double> methodPrior,
+      Instant now,
+      boolean demoPolicy) {
     List<Evidence> admissible =
         evidence.stream().filter(e -> EvidencePolicy.admissible(e, now, demoPolicy)).toList();
     ToDoubleFunction<Evidence> weight =
@@ -93,7 +104,7 @@ public final class Resolution {
     for (Evidence e : fresh) {
       JsonNode key =
           byValue.keySet().stream()
-              .filter(k -> same(k, e.getValue(), valueType))
+              .filter(k -> same(k, e.getValue(), valueType, threshold))
               .findFirst()
               .orElse(e.getValue());
       byValue.computeIfAbsent(key, k -> new ArrayList<>()).add(e);
@@ -137,8 +148,10 @@ public final class Resolution {
         reason);
   }
 
-  /** Допуск для расстояний: max(50 м, 25% от меньшего). Остальные типы — точное совпадение. */
-  static boolean same(JsonNode a, JsonNode b, String valueType) {
+  /** Approximate distances agree only on the same side of the characteristic's decision threshold. */
+  public static boolean same(JsonNode a, JsonNode b, String valueType, Integer threshold) {
+    if (threshold != null && a.isNumber() && b.isNumber()
+        && (a.asDouble() <= threshold) != (b.asDouble() <= threshold)) return false;
     if ("meters".equals(valueType) && a.isNumber() && b.isNumber()) {
       double x = a.asDouble(), y = b.asDouble();
       return Math.abs(x - y) <= Math.max(50.0, 0.25 * Math.min(x, y));
@@ -146,7 +159,7 @@ public final class Resolution {
     return a.equals(b);
   }
 
-  static Instant expiry(Evidence e, int ttlDays) {
+  public static Instant expiry(Evidence e, int ttlDays) {
     if (e.getExpiresAt() != null) return e.getExpiresAt();
     Instant base = Objects.requireNonNullElse(e.getObtainedAt(), Instant.EPOCH);
     return base.plus(ttlDays, ChronoUnit.DAYS);

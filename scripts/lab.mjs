@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { isolatedSchema } from "./local-runtime.mjs";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 function run(script, args, env = process.env) {
@@ -30,10 +31,8 @@ try {
     process.env.PORT = process.env.LAB_PORT || "8081";
     process.env.LAB_MODE = "true";
     process.env.ACCOUNT_MODE = "true";
-    const mainSchema = process.env.DB_SCHEMA || "public";
-    process.env.DB_SCHEMA = process.env.LAB_DB_SCHEMA || "lab";
-    if (process.env.DB_SCHEMA === mainSchema)
-      throw new Error("Схема лаборатории должна отличаться от схемы основного сайта.");
+    process.env.DB_SCHEMA = isolatedSchema(process.env, "LAB_DB_SCHEMA", "lab");
+    process.env.BIND_ADDRESS = "127.0.0.1";
     process.env.UPLOADS_PATH = process.env.LAB_UPLOADS_PATH || ".local/lab-uploads";
     // Importing any historical data requires an explicit lab-specific choice.
     process.env.LEGACY_DB_PATH = process.env.LAB_LEGACY_DB_PATH || "";

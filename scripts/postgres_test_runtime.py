@@ -29,7 +29,15 @@ def isolated_postgres(label: str) -> dict[str, str]:
     else:
         subprocess.run(["docker", "compose", "up", "-d", "--wait", "db"],
                        cwd=ROOT, check=True, creationflags=FLAGS, timeout=120)
-        url = "jdbc:postgresql://127.0.0.1:5432/opodoydet"
+        # Compose also reads .env itself: inspect the actual binding instead of
+        # assuming Python inherited POSTGRES_PORT from the calling shell.
+        binding = subprocess.run(["docker", "compose", "port", "db", "5432"],
+                                 cwd=ROOT, check=True, creationflags=FLAGS, timeout=30,
+                                 capture_output=True, text=True).stdout.strip()
+        port = binding.rpartition(":")[2]
+        if not port.isdecimal() or not 1 <= int(port) <= 65535:
+            raise ValueError("Compose did not publish a valid PostgreSQL port")
+        url = f"jdbc:postgresql://127.0.0.1:{port}/opodoydet"
         user = password = "opodoydet"
     if not url.startswith("jdbc:postgresql://"):
         raise ValueError("TEST_DATABASE_URL must be a real PostgreSQL JDBC URL")

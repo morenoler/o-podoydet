@@ -46,6 +46,11 @@ class SearchHttpContractTest {
       assertEquals("Ожидается JSON-объект", Json.read(notObject.body()).path("error").asText());
       assertEquals(400, post(client, base, "/api/search", Json.write(trip().put("unused", "x".repeat(25 * 1024)))).statusCode());
       assertEquals(400, post(client, base, "/api/search?pageSize=101", Json.write(trip())).statusCode());
+      for (String query : List.of("page=not-a-number&pageSize=10", "pageSize=2147483648", "includeExcluded=invalid")) {
+        var invalidParameter = post(client, base, "/api/search?" + query, Json.write(trip()));
+        assertEquals(400, invalidParameter.statusCode(), query);
+        assertEquals("Некорректный запрос", Json.read(invalidParameter.body()).path("error").asText());
+      }
       var compact = post(client, base, "/api/search?includeExcluded=false&page=0&pageSize=10", Json.write(trip()));
       assertEquals(200, compact.statusCode());
       assertEquals(0, Json.read(compact.body()).path("pagination").path("totals").path("excluded").asInt(-1));

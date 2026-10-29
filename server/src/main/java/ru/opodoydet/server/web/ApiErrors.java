@@ -20,6 +20,11 @@ public class ApiErrors {
     return ResponseEntity.badRequest().body(Map.of("error", message));
   }
 
+  @ExceptionHandler(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class)
+  ResponseEntity<Map<String, String>> invalidParameter() {
+    return ResponseEntity.badRequest().body(Map.of("error", "Некорректный запрос"));
+  }
+
   @ExceptionHandler(NotFoundException.class)
   ResponseEntity<Map<String, String>> notFound(NotFoundException error) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", error.getMessage()));

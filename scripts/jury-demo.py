@@ -44,7 +44,7 @@ def run(base):
     if criterion.get("status") != "match":
         raise ValueError("The room courtyard criterion did not become a match")
     facts = criterion.get("facts", [])
-    if not any(item.get("demo") is True or item.get("simulated") is True for item in facts):
+    if not any(item.get("demo") is True and item.get("simulated") is True for item in facts):
         raise ValueError("Search evidence lost its synthetic provenance")
     knowledge = request("/api/v2/hotels/demo-harbor/knowledge")
     print(json.dumps({

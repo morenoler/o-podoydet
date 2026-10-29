@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Контракт API: эталонные ответы (contract/snapshots/). Сняты со старого бэкенда при переносе на
-// Spring и защищают выходные данные от случайных изменений.
+// Контракт API: эталонные ответы (contract/snapshots/) независимой сборки исходного main.
+// Commit, JAR SHA-256, входные данные и время эталона записаны в contract/baseline.json.
 //
 //   node scripts/contract.mjs check   --base http://127.0.0.1:8080        сравнить сервер с эталонами
 //   node scripts/contract.mjs capture --base http://127.0.0.1:8080        переснять эталоны (осознанное изменение API)
@@ -27,15 +27,23 @@ const VOLATILE_KEYS = new Set([
 ]);
 const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
 
-function args() {
-  const [mode, ...rest] = process.argv.slice(2);
+export function parseContractArguments(argv = process.argv.slice(2)) {
+  const [mode, ...rest] = argv;
   const options = { mode };
-  for (let i = 0; i < rest.length; i += 2) options[rest[i].replace(/^--/, "")] = rest[i + 1];
-  if (!["capture", "check", "diff"].includes(mode) || !options.base || (mode === "diff" && !options.against)) {
-    console.error("Использование: contract.mjs capture|check --base URL  |  diff --base URL --against URL");
-    process.exit(2);
+  for (let i = 0; i < rest.length; i += 2) {
+    if (!["--base", "--against", "--only"].includes(rest[i]) || !rest[i + 1] || rest[i + 1].startsWith("--"))
+      throw new Error("Ожидаются --base URL, --against URL или --only имена-запросов.");
+    options[rest[i].slice(2)] = rest[i + 1];
   }
-  if (options.only) options.only = new Set(options.only.split(","));
+  if (!["capture", "check", "diff"].includes(mode) || !options.base || (mode === "diff" && !options.against)) {
+    throw new Error("Использование: contract.mjs capture|check --base URL  |  diff --base URL --against URL");
+  }
+  if (options.only) {
+    options.only = new Set(options.only.split(","));
+    const known = new Set(spec.requests.map(({ name }) => name));
+    const unknown = [...options.only].filter((name) => !known.has(name));
+    if (unknown.length) throw new Error(`Неизвестные имена запросов --only: ${unknown.join(", ")}`);
+  }
   return options;
 }
 
@@ -135,7 +143,14 @@ function normalize(value, run) {
 }
 
 /** Список расхождений в виде путей JSON. */
-export function differences(expected, actual, path = "$", out = [], valueChanges = []) {
+function ignoresPath(path, prefixes) {
+  return prefixes.some((prefix) => path === prefix || path.startsWith(prefix + ".") || path.startsWith(prefix + "["));
+}
+
+export function differences(expected, actual, path = "$", out = [], valueChanges = [], ignoredPaths = []) {
+  // Ignore approved subtrees before limiting diagnostics: otherwise allowed
+  // changes can consume the limit and hide a later incompatible field.
+  if (ignoresPath(path, ignoredPaths)) return out;
   if (out.length > 20) return out;
   // Exact scalar transition at one exact path; never skip the rest of a trace object.
   if (valueChanges.some((change) => change.path === path
@@ -144,12 +159,13 @@ export function differences(expected, actual, path = "$", out = [], valueChanges
     out.push(`${path}: ${short(expected)} → ${short(actual)}`);
   } else if (Array.isArray(expected)) {
     if (expected.length !== actual.length) out.push(`${path}.length: ${expected.length} → ${actual.length}`);
-    for (let i = 0; i < Math.min(expected.length, actual.length); i++) differences(expected[i], actual[i], `${path}[${i}]`, out, valueChanges);
+    for (let i = 0; i < Math.min(expected.length, actual.length); i++) differences(expected[i], actual[i], `${path}[${i}]`, out, valueChanges, ignoredPaths);
   } else if (expected && typeof expected === "object") {
     for (const k of new Set([...Object.keys(expected), ...Object.keys(actual)])) {
+      if (ignoresPath(`${path}.${k}`, ignoredPaths)) continue;
       if (!(k in actual)) out.push(`${path}.${k}: пропало поле`);
       else if (!(k in expected)) continue; // новые поля разрешены: фронт их игнорирует
-      else differences(expected[k], actual[k], `${path}.${k}`, out, valueChanges);
+      else differences(expected[k], actual[k], `${path}.${k}`, out, valueChanges, ignoredPaths);
     }
   } else if (expected !== actual) out.push(`${path}: ${short(expected)} → ${short(actual)}`);
   return out;
@@ -175,9 +191,7 @@ function compare(expected, actual) {
     // Прежние исключения по путям проверяются отдельно от точных переходов значений.
     const skip = allowed.get(name) ?? [];
     problems.push(
-      ...differences(want.body, got.body, "$", [], allowedValues.get(name) ?? []).filter(
-        (p) => !skip.some((prefix) => p.startsWith(prefix + ":") || p.startsWith(prefix + ".") || p.startsWith(prefix + "[")),
-      ),
+      ...differences(want.body, got.body, "$", [], allowedValues.get(name) ?? [], skip),
     );
     if (problems.length) {
       failed++;
@@ -191,7 +205,7 @@ function compare(expected, actual) {
 }
 
 async function main() {
-  const options = args();
+  const options = parseContractArguments();
   if (options.mode === "capture") {
     mkdirSync(snapshots, { recursive: true });
     const results = await runAll(options.base, options);

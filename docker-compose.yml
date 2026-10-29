@@ -1,7 +1,7 @@
 name: opodoydet
 
 x-app: &app
-  image: opodoydet-app:local
+  image: ${COMPOSE_PROJECT_NAME:-opodoydet}-app:local
   build:
     context: .
   init: true
@@ -43,7 +43,7 @@ services:
       retries: 30
 
   window-view:
-    image: opodoydet-window-view:local
+    image: ${COMPOSE_PROJECT_NAME:-opodoydet}-window-view:local
     build:
       context: services/window-view
     init: true
@@ -79,7 +79,7 @@ services:
       - "127.0.0.1:${JURY_PORT:-8081}:8080"
 
   jury-check:
-    image: opodoydet-app:local
+    image: ${COMPOSE_PROJECT_NAME:-opodoydet}-app:local
     profiles: [checks]
     depends_on:
       host-demo:

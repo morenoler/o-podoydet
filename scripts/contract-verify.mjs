@@ -1,5 +1,5 @@
 // Проверка контракта одной командой: Spring собирается, поднимается на чистой схеме PostgreSQL,
-// его ответы сравниваются с эталонами contract/snapshots/ (сняты со старого бэкенда при переносе),
+// его ответы сравниваются с независимым эталоном contract/snapshots/ (см. contract/baseline.json),
 // сервер останавливается.
 //
 //   npm run contract:verify
@@ -60,6 +60,7 @@ try {
   server = startBackend({
     env: {
       PORT,
+      BIND_ADDRESS: "127.0.0.1",
       SPRING_PROFILES_ACTIVE: "contract",
       CONTRACT_INSTANT: baseline.clockInstant,
       DB_SCHEMA: schema,
@@ -75,6 +76,7 @@ try {
       AREA_DATA_PATH: "data/area-assessments.json",
       NOISE_DATA_PATH: "data/noise-context.json",
       TRAFFIC_DATA_PATH: "data/traffic-ktdb-2024.json",
+      PLACES_DATA_PATH: "data/places/busan-places.json",
       FRONTEND_ORIGIN: "",
       LLM_API_KEY: "",
       AI_PROVIDER: "rules",

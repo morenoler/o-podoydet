@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync } from "node:fs";
 import { relative, resolve } from "node:path";
+import { accountDemoEnvironment } from "./local-runtime.mjs";
 import {
   demoToday,
   localDemoPath,
@@ -52,34 +53,13 @@ try {
       throw new Error(
         "Сначала выполните npm run build:all: демо использует основную сборку dist/.",
       );
-    const port = Number(process.env.DEMO_PORT || "8082");
-    if (!Number.isInteger(port) || port < 1 || port > 65535)
-      throw new Error("DEMO_PORT должен быть числом от 1 до 65535.");
-    const demoSchema = process.env.DEMO_DB_SCHEMA || "demo";
-    if (demoSchema === (process.env.DB_SCHEMA || "public"))
-      throw new Error("Схема демо должна отличаться от схемы основного сайта.");
-    Object.assign(process.env, {
-      PORT: String(port),
-      LEGACY_DB_PATH: "",
-      DEMO_SEED_PATH: demoPath,
-      DEMO_MODE: "true",
-      DB_SCHEMA: demoSchema,
-      UPLOADS_PATH: resolve(root, ".local/demo-uploads"),
-      DIST_PATH: "dist",
-      DATA_PATH: "data/verified-hotels.json",
-      LAB_MODE: "false",
-      ACCOUNT_MODE: "true",
-      SESSION_COOKIE_SECURE: "false",
-      FRONTEND_ORIGIN: "",
-      LLM_API_KEY: "",
-      AI_PROVIDER: "rules",
-    });
+    Object.assign(process.env, accountDemoEnvironment(process.env, root, demoPath));
     mkdirSync(process.env.UPLOADS_PATH, { recursive: true });
     // Import after setting the environment: backend.mjs snapshots it for the child JVM.
     const { startBackend } = await import("./backend.mjs");
     const child = startBackend();
     console.log(
-      `Демо с публичными учебными паролями: http://127.0.0.1:${port}. Только локальная проверка.`,
+      `Демо с публичными учебными паролями: http://127.0.0.1:${process.env.PORT}. Только локальная проверка.`,
     );
     child.once("error", (error) => {
       console.error(error.message);
